@@ -205,7 +205,7 @@ export default function ComptaImportPage() {
 
     const { data: importRec, error: impErr } = await supabase
       .from('fec_imports')
-      .insert({ societe: societe.trim(), exercice: exercice.trim(), filename: fileName, nb_lignes: rows.length, total_debit: totalDebit, total_credit: totalCredit })
+      .insert({ meta: JSON.stringify({ societe: societe.trim(), exercice: exercice.trim(), filename: fileName, nb_lignes: rows.length, total_debit: totalDebit, total_credit: totalCredit }) })
       .select('id')
       .single()
 
@@ -217,7 +217,7 @@ export default function ComptaImportPage() {
 
     const BATCH = 500
     for (let i = 0; i < rows.length; i += BATCH) {
-      const batch = rows.slice(i, i + BATCH).map(r => ({ ...r, import_id: importRec.id }))
+      const batch = rows.slice(i, i + BATCH).map(r => ({ import_id: importRec.id, data: JSON.stringify(r) }))
       const { error: bErr } = await supabase.from('fec_ecritures').insert(batch)
       if (bErr) {
         await supabase.from('fec_imports').delete().eq('id', importRec.id)

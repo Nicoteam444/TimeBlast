@@ -23,12 +23,16 @@ export default function ComptaEcrituresPage() {
   // Charger la liste des imports
   useEffect(() => {
     supabase.from('fec_imports')
-      .select('*')
-      .order('exercice', { ascending: false })
+      .select('id, created_at, meta')
       .order('created_at', { ascending: false })
       .then(({ data }) => {
-        setImports(data || [])
-        if (data?.length > 0) setSelectedImportId(data[0].id)
+        const parsed = (data || []).map(i => {
+          let m = {}
+          try { m = JSON.parse(i.meta || '{}') } catch {}
+          return { ...i, ...m }
+        })
+        setImports(parsed)
+        if (parsed.length > 0) setSelectedImportId(parsed[0].id)
         setLoadingImports(false)
       })
   }, [])
@@ -42,12 +46,16 @@ export default function ComptaEcrituresPage() {
     setFilterJournal('')
     setFilterCompte('')
     supabase.from('fec_ecritures')
-      .select('*')
+      .select('id, import_id, data')
       .eq('import_id', selectedImportId)
-      .order('ecriture_date', { ascending: true })
-      .order('ecriture_num', { ascending: true })
       .then(({ data }) => {
-        setEcritures(data || [])
+        const parsed = (data || []).map(r => {
+          let d = {}
+          try { d = JSON.parse(r.data || '{}') } catch {}
+          return { id: r.id, import_id: r.import_id, ...d }
+        })
+        parsed.sort((a, b) => (a.ecriture_date || '').localeCompare(b.ecriture_date || '') || (a.ecriture_num || '').localeCompare(b.ecriture_num || ''))
+        setEcritures(parsed)
         setLoading(false)
       })
   }, [selectedImportId])
