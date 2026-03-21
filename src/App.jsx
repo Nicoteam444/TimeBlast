@@ -18,6 +18,7 @@ import PlanificationPage from './pages/temps/PlanificationPage'
 import ComptaPage from './pages/compta/ComptaPage'
 import ComptaImportPage from './pages/compta/ComptaImportPage'
 import ComptaEcrituresPage from './pages/compta/ComptaEcrituresPage'
+import ComptaAnalysePage from './pages/compta/ComptaAnalysePage'
 import PrevisionnelPage from './pages/finance/PrevisionnelPage'
 import SetPasswordPage from './pages/SetPasswordPage'
 import UnauthorizedPage from './pages/UnauthorizedPage'
@@ -77,6 +78,9 @@ function AppRoutes() {
       } />
       <Route path="/finance/comptabilite/ecritures" element={
         <ProtectedRoute roles={['admin','comptable']}><Layout><ComptaEcrituresPage /></Layout></ProtectedRoute>
+      } />
+      <Route path="/finance/comptabilite/analyse" element={
+        <ProtectedRoute roles={['admin','comptable']}><Layout><ComptaAnalysePage /></Layout></ProtectedRoute>
       } />
       <Route path="/finance/previsionnel" element={
         <ProtectedRoute roles={['admin','comptable']}><Layout><PrevisionnelPage /></Layout></ProtectedRoute>

@@ -2616,3 +2616,84 @@ button:disabled { opacity: .6; cursor: not-allowed; }
   font-weight: 700;
   letter-spacing: .02em;
 }
+
+/* ── Analyse financière ─────────────────────────────────────── */
+.analyse-kpi-row {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+}
+.analyse-kpi-card {
+  flex: 1;
+  min-width: 140px;
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 1rem 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: .2rem;
+}
+.analyse-kpi-label {
+  font-size: .75rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: .04em;
+}
+.analyse-kpi-value {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--text);
+}
+.analyse-kpi-sub {
+  font-size: .8rem;
+  color: var(--text-muted);
+}
+
+.analyse-charts-row {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+.analyse-chart-card {
+  flex: 1;
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 1.25rem;
+  min-width: 0;
+}
+.analyse-chart-header {
+  display: flex;
+  align-items: baseline;
+  gap: .75rem;
+  margin-bottom: 1rem;
+}
+.analyse-chart-title {
+  font-size: .9rem;
+  font-weight: 700;
+  color: var(--text);
+}
+.analyse-chart-sub {
+  font-size: .75rem;
+  color: var(--text-muted);
+}
+
+.analyse-charges-row {
+  display: flex;
+  flex-direction: column;
+  gap: .75rem;
+}
+.analyse-charge-item { }
+.analyse-charge-bar-wrap {
+  height: 8px;
+  background: #f1f5f9;
+  border-radius: 4px;
+  overflow: hidden;
+}
+.analyse-charge-bar {
+  height: 100%;
+  border-radius: 4px;
+  transition: width .5s ease;
+}

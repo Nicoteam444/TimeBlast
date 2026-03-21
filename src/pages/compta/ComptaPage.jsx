@@ -25,10 +25,19 @@ export default function ComptaPage() {
         </button>
 
         <button className="home-module-card" onClick={() => navigate('/finance/comptabilite/ecritures')}>
-          <div className="home-module-icon">📊</div>
+          <div className="home-module-icon">📋</div>
           <div className="home-module-body">
             <h2>Écritures</h2>
             <p>Consulter les écritures comptables par société et par période</p>
+          </div>
+          <span className="home-module-arrow">→</span>
+        </button>
+
+        <button className="home-module-card" onClick={() => navigate('/finance/comptabilite/analyse')}>
+          <div className="home-module-icon">📊</div>
+          <div className="home-module-body">
+            <h2>Analyse financière</h2>
+            <p>KPIs, CA mensuel, trésorerie, EBITDA, composition du bilan</p>
           </div>
           <span className="home-module-arrow">→</span>
         </button>
