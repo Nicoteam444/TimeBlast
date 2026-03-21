@@ -31,7 +31,8 @@ function classify(num) {
   if (/^74/.test(n)) return 'subventions'
   if (/^75|^77|^78/.test(n)) return 'autresProduits'
   if (/^60|^61|^62/.test(n)) return 'achats'
-  if (/^63|^64/.test(n)) return 'personnel'
+  if (/^63/.test(n)) return 'impotsTaxes'
+  if (/^64/.test(n)) return 'personnel'
   if (/^65/.test(n)) return 'autresCharges'
   if (/^66/.test(n)) return 'chargesFinanc'
   if (/^67/.test(n)) return 'chargesExcep'
@@ -63,24 +64,26 @@ function computeKPIs(ecritures) {
     // Produits (7x) : net = crédit - débit
     if (['ca','prodStocks','subventions','autresProduits'].includes(cat)) add(cat, c - d)
     // Charges (6x) : net = débit - crédit
-    else if (['achats','personnel','autresCharges','chargesFinanc','chargesExcep','dotations','impots'].includes(cat)) add(cat, d - c)
+    else if (['achats','personnel','impotsTaxes','autresCharges','chargesFinanc','chargesExcep','dotations','impots'].includes(cat)) add(cat, d - c)
     // Bilan actif : net = débit - crédit
     else if (['tresorerie','clients','stocks','immoIncorp','immoCorp'].includes(cat)) add(cat, d - c)
     // Bilan passif : net = crédit - débit
     else if (['fournisseurs','capitauxPropres','dettesFinanc','dettesSocFisc','comptesCourants'].includes(cat)) add(cat, c - d)
   }
 
-  const ca         = Math.max(0, sums.ca || 0)
-  const achats     = Math.max(0, sums.achats || 0)
-  const margeB     = ca - achats
-  const margeBpct  = ca > 0 ? margeB / ca * 100 : 0
-  const personnel  = Math.max(0, sums.personnel || 0)
-  const autresChg  = Math.max(0, sums.autresCharges || 0)
-  const dotations  = Math.max(0, sums.dotations || 0)
-  const ebitda     = margeB - personnel - autresChg
-  const tresorerie = sums.tresorerie || 0
+  const ca          = Math.max(0, sums.ca || 0)
+  const achats      = Math.max(0, sums.achats || 0)
+  const margeB      = ca - achats
+  const margeBpct   = ca > 0 ? margeB / ca * 100 : 0
+  const personnel   = Math.max(0, sums.personnel || 0)
+  const impotsTaxes = Math.max(0, sums.impotsTaxes || 0)
+  const autresChg   = Math.max(0, sums.autresCharges || 0)
+  const dotations   = Math.max(0, sums.dotations || 0)
+  // EBITDA = EBE = CA - Achats - Impôts&taxes - Personnel - Autres charges
+  const ebitda      = margeB - impotsTaxes - personnel - autresChg
+  const tresorerie  = sums.tresorerie || 0
 
-  return { ca, achats, margeB, margeBpct, personnel, autresChg, dotations, ebitda, tresorerie, sums }
+  return { ca, achats, margeB, margeBpct, personnel, impotsTaxes, autresChg, dotations, ebitda, tresorerie, sums }
 }
 
 // ── Séries mensuelles ─────────────────────────────────────────
@@ -179,6 +182,7 @@ export default function ComptaAnalysePage() {
   const [ecritures, setEcritures]       = useState([])
   const [loading, setLoading]           = useState(false)
   const [loadingImports, setLoadingImports] = useState(true)
+  const [selectedYear, setSelectedYear] = useState(null) // null = toutes
 
   useEffect(() => {
     supabase.from('fec_imports').select('id, created_at, meta').order('created_at', { ascending: false })
@@ -208,11 +212,29 @@ export default function ComptaAnalysePage() {
   }, [selectedId])
 
   const selectedImport = imports.find(i => i.id === selectedId)
-  const kpis     = useMemo(() => computeKPIs(ecritures), [ecritures])
-  const monthly  = useMemo(() => computeMonthly(ecritures), [ecritures])
+
+  // Années disponibles dans les écritures
+  const availableYears = useMemo(() => {
+    const years = [...new Set(ecritures.map(e => e.ecriture_date?.slice(0, 4)).filter(Boolean))].sort()
+    return years
+  }, [ecritures])
+
+  // Auto-select dernière année quand les écritures changent
+  useEffect(() => {
+    if (availableYears.length > 0) setSelectedYear(availableYears[availableYears.length - 1])
+  }, [availableYears.join(',')])
+
+  // Filtrer par année sélectionnée
+  const ecrituresFiltrees = useMemo(() => {
+    if (!selectedYear) return ecritures
+    return ecritures.filter(e => e.ecriture_date?.startsWith(selectedYear))
+  }, [ecritures, selectedYear])
+
+  const kpis     = useMemo(() => computeKPIs(ecrituresFiltrees), [ecrituresFiltrees])
+  const monthly  = useMemo(() => computeMonthly(ecrituresFiltrees), [ecrituresFiltrees])
 
   // Séries pour graphiques
-  const caMonthly = monthly.map(m => ({ label: m.label, ca: m.ca, ebitda: m.ebitda }))
+  const caMonthly    = monthly.map(m => ({ label: m.label, ca: m.ca, ebitda: m.ebitda }))
   const tresoMonthly = monthly.map(m => ({ label: m.label, tresorerie: m.tresorerie }))
 
   if (loadingImports) return <div className="admin-page"><p style={{ padding: '2rem' }}>Chargement…</p></div>
@@ -235,10 +257,21 @@ export default function ComptaAnalysePage() {
           <h1>Analyse financière</h1>
           {selectedImport && <p>{selectedImport.societe} · Exercice {selectedImport.exercice}</p>}
         </div>
-        <div style={{ display: 'flex', gap: '.5rem' }}>
-          <select className="table-pagesize" style={{ minWidth: 300 }} value={selectedId || ''} onChange={e => setSelectedId(e.target.value)}>
+        <div style={{ display: 'flex', gap: '.5rem', alignItems: 'center', flexWrap: 'wrap' }}>
+          <select className="table-pagesize" style={{ minWidth: 260 }} value={selectedId || ''} onChange={e => { setSelectedId(e.target.value); setSelectedYear(null) }}>
             {imports.map(i => <option key={i.id} value={i.id}>{i.societe} — {i.exercice}</option>)}
           </select>
+          {availableYears.length > 0 && (
+            <div className="analyse-year-tabs">
+              {availableYears.map(y => (
+                <button key={y}
+                  className={`analyse-year-tab ${selectedYear === y ? 'analyse-year-tab--active' : ''}`}
+                  onClick={() => setSelectedYear(y)}>
+                  {y}
+                </button>
+              ))}
+            </div>
+          )}
           <button className="btn-secondary" onClick={() => navigate('/finance/comptabilite')}>← Retour</button>
         </div>
       </div>
