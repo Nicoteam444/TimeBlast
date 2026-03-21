@@ -3209,3 +3209,178 @@ button:disabled { opacity: .6; cursor: not-allowed; }
 /* Overlay for mobile sidebar */
 .sidebar-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.4); z-index: 299; }
 @media (max-width: 768px) { .sidebar-overlay { display: block; } }
+
+/* ── Planification 3 mois ────────────────────────────────────── */
+.plan-page { max-width: 100%; }
+.plan-filter-bar { display: flex; gap: .5rem; flex-wrap: wrap; margin-bottom: 1.25rem; }
+.plan-filter-chip {
+  padding: .3rem .85rem;
+  border: 1.5px solid var(--border);
+  border-radius: 20px;
+  font-size: .8rem;
+  font-weight: 600;
+  cursor: pointer;
+  background: var(--surface);
+  color: var(--text-muted);
+  transition: all .15s;
+}
+.plan-filter-chip:hover { border-color: var(--primary); color: var(--primary); }
+.plan-filter-chip--active { border-color: var(--primary); color: var(--primary); background: color-mix(in srgb, var(--primary) 8%, var(--surface)); }
+
+.plan-wrap {
+  display: flex;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  overflow: hidden;
+  background: var(--surface);
+}
+
+/* ── Colonne noms ── */
+.plan-names {
+  flex-shrink: 0;
+  width: 190px;
+  border-right: 2px solid var(--border);
+  background: var(--surface);
+  z-index: 2;
+}
+.plan-names-spacer { border-bottom: 1px solid var(--border); }
+.plan-name-row {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 0 .75rem;
+  gap: .2rem;
+  border-bottom: 1px solid var(--border);
+}
+.plan-name-text {
+  font-size: .82rem;
+  font-weight: 600;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.plan-service-badge {
+  font-size: .63rem;
+  font-weight: 700;
+  padding: .1rem .45rem;
+  border-radius: 4px;
+  width: fit-content;
+  letter-spacing: .03em;
+}
+.plan-names-empty {
+  padding: 1rem .75rem;
+  font-size: .82rem;
+  color: var(--text-muted);
+}
+
+/* ── Zone scrollable ── */
+.plan-scroll { flex: 1; overflow-x: auto; overflow-y: visible; }
+
+/* ── Header mois ── */
+.plan-month-row {
+  display: flex;
+  background: var(--bg);
+  border-bottom: 1px solid var(--border);
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+.plan-month-cell {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  padding: 0 .6rem;
+  font-size: .75rem;
+  font-weight: 700;
+  color: var(--text);
+  text-transform: capitalize;
+  border-right: 2px solid var(--border);
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+/* ── Header jours ── */
+.plan-day-row {
+  display: flex;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+}
+.plan-day-cell {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: .65rem;
+  color: var(--text-muted);
+  border-right: 1px solid var(--border);
+  box-sizing: border-box;
+  user-select: none;
+}
+.plan-day-cell--we    { background: color-mix(in srgb, var(--border) 50%, transparent); }
+.plan-day-cell--today { background: color-mix(in srgb, var(--primary) 15%, transparent); color: var(--primary); font-weight: 800; }
+
+/* ── Ligne collaborateur ── */
+.plan-row {
+  position: relative;
+  display: flex;
+  border-bottom: 1px solid var(--border);
+}
+.plan-cell {
+  flex-shrink: 0;
+  position: absolute;
+  top: 0; bottom: 0;
+  border-right: 1px solid var(--border);
+  box-sizing: border-box;
+}
+.plan-cell--we    { background: color-mix(in srgb, var(--border) 18%, transparent); }
+.plan-cell--today { background: color-mix(in srgb, var(--primary) 5%, transparent); }
+
+/* Trait aujourd'hui */
+.plan-today-line {
+  position: absolute;
+  top: 0; bottom: 0;
+  width: 2px;
+  background: #ef4444;
+  z-index: 3;
+  pointer-events: none;
+}
+.plan-today-line::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -3px;
+  width: 8px; height: 8px;
+  background: #ef4444;
+  border-radius: 50%;
+}
+
+/* ── Bloc planning ── */
+.plan-block {
+  position: absolute;
+  top: 7px; bottom: 7px;
+  border-left: 3px solid;
+  border-radius: 5px;
+  display: flex;
+  align-items: center;
+  padding: 0 7px;
+  overflow: hidden;
+  z-index: 2;
+  cursor: default;
+  transition: filter .15s;
+}
+.plan-block:hover { filter: brightness(.92); z-index: 4; }
+.plan-block-label {
+  font-size: .72rem;
+  font-weight: 700;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.plan-empty {
+  padding: 3rem 2rem;
+  text-align: center;
+  color: var(--text-muted);
+  font-size: .85rem;
+}

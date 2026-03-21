@@ -50,11 +50,31 @@ export const DEMO_PROJETS = [
 
 // ── Utilisateurs démo ─────────────────────────────────────────
 export const DEMO_USERS = [
-  { id: 'u1', full_name: 'Nicolas Nabhan',  role: 'admin',         email: 'nicolas@sra.fr' },
-  { id: 'u2', full_name: 'Alice Martin',    role: 'manager',       email: 'alice@sra.fr' },
-  { id: 'u3', full_name: 'Bob Dupont',      role: 'collaborateur', email: 'bob@sra.fr' },
-  { id: 'u4', full_name: 'Claire Petit',    role: 'collaborateur', email: 'claire@sra.fr' },
-  { id: 'u5', full_name: 'David Lemaire',   role: 'collaborateur', email: 'david@sra.fr' },
+  { id: 'u1', full_name: 'Nicolas Nabhan',  role: 'admin',         service: 'chef_projet', email: 'nicolas@sra.fr' },
+  { id: 'u2', full_name: 'Alice Martin',    role: 'manager',       service: 'commercial',  email: 'alice@sra.fr' },
+  { id: 'u3', full_name: 'Bob Dupont',      role: 'collaborateur', service: 'technique',   email: 'bob@sra.fr' },
+  { id: 'u4', full_name: 'Claire Petit',    role: 'collaborateur', service: 'fonctionnel', email: 'claire@sra.fr' },
+  { id: 'u5', full_name: 'David Lemaire',   role: 'collaborateur', service: 'technique',   email: 'david@sra.fr' },
+]
+
+// ── Plannings 3 mois (mars → mai 2026) ───────────────────────
+export const DEMO_PLANNINGS = [
+  // Nicolas — chef de projet
+  { id: 'pl1',  user_id: 'u1', label: 'Migration ERP Meridian',    color: '#6366f1', date_debut: '2026-03-03', date_fin: '2026-03-27' },
+  { id: 'pl2',  user_id: 'u1', label: 'Conseil RH Cabinet Marceau', color: '#0ea5e9', date_debut: '2026-04-07', date_fin: '2026-05-16' },
+  // Alice — commercial
+  { id: 'pl3',  user_id: 'u2', label: 'Formation Data TechForge',  color: '#f59e0b', date_debut: '2026-03-10', date_fin: '2026-04-04' },
+  { id: 'pl4',  user_id: 'u2', label: 'Dashboard BI Datavision',   color: '#ec4899', date_debut: '2026-04-14', date_fin: '2026-05-30' },
+  // Bob — technique
+  { id: 'pl5',  user_id: 'u3', label: 'Migration ERP Meridian',    color: '#6366f1', date_debut: '2026-03-03', date_fin: '2026-04-17' },
+  { id: 'pl6',  user_id: 'u3', label: 'Infra Cloud Industriel',    color: '#14b8a6', date_debut: '2026-04-22', date_fin: '2026-05-29' },
+  // Claire — fonctionnel
+  { id: 'pl7',  user_id: 'u4', label: 'Conformité RGPD Pharma',    color: '#16a34a', date_debut: '2026-03-03', date_fin: '2026-03-20' },
+  { id: 'pl8',  user_id: 'u4', label: 'Support & MCO Altéa',       color: '#0ea5e9', date_debut: '2026-03-24', date_fin: '2026-04-30' },
+  { id: 'pl9',  user_id: 'u4', label: 'Formation Data TechForge',  color: '#f59e0b', date_debut: '2026-05-04', date_fin: '2026-05-29' },
+  // David — technique
+  { id: 'pl10', user_id: 'u5', label: 'TMS Logistique Express',    color: '#f97316', date_debut: '2026-03-03', date_fin: '2026-03-14' },
+  { id: 'pl11', user_id: 'u5', label: 'Infra Cloud Industriel',    color: '#14b8a6', date_debut: '2026-03-17', date_fin: '2026-05-29' },
 ]
 
 // ── Saisies de temps (générées dynamiquement / semaine courante) ──
