@@ -1,6 +1,8 @@
 import { useState, useEffect, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { supabase } from '../../lib/supabase'
+import { useDemo } from '../../contexts/DemoContext'
+import { DEMO_IMPORTS, DEMO_ECRITURES } from '../../data/demoData'
 import {
   BarChart, Bar, LineChart, Line, ComposedChart,
   XAxis, YAxis, CartesianGrid, Tooltip, Legend,
@@ -177,14 +179,21 @@ function BilanTreemap({ sums }) {
 // ── Page principale ───────────────────────────────────────────
 export default function ComptaAnalysePage() {
   const navigate = useNavigate()
+  const { isDemoMode } = useDemo()
   const [imports, setImports]           = useState([])
   const [selectedId, setSelectedId]     = useState(null)
   const [ecritures, setEcritures]       = useState([])
   const [loading, setLoading]           = useState(false)
   const [loadingImports, setLoadingImports] = useState(true)
-  const [selectedYear, setSelectedYear] = useState(null) // null = toutes
+  const [selectedYear, setSelectedYear] = useState(null)
 
   useEffect(() => {
+    if (isDemoMode) {
+      setImports(DEMO_IMPORTS)
+      setSelectedId(DEMO_IMPORTS[0].id)
+      setLoadingImports(false)
+      return
+    }
     supabase.from('fec_imports').select('id, created_at, meta').order('created_at', { ascending: false })
       .then(({ data }) => {
         const parsed = (data || []).map(i => {
@@ -195,10 +204,14 @@ export default function ComptaAnalysePage() {
         if (parsed.length > 0) setSelectedId(parsed[0].id)
         setLoadingImports(false)
       })
-  }, [])
+  }, [isDemoMode])
 
   useEffect(() => {
     if (!selectedId) return
+    if (isDemoMode) {
+      setEcritures(DEMO_ECRITURES[selectedId] || [])
+      return
+    }
     setLoading(true)
     supabase.from('fec_ecritures').select('id, import_id, data').eq('import_id', selectedId)
       .then(({ data }) => {
@@ -209,7 +222,7 @@ export default function ComptaAnalysePage() {
         setEcritures(parsed)
         setLoading(false)
       })
-  }, [selectedId])
+  }, [selectedId, isDemoMode])
 
   const selectedImport = imports.find(i => i.id === selectedId)
 

@@ -1,6 +1,7 @@
 import { useEffect } from 'react'
 import { BrowserRouter, Routes, Route, Navigate, useNavigate } from 'react-router-dom'
 import { AuthProvider } from './contexts/AuthContext'
+import { DemoProvider } from './contexts/DemoContext'
 import ProtectedRoute from './components/ProtectedRoute'
 import Layout from './components/Layout'
 import LoginPage from './pages/LoginPage'
@@ -118,9 +119,11 @@ function AppRoutes() {
 export default function App() {
   return (
     <AuthProvider>
-      <BrowserRouter>
-        <AppRoutes />
-      </BrowserRouter>
+      <DemoProvider>
+        <BrowserRouter>
+          <AppRoutes />
+        </BrowserRouter>
+      </DemoProvider>
     </AuthProvider>
   )
 }

@@ -1,10 +1,12 @@
 import { useState, useRef, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
+import { useDemo } from '../contexts/DemoContext'
 import { supabase } from '../lib/supabase'
 
 export default function TopBar({ societes = [], selectedSociete, onSelectSociete }) {
   const { profile, signOut } = useAuth()
+  const { isDemoMode, setIsDemoMode } = useDemo()
   const navigate = useNavigate()
   const [userMenuOpen, setUserMenuOpen] = useState(false)
   const userMenuRef = useRef(null)
@@ -113,6 +115,11 @@ export default function TopBar({ societes = [], selectedSociete, onSelectSociete
         )}
       </div>
 
+      {isDemoMode && (
+        <div className="topbar-demo-indicator">
+          🎭 Mode démo
+        </div>
+      )}
       <div className="topbar-spacer" />
 
       {/* Sélecteur de société */}
@@ -167,6 +174,28 @@ export default function TopBar({ societes = [], selectedSociete, onSelectSociete
             <button className="topbar-dropdown-item" onClick={() => { navigate('/parametres'); setUserMenuOpen(false) }}>
               Mon profil
             </button>
+            <hr className="topbar-dropdown-divider" />
+            {/* Sélecteur de jeu de données */}
+            <div className="topbar-dropdown-section">
+              <span className="topbar-dropdown-section-label">Jeu de données</span>
+              <div className="topbar-dataset-toggle">
+                <button
+                  className={`topbar-dataset-btn ${!isDemoMode ? 'topbar-dataset-btn--active' : ''}`}
+                  onClick={() => setIsDemoMode(false)}
+                >
+                  Données réelles
+                </button>
+                <button
+                  className={`topbar-dataset-btn ${isDemoMode ? 'topbar-dataset-btn--active' : ''}`}
+                  onClick={() => setIsDemoMode(true)}
+                >
+                  🎭 Démo
+                </button>
+              </div>
+              {isDemoMode && (
+                <p className="topbar-demo-badge">Mode démo activé — données fictives</p>
+              )}
+            </div>
             <hr className="topbar-dropdown-divider" />
             <button className="topbar-dropdown-item topbar-dropdown-item--danger" onClick={handleSignOut}>
               Déconnexion
