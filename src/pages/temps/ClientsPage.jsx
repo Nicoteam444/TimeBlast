@@ -1,9 +1,12 @@
 import { useState, useEffect, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { supabase } from '../../lib/supabase'
+import { useDemo } from '../../contexts/DemoContext'
+import { DEMO_CLIENTS } from '../../data/demoData'
 
 export default function ClientsPage() {
   const navigate = useNavigate()
+  const { isDemoMode } = useDemo()
   const [clients, setClients] = useState([])
   const [loading, setLoading] = useState(true)
   const [showForm, setShowForm] = useState(false)
@@ -13,10 +16,15 @@ export default function ClientsPage() {
   const [pageSize, setPageSize] = useState(20)
   const [page, setPage] = useState(1)
 
-  useEffect(() => { fetchClients() }, [])
+  useEffect(() => { fetchClients() }, [isDemoMode])
 
   async function fetchClients() {
     setLoading(true)
+    if (isDemoMode) {
+      setClients(DEMO_CLIENTS)
+      setLoading(false)
+      return
+    }
     const { data } = await supabase.from('clients').select('*, projets(count)').order('name')
     setClients(data || [])
     setLoading(false)
@@ -24,6 +32,7 @@ export default function ClientsPage() {
 
   async function handleCreate(e) {
     e.preventDefault()
+    if (isDemoMode) { setShowForm(false); setName(''); return }
     await supabase.from('clients').insert({ name })
     setName('')
     setShowForm(false)
@@ -31,6 +40,7 @@ export default function ClientsPage() {
   }
 
   async function handleDelete(id) {
+    if (isDemoMode) { setDeleteConfirm(null); return }
     await supabase.from('clients').delete().eq('id', id)
     setDeleteConfirm(null)
     fetchClients()

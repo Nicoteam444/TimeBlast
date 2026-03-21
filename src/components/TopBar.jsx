@@ -2,14 +2,28 @@ import { useState, useRef, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
 import { useDemo } from '../contexts/DemoContext'
+import { useNotifications } from '../contexts/NotificationsContext'
 import { supabase } from '../lib/supabase'
+
+function fmtNotifDate(iso) {
+  const d = new Date(iso)
+  const now = new Date()
+  const diff = Math.floor((now - d) / 1000)
+  if (diff < 60) return 'À l\'instant'
+  if (diff < 3600) return `Il y a ${Math.floor(diff / 60)} min`
+  if (diff < 86400) return `Il y a ${Math.floor(diff / 3600)}h`
+  return d.toLocaleDateString('fr-FR', { day: '2-digit', month: 'short' })
+}
 
 export default function TopBar({ societes = [], selectedSociete, onSelectSociete }) {
   const { profile, signOut } = useAuth()
   const { isDemoMode, setIsDemoMode } = useDemo()
+  const { notifications, unreadCount, markRead, markAllRead } = useNotifications()
   const navigate = useNavigate()
   const [userMenuOpen, setUserMenuOpen] = useState(false)
+  const [notifOpen, setNotifOpen] = useState(false)
   const userMenuRef = useRef(null)
+  const notifRef = useRef(null)
 
   const [searchQuery, setSearchQuery] = useState('')
   const [searchResults, setSearchResults] = useState([])
@@ -25,6 +39,9 @@ export default function TopBar({ societes = [], selectedSociete, onSelectSociete
       }
       if (searchRef.current && !searchRef.current.contains(e.target)) {
         setSearchOpen(false)
+      }
+      if (notifRef.current && !notifRef.current.contains(e.target)) {
+        setNotifOpen(false)
       }
     }
     document.addEventListener('mousedown', handleClickOutside)
@@ -69,6 +86,12 @@ export default function TopBar({ societes = [], selectedSociete, onSelectSociete
   async function handleSignOut() {
     await signOut()
     navigate('/login')
+  }
+
+  function handleNotifClick(notif) {
+    markRead(notif.id)
+    setNotifOpen(false)
+    if (notif.link) navigate(notif.link)
   }
 
   const initials = profile?.full_name
@@ -146,6 +169,64 @@ export default function TopBar({ societes = [], selectedSociete, onSelectSociete
       <button className="topbar-btn" onClick={() => navigate('/parametres')} title="Paramètres">
         <span>⚙</span>
       </button>
+
+      {/* Notifications */}
+      <div className="topbar-notif notif-btn" ref={notifRef} style={{ position: 'relative' }}>
+        <button
+          className="topbar-btn"
+          onClick={() => setNotifOpen(v => !v)}
+          title="Notifications"
+          style={{ position: 'relative' }}
+        >
+          <span>🔔</span>
+          {unreadCount > 0 && (
+            <span className="notif-badge">{unreadCount > 9 ? '9+' : unreadCount}</span>
+          )}
+        </button>
+
+        {notifOpen && (
+          <div className="notif-dropdown">
+            <div className="notif-header">
+              <span>Notifications</span>
+              {unreadCount > 0 && (
+                <button
+                  style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '.78rem', color: 'var(--primary)', fontWeight: 600, padding: 0 }}
+                  onClick={markAllRead}
+                >
+                  Tout marquer lu
+                </button>
+              )}
+            </div>
+            <div className="notif-list">
+              {notifications.length === 0 ? (
+                <div className="notif-empty">Aucune notification</div>
+              ) : (
+                notifications.map(n => (
+                  <div
+                    key={n.id}
+                    className={`notif-item ${!n.read ? 'notif-item--unread' : ''}`}
+                    onClick={() => handleNotifClick(n)}
+                  >
+                    <div className={`notif-dot ${n.read ? 'notif-dot--read' : ''}`} />
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div className="notif-msg">{n.message}</div>
+                      <div className="notif-date">{fmtNotifDate(n.date)}</div>
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+            <div className="notif-footer">
+              <button
+                style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '.8rem', color: 'var(--text-muted)' }}
+                onClick={() => setNotifOpen(false)}
+              >
+                Fermer
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
 
       {/* Menu utilisateur */}
       <div className="topbar-user" ref={userMenuRef}>

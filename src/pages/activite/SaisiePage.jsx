@@ -1,6 +1,78 @@
 import { useState, useEffect, useCallback, useRef } from 'react'
 import { supabase } from '../../lib/supabase'
 import { useAuth } from '../../contexts/AuthContext'
+import { useDemo } from '../../contexts/DemoContext'
+import { DEMO_SAISIES } from '../../data/demoData'
+
+// ── Validation semaine ───────────────────────────────────────
+const VALIDATION_STORAGE_KEY = 'validation_statuts'
+
+function loadValidationStatuts() {
+  try { return JSON.parse(localStorage.getItem(VALIDATION_STORAGE_KEY) || '{}') } catch { return {} }
+}
+function saveValidationStatuts(s) {
+  try { localStorage.setItem(VALIDATION_STORAGE_KEY, JSON.stringify(s)) } catch {}
+}
+
+function WeekStatusBar({ userId, mondayISO, userRole }) {
+  const [status, setStatus] = useState('brouillon')
+
+  useEffect(() => {
+    const stored = loadValidationStatuts()
+    const key = `${userId}_${mondayISO}`
+    setStatus(stored[key] || 'brouillon')
+  }, [userId, mondayISO])
+
+  function handleSubmit() {
+    const stored = loadValidationStatuts()
+    const key = `${userId}_${mondayISO}`
+    stored[key] = 'soumis'
+    saveValidationStatuts(stored)
+    setStatus('soumis')
+  }
+
+  if (!['admin', 'manager', 'collaborateur'].includes(userRole)) return null
+
+  return (
+    <div style={{ display: 'flex', alignItems: 'center', gap: '.75rem' }}>
+      {status === 'brouillon' && (
+        <button className="btn-primary" style={{ fontSize: '.82rem' }} onClick={handleSubmit}>
+          Soumettre la semaine
+        </button>
+      )}
+      {status === 'soumis' && (
+        <span style={{
+          display: 'inline-flex', alignItems: 'center', gap: '.4rem',
+          padding: '.3rem .85rem', borderRadius: 20,
+          background: '#fffbeb', color: '#f59e0b',
+          border: '1px solid #f59e0b44', fontSize: '.82rem', fontWeight: 700,
+        }}>
+          ⏳ En attente de validation
+        </span>
+      )}
+      {status === 'valide' && (
+        <span style={{
+          display: 'inline-flex', alignItems: 'center', gap: '.4rem',
+          padding: '.3rem .85rem', borderRadius: 20,
+          background: '#f0fdf4', color: '#16a34a',
+          border: '1px solid #16a34a44', fontSize: '.82rem', fontWeight: 700,
+        }}>
+          ✓ Semaine validée
+        </span>
+      )}
+      {status === 'rejete' && (
+        <span style={{
+          display: 'inline-flex', alignItems: 'center', gap: '.4rem',
+          padding: '.3rem .85rem', borderRadius: 20,
+          background: '#fef2f2', color: '#dc2626',
+          border: '1px solid #dc262644', fontSize: '.82rem', fontWeight: 700,
+        }}>
+          ✕ À corriger
+        </span>
+      )}
+    </div>
+  )
+}
 
 // ── Constantes calendrier ────────────────────────────────────
 const HOUR_H = 60        // px par heure
@@ -22,6 +94,7 @@ function toISO(d) { return d.toISOString().slice(0, 10) }
 function isToday(d) { return toISO(d) === toISO(new Date()) }
 function fmtWeekDay(d) { return d.toLocaleDateString('fr-FR', { weekday: 'short' }) }
 function fmtDayNum(d) { return d.toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit' }) }
+function fmtDayShort(d) { return d.toLocaleDateString('fr-FR', { weekday: 'short', day: 'numeric' }) }
 function fmtMonthYear(d) { return d.toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' }) }
 function fmtTime(min) { const h = Math.floor(min / 60); const m = min % 60; return `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}` }
 function minToY(min) { return ((min - START_H * 60) / 60) * HOUR_H }
@@ -295,9 +368,75 @@ function EventDetailModal({ ev, onClose, onDelete, onRefresh }) {
   )
 }
 
+// ── Totals Bar ───────────────────────────────────────────────
+const WEEK_DAYS_SHORT = ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim']
+const OBJECTIVE_H = 40
+
+function TotalsBar({ weekDates, events }) {
+  const dayTotals = weekDates.map(d => {
+    const iso = toISO(d)
+    const evs = events[iso] || []
+    return Math.round(evs.reduce((s, e) => s + (e.heures || 0), 0) * 10) / 10
+  })
+  const weekTotal = Math.round(dayTotals.reduce((s, h) => s + h, 0) * 10) / 10
+  const progress = Math.min(100, Math.round(weekTotal / OBJECTIVE_H * 100))
+
+  return (
+    <div className="cal-totals-bar">
+      {weekDates.map((d, i) => (
+        <div key={i} className="cal-totals-day">
+          <span>{WEEK_DAYS_SHORT[i]}</span>
+          <span className="cal-totals-day-val">{dayTotals[i] > 0 ? `${dayTotals[i]}h` : '—'}</span>
+        </div>
+      ))}
+      <span className="cal-totals-sep">|</span>
+      <span className="cal-totals-total">{weekTotal}h / {OBJECTIVE_H}h</span>
+      <div className="cal-totals-progress-wrap" title={`${progress}%`}>
+        <div
+          className="cal-totals-progress-bar"
+          style={{
+            width: `${progress}%`,
+            background: weekTotal > OBJECTIVE_H ? '#dc2626' : 'var(--primary)',
+          }}
+        />
+      </div>
+      <span style={{ fontSize: '.75rem', color: 'var(--text-muted)' }}>{progress}%</span>
+    </div>
+  )
+}
+
+// ── CSV Export ───────────────────────────────────────────────
+function exportCSV(weekDates, events) {
+  const rows = [['Date', 'Projet', 'Début', 'Fin', 'Heures', 'Note']]
+  for (const d of weekDates) {
+    const iso = toISO(d)
+    const evs = events[iso] || []
+    for (const ev of evs) {
+      rows.push([
+        iso,
+        ev.projets?.name || '—',
+        fmtTime(ev.startMin),
+        fmtTime(ev.endMin),
+        ev.heures ?? '',
+        ev.noteText || '',
+      ])
+    }
+  }
+  const csv = rows.map(r => r.map(cell => `"${String(cell).replace(/"/g, '""')}"`).join(',')).join('\n')
+  const blob = new Blob(['\ufeff' + csv], { type: 'text/csv;charset=utf-8;' })
+  const url = URL.createObjectURL(blob)
+  const a = document.createElement('a')
+  a.href = url
+  const weekLabel = toISO(weekDates[0])
+  a.download = `saisies-${weekLabel}.csv`
+  a.click()
+  URL.revokeObjectURL(url)
+}
+
 // ── Page principale ──────────────────────────────────────────
 export default function SaisiePage() {
   const { profile } = useAuth()
+  const { isDemoMode } = useDemo()
   const [weekStart, setWeekStart] = useState(() => getMonday(new Date()))
   const [events, setEvents] = useState({})
   const [loading, setLoading] = useState(true)
@@ -308,16 +447,26 @@ export default function SaisiePage() {
   const weekDates = Array.from({ length: 7 }, (_, i) => addDays(weekStart, i))
 
   const fetchWeek = useCallback(async () => {
-    if (!profile?.id) return
     setLoading(true)
-    const { data } = await supabase
-      .from('saisies_temps')
-      .select('id, date, heures, commentaire')
-      .eq('user_id', profile.id)
-      .gte('date', toISO(weekStart))
-      .lte('date', toISO(addDays(weekStart, 6)))
+
+    let rows = []
+    if (isDemoMode) {
+      const weekEnd = toISO(addDays(weekStart, 6))
+      const weekStartISO = toISO(weekStart)
+      rows = DEMO_SAISIES.filter(s => s.date >= weekStartISO && s.date <= weekEnd)
+    } else {
+      if (!profile?.id) { setLoading(false); return }
+      const { data } = await supabase
+        .from('saisies_temps')
+        .select('id, date, heures, commentaire')
+        .eq('user_id', profile.id)
+        .gte('date', toISO(weekStart))
+        .lte('date', toISO(addDays(weekStart, 6)))
+      rows = data || []
+    }
+
     const map = {}
-    for (const s of data || []) {
+    for (const s of rows) {
       const dateKey = s.date
       if (!map[dateKey]) map[dateKey] = []
       // Lire les métadonnées depuis commentaire JSON
@@ -336,7 +485,7 @@ export default function SaisiePage() {
     }
     setEvents(map)
     setLoading(false)
-  }, [profile?.id, weekStart])
+  }, [profile?.id, weekStart, isDemoMode])
 
   useEffect(() => { fetchWeek() }, [fetchWeek])
 
@@ -386,10 +535,22 @@ export default function SaisiePage() {
           <h1>Saisie des temps</h1>
           <p style={{ textTransform: 'capitalize' }}>{fmtMonthYear(weekStart)} · {totalWeek > 0 ? `${totalWeek}h cette semaine` : 'Aucune saisie'}</p>
         </div>
-        <div style={{ display: 'flex', gap: '.5rem' }}>
+        <div style={{ display: 'flex', gap: '.5rem', alignItems: 'center', flexWrap: 'wrap' }}>
+          <WeekStatusBar
+            userId={isDemoMode ? 'u1' : (profile?.id || 'unknown')}
+            mondayISO={toISO(weekStart)}
+            userRole={profile?.role}
+          />
           <button className="btn-secondary" onClick={() => setWeekStart(w => addDays(w, -7))}>← Préc.</button>
           <button className="btn-secondary" onClick={() => setWeekStart(getMonday(new Date()))}>Aujourd'hui</button>
           <button className="btn-secondary" onClick={() => setWeekStart(w => addDays(w, 7))}>Suiv. →</button>
+          <button
+            className="btn-secondary"
+            title="Exporter la semaine en CSV"
+            onClick={() => exportCSV(weekDates, events)}
+          >
+            ↓ CSV
+          </button>
         </div>
       </div>
 
@@ -426,7 +587,6 @@ export default function SaisiePage() {
             const iso = toISO(d)
             const dayEvents = events[iso] || []
             const isWeekend = i >= 5
-            const colRef = (el) => {} // ref handled inline
 
             return (
               <div
@@ -485,6 +645,9 @@ export default function SaisiePage() {
           })}
         </div>
       </div>
+
+      {/* Totals Bar */}
+      <TotalsBar weekDates={weekDates} events={events} />
 
       {/* Modal création */}
       {newEvent && (

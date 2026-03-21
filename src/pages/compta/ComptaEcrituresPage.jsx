@@ -1,6 +1,8 @@
 import { useState, useEffect, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { supabase } from '../../lib/supabase'
+import { useDemo } from '../../contexts/DemoContext'
+import { DEMO_IMPORTS, DEMO_ECRITURES } from '../../data/demoData'
 
 function fmtNum(n) {
   return new Intl.NumberFormat('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(n || 0)
@@ -8,6 +10,7 @@ function fmtNum(n) {
 
 export default function ComptaEcrituresPage() {
   const navigate = useNavigate()
+  const { isDemoMode } = useDemo()
   const [imports, setImports] = useState([])
   const [selectedImportId, setSelectedImportId] = useState(null)
   const [ecritures, setEcritures] = useState([])
@@ -22,6 +25,12 @@ export default function ComptaEcrituresPage() {
 
   // Charger la liste des imports
   useEffect(() => {
+    if (isDemoMode) {
+      setImports(DEMO_IMPORTS)
+      setSelectedImportId(DEMO_IMPORTS[0].id)
+      setLoadingImports(false)
+      return
+    }
     supabase.from('fec_imports')
       .select('id, created_at, meta')
       .order('created_at', { ascending: false })
@@ -35,7 +44,7 @@ export default function ComptaEcrituresPage() {
         if (parsed.length > 0) setSelectedImportId(parsed[0].id)
         setLoadingImports(false)
       })
-  }, [])
+  }, [isDemoMode])
 
   // Charger les écritures de l'import sélectionné
   useEffect(() => {
@@ -45,6 +54,15 @@ export default function ComptaEcrituresPage() {
     setFilter('')
     setFilterJournal('')
     setFilterCompte('')
+
+    if (isDemoMode) {
+      const rows = (DEMO_ECRITURES[selectedImportId] || []).slice()
+      rows.sort((a, b) => (a.ecriture_date || '').localeCompare(b.ecriture_date || '') || (a.ecriture_num || '').localeCompare(b.ecriture_num || ''))
+      setEcritures(rows)
+      setLoading(false)
+      return
+    }
+
     supabase.from('fec_ecritures')
       .select('id, import_id, data')
       .eq('import_id', selectedImportId)
@@ -58,7 +76,7 @@ export default function ComptaEcrituresPage() {
         setEcritures(parsed)
         setLoading(false)
       })
-  }, [selectedImportId])
+  }, [selectedImportId, isDemoMode])
 
   const selectedImport = imports.find(i => i.id === selectedImportId)
 

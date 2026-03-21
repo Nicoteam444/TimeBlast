@@ -2,6 +2,8 @@ import { useState, useEffect, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { supabase } from '../../lib/supabase'
 import ClientAutocomplete from '../../components/ClientAutocomplete'
+import { useDemo } from '../../contexts/DemoContext'
+import { DEMO_TRANSACTIONS } from '../../data/demoData'
 
 const PHASES = [
   { id: 'qualification',   label: 'Qualification',    color: '#6366f1', bg: '#eef2ff' },
@@ -22,6 +24,7 @@ const EMPTY_FORM = {
 
 export default function TransactionsPage() {
   const navigate = useNavigate()
+  const { isDemoMode } = useDemo()
   const [transactions, setTransactions] = useState([])
   const [loading, setLoading] = useState(true)
   const [showForm, setShowForm] = useState(false)
@@ -32,10 +35,15 @@ export default function TransactionsPage() {
   const [pageSize, setPageSize] = useState(20)
   const [page, setPage] = useState(1)
 
-  useEffect(() => { fetchTransactions() }, [])
+  useEffect(() => { fetchTransactions() }, [isDemoMode])
 
   async function fetchTransactions() {
     setLoading(true)
+    if (isDemoMode) {
+      setTransactions(DEMO_TRANSACTIONS)
+      setLoading(false)
+      return
+    }
     const { data, error } = await supabase
       .from('transactions')
       .select('*, clients(name)')
@@ -47,6 +55,7 @@ export default function TransactionsPage() {
 
   async function handleCreate(e) {
     e.preventDefault()
+    if (isDemoMode) { setShowForm(false); setForm(EMPTY_FORM); setSelectedClient(null); return }
     const { error } = await supabase.from('transactions').insert({
       name: form.name,
       client_id: selectedClient?.id || null,

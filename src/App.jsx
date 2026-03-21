@@ -2,19 +2,24 @@ import { useEffect } from 'react'
 import { BrowserRouter, Routes, Route, Navigate, useNavigate } from 'react-router-dom'
 import { AuthProvider } from './contexts/AuthContext'
 import { DemoProvider } from './contexts/DemoContext'
+import { AppearanceProvider } from './contexts/AppearanceContext'
+import { NotificationsProvider } from './contexts/NotificationsContext'
 import ProtectedRoute from './components/ProtectedRoute'
 import Layout from './components/Layout'
 import LoginPage from './pages/LoginPage'
 import DashboardPage from './pages/DashboardPage'
 import AdminPage from './pages/admin/AdminPage'
 import AdminUtilisateursPage from './pages/admin/AdminUtilisateursPage'
-import IntegrationsPage from './pages/parametres/IntegrationsPage'
+import AdminAuditPage from './pages/admin/AdminAuditPage'
+import ParametresPage from './pages/parametres/ParametresPage'
 import ClientDetailPage from './pages/clients/ClientDetailPage'
 import ClientsPage from './pages/temps/ClientsPage'
 import TransactionsPage from './pages/commerce/TransactionsPage'
 import TransactionDetailPage from './pages/commerce/TransactionDetailPage'
 import ProjetsWrapper from './pages/commerce/ProjetsWrapper'
 import SaisiePage from './pages/activite/SaisiePage'
+import ValidationPage from './pages/manager/ValidationPage'
+import AbsencesPage from './pages/activite/AbsencesPage'
 import PlanificationPage from './pages/temps/PlanificationPage'
 import ComptaPage from './pages/compta/ComptaPage'
 import ComptaImportPage from './pages/compta/ComptaImportPage'
@@ -69,6 +74,12 @@ function AppRoutes() {
       <Route path="/activite/projets" element={
         <ProtectedRoute roles={['admin','manager','collaborateur']}><Layout><ProjetsWrapper /></Layout></ProtectedRoute>
       } />
+      <Route path="/activite/validation" element={
+        <ProtectedRoute roles={['admin','manager']}><Layout><ValidationPage /></Layout></ProtectedRoute>
+      } />
+      <Route path="/activite/absences" element={
+        <ProtectedRoute roles={['admin','manager','collaborateur']}><Layout><AbsencesPage /></Layout></ProtectedRoute>
+      } />
 
       {/* Finance */}
       <Route path="/finance/comptabilite" element={
@@ -80,9 +91,7 @@ function AppRoutes() {
       <Route path="/finance/comptabilite/ecritures" element={
         <ProtectedRoute roles={['admin','comptable']}><Layout><ComptaEcrituresPage /></Layout></ProtectedRoute>
       } />
-      <Route path="/finance/comptabilite/analyse" element={
-        <ProtectedRoute roles={['admin','comptable']}><Layout><ComptaAnalysePage /></Layout></ProtectedRoute>
-      } />
+      <Route path="/finance/comptabilite/analyse" element={<Navigate to="/finance/comptabilite" replace />} />
       <Route path="/finance/previsionnel" element={
         <ProtectedRoute roles={['admin','comptable']}><Layout><PrevisionnelPage /></Layout></ProtectedRoute>
       } />
@@ -94,8 +103,11 @@ function AppRoutes() {
       <Route path="/admin/utilisateurs" element={
         <ProtectedRoute roles={['admin']}><Layout><AdminUtilisateursPage /></Layout></ProtectedRoute>
       } />
+      <Route path="/admin/audit" element={
+        <ProtectedRoute roles={['admin']}><Layout><AdminAuditPage /></Layout></ProtectedRoute>
+      } />
       <Route path="/parametres" element={
-        <ProtectedRoute roles={['admin']}><Layout><IntegrationsPage /></Layout></ProtectedRoute>
+        <ProtectedRoute roles={['admin']}><Layout><ParametresPage /></Layout></ProtectedRoute>
       } />
 
       {/* Fiche client */}
@@ -118,12 +130,16 @@ function AppRoutes() {
 
 export default function App() {
   return (
-    <AuthProvider>
-      <DemoProvider>
-        <BrowserRouter>
-          <AppRoutes />
-        </BrowserRouter>
-      </DemoProvider>
-    </AuthProvider>
+    <AppearanceProvider>
+      <AuthProvider>
+        <DemoProvider>
+          <NotificationsProvider>
+            <BrowserRouter>
+              <AppRoutes />
+            </BrowserRouter>
+          </NotificationsProvider>
+        </DemoProvider>
+      </AuthProvider>
+    </AppearanceProvider>
   )
 }
