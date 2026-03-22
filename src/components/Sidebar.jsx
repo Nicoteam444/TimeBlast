@@ -49,8 +49,9 @@ const SECTIONS = [
 ]
 
 const ADMIN_ITEMS = [
-  { to: '/admin',        icon: '⚙️', label: 'Administration', roles: ['admin'] },
-  { to: '/admin/audit',  icon: '📋', label: "Journal d'audit", roles: ['admin'] },
+  { to: '/admin',           icon: '⚙️', label: 'Administration',  roles: ['admin'] },
+  { to: '/admin/societes',  icon: '🏢', label: 'Sociétés',         roles: ['admin'] },
+  { to: '/admin/audit',     icon: '📋', label: "Journal d'audit",  roles: ['admin'] },
 ]
 
 export default function Sidebar() {

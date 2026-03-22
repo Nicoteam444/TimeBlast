@@ -1,0 +1,238 @@
+import { useState, useEffect } from 'react'
+import { supabase } from '../../lib/supabase'
+
+export default function AdminSocietesPage() {
+  const [societes, setSocietes]       = useState([])
+  const [loading, setLoading]         = useState(true)
+  const [showForm, setShowForm]       = useState(false)
+  const [editItem, setEditItem]       = useState(null)       // null = création
+  const [form, setForm]               = useState({ name: '', siren: '', ville: '' })
+  const [formLoading, setFormLoading] = useState(false)
+  const [formError, setFormError]     = useState(null)
+  const [deleteConfirm, setDeleteConfirm] = useState(null)
+  const [sqlMissing, setSqlMissing]   = useState(false)
+
+  useEffect(() => { fetchSocietes() }, [])
+
+  async function fetchSocietes() {
+    setLoading(true)
+    const { data, error } = await supabase.from('societes').select('*').order('name')
+    if (error?.code === '42P01') { setSqlMissing(true); setLoading(false); return }
+    setSocietes(data || [])
+    setLoading(false)
+  }
+
+  function openCreate() {
+    setEditItem(null)
+    setForm({ name: '', siren: '', ville: '' })
+    setFormError(null)
+    setShowForm(true)
+  }
+
+  function openEdit(s) {
+    setEditItem(s)
+    setForm({ name: s.name || '', siren: s.siren || '', ville: s.ville || '' })
+    setFormError(null)
+    setShowForm(true)
+  }
+
+  async function handleSubmit(e) {
+    e.preventDefault()
+    if (!form.name.trim()) { setFormError('Le nom est obligatoire'); return }
+    setFormLoading(true)
+    setFormError(null)
+
+    const payload = { name: form.name.trim(), siren: form.siren.trim() || null, ville: form.ville.trim() || null }
+    let error
+
+    if (editItem) {
+      ;({ error } = await supabase.from('societes').update(payload).eq('id', editItem.id))
+    } else {
+      ;({ error } = await supabase.from('societes').insert(payload))
+    }
+
+    setFormLoading(false)
+    if (error) { setFormError(error.message); return }
+    setShowForm(false)
+    fetchSocietes()
+  }
+
+  async function handleDelete(id) {
+    await supabase.from('societes').delete().eq('id', id)
+    setDeleteConfirm(null)
+    fetchSocietes()
+  }
+
+  const SQL_CREATE = `-- Table sociétés
+CREATE TABLE IF NOT EXISTS societes (
+  id         uuid DEFAULT gen_random_uuid() PRIMARY KEY,
+  created_at timestamptz DEFAULT now(),
+  name       text NOT NULL,
+  siren      text,
+  ville      text
+);
+ALTER TABLE societes ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "societes_admin" ON societes FOR ALL
+  USING (EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND role IN ('admin','comptable','manager')));
+
+-- Lien user → société
+ALTER TABLE profiles ADD COLUMN IF NOT EXISTS societe_id uuid REFERENCES societes(id);`
+
+  if (sqlMissing) {
+    return (
+      <div className="admin-page">
+        <div className="admin-page-header"><h1>Sociétés</h1></div>
+        <div className="fec-sql-box">
+          <p>⚠ La table <code>societes</code> n'existe pas encore.<br />
+          Exécutez ce SQL dans <strong>Supabase → SQL Editor</strong> :</p>
+          <pre>{SQL_CREATE}</pre>
+          <button className="btn-secondary" onClick={() => { navigator.clipboard.writeText(SQL_CREATE) }}>
+            Copier le SQL
+          </button>
+        </div>
+      </div>
+    )
+  }
+
+  return (
+    <div className="admin-page">
+      <div className="admin-page-header">
+        <div>
+          <h1>Sociétés</h1>
+          <p>{societes.length} société{societes.length > 1 ? 's' : ''}</p>
+        </div>
+        <button className="btn-primary" onClick={openCreate}>+ Nouvelle société</button>
+      </div>
+
+      {/* SQL migration colonne societe_id */}
+      <div className="fec-sql-box" style={{ marginBottom: '1.5rem' }}>
+        <p style={{ marginBottom: '.5rem' }}>
+          💡 Pour lier les utilisateurs à une société, exécutez cette migration SQL si elle n'est pas encore faite :
+        </p>
+        <pre style={{ fontSize: '.78rem' }}>
+          {`ALTER TABLE profiles ADD COLUMN IF NOT EXISTS societe_id uuid REFERENCES societes(id);`}
+        </pre>
+        <button className="btn-secondary" style={{ marginTop: '.5rem' }}
+          onClick={() => navigator.clipboard.writeText('ALTER TABLE profiles ADD COLUMN IF NOT EXISTS societe_id uuid REFERENCES societes(id);')}>
+          Copier
+        </button>
+      </div>
+
+      {/* Formulaire création / édition */}
+      {showForm && (
+        <div className="modal-overlay" onClick={() => setShowForm(false)}>
+          <div className="modal" onClick={e => e.stopPropagation()}>
+            <div className="modal-header">
+              <h2>{editItem ? 'Modifier la société' : 'Nouvelle société'}</h2>
+              <button className="modal-close" onClick={() => setShowForm(false)}>✕</button>
+            </div>
+            <form onSubmit={handleSubmit}>
+              <div className="field">
+                <label>Nom de la société *</label>
+                <input
+                  type="text"
+                  value={form.name}
+                  onChange={e => setForm(f => ({ ...f, name: e.target.value }))}
+                  placeholder="Ex : AXIS Solutions"
+                  autoFocus
+                  required
+                />
+              </div>
+              <div className="field">
+                <label>SIREN</label>
+                <input
+                  type="text"
+                  value={form.siren}
+                  onChange={e => setForm(f => ({ ...f, siren: e.target.value }))}
+                  placeholder="Ex : 123456789"
+                  maxLength={9}
+                />
+              </div>
+              <div className="field">
+                <label>Ville / Siège</label>
+                <input
+                  type="text"
+                  value={form.ville}
+                  onChange={e => setForm(f => ({ ...f, ville: e.target.value }))}
+                  placeholder="Ex : Paris"
+                />
+              </div>
+              {formError && <p className="error">{formError}</p>}
+              <div className="modal-actions">
+                <button type="button" className="btn-secondary" onClick={() => setShowForm(false)}>Annuler</button>
+                <button type="submit" className="btn-primary" disabled={formLoading}>
+                  {formLoading ? 'Enregistrement...' : (editItem ? 'Enregistrer' : 'Créer')}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Confirmation suppression */}
+      {deleteConfirm && (
+        <div className="modal-overlay" onClick={() => setDeleteConfirm(null)}>
+          <div className="modal modal--sm" onClick={e => e.stopPropagation()}>
+            <div className="modal-header"><h2>Supprimer la société</h2></div>
+            <p style={{ padding: '0 0 1.5rem' }}>
+              Supprimer <strong>{deleteConfirm.name}</strong> ? Les utilisateurs liés à cette société ne seront pas supprimés mais leur lien sera effacé.
+            </p>
+            <div className="modal-actions">
+              <button className="btn-secondary" onClick={() => setDeleteConfirm(null)}>Annuler</button>
+              <button className="btn-danger" onClick={() => handleDelete(deleteConfirm.id)}>Supprimer</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Liste */}
+      {loading ? (
+        <div className="loading-inline">Chargement...</div>
+      ) : societes.length === 0 ? (
+        <div style={{ textAlign: 'center', padding: '3rem', color: 'var(--text-muted)' }}>
+          <p style={{ fontSize: '2rem', marginBottom: '1rem' }}>🏢</p>
+          <p style={{ fontWeight: 600, marginBottom: '.5rem' }}>Aucune société créée</p>
+          <p style={{ fontSize: '.9rem', marginBottom: '1.5rem' }}>Créez votre première société pour activer le sélecteur dans la barre de navigation.</p>
+          <button className="btn-primary" onClick={openCreate}>+ Créer une société</button>
+        </div>
+      ) : (
+        <div className="users-table-wrapper">
+          <table className="users-table">
+            <thead>
+              <tr>
+                <th>Société</th>
+                <th>SIREN</th>
+                <th>Ville</th>
+                <th>Créée le</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              {societes.map(s => (
+                <tr key={s.id}>
+                  <td>
+                    <div className="user-cell">
+                      <span className="user-avatar" style={{ background: 'var(--primary)', fontSize: '.75rem' }}>
+                        {s.name.split(/\s+/).map(w => w[0]).join('').toUpperCase().slice(0, 2)}
+                      </span>
+                      <span className="user-name">{s.name}</span>
+                    </div>
+                  </td>
+                  <td style={{ color: 'var(--text-muted)', fontSize: '.85rem' }}>{s.siren || '—'}</td>
+                  <td style={{ color: 'var(--text-muted)', fontSize: '.85rem' }}>{s.ville || '—'}</td>
+                  <td style={{ color: 'var(--text-muted)', fontSize: '.82rem' }}>
+                    {s.created_at ? new Date(s.created_at).toLocaleDateString('fr-FR') : '—'}
+                  </td>
+                  <td style={{ display: 'flex', gap: '.5rem', justifyContent: 'flex-end' }}>
+                    <button className="btn-sm btn-secondary" onClick={() => openEdit(s)}>✏ Modifier</button>
+                    <button className="btn-icon btn-icon--danger" onClick={() => setDeleteConfirm(s)} title="Supprimer">🗑</button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+    </div>
+  )
+}

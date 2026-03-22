@@ -15,6 +15,15 @@ export default function AdminPage() {
       </div>
 
       <div className="home-modules">
+        <button className="home-module-card" onClick={() => navigate('/admin/societes')}>
+          <div className="home-module-icon">🏢</div>
+          <div className="home-module-body">
+            <h2>Sociétés</h2>
+            <p>Créer et gérer les sociétés du groupe</p>
+          </div>
+          <span className="home-module-arrow">→</span>
+        </button>
+
         <button className="home-module-card" onClick={() => navigate('/admin/utilisateurs')}>
           <div className="home-module-icon">👥</div>
           <div className="home-module-body">

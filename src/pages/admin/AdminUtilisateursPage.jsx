@@ -33,15 +33,19 @@ function formatDateTime(date) {
 }
 
 export default function AdminUtilisateursPage() {
-  const [users, setUsers] = useState([])
-  const [loading, setLoading] = useState(true)
-  const [showForm, setShowForm] = useState(false)
-  const [form, setForm] = useState({ full_name: '', email: '', password: '', role: 'collaborateur', send_invite: true })
+  const [users, setUsers]             = useState([])
+  const [societes, setSocietes]       = useState([])
+  const [loading, setLoading]         = useState(true)
+  const [showForm, setShowForm]       = useState(false)
+  const [form, setForm]               = useState({ full_name: '', email: '', password: '', role: 'collaborateur', societe_id: '', send_invite: true })
   const [formLoading, setFormLoading] = useState(false)
-  const [formError, setFormError] = useState(null)
+  const [formError, setFormError]     = useState(null)
   const [deleteConfirm, setDeleteConfirm] = useState(null)
 
-  useEffect(() => { fetchUsers() }, [])
+  useEffect(() => {
+    fetchUsers()
+    supabase.from('societes').select('id, name').order('name').then(({ data }) => setSocietes(data || []))
+  }, [])
 
   async function fetchUsers() {
     setLoading(true)
@@ -64,8 +68,12 @@ export default function AdminUtilisateursPage() {
     if (error || data?.error) {
       setFormError(data?.error || error.message)
     } else {
+      // Si une société est choisie, mettre à jour le profil créé
+      if (form.societe_id && data?.user?.id) {
+        await supabase.from('profiles').update({ societe_id: form.societe_id }).eq('id', data.user.id)
+      }
       setShowForm(false)
-      setForm({ full_name: '', email: '', password: '', role: 'collaborateur', send_invite: true })
+      setForm({ full_name: '', email: '', password: '', role: 'collaborateur', societe_id: '', send_invite: true })
       fetchUsers()
     }
   }
@@ -75,12 +83,21 @@ export default function AdminUtilisateursPage() {
     setUsers(prev => prev.map(u => u.id === userId ? { ...u, role: newRole } : u))
   }
 
+  async function handleSocieteChange(userId, societeId) {
+    await supabase.from('profiles').update({ societe_id: societeId || null }).eq('id', userId)
+    setUsers(prev => prev.map(u => u.id === userId ? { ...u, societe_id: societeId || null } : u))
+  }
+
   async function handleDelete(userId) {
     await supabase.functions.invoke('manage-user', {
       body: { action: 'delete', user_id: userId },
     })
     setDeleteConfirm(null)
     fetchUsers()
+  }
+
+  function getSocieteName(societeId) {
+    return societes.find(s => s.id === societeId)?.name || '—'
   }
 
   return (
@@ -131,16 +148,12 @@ export default function AdminUtilisateursPage() {
                     type="button"
                     className={`toggle-btn ${form.send_invite ? 'toggle-btn--active' : ''}`}
                     onClick={() => setForm(f => ({ ...f, send_invite: true }))}
-                  >
-                    📧 Invitation par email
-                  </button>
+                  >📧 Invitation par email</button>
                   <button
                     type="button"
                     className={`toggle-btn ${!form.send_invite ? 'toggle-btn--active' : ''}`}
                     onClick={() => setForm(f => ({ ...f, send_invite: false }))}
-                  >
-                    🔑 Mot de passe direct
-                  </button>
+                  >🔑 Mot de passe direct</button>
                 </div>
               </div>
 
@@ -164,11 +177,23 @@ export default function AdminUtilisateursPage() {
                   value={form.role}
                   onChange={e => setForm(f => ({ ...f, role: e.target.value }))}
                 >
-                  {ROLES.map(r => (
-                    <option key={r} value={r}>{ROLE_LABELS[r]}</option>
-                  ))}
+                  {ROLES.map(r => <option key={r} value={r}>{ROLE_LABELS[r]}</option>)}
                 </select>
               </div>
+
+              {societes.length > 0 && (
+                <div className="field">
+                  <label>Société</label>
+                  <select
+                    value={form.societe_id}
+                    onChange={e => setForm(f => ({ ...f, societe_id: e.target.value }))}
+                  >
+                    <option value="">— Aucune —</option>
+                    {societes.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
+                  </select>
+                </div>
+              )}
+
               {formError && <p className="error">{formError}</p>}
               <div className="modal-actions">
                 <button type="button" className="btn-secondary" onClick={() => setShowForm(false)}>
@@ -210,6 +235,7 @@ export default function AdminUtilisateursPage() {
             <thead>
               <tr>
                 <th>Utilisateur</th>
+                <th>Société</th>
                 <th>Rôle</th>
                 <th>Statut</th>
                 <th>Dernière connexion</th>
@@ -234,15 +260,28 @@ export default function AdminUtilisateursPage() {
                       </div>
                     </td>
                     <td>
+                      {societes.length > 0 ? (
+                        <select
+                          className="role-select"
+                          value={user.societe_id || ''}
+                          onChange={e => handleSocieteChange(user.id, e.target.value)}
+                          style={{ '--role-color': '#1a5c82', minWidth: 130 }}
+                        >
+                          <option value="">— Aucune —</option>
+                          {societes.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
+                        </select>
+                      ) : (
+                        <span style={{ color: 'var(--text-muted)', fontSize: '.82rem' }}>—</span>
+                      )}
+                    </td>
+                    <td>
                       <select
                         className="role-select"
                         value={user.role}
                         onChange={e => handleRoleChange(user.id, e.target.value)}
                         style={{ '--role-color': ROLE_COLORS[user.role] }}
                       >
-                        {ROLES.map(r => (
-                          <option key={r} value={r}>{ROLE_LABELS[r]}</option>
-                        ))}
+                        {ROLES.map(r => <option key={r} value={r}>{ROLE_LABELS[r]}</option>)}
                       </select>
                     </td>
                     <td>
@@ -257,15 +296,22 @@ export default function AdminUtilisateursPage() {
                         className="btn-icon btn-icon--danger"
                         onClick={() => setDeleteConfirm(user)}
                         title="Supprimer"
-                      >
-                        🗑
-                      </button>
+                      >🗑</button>
                     </td>
                   </tr>
                 )
               })}
             </tbody>
           </table>
+        </div>
+      )}
+
+      {/* Bloc SQL migration */}
+      {societes.length === 0 && (
+        <div className="fec-sql-box" style={{ marginTop: '2rem' }}>
+          <p>⚠ La colonne <code>societe_id</code> n'existe pas encore dans la table <code>profiles</code>.<br />
+          Exécutez ce SQL dans <strong>Supabase → SQL Editor</strong> :</p>
+          <pre>{`ALTER TABLE profiles ADD COLUMN IF NOT EXISTS societe_id uuid REFERENCES societes(id);`}</pre>
         </div>
       )}
     </div>

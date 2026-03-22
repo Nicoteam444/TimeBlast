@@ -4,6 +4,7 @@ import { AuthProvider } from './contexts/AuthContext'
 import { DemoProvider } from './contexts/DemoContext'
 import { AppearanceProvider } from './contexts/AppearanceContext'
 import { NotificationsProvider } from './contexts/NotificationsContext'
+import { SocieteProvider } from './contexts/SocieteContext'
 import ProtectedRoute from './components/ProtectedRoute'
 import Layout from './components/Layout'
 import LoginPage from './pages/LoginPage'
@@ -11,6 +12,7 @@ import DashboardPage from './pages/DashboardPage'
 import AdminPage from './pages/admin/AdminPage'
 import AdminUtilisateursPage from './pages/admin/AdminUtilisateursPage'
 import AdminAuditPage from './pages/admin/AdminAuditPage'
+import AdminSocietesPage from './pages/admin/AdminSocietesPage'
 import ParametresPage from './pages/parametres/ParametresPage'
 import ClientDetailPage from './pages/clients/ClientDetailPage'
 import ClientsPage from './pages/temps/ClientsPage'
@@ -106,6 +108,9 @@ function AppRoutes() {
       <Route path="/admin/audit" element={
         <ProtectedRoute roles={['admin']}><Layout><AdminAuditPage /></Layout></ProtectedRoute>
       } />
+      <Route path="/admin/societes" element={
+        <ProtectedRoute roles={['admin']}><Layout><AdminSocietesPage /></Layout></ProtectedRoute>
+      } />
       <Route path="/parametres" element={
         <ProtectedRoute roles={['admin']}><Layout><ParametresPage /></Layout></ProtectedRoute>
       } />
@@ -132,13 +137,15 @@ export default function App() {
   return (
     <AppearanceProvider>
       <AuthProvider>
-        <DemoProvider>
-          <NotificationsProvider>
-            <BrowserRouter>
-              <AppRoutes />
-            </BrowserRouter>
-          </NotificationsProvider>
-        </DemoProvider>
+        <SocieteProvider>
+          <DemoProvider>
+            <NotificationsProvider>
+              <BrowserRouter>
+                <AppRoutes />
+              </BrowserRouter>
+            </NotificationsProvider>
+          </DemoProvider>
+        </SocieteProvider>
       </AuthProvider>
     </AppearanceProvider>
   )

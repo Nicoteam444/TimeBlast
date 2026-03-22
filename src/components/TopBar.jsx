@@ -4,6 +4,7 @@ import { useAuth } from '../contexts/AuthContext'
 import { useDemo } from '../contexts/DemoContext'
 import { useNotifications } from '../contexts/NotificationsContext'
 import { useLayout } from '../contexts/LayoutContext'
+import { useSociete } from '../contexts/SocieteContext'
 import { supabase } from '../lib/supabase'
 
 function fmtNotifDate(iso) {
@@ -16,35 +17,35 @@ function fmtNotifDate(iso) {
   return d.toLocaleDateString('fr-FR', { day: '2-digit', month: 'short' })
 }
 
-export default function TopBar({ societes = [], selectedSociete, onSelectSociete }) {
+export default function TopBar() {
   const { profile, signOut } = useAuth()
   const { isDemoMode, setIsDemoMode } = useDemo()
   const { notifications, unreadCount, markRead, markAllRead } = useNotifications()
   const { toggleSidebar } = useLayout()
+  const { societes, selectedSociete, setSelectedSociete } = useSociete()
   const navigate = useNavigate()
-  const [userMenuOpen, setUserMenuOpen] = useState(false)
-  const [notifOpen, setNotifOpen] = useState(false)
-  const userMenuRef = useRef(null)
-  const notifRef = useRef(null)
+  const [userMenuOpen, setUserMenuOpen]   = useState(false)
+  const [notifOpen, setNotifOpen]         = useState(false)
+  const [societeOpen, setSocieteOpen]     = useState(false)
+  const userMenuRef  = useRef(null)
+  const notifRef     = useRef(null)
+  const societeRef   = useRef(null)
 
-  const [searchQuery, setSearchQuery] = useState('')
+  const [searchQuery, setSearchQuery]   = useState('')
   const [searchResults, setSearchResults] = useState([])
-  const [searchOpen, setSearchOpen] = useState(false)
-  const searchRef = useRef(null)
+  const [searchOpen, setSearchOpen]     = useState(false)
+  const searchRef    = useRef(null)
   const searchDebounce = useRef(null)
+
+  const canSwitch = profile?.role === 'admin' || profile?.role === 'comptable'
 
   // Fermer les menus si clic extérieur
   useEffect(() => {
     function handleClickOutside(e) {
-      if (userMenuRef.current && !userMenuRef.current.contains(e.target)) {
-        setUserMenuOpen(false)
-      }
-      if (searchRef.current && !searchRef.current.contains(e.target)) {
-        setSearchOpen(false)
-      }
-      if (notifRef.current && !notifRef.current.contains(e.target)) {
-        setNotifOpen(false)
-      }
+      if (userMenuRef.current  && !userMenuRef.current.contains(e.target))  setUserMenuOpen(false)
+      if (searchRef.current    && !searchRef.current.contains(e.target))    setSearchOpen(false)
+      if (notifRef.current     && !notifRef.current.contains(e.target))     setNotifOpen(false)
+      if (societeRef.current   && !societeRef.current.contains(e.target))   setSocieteOpen(false)
     }
     document.addEventListener('mousedown', handleClickOutside)
     return () => document.removeEventListener('mousedown', handleClickOutside)
@@ -62,9 +63,9 @@ export default function TopBar({ societes = [], selectedSociete, onSelectSociete
         supabase.from('projets').select('id, name').ilike('name', `%${q}%`).limit(3),
       ])
       const results = [
-        ...(clients || []).map(r => ({ ...r, type: 'client', icon: '👥', path: `/clients/${r.id}` })),
+        ...(clients      || []).map(r => ({ ...r, type: 'client',      icon: '👥', path: `/clients/${r.id}` })),
         ...(transactions || []).map(r => ({ ...r, type: 'transaction', icon: '💼', path: `/commerce/transactions/${r.id}` })),
-        ...(projets || []).map(r => ({ ...r, type: 'projet', icon: '📁', path: `/activite/projets` })),
+        ...(projets      || []).map(r => ({ ...r, type: 'projet',      icon: '📁', path: `/activite/projets` })),
       ]
       setSearchResults(results)
       setSearchOpen(true)
@@ -72,9 +73,7 @@ export default function TopBar({ societes = [], selectedSociete, onSelectSociete
   }
 
   function handleSelectResult(item) {
-    setSearchQuery('')
-    setSearchResults([])
-    setSearchOpen(false)
+    setSearchQuery(''); setSearchResults([]); setSearchOpen(false)
     navigate(item.path)
   }
 
@@ -100,12 +99,15 @@ export default function TopBar({ societes = [], selectedSociete, onSelectSociete
     ? profile.full_name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2)
     : '?'
 
+  // Initiales de la société (2 premières lettres des mots)
+  const societeInitials = selectedSociete?.name
+    ? selectedSociete.name.split(/\s+/).map(w => w[0]).join('').toUpperCase().slice(0, 2)
+    : '?'
+
   return (
     <header className="topbar">
       {/* Hamburger mobile */}
-      <button className="sidebar-hamburger" onClick={toggleSidebar} aria-label="Menu">
-        ☰
-      </button>
+      <button className="sidebar-hamburger" onClick={toggleSidebar} aria-label="Menu">☰</button>
 
       {/* Barre de recherche globale */}
       <div className="topbar-search" ref={searchRef}>
@@ -126,7 +128,7 @@ export default function TopBar({ societes = [], selectedSociete, onSelectSociete
         </div>
         {searchOpen && searchResults.length > 0 && (
           <ul className="topbar-search-dropdown">
-            {searchResults.map((r, i) => (
+            {searchResults.map((r) => (
               <li key={`${r.type}-${r.id}`} className="topbar-search-result" onMouseDown={() => handleSelectResult(r)}>
                 <span className="topbar-search-result-icon">{r.icon}</span>
                 <span className="topbar-search-result-name">{r.name}</span>
@@ -145,32 +147,8 @@ export default function TopBar({ societes = [], selectedSociete, onSelectSociete
         )}
       </div>
 
-      {isDemoMode && (
-        <div className="topbar-demo-indicator">
-          🎭 Mode démo
-        </div>
-      )}
+      {isDemoMode && <div className="topbar-demo-indicator">🎭 Mode démo</div>}
       <div className="topbar-spacer" />
-
-      {/* Sélecteur de société */}
-      {societes.length > 0 && (
-        <div className="topbar-societe">
-          <span className="topbar-societe-label">Société</span>
-          <select
-            className="topbar-societe-select"
-            value={selectedSociete?.id || ''}
-            onChange={e => {
-              const s = societes.find(s => s.id === e.target.value)
-              onSelectSociete?.(s)
-            }}
-          >
-            <option value="">Toutes</option>
-            {societes.map(s => (
-              <option key={s.id} value={s.id}>{s.name}</option>
-            ))}
-          </select>
-        </div>
-      )}
 
       {/* Paramètres */}
       <button className="topbar-btn" onClick={() => navigate('/parametres')} title="Paramètres">
@@ -179,16 +157,9 @@ export default function TopBar({ societes = [], selectedSociete, onSelectSociete
 
       {/* Notifications */}
       <div className="topbar-notif notif-btn" ref={notifRef} style={{ position: 'relative' }}>
-        <button
-          className="topbar-btn"
-          onClick={() => setNotifOpen(v => !v)}
-          title="Notifications"
-          style={{ position: 'relative' }}
-        >
+        <button className="topbar-btn" onClick={() => setNotifOpen(v => !v)} title="Notifications" style={{ position: 'relative' }}>
           <span>🔔</span>
-          {unreadCount > 0 && (
-            <span className="notif-badge">{unreadCount > 9 ? '9+' : unreadCount}</span>
-          )}
+          {unreadCount > 0 && <span className="notif-badge">{unreadCount > 9 ? '9+' : unreadCount}</span>}
         </button>
 
         {notifOpen && (
@@ -196,40 +167,27 @@ export default function TopBar({ societes = [], selectedSociete, onSelectSociete
             <div className="notif-header">
               <span>Notifications</span>
               {unreadCount > 0 && (
-                <button
-                  style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '.78rem', color: 'var(--primary)', fontWeight: 600, padding: 0 }}
-                  onClick={markAllRead}
-                >
-                  Tout marquer lu
-                </button>
+                <button style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '.78rem', color: 'var(--primary)', fontWeight: 600, padding: 0 }}
+                  onClick={markAllRead}>Tout marquer lu</button>
               )}
             </div>
             <div className="notif-list">
-              {notifications.length === 0 ? (
-                <div className="notif-empty">Aucune notification</div>
-              ) : (
-                notifications.map(n => (
-                  <div
-                    key={n.id}
-                    className={`notif-item ${!n.read ? 'notif-item--unread' : ''}`}
-                    onClick={() => handleNotifClick(n)}
-                  >
-                    <div className={`notif-dot ${n.read ? 'notif-dot--read' : ''}`} />
-                    <div style={{ flex: 1, minWidth: 0 }}>
-                      <div className="notif-msg">{n.message}</div>
-                      <div className="notif-date">{fmtNotifDate(n.date)}</div>
+              {notifications.length === 0
+                ? <div className="notif-empty">Aucune notification</div>
+                : notifications.map(n => (
+                    <div key={n.id} className={`notif-item ${!n.read ? 'notif-item--unread' : ''}`} onClick={() => handleNotifClick(n)}>
+                      <div className={`notif-dot ${n.read ? 'notif-dot--read' : ''}`} />
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        <div className="notif-msg">{n.message}</div>
+                        <div className="notif-date">{fmtNotifDate(n.date)}</div>
+                      </div>
                     </div>
-                  </div>
-                ))
-              )}
+                  ))
+              }
             </div>
             <div className="notif-footer">
-              <button
-                style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '.8rem', color: 'var(--text-muted)' }}
-                onClick={() => setNotifOpen(false)}
-              >
-                Fermer
-              </button>
+              <button style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '.8rem', color: 'var(--text-muted)' }}
+                onClick={() => setNotifOpen(false)}>Fermer</button>
             </div>
           </div>
         )}
@@ -237,10 +195,7 @@ export default function TopBar({ societes = [], selectedSociete, onSelectSociete
 
       {/* Menu utilisateur */}
       <div className="topbar-user" ref={userMenuRef}>
-        <button
-          className="topbar-user-btn"
-          onClick={() => setUserMenuOpen(v => !v)}
-        >
+        <button className="topbar-user-btn" onClick={() => setUserMenuOpen(v => !v)}>
           <span className="topbar-avatar">{initials}</span>
           <div className="topbar-user-info">
             <span className="topbar-user-name">{profile?.full_name || 'Utilisateur'}</span>
@@ -263,26 +218,18 @@ export default function TopBar({ societes = [], selectedSociete, onSelectSociete
               Mon profil
             </button>
             <hr className="topbar-dropdown-divider" />
-            {/* Sélecteur de jeu de données */}
+            {/* Jeu de données */}
             <div className="topbar-dropdown-section">
               <span className="topbar-dropdown-section-label">Jeu de données</span>
               <div className="topbar-dataset-toggle">
-                <button
-                  className={`topbar-dataset-btn ${!isDemoMode ? 'topbar-dataset-btn--active' : ''}`}
-                  onClick={() => setIsDemoMode(false)}
-                >
+                <button className={`topbar-dataset-btn ${!isDemoMode ? 'topbar-dataset-btn--active' : ''}`} onClick={() => setIsDemoMode(false)}>
                   Données réelles
                 </button>
-                <button
-                  className={`topbar-dataset-btn ${isDemoMode ? 'topbar-dataset-btn--active' : ''}`}
-                  onClick={() => setIsDemoMode(true)}
-                >
+                <button className={`topbar-dataset-btn ${isDemoMode ? 'topbar-dataset-btn--active' : ''}`} onClick={() => setIsDemoMode(true)}>
                   🎭 Démo
                 </button>
               </div>
-              {isDemoMode && (
-                <p className="topbar-demo-badge">Mode démo activé — données fictives</p>
-              )}
+              {isDemoMode && <p className="topbar-demo-badge">Mode démo activé — données fictives</p>}
             </div>
             <hr className="topbar-dropdown-divider" />
             <button className="topbar-dropdown-item topbar-dropdown-item--danger" onClick={handleSignOut}>
@@ -291,6 +238,49 @@ export default function TopBar({ societes = [], selectedSociete, onSelectSociete
           </div>
         )}
       </div>
+
+      {/* ── Sélecteur de société — à droite de la pastille utilisateur ── */}
+      {selectedSociete && (
+        <div className="topbar-societe-btn-wrap" ref={societeRef}>
+          {canSwitch && societes.length > 1 ? (
+            <>
+              <button
+                className={`topbar-societe-btn ${societeOpen ? 'topbar-societe-btn--open' : ''}`}
+                onClick={() => setSocieteOpen(v => !v)}
+                title="Changer de société"
+              >
+                <span className="topbar-societe-avatar">{societeInitials}</span>
+                <span className="topbar-societe-name">{selectedSociete.name}</span>
+                <span className="topbar-societe-chevron">{societeOpen ? '▲' : '▼'}</span>
+              </button>
+
+              {societeOpen && (
+                <div className="topbar-societe-dropdown">
+                  <p className="topbar-societe-dropdown-label">Changer de société</p>
+                  {societes.map(s => (
+                    <button
+                      key={s.id}
+                      className={`topbar-societe-dropdown-item ${s.id === selectedSociete.id ? 'topbar-societe-dropdown-item--active' : ''}`}
+                      onClick={() => { setSelectedSociete(s); setSocieteOpen(false) }}
+                    >
+                      <span className="topbar-societe-item-dot"
+                        style={{ background: s.id === selectedSociete.id ? 'var(--primary)' : 'var(--border)' }} />
+                      <span style={{ flex: 1 }}>{s.name}</span>
+                      {s.id === selectedSociete.id && <span style={{ color: 'var(--primary)', fontSize: '.8rem' }}>✓</span>}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </>
+          ) : (
+            /* Une seule société ou non-admin : badge simple */
+            <span className="topbar-societe-badge">
+              <span className="topbar-societe-avatar">{societeInitials}</span>
+              <span className="topbar-societe-name">{selectedSociete.name}</span>
+            </span>
+          )}
+        </div>
+      )}
     </header>
   )
 }
