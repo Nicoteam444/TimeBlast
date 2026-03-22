@@ -3,7 +3,7 @@ import { supabase } from '../lib/supabase'
 import { useSociete } from '../contexts/SocieteContext'
 import { useAuth } from '../contexts/AuthContext'
 
-const API_KEY = import.meta.env.VITE_ANTHROPIC_API_KEY
+const API_KEY = import.meta.env.VITE_OPENAI_API_KEY
 
 function buildSystemPrompt(societe, ctx) {
   const lines = [
@@ -54,18 +54,15 @@ export default function ChatWidget() {
   const inputRef = useRef(null)
   const abortRef = useRef(null)
 
-  // Load context data when widget opens or société changes
   useEffect(() => {
     if (!open) return
     loadContext()
   }, [open, selectedSociete?.id])
 
-  // Auto-scroll on new messages
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
   }, [messages])
 
-  // Focus input when opening
   useEffect(() => {
     if (open) setTimeout(() => inputRef.current?.focus(), 100)
   }, [open])
@@ -115,7 +112,7 @@ export default function ChatWidget() {
     if (!text || loading) return
 
     if (!API_KEY) {
-      setError('Clé API Anthropic non configurée (VITE_ANTHROPIC_API_KEY manquante).')
+      setError('Clé API OpenAI non configurée (VITE_OPENAI_API_KEY manquante).')
       return
     }
 
@@ -126,7 +123,6 @@ export default function ChatWidget() {
     setMessages(newMessages)
     setLoading(true)
 
-    // Placeholder for streaming response
     const assistantMsg = { role: 'assistant', content: '' }
     setMessages(prev => [...prev, assistantMsg])
 
@@ -137,20 +133,20 @@ export default function ChatWidget() {
 
       abortRef.current = new AbortController()
 
-      const response = await fetch('https://api.anthropic.com/v1/messages', {
+      const response = await fetch('https://api.openai.com/v1/chat/completions', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'x-api-key': API_KEY,
-          'anthropic-version': '2023-06-01',
-          'anthropic-dangerous-direct-browser-access': 'true',
+          'Authorization': `Bearer ${API_KEY}`,
         },
         body: JSON.stringify({
-          model: 'claude-opus-4-6',
+          model: 'gpt-4o',
           max_tokens: 1024,
-          system: systemPrompt,
           stream: true,
-          messages: newMessages.map(m => ({ role: m.role, content: m.content })),
+          messages: [
+            { role: 'system', content: systemPrompt },
+            ...newMessages.map(m => ({ role: m.role, content: m.content })),
+          ],
         }),
         signal: abortRef.current.signal,
       })
@@ -170,7 +166,7 @@ export default function ChatWidget() {
 
         buffer += decoder.decode(value, { stream: true })
         const lines = buffer.split('\n')
-        buffer = lines.pop() // keep incomplete line
+        buffer = lines.pop()
 
         for (const line of lines) {
           if (!line.startsWith('data: ')) continue
@@ -178,12 +174,13 @@ export default function ChatWidget() {
           if (data === '[DONE]') continue
           try {
             const evt = JSON.parse(data)
-            if (evt.type === 'content_block_delta' && evt.delta?.type === 'text_delta') {
+            const delta = evt.choices?.[0]?.delta?.content
+            if (delta) {
               setMessages(prev => {
                 const updated = [...prev]
                 updated[updated.length - 1] = {
                   ...updated[updated.length - 1],
-                  content: updated[updated.length - 1].content + evt.delta.text,
+                  content: updated[updated.length - 1].content + delta,
                 }
                 return updated
               })
@@ -193,7 +190,7 @@ export default function ChatWidget() {
       }
     } catch (err) {
       if (err.name === 'AbortError') return
-      console.error('Claude API error', err)
+      console.error('OpenAI API error', err)
       setMessages(prev => {
         const updated = [...prev]
         updated[updated.length - 1] = {
@@ -218,9 +215,7 @@ export default function ChatWidget() {
   }
 
   function handleClose() {
-    if (loading && abortRef.current) {
-      abortRef.current.abort()
-    }
+    if (loading && abortRef.current) abortRef.current.abort()
     setOpen(false)
   }
 
@@ -280,7 +275,7 @@ export default function ChatWidget() {
             {!ctxLoading && messages.length === 0 && (
               <div className="chat-welcome">
                 <p>Bonjour{profile?.full_name ? ` ${profile.full_name.split(' ')[0]}` : ''} 👋</p>
-                <p>Je suis votre assistant IA. Posez-moi des questions sur vos données{selectedSociete ? ` pour <strong>${selectedSociete.name}</strong>` : ''} !</p>
+                <p>Je suis votre assistant IA. Posez-moi des questions sur vos données{selectedSociete ? ` pour ${selectedSociete.name}` : ''} !</p>
                 <div className="chat-suggestions">
                   {[
                     'Combien de clients ?',
