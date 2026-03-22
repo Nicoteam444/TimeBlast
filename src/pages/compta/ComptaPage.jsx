@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react'
+import { useState, useEffect, useMemo, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { supabase } from '../../lib/supabase'
 import { useDemo } from '../../contexts/DemoContext'
@@ -66,7 +66,11 @@ function computeKPIs(ecritures) {
   const dotations = Math.max(0, sums.dotations || 0)
   const ebitda = margeB - impotsTaxes - personnel - autresChg
   const tresorerie = sums.tresorerie || 0
-  return { ca, achats, margeB, margeBpct: ca > 0 ? margeB / ca * 100 : 0, personnel, impotsTaxes, autresChg, dotations, ebitda, tresorerie, sums }
+  const resultat = ca + (sums.prodStocks || 0) + (sums.subventions || 0) + (sums.autresProduits || 0)
+    - achats - personnel - impotsTaxes - autresChg - dotations
+    - Math.max(0, sums.chargesFinanc || 0) - Math.max(0, sums.chargesExcep || 0)
+    - Math.max(0, sums.impots || 0)
+  return { ca, achats, margeB, margeBpct: ca > 0 ? margeB / ca * 100 : 0, personnel, impotsTaxes, autresChg, dotations, ebitda, resultat, tresorerie, sums }
 }
 
 function computeMonthly(ecritures) {
@@ -148,6 +152,7 @@ export default function ComptaPage() {
   const navigate = useNavigate()
   const { isDemoMode } = useDemo()
 
+  const [activeTab, setActiveTab]     = useState('analyse')
   const [imports, setImports]         = useState([])
   const [loadingImports, setLoadingImports] = useState(true)
   const [selectedId, setSelectedId]   = useState(null)
@@ -155,6 +160,12 @@ export default function ComptaPage() {
   const [loadingEc, setLoadingEc]     = useState(false)
   const [selectedYear, setSelectedYear] = useState(null)
   const [filterSociete, setFilterSociete] = useState('')
+  // Historique : KPIs pré-calculés par import
+  const [histKpis, setHistKpis]       = useState({})
+  const [loadingHist, setLoadingHist] = useState(false)
+
+  // Reset histKpis quand le mode ou les imports changent
+  useEffect(() => { setHistKpis({}) }, [isDemoMode])
 
   // Charger imports
   useEffect(() => {
@@ -195,6 +206,40 @@ export default function ComptaPage() {
       })
   }, [selectedId, isDemoMode])
 
+  // Calcul KPIs pour l'historique (tous imports)
+  const loadHistKpis = useCallback(async () => {
+    // déjà chargé pour ces imports ?
+    if (imports.length > 0 && imports.every(i => histKpis[i.id] !== undefined)) return
+    setLoadingHist(true)
+    if (isDemoMode) {
+      const result = {}
+      for (const imp of DEMO_IMPORTS) {
+        const rows = DEMO_ECRITURES[imp.id] || []
+        result[imp.id] = computeKPIs(rows)
+      }
+      setHistKpis(result)
+      setLoadingHist(false)
+      return
+    }
+    // Mode réel : charger toutes les écritures en une requête
+    try {
+      const ids = imports.map(i => i.id)
+      if (ids.length === 0) { setLoadingHist(false); return }
+      const { data } = await supabase
+        .from('fec_ecritures').select('import_id, data').in('import_id', ids)
+      const byImport = {}
+      for (const row of data || []) {
+        let d = {}; try { d = JSON.parse(row.data || '{}') } catch {}
+        if (!byImport[row.import_id]) byImport[row.import_id] = []
+        byImport[row.import_id].push(d)
+      }
+      const result = {}
+      for (const id of ids) result[id] = computeKPIs(byImport[id] || [])
+      setHistKpis(result)
+    } catch {}
+    setLoadingHist(false)
+  }, [isDemoMode, imports, histKpis])
+
   // Liste des sociétés uniques
   const societes = useMemo(() => [...new Set(imports.map(i => i.societe).filter(Boolean))].sort(), [imports])
 
@@ -234,6 +279,92 @@ export default function ComptaPage() {
         </button>
       </div>
 
+      {/* ── Onglets ── */}
+      <div className="compta-tabs">
+        <button
+          className={`compta-tab ${activeTab === 'analyse' ? 'compta-tab--active' : ''}`}
+          onClick={() => setActiveTab('analyse')}
+        >
+          📊 Analyse
+        </button>
+        <button
+          className={`compta-tab ${activeTab === 'historique' ? 'compta-tab--active' : ''}`}
+          onClick={() => { setActiveTab('historique'); loadHistKpis() }}
+        >
+          🗂 Historique des imports
+        </button>
+      </div>
+
+      {/* ── Onglet Historique ── */}
+      {activeTab === 'historique' && (
+        <div className="compta-hist-card">
+          {loadingHist ? (
+            <p style={{ padding: '2rem', textAlign: 'center', color: 'var(--text-muted)' }}>Calcul des indicateurs…</p>
+          ) : imports.length === 0 ? (
+            <p style={{ padding: '2rem', textAlign: 'center', color: 'var(--text-muted)' }}>
+              Aucun FEC importé.{' '}
+              <button className="btn-link" onClick={() => navigate('/finance/comptabilite/import')}>Importer maintenant →</button>
+            </p>
+          ) : (
+            <>
+              {/* Filtre société */}
+              {societes.length > 1 && (
+                <div className="compta-hist-toolbar">
+                  <label style={{ fontSize: '.82rem', color: 'var(--text-muted)', fontWeight: 600 }}>Société</label>
+                  <select className="table-pagesize" value={filterSociete} onChange={e => setFilterSociete(e.target.value)}>
+                    <option value="">Toutes</option>
+                    {societes.map(s => <option key={s} value={s}>{s}</option>)}
+                  </select>
+                </div>
+              )}
+              <div className="compta-hist-table">
+                <div className="compta-hist-row compta-hist-row--header">
+                  <span>Société</span>
+                  <span>Exercice</span>
+                  <span className="align-right">CA</span>
+                  <span className="align-right">Résultat</span>
+                  <span className="align-right">Trésorerie clôture</span>
+                  <span>Lignes</span>
+                  <span>Importé le</span>
+                  <span></span>
+                </div>
+                {importsFiltres.map(imp => {
+                  const k = histKpis[imp.id]
+                  return (
+                    <div key={imp.id} className="compta-hist-row">
+                      <span className="compta-hist-societe">{imp.societe || '—'}</span>
+                      <span><span className="compta-archives-exercice">{imp.exercice || '—'}</span></span>
+                      <span className="align-right compta-hist-kpi">
+                        {k ? `${fmtK(k.ca)} k€` : <span className="compta-hist-loading">…</span>}
+                      </span>
+                      <span className={`align-right compta-hist-kpi ${k && k.resultat < 0 ? 'text-red' : k && k.resultat > 0 ? 'text-green' : ''}`}>
+                        {k ? `${fmtK(k.resultat)} k€` : <span className="compta-hist-loading">…</span>}
+                      </span>
+                      <span className={`align-right compta-hist-kpi ${k && k.tresorerie < 0 ? 'text-red' : k && k.tresorerie > 0 ? 'text-green' : ''}`}>
+                        {k ? `${fmtK(k.tresorerie)} k€` : <span className="compta-hist-loading">…</span>}
+                      </span>
+                      <span style={{ color: 'var(--text-muted)', fontSize: '.82rem' }}>
+                        {imp.nb_lignes?.toLocaleString('fr-FR') || '—'}
+                      </span>
+                      <span style={{ color: 'var(--text-muted)', fontSize: '.82rem' }}>
+                        {imp.created_at ? new Date(imp.created_at).toLocaleDateString('fr-FR') : '—'}
+                      </span>
+                      <span>
+                        <button className="btn-sm btn-secondary" onClick={() => { setSelectedId(imp.id); setSelectedYear(null); setActiveTab('analyse') }}>
+                          Analyser →
+                        </button>
+                      </span>
+                    </div>
+                  )
+                })}
+              </div>
+            </>
+          )}
+        </div>
+      )}
+
+      {activeTab === 'analyse' && (
+      <>
       {/* ── Section archives ── */}
       <div className="compta-archives-card">
         <div className="compta-archives-header">
@@ -427,6 +558,8 @@ export default function ComptaPage() {
             </>
           )}
         </>
+      )}
+      </> /* fin onglet analyse */
       )}
     </div>
   )

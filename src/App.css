@@ -2747,6 +2747,75 @@ button:disabled { opacity: .6; cursor: not-allowed; }
 }
 
 /* ── Analyse financière ─────────────────────────────────────── */
+/* ── Onglets comptabilité ── */
+.compta-tabs {
+  display: flex;
+  gap: 0;
+  border-bottom: 2px solid var(--border);
+  margin-bottom: 1.5rem;
+}
+.compta-tab {
+  padding: .65rem 1.25rem;
+  font-size: .9rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -2px;
+  cursor: pointer;
+  transition: color .15s, border-color .15s;
+  white-space: nowrap;
+}
+.compta-tab:hover { color: var(--text); }
+.compta-tab--active { color: var(--primary); border-bottom-color: var(--primary); }
+
+/* ── Historique des imports ── */
+.compta-hist-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  overflow: hidden;
+  margin-bottom: 1.5rem;
+}
+.compta-hist-toolbar {
+  display: flex;
+  align-items: center;
+  gap: .75rem;
+  padding: .75rem 1.25rem;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg);
+}
+.compta-hist-table { width: 100%; }
+.compta-hist-row {
+  display: grid;
+  grid-template-columns: 2fr .8fr 1fr 1fr 1.2fr .7fr .9fr auto;
+  align-items: center;
+  gap: .5rem;
+  padding: .75rem 1.25rem;
+  border-bottom: 1px solid var(--border);
+  font-size: .875rem;
+  transition: background .1s;
+}
+.compta-hist-row:last-child { border-bottom: none; }
+.compta-hist-row--header {
+  background: var(--bg);
+  font-size: .75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+  color: var(--text-muted);
+  padding-top: .6rem;
+  padding-bottom: .6rem;
+}
+.compta-hist-row:not(.compta-hist-row--header):hover { background: color-mix(in srgb, var(--primary) 4%, transparent); }
+.compta-hist-societe { font-weight: 600; color: var(--text); }
+.compta-hist-kpi { font-weight: 700; font-size: .9rem; }
+.compta-hist-loading { color: var(--text-muted); font-weight: 400; }
+.align-right { text-align: right; }
+.text-green { color: var(--success); }
+.text-red   { color: var(--error); }
+
 /* ── Comptabilité unifiée ── */
 .compta-archives-card {
   background: var(--surface);
