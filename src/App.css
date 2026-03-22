@@ -933,7 +933,7 @@ button:disabled { opacity: .6; cursor: not-allowed; }
 
 .users-table th {
   text-align: left;
-  padding: .875rem 1.25rem;
+  padding: .6rem 1rem;
   font-size: .8rem;
   font-weight: 600;
   color: var(--text-muted);
@@ -944,7 +944,7 @@ button:disabled { opacity: .6; cursor: not-allowed; }
 }
 
 .users-table td {
-  padding: .875rem 1.25rem;
+  padding: .5rem 1rem;
   border-bottom: 1px solid var(--border);
   vertical-align: middle;
 }
@@ -959,8 +959,8 @@ button:disabled { opacity: .6; cursor: not-allowed; }
 }
 
 .user-avatar {
-  width: 34px;
-  height: 34px;
+  width: 28px;
+  height: 28px;
   border-radius: 50%;
   color: #fff;
   display: flex;
