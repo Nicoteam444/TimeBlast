@@ -1,6 +1,7 @@
 import { LayoutProvider } from '../contexts/LayoutContext'
 import Sidebar from './Sidebar'
 import TopBar from './TopBar'
+import ChatWidget from './ChatWidget'
 
 function LayoutInner({ children }) {
   return (
@@ -12,6 +13,7 @@ function LayoutInner({ children }) {
           {children}
         </main>
       </div>
+      <ChatWidget />
     </div>
   )
 }
