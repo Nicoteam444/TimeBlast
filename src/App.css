@@ -4281,3 +4281,51 @@ button:disabled { opacity: .6; cursor: not-allowed; }
   .fac-preview { box-shadow: none !important; border: none !important; padding: 0 !important; }
   body { background: white !important; }
 }
+
+/* ═══ FACTURATION - NOUVELLE MISE EN PAGE ═══════════════════ */
+.fac-main-layout {
+  display: grid;
+  grid-template-columns: 1fr 420px;
+  gap: 1.5rem;
+  align-items: start;
+  height: calc(100vh - 120px);
+}
+@media (max-width: 1100px) { .fac-main-layout { grid-template-columns: 1fr; height: auto; } }
+
+.fac-left-col  { display: flex; flex-direction: column; gap: .75rem; min-width: 0; }
+.fac-right-col { position: sticky; top: 1rem; display: flex; flex-direction: column; gap: .5rem; }
+.fac-right-scroll { overflow-y: auto; max-height: calc(100vh - 160px); border-radius: 8px; }
+
+/* KPIs */
+.fac-kpi-bar { display: flex; gap: .75rem; flex-wrap: wrap; }
+.fac-kpi-chip {
+  background: var(--surface); border: 1.5px solid; border-radius: 10px;
+  padding: .5rem .9rem; display: flex; flex-direction: column; gap: .15rem;
+  min-width: 130px;
+}
+.fac-kpi-label { font-size: .72rem; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; }
+.fac-kpi-val   { font-size: 1rem; font-weight: 700; color: var(--text); }
+
+/* Statut badge */
+.fac-statut-badge {
+  display: inline-block; border-radius: 5px;
+  padding: .15rem .5rem; font-size: .72rem; font-weight: 700;
+}
+
+/* Row selected */
+.fac-row--selected { background: var(--primary-light, #dbeafe) !important; }
+
+/* Modal large */
+.fac-modal {
+  background: var(--surface); border-radius: 14px;
+  box-shadow: 0 20px 60px rgba(0,0,0,.25);
+  width: 860px; max-width: 97vw; max-height: 92vh; overflow-y: auto;
+}
+.fac-modal-body { padding: 1.25rem; display: flex; flex-direction: column; gap: .6rem; }
+.fac-modal-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; }
+
+/* Preview vide */
+.fac-preview--empty {
+  min-height: 500px; display: flex; align-items: flex-start;
+  justify-content: center;
+}

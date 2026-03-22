@@ -1,295 +1,419 @@
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect, useCallback } from 'react'
+import { supabase } from '../../lib/supabase'
 import { useSociete } from '../../contexts/SocieteContext'
 
-function newLine() {
-  return { id: Date.now() + Math.random(), desc: '', qte: 1, pu: '', tva: 20 }
-}
-
+// ── Helpers ───────────────────────────────────────────────────
 function fmtE(n) {
   return new Intl.NumberFormat('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(n || 0) + ' €'
 }
-
 function parseN(s) { return parseFloat(String(s).replace(',', '.')) || 0 }
-
+function newLine() { return { id: Date.now() + Math.random(), desc: '', qte: 1, pu: '', tva: 20 } }
 const TVA_RATES = [0, 5.5, 10, 20]
+const STATUTS = [
+  { id: 'brouillon', label: 'Brouillon',  color: '#94a3b8', bg: '#f1f5f9' },
+  { id: 'envoyee',   label: 'Envoyée',    color: '#f59e0b', bg: '#fffbeb' },
+  { id: 'payee',     label: 'Payée',      color: '#22c55e', bg: '#f0fdf4' },
+  { id: 'retard',    label: 'En retard',  color: '#ef4444', bg: '#fef2f2' },
+]
+function statutMeta(s) { return STATUTS.find(x => x.id === s) || STATUTS[0] }
 
-export default function FacturationPage() {
-  const { selectedSociete } = useSociete()
+// ── Prévisualisation ──────────────────────────────────────────
+function InvoicePreview({ fac }) {
+  if (!fac) return (
+    <div className="fac-preview fac-preview--empty">
+      <div style={{ textAlign: 'center', color: '#ccc', marginTop: '4rem' }}>
+        <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>🧾</div>
+        <div>Sélectionnez une facture<br />pour la prévisualiser</div>
+      </div>
+    </div>
+  )
 
-  // ── Infos émetteur ──────────────────────────────────────────
-  const [emNom,     setEmNom]     = useState(selectedSociete?.name || '')
-  const [emAdresse, setEmAdresse] = useState('')
-  const [emSiret,   setEmSiret]   = useState('')
-  const [emEmail,   setEmEmail]   = useState('')
-  const [emTel,     setEmTel]     = useState('')
+  const lignes = typeof fac.lignes === 'string' ? JSON.parse(fac.lignes || '[]') : (fac.lignes || [])
+  const tvaMap = {}
+  for (const l of lignes) {
+    const t = parseN(l.qte) * parseN(l.pu || l.montant / parseN(l.qte) || 0)
+    tvaMap[l.tva] = (tvaMap[l.tva] || 0) + t * (l.tva / 100)
+  }
+  const sm = statutMeta(fac.statut)
 
-  // ── Infos client ────────────────────────────────────────────
-  const [clNom,     setClNom]     = useState('')
-  const [clAdresse, setClAdresse] = useState('')
-  const [clSiret,   setClSiret]   = useState('')
+  return (
+    <div className="fac-preview">
+      <div className="fac-p-header">
+        <div className="fac-p-emetteur">
+          <div className="fac-p-em-name">{fac.emetteur_nom}</div>
+          {fac.emetteur_adresse && <div className="fac-p-em-addr">{fac.emetteur_adresse.split('\n').map((l,i)=><span key={i}>{l}<br/></span>)}</div>}
+          {fac.emetteur_siret && <div className="fac-p-em-detail">SIRET : {fac.emetteur_siret}</div>}
+          {fac.emetteur_email && <div className="fac-p-em-detail">{fac.emetteur_email}</div>}
+        </div>
+        <div className="fac-p-facture-box">
+          <div className="fac-p-facture-title">FACTURE</div>
+          <div className="fac-p-facture-num">{fac.num_facture}</div>
+          <div className="fac-p-facture-meta"><span>Émise le</span><strong>{new Date(fac.date_emission).toLocaleDateString('fr-FR')}</strong></div>
+          <div className="fac-p-facture-meta"><span>Échéance</span><strong>{new Date(fac.date_echeance).toLocaleDateString('fr-FR')}</strong></div>
+          <div style={{ marginTop: '.5rem', textAlign: 'right' }}>
+            <span style={{ background: sm.bg, color: sm.color, borderRadius: 4, padding: '2px 8px', fontSize: 10, fontWeight: 700 }}>{sm.label}</span>
+          </div>
+        </div>
+      </div>
 
-  // ── Facture ─────────────────────────────────────────────────
-  const today = new Date().toISOString().slice(0, 10)
-  const [numFac,   setNumFac]   = useState(`FAC-${new Date().getFullYear()}-001`)
-  const [dateFac,  setDateFac]  = useState(today)
-  const [dateEch,  setDateEch]  = useState(() => {
-    const d = new Date(); d.setDate(d.getDate() + 30); return d.toISOString().slice(0, 10)
+      <div className="fac-p-destinataire">
+        <div className="fac-p-dest-label">Facturé à</div>
+        <div className="fac-p-dest-name">{fac.client_nom}</div>
+        {fac.client_adresse && <div className="fac-p-dest-addr">{fac.client_adresse.split('\n').map((l,i)=><span key={i}>{l}<br/></span>)}</div>}
+        {fac.client_siret && <div className="fac-p-dest-detail">SIRET : {fac.client_siret}</div>}
+      </div>
+
+      {fac.objet && <div className="fac-p-objet">Objet : <strong>{fac.objet}</strong></div>}
+
+      <table className="fac-p-table">
+        <thead><tr>
+          <th>Description</th>
+          <th style={{width:50,textAlign:'center'}}>Qté</th>
+          <th style={{width:90,textAlign:'right'}}>P.U. HT</th>
+          <th style={{width:50,textAlign:'center'}}>TVA</th>
+          <th style={{width:90,textAlign:'right'}}>Total HT</th>
+        </tr></thead>
+        <tbody>{lignes.map((l,i) => (
+          <tr key={i} className={i%2===0?'fac-p-row-even':''}>
+            <td>{l.desc}</td>
+            <td style={{textAlign:'center'}}>{l.qte}</td>
+            <td style={{textAlign:'right'}}>{fmtE(parseN(l.pu))}</td>
+            <td style={{textAlign:'center'}}>{l.tva}%</td>
+            <td style={{textAlign:'right',fontWeight:600}}>{fmtE(l.montant || parseN(l.qte)*parseN(l.pu))}</td>
+          </tr>
+        ))}</tbody>
+      </table>
+
+      <div className="fac-p-totaux">
+        <div className="fac-p-total-row"><span>Total HT</span><span>{fmtE(fac.total_ht)}</span></div>
+        {Object.entries(tvaMap).filter(([,v])=>v>0).map(([r,v])=>(
+          <div key={r} className="fac-p-total-row"><span>TVA {r}%</span><span>{fmtE(v)}</span></div>
+        ))}
+        <div className="fac-p-total-row fac-p-total-ttc"><span>TOTAL TTC</span><span>{fmtE(fac.total_ttc)}</span></div>
+      </div>
+
+      {fac.notes && <div className="fac-p-notes">{fac.notes.split('\n').map((l,i)=><div key={i}>{l}</div>)}</div>}
+      <div className="fac-p-footer">{fac.emetteur_nom}{fac.emetteur_siret ? ` · SIRET ${fac.emetteur_siret}` : ''}</div>
+    </div>
+  )
+}
+
+// ── Modal création/édition ────────────────────────────────────
+function FactureModal({ facture, societe, onSave, onClose }) {
+  const isNew = !facture?.id
+  const today = new Date().toISOString().slice(0,10)
+  const [emNom,     setEmNom]     = useState(facture?.emetteur_nom    || societe?.name || '')
+  const [emSiret,   setEmSiret]   = useState(facture?.emetteur_siret  || '')
+  const [emEmail,   setEmEmail]   = useState(facture?.emetteur_email  || '')
+  const [clNom,     setClNom]     = useState(facture?.client_nom      || '')
+  const [clAdresse, setClAdresse] = useState(facture?.client_adresse  || '')
+  const [clSiret,   setClSiret]   = useState(facture?.client_siret    || '')
+  const [numFac,    setNumFac]    = useState(facture?.num_facture      || `FAC-${new Date().getFullYear()}-001`)
+  const [dateFac,   setDateFac]   = useState(facture?.date_emission   || today)
+  const [dateEch,   setDateEch]   = useState(facture?.date_echeance   || (() => { const d=new Date(); d.setDate(d.getDate()+30); return d.toISOString().slice(0,10) })())
+  const [objet,     setObjet]     = useState(facture?.objet           || '')
+  const [statut,    setStatut]    = useState(facture?.statut          || 'brouillon')
+  const [notes,     setNotes]     = useState(facture?.notes           || 'Paiement par virement bancaire.\nMerci de mentionner le numéro de facture.')
+  const [lines,     setLines]     = useState(() => {
+    const l = typeof facture?.lignes === 'string' ? JSON.parse(facture?.lignes||'[]') : (facture?.lignes||[])
+    return l.length ? l.map(x=>({...x, id:Math.random()})) : [newLine()]
   })
-  const [objet,    setObjet]    = useState('')
-  const [notes,    setNotes]    = useState('Paiement par virement bancaire.\nIBAN : FR76 XXXX XXXX XXXX XXXX')
-  const [lines,    setLines]    = useState([newLine()])
-  const [logo,     setLogo]     = useState(null)
+  const [saving, setSaving] = useState(false)
 
-  // ── Calculs ─────────────────────────────────────────────────
   const totals = useMemo(() => {
-    let ht = 0, tvaMap = {}
-    for (const l of lines) {
-      const montant = parseN(l.qte) * parseN(l.pu)
-      ht += montant
-      const tvaAmt = montant * (l.tva / 100)
-      tvaMap[l.tva] = (tvaMap[l.tva] || 0) + tvaAmt
-    }
-    const totalTva = Object.values(tvaMap).reduce((s, v) => s + v, 0)
-    return { ht, tvaMap, totalTva, ttc: ht + totalTva }
+    let ht=0, tvaTotal=0
+    for (const l of lines) { const m=parseN(l.qte)*parseN(l.pu); ht+=m; tvaTotal+=m*(l.tva/100) }
+    return { ht, ttc: ht+tvaTotal }
   }, [lines])
 
   function updateLine(id, field, val) {
-    setLines(prev => prev.map(l => l.id === id ? { ...l, [field]: val } : l))
-  }
-  function addLine()       { setLines(prev => [...prev, newLine()]) }
-  function removeLine(id)  { setLines(prev => prev.filter(l => l.id !== id)) }
-
-  function handleLogo(e) {
-    const file = e.target.files[0]
-    if (!file) return
-    const reader = new FileReader()
-    reader.onload = ev => setLogo(ev.target.result)
-    reader.readAsDataURL(file)
+    setLines(prev => prev.map(l => l.id===id ? {...l,[field]:val} : l))
   }
 
-  function handlePrint() { window.print() }
+  async function handleSave(e) {
+    e.preventDefault()
+    setSaving(true)
+    const lignes = lines.filter(l=>l.desc||parseN(l.pu)).map(({id,...l})=>({
+      ...l, montant: Math.round(parseN(l.qte)*parseN(l.pu)*100)/100
+    }))
+    const payload = {
+      societe_id: societe?.id, num_facture: numFac, date_emission: dateFac,
+      date_echeance: dateEch, statut, client_nom: clNom, client_adresse: clAdresse,
+      client_siret: clSiret, objet, emetteur_nom: emNom, emetteur_siret: emSiret,
+      emetteur_email: emEmail, lignes: JSON.stringify(lignes), notes,
+      total_ht: Math.round(totals.ht*100)/100,
+      total_ttc: Math.round(totals.ttc*100)/100,
+    }
+    if (isNew) {
+      const { data } = await supabase.from('factures').insert(payload).select().single()
+      onSave(data)
+    } else {
+      await supabase.from('factures').update(payload).eq('id', facture.id)
+      onSave({ ...facture, ...payload })
+    }
+    setSaving(false)
+  }
 
-  // ── Rendu ────────────────────────────────────────────────────
   return (
-    <div className="fac-page">
-
-      {/* ── FORMULAIRE GAUCHE ── */}
-      <div className="fac-form-col">
-        <h2 className="fac-section-title">Création de facture</h2>
-
-        {/* Émetteur */}
-        <div className="fac-card">
-          <div className="fac-card-title">📤 Votre société</div>
-          <div className="fac-fields">
-            <div className="fac-field fac-field--full">
-              <label>Nom / Raison sociale</label>
-              <input value={emNom} onChange={e => setEmNom(e.target.value)} placeholder="Ma Société SAS" />
+    <div className="plan-modal-overlay" onClick={onClose}>
+      <div className="fac-modal" onClick={e=>e.stopPropagation()}>
+        <div className="plan-modal-header">
+          <h3>{isNew ? 'Nouvelle facture' : `Modifier ${facture.num_facture}`}</h3>
+          <button className="plan-modal-close" onClick={onClose}>✕</button>
+        </div>
+        <form onSubmit={handleSave} className="fac-modal-body">
+          <div className="fac-modal-cols">
+            {/* Émetteur */}
+            <div>
+              <div className="fac-card-title">📤 Émetteur</div>
+              <div className="fac-fields" style={{gridTemplateColumns:'1fr'}}>
+                <div className="fac-field"><label>Nom société</label><input value={emNom} onChange={e=>setEmNom(e.target.value)} /></div>
+                <div className="fac-field"><label>SIRET</label><input value={emSiret} onChange={e=>setEmSiret(e.target.value)} /></div>
+                <div className="fac-field"><label>Email</label><input value={emEmail} onChange={e=>setEmEmail(e.target.value)} /></div>
+              </div>
             </div>
-            <div className="fac-field fac-field--full">
-              <label>Adresse</label>
-              <textarea value={emAdresse} onChange={e => setEmAdresse(e.target.value)} rows={2} placeholder="12 rue de la Paix&#10;75001 Paris" />
-            </div>
-            <div className="fac-field">
-              <label>SIRET</label>
-              <input value={emSiret} onChange={e => setEmSiret(e.target.value)} placeholder="123 456 789 00012" />
-            </div>
-            <div className="fac-field">
-              <label>Email</label>
-              <input value={emEmail} onChange={e => setEmEmail(e.target.value)} placeholder="contact@societe.fr" />
-            </div>
-            <div className="fac-field">
-              <label>Téléphone</label>
-              <input value={emTel} onChange={e => setEmTel(e.target.value)} placeholder="+33 1 23 45 67 89" />
-            </div>
-            <div className="fac-field">
-              <label>Logo</label>
-              <input type="file" accept="image/*" onChange={handleLogo} style={{ fontSize: '.8rem' }} />
+            {/* Client */}
+            <div>
+              <div className="fac-card-title">📥 Client</div>
+              <div className="fac-fields" style={{gridTemplateColumns:'1fr'}}>
+                <div className="fac-field"><label>Nom client</label><input value={clNom} onChange={e=>setClNom(e.target.value)} required /></div>
+                <div className="fac-field"><label>Adresse</label><textarea value={clAdresse} onChange={e=>setClAdresse(e.target.value)} rows={2} /></div>
+                <div className="fac-field"><label>SIRET</label><input value={clSiret} onChange={e=>setClSiret(e.target.value)} /></div>
+              </div>
             </div>
           </div>
-        </div>
 
-        {/* Client */}
-        <div className="fac-card">
-          <div className="fac-card-title">📥 Client / Destinataire</div>
-          <div className="fac-fields">
-            <div className="fac-field fac-field--full">
-              <label>Nom / Raison sociale</label>
-              <input value={clNom} onChange={e => setClNom(e.target.value)} placeholder="Client SAS" />
-            </div>
-            <div className="fac-field fac-field--full">
-              <label>Adresse</label>
-              <textarea value={clAdresse} onChange={e => setClAdresse(e.target.value)} rows={2} placeholder="45 avenue des Champs-Élysées&#10;75008 Paris" />
-            </div>
-            <div className="fac-field">
-              <label>SIRET</label>
-              <input value={clSiret} onChange={e => setClSiret(e.target.value)} placeholder="987 654 321 00019" />
-            </div>
+          {/* En-tête */}
+          <div className="fac-fields" style={{gridTemplateColumns:'1fr 1fr 1fr 1fr', gap:'.5rem', margin:'.75rem 0'}}>
+            <div className="fac-field"><label>N° facture</label><input value={numFac} onChange={e=>setNumFac(e.target.value)} required /></div>
+            <div className="fac-field"><label>Objet</label><input value={objet} onChange={e=>setObjet(e.target.value)} /></div>
+            <div className="fac-field"><label>Date émission</label><input type="date" value={dateFac} onChange={e=>setDateFac(e.target.value)} /></div>
+            <div className="fac-field"><label>Échéance</label><input type="date" value={dateEch} onChange={e=>setDateEch(e.target.value)} /></div>
           </div>
-        </div>
-
-        {/* Entête facture */}
-        <div className="fac-card">
-          <div className="fac-card-title">📄 Facture</div>
-          <div className="fac-fields">
-            <div className="fac-field">
-              <label>N° de facture</label>
-              <input value={numFac} onChange={e => setNumFac(e.target.value)} />
-            </div>
-            <div className="fac-field">
-              <label>Objet</label>
-              <input value={objet} onChange={e => setObjet(e.target.value)} placeholder="Prestation développement…" />
-            </div>
-            <div className="fac-field">
-              <label>Date d'émission</label>
-              <input type="date" value={dateFac} onChange={e => setDateFac(e.target.value)} />
-            </div>
-            <div className="fac-field">
-              <label>Date d'échéance</label>
-              <input type="date" value={dateEch} onChange={e => setDateEch(e.target.value)} />
-            </div>
+          <div className="fac-field" style={{marginBottom:'.75rem', maxWidth:160}}>
+            <label>Statut</label>
+            <select value={statut} onChange={e=>setStatut(e.target.value)}>
+              {STATUTS.map(s=><option key={s.id} value={s.id}>{s.label}</option>)}
+            </select>
           </div>
-        </div>
 
-        {/* Lignes */}
-        <div className="fac-card">
-          <div className="fac-card-title">📋 Prestations / Articles</div>
+          {/* Lignes */}
+          <div className="fac-card-title" style={{marginBottom:'.4rem'}}>📋 Lignes</div>
           <div className="fac-lines-head">
-            <span style={{ flex: 1 }}>Description</span>
-            <span style={{ width: 56, textAlign: 'center' }}>Qté</span>
-            <span style={{ width: 90, textAlign: 'right' }}>P.U. HT</span>
-            <span style={{ width: 60, textAlign: 'center' }}>TVA</span>
-            <span style={{ width: 90, textAlign: 'right' }}>Total HT</span>
-            <span style={{ width: 28 }}></span>
+            <span style={{flex:1}}>Description</span>
+            <span style={{width:56,textAlign:'center'}}>Qté</span>
+            <span style={{width:90,textAlign:'right'}}>P.U. HT</span>
+            <span style={{width:60,textAlign:'center'}}>TVA</span>
+            <span style={{width:90,textAlign:'right'}}>Total HT</span>
+            <span style={{width:28}}></span>
           </div>
-          {lines.map(l => (
+          {lines.map(l=>(
             <div key={l.id} className="fac-line-row">
-              <input className="fac-line-input" style={{ flex: 1 }} value={l.desc}
-                onChange={e => updateLine(l.id, 'desc', e.target.value)} placeholder="Développement feature X…" />
-              <input className="fac-line-input" style={{ width: 56, textAlign: 'center' }} value={l.qte}
-                onChange={e => updateLine(l.id, 'qte', e.target.value)} type="number" min="0" step="0.5" />
-              <input className="fac-line-input" style={{ width: 90, textAlign: 'right' }} value={l.pu}
-                onChange={e => updateLine(l.id, 'pu', e.target.value)} placeholder="0,00" />
-              <select className="fac-line-input" style={{ width: 60, textAlign: 'center' }} value={l.tva}
-                onChange={e => updateLine(l.id, 'tva', +e.target.value)}>
-                {TVA_RATES.map(r => <option key={r} value={r}>{r}%</option>)}
+              <input className="fac-line-input" style={{flex:1}} value={l.desc} onChange={e=>updateLine(l.id,'desc',e.target.value)} placeholder="Description…" />
+              <input className="fac-line-input" style={{width:56,textAlign:'center'}} value={l.qte} onChange={e=>updateLine(l.id,'qte',e.target.value)} type="number" min="0" step="0.5" />
+              <input className="fac-line-input" style={{width:90,textAlign:'right'}} value={l.pu} onChange={e=>updateLine(l.id,'pu',e.target.value)} placeholder="0,00" />
+              <select className="fac-line-input" style={{width:60}} value={l.tva} onChange={e=>updateLine(l.id,'tva',+e.target.value)}>
+                {TVA_RATES.map(r=><option key={r} value={r}>{r}%</option>)}
               </select>
-              <span className="fac-line-total" style={{ width: 90 }}>
-                {fmtE(parseN(l.qte) * parseN(l.pu))}
-              </span>
-              <button className="fac-line-del" onClick={() => removeLine(l.id)}
-                disabled={lines.length === 1} title="Supprimer">✕</button>
+              <span className="fac-line-total" style={{width:90}}>{fmtE(parseN(l.qte)*parseN(l.pu))}</span>
+              <button type="button" className="fac-line-del" onClick={()=>setLines(p=>p.filter(x=>x.id!==l.id))} disabled={lines.length===1}>✕</button>
             </div>
           ))}
-          <button className="btn-secondary" style={{ marginTop: '.5rem', fontSize: '.8rem' }} onClick={addLine}>
-            + Ajouter une ligne
-          </button>
-        </div>
+          <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginTop:'.5rem'}}>
+            <button type="button" className="btn-secondary" style={{fontSize:'.8rem'}} onClick={()=>setLines(p=>[...p,newLine()])}>+ Ligne</button>
+            <div style={{fontSize:'.85rem',fontWeight:700}}>HT : {fmtE(totals.ht)} · TTC : {fmtE(totals.ttc)}</div>
+          </div>
 
-        {/* Notes */}
-        <div className="fac-card">
-          <div className="fac-card-title">📝 Notes / Mentions légales</div>
-          <textarea className="fac-notes-input" value={notes}
-            onChange={e => setNotes(e.target.value)} rows={4} />
-        </div>
+          <div className="fac-field" style={{marginTop:'.75rem'}}>
+            <label>Notes</label>
+            <textarea className="fac-notes-input" value={notes} onChange={e=>setNotes(e.target.value)} rows={3} />
+          </div>
+
+          <div className="plan-modal-actions" style={{marginTop:'1rem'}}>
+            <button type="button" className="btn-secondary" onClick={onClose}>Annuler</button>
+            <button type="submit" className="btn-primary" disabled={saving}>{saving?'Enregistrement…':'💾 Enregistrer'}</button>
+          </div>
+        </form>
       </div>
+    </div>
+  )
+}
 
-      {/* ── PRÉVISUALISATION DROITE ── */}
-      <div className="fac-preview-col">
-        <div className="fac-preview-header">
-          <span className="fac-preview-label">Prévisualisation</span>
-          <button className="btn-primary" style={{ fontSize: '.8rem' }} onClick={handlePrint}>🖨 Imprimer / PDF</button>
+// ── Page principale ───────────────────────────────────────────
+export default function FacturationPage() {
+  const { selectedSociete } = useSociete()
+  const [factures, setFactures]       = useState([])
+  const [loading, setLoading]         = useState(true)
+  const [selected, setSelected]       = useState(null)
+  const [modal, setModal]             = useState(null)  // null | 'new' | facture
+  const [search, setSearch]           = useState('')
+  const [filterStatut, setFilterStatut] = useState('')
+  const [sortCol, setSortCol]         = useState('date_emission')
+  const [sortDir, setSortDir]         = useState('desc')
+  const [page, setPage]               = useState(1)
+  const PAGE_SIZE = 50
+
+  function loadFactures() {
+    if (!selectedSociete?.id) { setFactures([]); setLoading(false); return }
+    setLoading(true)
+    supabase.from('factures').select('*')
+      .eq('societe_id', selectedSociete.id)
+      .order('date_emission', { ascending: false })
+      .then(({ data }) => { setFactures(data||[]); setLoading(false) })
+  }
+  useEffect(() => { loadFactures() }, [selectedSociete?.id])
+
+  function toggleSort(col) {
+    if (sortCol === col) setSortDir(d => d==='asc'?'desc':'asc')
+    else { setSortCol(col); setSortDir('asc') }
+  }
+
+  const filtered = useMemo(() => {
+    let rows = factures
+    if (filterStatut) rows = rows.filter(f => f.statut === filterStatut)
+    if (search) {
+      const q = search.toLowerCase()
+      rows = rows.filter(f => f.num_facture?.toLowerCase().includes(q) || f.client_nom?.toLowerCase().includes(q) || f.objet?.toLowerCase().includes(q))
+    }
+    rows = [...rows].sort((a,b) => {
+      let va = a[sortCol]||'', vb = b[sortCol]||''
+      if (sortCol==='total_ttc') { va=+va; vb=+vb }
+      return sortDir==='asc' ? (va>vb?1:-1) : (va<vb?1:-1)
+    })
+    return rows
+  }, [factures, search, filterStatut, sortCol, sortDir])
+
+  const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE))
+  const paged = filtered.slice((page-1)*PAGE_SIZE, page*PAGE_SIZE)
+
+  const totauxStatuts = useMemo(() => {
+    const r = {}
+    for (const f of factures) r[f.statut] = (r[f.statut]||0) + (f.total_ttc||0)
+    return r
+  }, [factures])
+
+  function handleSave(fac) {
+    loadFactures()
+    setSelected(fac)
+    setModal(null)
+  }
+
+  async function handleDelete(id) {
+    if (!window.confirm('Supprimer cette facture ?')) return
+    await supabase.from('factures').delete().eq('id', id)
+    if (selected?.id === id) setSelected(null)
+    loadFactures()
+  }
+
+  function SortIcon({ col }) {
+    if (sortCol !== col) return <span className="sort-icon">↕</span>
+    return <span className="sort-icon">{sortDir==='asc'?'↑':'↓'}</span>
+  }
+
+  return (
+    <div className="fac-main-layout">
+
+      {/* ── COLONNE GAUCHE : header + tableau ── */}
+      <div className="fac-left-col">
+
+        {/* KPIs */}
+        <div className="fac-kpi-bar">
+          {STATUTS.map(s => (
+            <div key={s.id} className="fac-kpi-chip" style={{borderColor: s.color}}>
+              <span className="fac-kpi-label" style={{color: s.color}}>{s.label}</span>
+              <span className="fac-kpi-val">{fmtE(totauxStatuts[s.id]||0)}</span>
+            </div>
+          ))}
         </div>
 
-        <div className="fac-preview" id="fac-printable">
+        {/* Toolbar */}
+        <div className="table-toolbar">
+          <button className="btn-primary" onClick={() => setModal('new')}>+ Nouvelle facture</button>
+          <input className="table-search" value={search} onChange={e=>{setSearch(e.target.value);setPage(1)}} placeholder="Rechercher…" />
+          <select className="table-pagesize" value={filterStatut} onChange={e=>{setFilterStatut(e.target.value);setPage(1)}}>
+            <option value="">Tous statuts</option>
+            {STATUTS.map(s=><option key={s.id} value={s.id}>{s.label}</option>)}
+          </select>
+        </div>
 
-          {/* En-tête facture */}
-          <div className="fac-p-header">
-            <div className="fac-p-emetteur">
-              {logo && <img src={logo} alt="logo" className="fac-p-logo" />}
-              <div className="fac-p-em-name">{emNom || 'Votre société'}</div>
-              {emAdresse && <div className="fac-p-em-addr">{emAdresse.split('\n').map((l,i) => <span key={i}>{l}<br/></span>)}</div>}
-              {emSiret   && <div className="fac-p-em-detail">SIRET : {emSiret}</div>}
-              {emEmail   && <div className="fac-p-em-detail">{emEmail}</div>}
-              {emTel     && <div className="fac-p-em-detail">{emTel}</div>}
-            </div>
-            <div className="fac-p-facture-box">
-              <div className="fac-p-facture-title">FACTURE</div>
-              <div className="fac-p-facture-num">{numFac}</div>
-              <div className="fac-p-facture-meta">
-                <span>Émise le</span>
-                <strong>{new Date(dateFac).toLocaleDateString('fr-FR')}</strong>
-              </div>
-              <div className="fac-p-facture-meta">
-                <span>Échéance</span>
-                <strong>{new Date(dateEch).toLocaleDateString('fr-FR')}</strong>
-              </div>
-            </div>
-          </div>
-
-          {/* Destinataire */}
-          <div className="fac-p-destinataire">
-            <div className="fac-p-dest-label">Facturé à</div>
-            <div className="fac-p-dest-name">{clNom || 'Nom du client'}</div>
-            {clAdresse && <div className="fac-p-dest-addr">{clAdresse.split('\n').map((l,i) => <span key={i}>{l}<br/></span>)}</div>}
-            {clSiret   && <div className="fac-p-dest-detail">SIRET : {clSiret}</div>}
-          </div>
-
-          {objet && <div className="fac-p-objet">Objet : <strong>{objet}</strong></div>}
-
-          {/* Tableau lignes */}
-          <table className="fac-p-table">
+        {/* Tableau */}
+        <div style={{overflowX:'auto'}}>
+          <table className="users-table" style={{width:'100%'}}>
             <thead>
               <tr>
-                <th>Description</th>
-                <th style={{ width: 50, textAlign: 'center' }}>Qté</th>
-                <th style={{ width: 90, textAlign: 'right' }}>P.U. HT</th>
-                <th style={{ width: 55, textAlign: 'center' }}>TVA</th>
-                <th style={{ width: 90, textAlign: 'right' }}>Total HT</th>
+                <th className="sortable" onClick={()=>toggleSort('num_facture')}>N° <SortIcon col="num_facture"/></th>
+                <th className="sortable" onClick={()=>toggleSort('client_nom')}>Client <SortIcon col="client_nom"/></th>
+                <th className="sortable" onClick={()=>toggleSort('objet')}>Objet <SortIcon col="objet"/></th>
+                <th className="sortable" onClick={()=>toggleSort('date_emission')}>Date <SortIcon col="date_emission"/></th>
+                <th className="sortable" onClick={()=>toggleSort('date_echeance')}>Échéance <SortIcon col="date_echeance"/></th>
+                <th>Statut</th>
+                <th className="sortable" style={{textAlign:'right'}} onClick={()=>toggleSort('total_ttc')}>Total TTC <SortIcon col="total_ttc"/></th>
+                <th></th>
               </tr>
             </thead>
             <tbody>
-              {lines.map((l, i) => (
-                <tr key={l.id} className={i % 2 === 0 ? 'fac-p-row-even' : ''}>
-                  <td>{l.desc || <span style={{ color: '#ccc' }}>—</span>}</td>
-                  <td style={{ textAlign: 'center' }}>{l.qte}</td>
-                  <td style={{ textAlign: 'right' }}>{l.pu ? fmtE(parseN(l.pu)) : '—'}</td>
-                  <td style={{ textAlign: 'center' }}>{l.tva}%</td>
-                  <td style={{ textAlign: 'right', fontWeight: 600 }}>{fmtE(parseN(l.qte) * parseN(l.pu))}</td>
-                </tr>
-              ))}
+              {loading ? (
+                <tr><td colSpan={8} style={{textAlign:'center',padding:'2rem',color:'var(--text-muted)'}}>Chargement…</td></tr>
+              ) : paged.length === 0 ? (
+                <tr><td colSpan={8} style={{textAlign:'center',padding:'2rem',color:'var(--text-muted)'}}>Aucune facture</td></tr>
+              ) : paged.map(f => {
+                const sm = statutMeta(f.statut)
+                const isSelected = selected?.id === f.id
+                return (
+                  <tr key={f.id} className={`users-table-row ${isSelected?'fac-row--selected':''}`}
+                    onClick={() => setSelected(f)} style={{cursor:'pointer'}}>
+                    <td style={{fontWeight:600,fontSize:'.8rem'}}>{f.num_facture}</td>
+                    <td style={{fontWeight:500}}>{f.client_nom}</td>
+                    <td style={{color:'var(--text-muted)',fontSize:'.8rem',maxWidth:150,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{f.objet}</td>
+                    <td style={{color:'var(--text-muted)',fontSize:'.8rem',whiteSpace:'nowrap'}}>{new Date(f.date_emission).toLocaleDateString('fr-FR')}</td>
+                    <td style={{color:'var(--text-muted)',fontSize:'.8rem',whiteSpace:'nowrap'}}>{new Date(f.date_echeance).toLocaleDateString('fr-FR')}</td>
+                    <td><span className="fac-statut-badge" style={{color:sm.color,background:sm.bg}}>{sm.label}</span></td>
+                    <td style={{textAlign:'right',fontWeight:700,fontVariantNumeric:'tabular-nums',fontSize:'.85rem'}}>{fmtE(f.total_ttc)}</td>
+                    <td style={{whiteSpace:'nowrap'}}>
+                      <button className="btn-icon" title="Modifier" onClick={e=>{e.stopPropagation();setModal(f)}}>✏️</button>
+                      <button className="btn-icon" title="Supprimer" onClick={e=>{e.stopPropagation();handleDelete(f.id)}}>🗑</button>
+                    </td>
+                  </tr>
+                )
+              })}
             </tbody>
           </table>
+        </div>
 
-          {/* Totaux */}
-          <div className="fac-p-totaux">
-            <div className="fac-p-total-row">
-              <span>Total HT</span>
-              <span>{fmtE(totals.ht)}</span>
-            </div>
-            {Object.entries(totals.tvaMap).filter(([,v]) => v > 0).map(([rate, amt]) => (
-              <div key={rate} className="fac-p-total-row">
-                <span>TVA {rate}%</span>
-                <span>{fmtE(amt)}</span>
-              </div>
-            ))}
-            <div className="fac-p-total-row fac-p-total-ttc">
-              <span>TOTAL TTC</span>
-              <span>{fmtE(totals.ttc)}</span>
-            </div>
+        {totalPages > 1 && (
+          <div className="pagination">
+            <button disabled={page===1} onClick={()=>setPage(1)}>«</button>
+            <button disabled={page===1} onClick={()=>setPage(p=>p-1)}>‹</button>
+            <span>Page {page} / {totalPages}</span>
+            <button disabled={page===totalPages} onClick={()=>setPage(p=>p+1)}>›</button>
+            <button disabled={page===totalPages} onClick={()=>setPage(totalPages)}>»</button>
           </div>
+        )}
+      </div>
 
-          {/* Notes */}
-          {notes && (
-            <div className="fac-p-notes">
-              {notes.split('\n').map((l, i) => <div key={i}>{l}</div>)}
-            </div>
-          )}
-
-          <div className="fac-p-footer">
-            {emNom} {emSiret ? `· SIRET ${emSiret}` : ''}
+      {/* ── COLONNE DROITE : prévisualisation ── */}
+      <div className="fac-right-col">
+        <div className="fac-preview-header">
+          <span className="fac-preview-label">Prévisualisation</span>
+          <div style={{display:'flex',gap:'.4rem'}}>
+            {selected && <button className="btn-secondary" style={{fontSize:'.78rem'}} onClick={()=>setModal(selected)}>✏️ Modifier</button>}
+            {selected && <button className="btn-primary" style={{fontSize:'.78rem'}} onClick={()=>window.print()}>🖨 PDF</button>}
           </div>
         </div>
+        <div className="fac-right-scroll">
+          <InvoicePreview fac={selected} />
+        </div>
       </div>
+
+      {/* Modal */}
+      {modal && (
+        <FactureModal
+          facture={modal === 'new' ? null : modal}
+          societe={selectedSociete}
+          onSave={handleSave}
+          onClose={() => setModal(null)}
+        />
+      )}
     </div>
   )
 }
