@@ -9,15 +9,21 @@ const MONTH_H = 26   // px header mois
 const DAY_H   = 24   // px header jours
 const N_MONTHS = 3
 
-// ── Services ─────────────────────────────────────────────────
-const SERVICES = [
-  { id: 'tous',        label: 'Tous' },
-  { id: 'chef_projet', label: 'Chef de projet', color: '#6366f1', bg: '#eef2ff' },
-  { id: 'commercial',  label: 'Commercial',     color: '#f59e0b', bg: '#fffbeb' },
-  { id: 'technique',   label: 'Technique',      color: '#22c55e', bg: '#f0fdf4' },
-  { id: 'fonctionnel', label: 'Fonctionnel',    color: '#8b5cf6', bg: '#f5f3ff' },
+// ── Couleurs par poste ────────────────────────────────────────
+const POSTE_COLORS = [
+  { color: '#6366f1', bg: '#eef2ff' },
+  { color: '#f59e0b', bg: '#fffbeb' },
+  { color: '#22c55e', bg: '#f0fdf4' },
+  { color: '#8b5cf6', bg: '#f5f3ff' },
+  { color: '#ec4899', bg: '#fdf2f8' },
+  { color: '#14b8a6', bg: '#f0fdfa' },
+  { color: '#f97316', bg: '#fff7ed' },
+  { color: '#3b82f6', bg: '#eff6ff' },
 ]
-const SERVICE_MAP = Object.fromEntries(SERVICES.slice(1).map(s => [s.id, s]))
+function posteColor(poste, allPostes) {
+  const idx = allPostes.indexOf(poste)
+  return POSTE_COLORS[idx % POSTE_COLORS.length] || POSTE_COLORS[0]
+}
 
 // ── Helpers ───────────────────────────────────────────────────
 function startOfMonth(d) { return new Date(d.getFullYear(), d.getMonth(), 1) }
@@ -51,8 +57,9 @@ function groupByMonth(days) {
 // ── Page principale ───────────────────────────────────────────
 export default function PlanificationPage() {
   const { selectedSociete } = useSociete()
-  const [serviceFilter, setServiceFilter] = useState('tous')
-  const [users, setUsers]       = useState([])
+  const [posteFilter, setPosteFilter] = useState('tous')
+  const [searchCollab, setSearchCollab] = useState('')
+  const [equipe, setEquipe]     = useState([])
   const [plannings, setPlannings] = useState([])
   const [quarterStart, setQuarterStart] = useState(() => startOfMonth(new Date()))
   const scrollRef = useRef()
@@ -63,21 +70,14 @@ export default function PlanificationPage() {
   const todayISO    = toISO(new Date())
   const todayIdx    = days.findIndex(d => toISO(d) === todayISO)
 
-  // Charger les utilisateurs
+  // Charger les collaborateurs depuis la table equipe
   useEffect(() => {
-    if (!selectedSociete?.id) { setUsers([]); return }
-    // Derive unique users from plannings for this société
-    supabase.from('plannings')
-      .select('user_key, user_label')
+    if (!selectedSociete?.id) { setEquipe([]); return }
+    supabase.from('equipe')
+      .select('id, nom, prenom, poste')
       .eq('societe_id', selectedSociete.id)
-      .then(({ data }) => {
-        const seen = new Set()
-        const unique = []
-        for (const p of (data || [])) {
-          if (!seen.has(p.user_key)) { seen.add(p.user_key); unique.push({ id: p.user_key, full_name: p.user_label, service: null }) }
-        }
-        setUsers(unique)
-      })
+      .order('nom', { ascending: true })
+      .then(({ data }) => setEquipe(data || []))
   }, [selectedSociete?.id])
 
   // Charger les plannings
@@ -100,9 +100,18 @@ export default function PlanificationPage() {
     }
   }, [todayIdx])
 
-  const filteredUsers = useMemo(() =>
-    serviceFilter === 'tous' ? users : users.filter(u => u.service === serviceFilter),
-  [users, serviceFilter])
+  // Postes uniques pour les filtres
+  const allPostes = useMemo(() => [...new Set(equipe.map(e => e.poste).filter(Boolean))].sort(), [equipe])
+
+  const filteredUsers = useMemo(() => {
+    let rows = equipe
+    if (posteFilter !== 'tous') rows = rows.filter(u => u.poste === posteFilter)
+    if (searchCollab) {
+      const q = searchCollab.toLowerCase()
+      rows = rows.filter(u => `${u.nom} ${u.prenom}`.toLowerCase().includes(q))
+    }
+    return rows
+  }, [equipe, posteFilter, searchCollab])
 
   const planningsByUser = useMemo(() => {
     const map = {}
@@ -132,20 +141,29 @@ export default function PlanificationPage() {
         </div>
       </div>
 
-      {/* Filtres services */}
+      {/* Filtres postes + recherche */}
       <div className="plan-filter-bar">
-        {SERVICES.map(s => {
-          const active = serviceFilter === s.id
-          const meta   = SERVICE_MAP[s.id]
+        <input
+          className="table-search"
+          style={{ width: 180 }}
+          value={searchCollab}
+          onChange={e => setSearchCollab(e.target.value)}
+          placeholder="Rechercher un collaborateur…"
+        />
+        <button
+          className={`plan-filter-chip ${posteFilter === 'tous' ? 'plan-filter-chip--active' : ''}`}
+          onClick={() => setPosteFilter('tous')}
+        >Tous</button>
+        {allPostes.map(p => {
+          const c = posteColor(p, allPostes)
+          const active = posteFilter === p
           return (
             <button
-              key={s.id}
+              key={p}
               className={`plan-filter-chip ${active ? 'plan-filter-chip--active' : ''}`}
-              style={active && meta ? { background: meta.bg, borderColor: meta.color, color: meta.color } : {}}
-              onClick={() => setServiceFilter(s.id)}
-            >
-              {s.label}
-            </button>
+              style={active ? { background: c.bg, borderColor: c.color, color: c.color } : {}}
+              onClick={() => setPosteFilter(p)}
+            >{p}</button>
           )
         })}
       </div>
@@ -157,13 +175,13 @@ export default function PlanificationPage() {
         <div className="plan-names">
           <div className="plan-names-spacer" style={{ height: MONTH_H + DAY_H }} />
           {filteredUsers.map(u => {
-            const sm = SERVICE_MAP[u.service]
+            const c = u.poste ? posteColor(u.poste, allPostes) : null
             return (
               <div key={u.id} className="plan-name-row" style={{ height: ROW_H }}>
-                <span className="plan-name-text">{u.full_name}</span>
-                {sm && (
-                  <span className="plan-service-badge" style={{ color: sm.color, background: sm.bg }}>
-                    {sm.label}
+                <span className="plan-name-text">{u.prenom} {u.nom}</span>
+                {u.poste && c && (
+                  <span className="plan-service-badge" style={{ color: c.color, background: c.bg }}>
+                    {u.poste}
                   </span>
                 )}
               </div>
