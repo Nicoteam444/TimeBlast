@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
 import { useDemo } from '../contexts/DemoContext'
 import { useNotifications } from '../contexts/NotificationsContext'
+import { useLayout } from '../contexts/LayoutContext'
 import { supabase } from '../lib/supabase'
 
 function fmtNotifDate(iso) {
@@ -19,6 +20,7 @@ export default function TopBar({ societes = [], selectedSociete, onSelectSociete
   const { profile, signOut } = useAuth()
   const { isDemoMode, setIsDemoMode } = useDemo()
   const { notifications, unreadCount, markRead, markAllRead } = useNotifications()
+  const { toggleSidebar } = useLayout()
   const navigate = useNavigate()
   const [userMenuOpen, setUserMenuOpen] = useState(false)
   const [notifOpen, setNotifOpen] = useState(false)
@@ -100,6 +102,11 @@ export default function TopBar({ societes = [], selectedSociete, onSelectSociete
 
   return (
     <header className="topbar">
+      {/* Hamburger mobile */}
+      <button className="sidebar-hamburger" onClick={toggleSidebar} aria-label="Menu">
+        ☰
+      </button>
+
       {/* Barre de recherche globale */}
       <div className="topbar-search" ref={searchRef}>
         <div className="topbar-search-wrap">
