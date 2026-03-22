@@ -1,8 +1,7 @@
 import { useState, useEffect, useMemo, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { supabase } from '../../lib/supabase'
-import { useDemo } from '../../contexts/DemoContext'
-import { DEMO_IMPORTS, DEMO_ECRITURES } from '../../data/demoData'
+import { useSociete } from '../../contexts/SocieteContext'
 import {
   BarChart, Bar, ComposedChart, Line,
   XAxis, YAxis, CartesianGrid, Tooltip, Legend,
@@ -185,7 +184,7 @@ async function fetchAllEcritures(importId, signal) {
 // ── Page principale ───────────────────────────────────────────
 export default function ComptaPage() {
   const navigate = useNavigate()
-  const { isDemoMode } = useDemo()
+  const { selectedSociete } = useSociete()
 
   const [activeTab, setActiveTab]     = useState('analyse')
   const [imports, setImports]         = useState([])
@@ -200,36 +199,27 @@ export default function ComptaPage() {
   const [histKpis, setHistKpis]       = useState({})
   const [loadingHist, setLoadingHist] = useState(false)
 
-  // Reset histKpis quand le mode ou les imports changent
-  useEffect(() => { setHistKpis({}) }, [isDemoMode])
+  // Reset histKpis quand la société change
+  useEffect(() => { setHistKpis({}) }, [selectedSociete?.id])
 
   // Charger imports
   useEffect(() => {
-    if (isDemoMode) {
-      setImports(DEMO_IMPORTS)
-      setSelectedId(DEMO_IMPORTS[0].id)
-      setLoadingImports(false)
-      return
-    }
-    supabase.from('fec_imports').select('id, created_at, meta').order('created_at', { ascending: false })
-      .then(({ data }) => {
-        const parsed = (data || []).map(i => {
-          let m = {}; try { m = JSON.parse(i.meta || '{}') } catch {}
-          return { ...i, ...m }
-        })
-        setImports(parsed)
-        if (parsed.length > 0) setSelectedId(parsed[0].id)
-        setLoadingImports(false)
+    let query = supabase.from('fec_imports').select('id, created_at, meta').order('created_at', { ascending: false })
+    if (selectedSociete?.id) query = query.eq('societe_id', selectedSociete.id)
+    query.then(({ data }) => {
+      const parsed = (data || []).map(i => {
+        let m = {}; try { m = JSON.parse(i.meta || '{}') } catch {}
+        return { ...i, ...m }
       })
-  }, [isDemoMode])
+      setImports(parsed)
+      if (parsed.length > 0) setSelectedId(parsed[0].id)
+      setLoadingImports(false)
+    })
+  }, [selectedSociete?.id])
 
   // Charger écritures (avec abort controller pour éviter les race conditions)
   useEffect(() => {
     if (!selectedId) return
-    if (isDemoMode) {
-      setEcritures(DEMO_ECRITURES[selectedId] || [])
-      return
-    }
     const controller = new AbortController()
     setLoadingEc(true)
     setLoadingEcProgress(0)
@@ -259,24 +249,14 @@ export default function ComptaPage() {
       setLoadingEc(false)
     })()
     return () => controller.abort()
-  }, [selectedId, isDemoMode])
+  }, [selectedId])
 
   // Calcul KPIs pour l'historique (tous imports)
   const loadHistKpis = useCallback(async () => {
     // déjà chargé pour ces imports ?
     if (imports.length > 0 && imports.every(i => histKpis[i.id] !== undefined)) return
     setLoadingHist(true)
-    if (isDemoMode) {
-      const result = {}
-      for (const imp of DEMO_IMPORTS) {
-        const rows = DEMO_ECRITURES[imp.id] || []
-        result[imp.id] = computeKPIs(rows)
-      }
-      setHistKpis(result)
-      setLoadingHist(false)
-      return
-    }
-    // Mode réel : charger les écritures de chaque import (paginé)
+    // Charger les écritures de chaque import (paginé)
     try {
       const ids = imports.map(i => i.id)
       if (ids.length === 0) { setLoadingHist(false); return }
@@ -288,7 +268,7 @@ export default function ComptaPage() {
       setHistKpis(result)
     } catch {}
     setLoadingHist(false)
-  }, [isDemoMode, imports, histKpis])
+  }, [imports, histKpis])
 
   // Liste des sociétés uniques
   const societes = useMemo(() => [...new Set(imports.map(i => i.societe).filter(Boolean))].sort(), [imports])

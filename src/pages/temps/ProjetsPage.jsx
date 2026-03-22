@@ -1,8 +1,7 @@
 import { useState, useEffect, useMemo } from 'react'
 import { supabase } from '../../lib/supabase'
 import ClientAutocomplete from '../../components/ClientAutocomplete'
-import { useDemo } from '../../contexts/DemoContext'
-import { DEMO_PROJETS, DEMO_SAISIES } from '../../data/demoData'
+import { useSociete } from '../../contexts/SocieteContext'
 
 const STATUT_COLORS = {
   actif:    { color: '#16a34a', bg: '#f0fdf4' },
@@ -10,20 +9,8 @@ const STATUT_COLORS = {
   suspendu: { color: '#f59e0b', bg: '#fffbeb' },
 }
 
-// Compute consumed hours per project from DEMO_SAISIES
-function getDemoConsumedHours() {
-  const map = {}
-  for (const s of DEMO_SAISIES) {
-    let meta = {}
-    try { meta = JSON.parse(s.commentaire || '{}') } catch {}
-    const pid = meta.projet_id
-    if (pid) map[pid] = (map[pid] || 0) + (s.heures || 0)
-  }
-  return map
-}
-
 export default function ProjetsPage({ onSelect }) {
-  const { isDemoMode } = useDemo()
+  const { selectedSociete } = useSociete()
   const [projets, setProjets] = useState([])
   const [loading, setLoading] = useState(true)
   const [showForm, setShowForm] = useState(false)
@@ -34,24 +21,23 @@ export default function ProjetsPage({ onSelect }) {
   const [pageSize, setPageSize] = useState(20)
   const [page, setPage] = useState(1)
 
-  // Consumed hours per project (real mode fetched, demo mode computed)
   const [consumedHours, setConsumedHours] = useState({})
 
-  useEffect(() => { fetchProjets() }, [isDemoMode])
+  useEffect(() => { fetchProjets() }, [selectedSociete?.id])
 
   async function fetchProjets() {
     setLoading(true)
-    if (isDemoMode) {
-      setProjets(DEMO_PROJETS)
-      setConsumedHours(getDemoConsumedHours())
-      setLoading(false)
-      return
-    }
-    const { data } = await supabase
+    let query = supabase
       .from('projets')
-      .select('*, clients(name), lots(count)')
+      .select('*, clients(name, societe_id), lots(count)')
       .order('created_at', { ascending: false })
-    setProjets(data || [])
+    if (selectedSociete?.id) query = query.eq('clients.societe_id', selectedSociete.id)
+    const { data } = await query
+    // Filter client-side since PostgREST join filters can return rows with null client when using eq on joined table
+    const filtered_data = selectedSociete?.id
+      ? (data || []).filter(p => p.clients?.societe_id === selectedSociete.id)
+      : (data || [])
+    setProjets(filtered_data)
 
     // Fetch consumed hours from saisies_temps
     const { data: saisiesData } = await supabase
@@ -73,7 +59,6 @@ export default function ProjetsPage({ onSelect }) {
 
   async function handleCreate(e) {
     e.preventDefault()
-    if (isDemoMode) { setShowForm(false); setSelectedClient(null); setForm({ name: '', total_jours: '', date_debut: '', date_fin: '', statut: 'actif' }); return }
     await supabase.from('projets').insert({
       name: form.name,
       client_id: selectedClient?.id || null,
@@ -89,7 +74,6 @@ export default function ProjetsPage({ onSelect }) {
   }
 
   async function handleDelete(id) {
-    if (isDemoMode) { setDeleteConfirm(null); return }
     await supabase.from('projets').delete().eq('id', id)
     setDeleteConfirm(null)
     fetchProjets()
@@ -113,7 +97,14 @@ export default function ProjetsPage({ onSelect }) {
       <div className="admin-page-header">
         <div>
           <h1>Projets</h1>
-          <p>{filtered.length} projet{filtered.length > 1 ? 's' : ''}{filter ? ` sur ${projets.length}` : ''}</p>
+          <p>
+            {filtered.length} projet{filtered.length > 1 ? 's' : ''}{filter ? ` sur ${projets.length}` : ''}
+            {selectedSociete && (
+              <span style={{ marginLeft: '.5rem', padding: '.1rem .5rem', background: 'var(--primary-light, #eef2ff)', color: 'var(--primary)', borderRadius: 4, fontSize: '.8rem', fontWeight: 500 }}>
+                {selectedSociete.name}
+              </span>
+            )}
+          </p>
         </div>
         <button className="btn-primary" onClick={() => setShowForm(true)}>+ Nouveau projet</button>
       </div>

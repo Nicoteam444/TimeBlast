@@ -1,12 +1,11 @@
 import { useState, useEffect, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { supabase } from '../../lib/supabase'
-import { useDemo } from '../../contexts/DemoContext'
-import { DEMO_CLIENTS } from '../../data/demoData'
+import { useSociete } from '../../contexts/SocieteContext'
 
 export default function ClientsPage() {
   const navigate = useNavigate()
-  const { isDemoMode } = useDemo()
+  const { selectedSociete } = useSociete()
   const [clients, setClients] = useState([])
   const [loading, setLoading] = useState(true)
   const [showForm, setShowForm] = useState(false)
@@ -16,31 +15,26 @@ export default function ClientsPage() {
   const [pageSize, setPageSize] = useState(20)
   const [page, setPage] = useState(1)
 
-  useEffect(() => { fetchClients() }, [isDemoMode])
+  useEffect(() => { fetchClients() }, [selectedSociete?.id])
 
   async function fetchClients() {
     setLoading(true)
-    if (isDemoMode) {
-      setClients(DEMO_CLIENTS)
-      setLoading(false)
-      return
-    }
-    const { data } = await supabase.from('clients').select('*, projets(count)').order('name')
+    let query = supabase.from('clients').select('*, projets(count)').order('name')
+    if (selectedSociete?.id) query = query.eq('societe_id', selectedSociete.id)
+    const { data } = await query
     setClients(data || [])
     setLoading(false)
   }
 
   async function handleCreate(e) {
     e.preventDefault()
-    if (isDemoMode) { setShowForm(false); setName(''); return }
-    await supabase.from('clients').insert({ name })
+    await supabase.from('clients').insert({ name, societe_id: selectedSociete?.id || null })
     setName('')
     setShowForm(false)
     fetchClients()
   }
 
   async function handleDelete(id) {
-    if (isDemoMode) { setDeleteConfirm(null); return }
     await supabase.from('clients').delete().eq('id', id)
     setDeleteConfirm(null)
     fetchClients()
@@ -69,7 +63,14 @@ export default function ClientsPage() {
       <div className="admin-page-header">
         <div>
           <h1>Clients</h1>
-          <p>{filtered.length} client{filtered.length > 1 ? 's' : ''}{filter ? ` sur ${clients.length}` : ''}</p>
+          <p>
+            {filtered.length} client{filtered.length > 1 ? 's' : ''}{filter ? ` sur ${clients.length}` : ''}
+            {selectedSociete && (
+              <span style={{ marginLeft: '.5rem', padding: '.1rem .5rem', background: 'var(--primary-light, #eef2ff)', color: 'var(--primary)', borderRadius: 4, fontSize: '.8rem', fontWeight: 500 }}>
+                {selectedSociete.name}
+              </span>
+            )}
+          </p>
         </div>
         <button className="btn-primary" onClick={() => setShowForm(true)}>+ Nouveau client</button>
       </div>

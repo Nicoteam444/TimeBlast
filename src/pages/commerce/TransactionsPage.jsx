@@ -2,8 +2,7 @@ import { useState, useEffect, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { supabase } from '../../lib/supabase'
 import ClientAutocomplete from '../../components/ClientAutocomplete'
-import { useDemo } from '../../contexts/DemoContext'
-import { DEMO_TRANSACTIONS } from '../../data/demoData'
+import { useSociete } from '../../contexts/SocieteContext'
 
 const PHASES = [
   { id: 'qualification',   label: 'Qualification',    color: '#6366f1', bg: '#eef2ff' },
@@ -24,7 +23,7 @@ const EMPTY_FORM = {
 
 export default function TransactionsPage() {
   const navigate = useNavigate()
-  const { isDemoMode } = useDemo()
+  const { selectedSociete } = useSociete()
   const [transactions, setTransactions] = useState([])
   const [loading, setLoading] = useState(true)
   const [showForm, setShowForm] = useState(false)
@@ -35,19 +34,16 @@ export default function TransactionsPage() {
   const [pageSize, setPageSize] = useState(20)
   const [page, setPage] = useState(1)
 
-  useEffect(() => { fetchTransactions() }, [isDemoMode])
+  useEffect(() => { fetchTransactions() }, [selectedSociete?.id])
 
   async function fetchTransactions() {
     setLoading(true)
-    if (isDemoMode) {
-      setTransactions(DEMO_TRANSACTIONS)
-      setLoading(false)
-      return
-    }
-    const { data, error } = await supabase
+    let query = supabase
       .from('transactions')
       .select('*, clients(name)')
       .order('created_at', { ascending: false })
+    if (selectedSociete?.id) query = query.eq('societe_id', selectedSociete.id)
+    const { data, error } = await query
     if (error) setError(error.message)
     setTransactions(data || [])
     setLoading(false)
@@ -55,10 +51,10 @@ export default function TransactionsPage() {
 
   async function handleCreate(e) {
     e.preventDefault()
-    if (isDemoMode) { setShowForm(false); setForm(EMPTY_FORM); setSelectedClient(null); return }
     const { error } = await supabase.from('transactions').insert({
       name: form.name,
       client_id: selectedClient?.id || null,
+      societe_id: selectedSociete?.id || null,
       phase: form.phase,
       montant: form.montant ? parseFloat(form.montant) : null,
       date_fermeture_prevue: form.date_fermeture_prevue || null,
@@ -99,7 +95,14 @@ export default function TransactionsPage() {
       <div className="admin-page-header">
         <div>
           <h1>Transactions</h1>
-          <p>{filtered.length} transaction{filtered.length > 1 ? 's' : ''}{filter ? ` sur ${transactions.length}` : ''}</p>
+          <p>
+            {filtered.length} transaction{filtered.length > 1 ? 's' : ''}{filter ? ` sur ${transactions.length}` : ''}
+            {selectedSociete && (
+              <span style={{ marginLeft: '.5rem', padding: '.1rem .5rem', background: 'var(--primary-light, #eef2ff)', color: 'var(--primary)', borderRadius: 4, fontSize: '.8rem', fontWeight: 500 }}>
+                {selectedSociete.name}
+              </span>
+            )}
+          </p>
         </div>
         <button className="btn-primary" onClick={() => setShowForm(true)}>+ Nouvelle transaction</button>
       </div>

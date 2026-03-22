@@ -1,17 +1,19 @@
-import { createContext, useContext, useState } from 'react'
+import { createContext, useContext } from 'react'
+import { useSociete } from './SocieteContext'
 
 const DemoContext = createContext()
 
 export function DemoProvider({ children }) {
-  const [isDemoMode, setIsDemoMode] = useState(false)
-
   return (
-    <DemoContext.Provider value={{ isDemoMode, setIsDemoMode }}>
+    <DemoContext.Provider value={{}}>
       {children}
     </DemoContext.Provider>
   )
 }
 
+// isDemoMode est vrai quand la société sélectionnée est "SRA TEST"
 export function useDemo() {
-  return useContext(DemoContext)
+  const { selectedSociete } = useSociete() || {}
+  const isDemoMode = selectedSociete?.name === 'SRA TEST'
+  return { isDemoMode, setIsDemoMode: () => {} }
 }

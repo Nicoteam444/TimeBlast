@@ -1,8 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react'
 import { supabase } from '../../lib/supabase'
 import { useAuth } from '../../contexts/AuthContext'
-import { useDemo } from '../../contexts/DemoContext'
-import { DEMO_SAISIES } from '../../data/demoData'
+import { useSociete } from '../../contexts/SocieteContext'
 
 // ── Validation semaine ───────────────────────────────────────
 const VALIDATION_STORAGE_KEY = 'validation_statuts'
@@ -156,7 +155,7 @@ function ProjectPicker({ value, onChange, autoFocus }) {
 }
 
 // ── Modal création événement ─────────────────────────────────
-function EventModal({ event, userId, onClose, onSaved }) {
+function EventModal({ event, userId, societeId, onClose, onSaved }) {
   const [project, setProject] = useState(null)
   const [startMin, setStartMin] = useState(event.startMin)
   const [endMin, setEndMin] = useState(event.endMin)
@@ -193,6 +192,7 @@ function EventModal({ event, userId, onClose, onSaved }) {
       date: event.date,
       heures,
       commentaire: meta,
+      societe_id: societeId || null,
     })
 
     setSaving(false)
@@ -436,7 +436,7 @@ function exportCSV(weekDates, events) {
 // ── Page principale ──────────────────────────────────────────
 export default function SaisiePage() {
   const { profile } = useAuth()
-  const { isDemoMode } = useDemo()
+  const { selectedSociete } = useSociete()
   const [weekStart, setWeekStart] = useState(() => getMonday(new Date()))
   const [events, setEvents] = useState({})
   const [loading, setLoading] = useState(true)
@@ -449,21 +449,16 @@ export default function SaisiePage() {
   const fetchWeek = useCallback(async () => {
     setLoading(true)
 
-    let rows = []
-    if (isDemoMode) {
-      const weekEnd = toISO(addDays(weekStart, 6))
-      const weekStartISO = toISO(weekStart)
-      rows = DEMO_SAISIES.filter(s => s.date >= weekStartISO && s.date <= weekEnd)
-    } else {
-      if (!profile?.id) { setLoading(false); return }
-      const { data } = await supabase
-        .from('saisies_temps')
-        .select('id, date, heures, commentaire')
-        .eq('user_id', profile.id)
-        .gte('date', toISO(weekStart))
-        .lte('date', toISO(addDays(weekStart, 6)))
-      rows = data || []
-    }
+    if (!profile?.id) { setLoading(false); return }
+    let query = supabase
+      .from('saisies_temps')
+      .select('id, date, heures, commentaire')
+      .eq('user_id', profile.id)
+      .gte('date', toISO(weekStart))
+      .lte('date', toISO(addDays(weekStart, 6)))
+    if (selectedSociete?.id) query = query.eq('societe_id', selectedSociete.id)
+    const { data } = await query
+    let rows = data || []
 
     const map = {}
     for (const s of rows) {
@@ -485,7 +480,7 @@ export default function SaisiePage() {
     }
     setEvents(map)
     setLoading(false)
-  }, [profile?.id, weekStart, isDemoMode])
+  }, [profile?.id, weekStart, selectedSociete?.id])
 
   useEffect(() => { fetchWeek() }, [fetchWeek])
 
@@ -537,7 +532,7 @@ export default function SaisiePage() {
         </div>
         <div style={{ display: 'flex', gap: '.5rem', alignItems: 'center', flexWrap: 'wrap' }}>
           <WeekStatusBar
-            userId={isDemoMode ? 'u1' : (profile?.id || 'unknown')}
+            userId={profile?.id || 'unknown'}
             mondayISO={toISO(weekStart)}
             userRole={profile?.role}
           />
@@ -654,6 +649,7 @@ export default function SaisiePage() {
         <EventModal
           event={newEvent}
           userId={profile.id}
+          societeId={selectedSociete?.id || null}
           onClose={() => setNewEvent(null)}
           onSaved={fetchWeek}
         />

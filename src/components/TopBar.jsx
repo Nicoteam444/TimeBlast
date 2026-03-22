@@ -19,17 +19,15 @@ function fmtNotifDate(iso) {
 
 export default function TopBar() {
   const { profile, signOut } = useAuth()
-  const { isDemoMode, setIsDemoMode } = useDemo()
+  const { isDemoMode } = useDemo()
   const { notifications, unreadCount, markRead, markAllRead } = useNotifications()
   const { toggleSidebar } = useLayout()
   const { societes, selectedSociete, setSelectedSociete } = useSociete()
   const navigate = useNavigate()
   const [userMenuOpen, setUserMenuOpen]   = useState(false)
   const [notifOpen, setNotifOpen]         = useState(false)
-  const [societeOpen, setSocieteOpen]     = useState(false)
   const userMenuRef  = useRef(null)
   const notifRef     = useRef(null)
-  const societeRef   = useRef(null)
 
   const [searchQuery, setSearchQuery]   = useState('')
   const [searchResults, setSearchResults] = useState([])
@@ -45,7 +43,6 @@ export default function TopBar() {
       if (userMenuRef.current  && !userMenuRef.current.contains(e.target))  setUserMenuOpen(false)
       if (searchRef.current    && !searchRef.current.contains(e.target))    setSearchOpen(false)
       if (notifRef.current     && !notifRef.current.contains(e.target))     setNotifOpen(false)
-      if (societeRef.current   && !societeRef.current.contains(e.target))   setSocieteOpen(false)
     }
     document.addEventListener('mousedown', handleClickOutside)
     return () => document.removeEventListener('mousedown', handleClickOutside)
@@ -147,7 +144,6 @@ export default function TopBar() {
         )}
       </div>
 
-      {isDemoMode && <div className="topbar-demo-indicator">🎭 Mode démo</div>}
       <div className="topbar-spacer" />
 
       {/* Paramètres */}
@@ -198,7 +194,7 @@ export default function TopBar() {
         <button className="topbar-user-btn" onClick={() => setUserMenuOpen(v => !v)}>
           <span className="topbar-avatar">{initials}</span>
           <div className="topbar-user-info">
-            <span className="topbar-user-name">{profile?.full_name || 'Utilisateur'}</span>
+            <span className="topbar-user-name">{selectedSociete?.name || profile?.full_name || 'Utilisateur'}</span>
             <span className="topbar-user-role">{profile?.role}</span>
           </div>
           <span className="topbar-chevron">{userMenuOpen ? '▲' : '▼'}</span>
@@ -217,20 +213,36 @@ export default function TopBar() {
             <button className="topbar-dropdown-item" onClick={() => { navigate('/parametres'); setUserMenuOpen(false) }}>
               Mon profil
             </button>
-            <hr className="topbar-dropdown-divider" />
-            {/* Jeu de données */}
-            <div className="topbar-dropdown-section">
-              <span className="topbar-dropdown-section-label">Jeu de données</span>
-              <div className="topbar-dataset-toggle">
-                <button className={`topbar-dataset-btn ${!isDemoMode ? 'topbar-dataset-btn--active' : ''}`} onClick={() => setIsDemoMode(false)}>
-                  Données réelles
-                </button>
-                <button className={`topbar-dataset-btn ${isDemoMode ? 'topbar-dataset-btn--active' : ''}`} onClick={() => setIsDemoMode(true)}>
-                  🎭 Démo
-                </button>
-              </div>
-              {isDemoMode && <p className="topbar-demo-badge">Mode démo activé — données fictives</p>}
-            </div>
+
+            {/* ── Sélecteur de société dans le menu ── */}
+            {societes.length > 0 && (
+              <>
+                <hr className="topbar-dropdown-divider" />
+                <div className="topbar-dropdown-section">
+                  <span className="topbar-dropdown-section-label">Société</span>
+                  {canSwitch && societes.length > 1 ? (
+                    societes.map(s => (
+                      <button
+                        key={s.id}
+                        className={`topbar-dropdown-item topbar-dropdown-societe-item ${s.id === selectedSociete?.id ? 'topbar-dropdown-item--societe-active' : ''}`}
+                        onClick={() => { setSelectedSociete(s); setUserMenuOpen(false) }}
+                      >
+                        <span className="topbar-societe-item-dot"
+                          style={{ background: s.id === selectedSociete?.id ? 'var(--primary)' : 'var(--border)' }} />
+                        <span style={{ flex: 1 }}>{s.name}</span>
+                        {s.id === selectedSociete?.id && <span style={{ color: 'var(--primary)', fontSize: '.8rem' }}>✓</span>}
+                      </button>
+                    ))
+                  ) : (
+                    <div className="topbar-dropdown-societe-badge">
+                      <span className="topbar-societe-item-dot" style={{ background: 'var(--primary)' }} />
+                      <span>{selectedSociete?.name}</span>
+                    </div>
+                  )}
+                </div>
+              </>
+            )}
+
             <hr className="topbar-dropdown-divider" />
             <button className="topbar-dropdown-item topbar-dropdown-item--danger" onClick={handleSignOut}>
               Déconnexion
@@ -238,49 +250,6 @@ export default function TopBar() {
           </div>
         )}
       </div>
-
-      {/* ── Sélecteur de société — à droite de la pastille utilisateur ── */}
-      {selectedSociete && (
-        <div className="topbar-societe-btn-wrap" ref={societeRef}>
-          {canSwitch && societes.length > 1 ? (
-            <>
-              <button
-                className={`topbar-societe-btn ${societeOpen ? 'topbar-societe-btn--open' : ''}`}
-                onClick={() => setSocieteOpen(v => !v)}
-                title="Changer de société"
-              >
-                <span className="topbar-societe-avatar">{societeInitials}</span>
-                <span className="topbar-societe-name">{selectedSociete.name}</span>
-                <span className="topbar-societe-chevron">{societeOpen ? '▲' : '▼'}</span>
-              </button>
-
-              {societeOpen && (
-                <div className="topbar-societe-dropdown">
-                  <p className="topbar-societe-dropdown-label">Changer de société</p>
-                  {societes.map(s => (
-                    <button
-                      key={s.id}
-                      className={`topbar-societe-dropdown-item ${s.id === selectedSociete.id ? 'topbar-societe-dropdown-item--active' : ''}`}
-                      onClick={() => { setSelectedSociete(s); setSocieteOpen(false) }}
-                    >
-                      <span className="topbar-societe-item-dot"
-                        style={{ background: s.id === selectedSociete.id ? 'var(--primary)' : 'var(--border)' }} />
-                      <span style={{ flex: 1 }}>{s.name}</span>
-                      {s.id === selectedSociete.id && <span style={{ color: 'var(--primary)', fontSize: '.8rem' }}>✓</span>}
-                    </button>
-                  ))}
-                </div>
-              )}
-            </>
-          ) : (
-            /* Une seule société ou non-admin : badge simple */
-            <span className="topbar-societe-badge">
-              <span className="topbar-societe-avatar">{societeInitials}</span>
-              <span className="topbar-societe-name">{selectedSociete.name}</span>
-            </span>
-          )}
-        </div>
-      )}
     </header>
   )
 }

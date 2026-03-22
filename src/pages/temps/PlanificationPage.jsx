@@ -1,7 +1,6 @@
 import { useState, useEffect, useMemo, useRef } from 'react'
 import { supabase } from '../../lib/supabase'
-import { useDemo } from '../../contexts/DemoContext'
-import { DEMO_USERS, DEMO_PLANNINGS } from '../../data/demoData'
+import { useSociete } from '../../contexts/SocieteContext'
 
 // ── Constantes ────────────────────────────────────────────────
 const DAY_W   = 28   // px par jour
@@ -51,7 +50,7 @@ function groupByMonth(days) {
 
 // ── Page principale ───────────────────────────────────────────
 export default function PlanificationPage() {
-  const { isDemoMode } = useDemo()
+  const { selectedSociete } = useSociete()
   const [serviceFilter, setServiceFilter] = useState('tous')
   const [users, setUsers]       = useState([])
   const [plannings, setPlannings] = useState([])
@@ -66,34 +65,33 @@ export default function PlanificationPage() {
 
   // Charger les utilisateurs
   useEffect(() => {
-    if (isDemoMode) {
-      setUsers(DEMO_USERS)
-    } else {
-      supabase.from('profiles').select('id, full_name, role, service')
-        .then(({ data, error }) => {
-          if (error) {
-            supabase.from('profiles').select('id, full_name, role')
-              .then(({ data: d2 }) => setUsers(d2 || []))
-          } else {
-            setUsers(data || [])
-          }
-        })
-    }
-  }, [isDemoMode])
+    if (!selectedSociete?.id) { setUsers([]); return }
+    // Derive unique users from plannings for this société
+    supabase.from('plannings')
+      .select('user_key, user_label')
+      .eq('societe_id', selectedSociete.id)
+      .then(({ data }) => {
+        const seen = new Set()
+        const unique = []
+        for (const p of (data || [])) {
+          if (!seen.has(p.user_key)) { seen.add(p.user_key); unique.push({ id: p.user_key, full_name: p.user_label, service: null }) }
+        }
+        setUsers(unique)
+      })
+  }, [selectedSociete?.id])
 
   // Charger les plannings
   useEffect(() => {
+    if (!selectedSociete?.id) { setPlannings([]); return }
     const from = toISO(quarterStart)
     const to   = toISO(addMonths(quarterStart, N_MONTHS))
-    if (isDemoMode) {
-      setPlannings(DEMO_PLANNINGS.filter(p => p.date_fin >= from && p.date_debut <= to))
-    } else {
-      supabase.from('plannings').select('*')
-        .gte('date_fin', from)
-        .lte('date_debut', to)
-        .then(({ data }) => setPlannings(data || []))
-    }
-  }, [isDemoMode, quarterStart])
+    supabase.from('plannings')
+      .select('*')
+      .eq('societe_id', selectedSociete.id)
+      .gte('date_fin', from)
+      .lte('date_debut', to)
+      .then(({ data }) => setPlannings(data || []))
+  }, [selectedSociete?.id, quarterStart])
 
   // Scroll vers aujourd'hui au chargement
   useEffect(() => {
@@ -110,7 +108,7 @@ export default function PlanificationPage() {
     const map = {}
     for (const u of filteredUsers) map[u.id] = []
     for (const p of plannings) {
-      if (map[p.user_id] !== undefined) map[p.user_id].push(p)
+      if (map[p.user_key] !== undefined) map[p.user_key].push(p)
     }
     return map
   }, [plannings, filteredUsers])
