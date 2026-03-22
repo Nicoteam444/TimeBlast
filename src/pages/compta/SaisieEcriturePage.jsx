@@ -203,20 +203,51 @@ export default function SaisieEcriturePage() {
     loadEntries()
   }
 
-  // ── Filtre liste ────────────────────────────────────────────
-  const filteredEntries = useMemo(() => {
-    let rows = entries
-    if (filterJournal) rows = rows.filter(e => e.journal_code === filterJournal)
+  const [page, setPage] = useState(1)
+  const PAGE_SIZE = 50
+
+  // Aplatir entries → lignes individuelles pour le tableau
+  const allRows = useMemo(() => {
+    const rows = []
+    for (const e of entries) {
+      for (const l of (e.journal_lines || [])) {
+        rows.push({
+          entry_id: e.id,
+          date: e.date,
+          journal_code: e.journal_code,
+          piece_ref: e.piece_ref,
+          entry_lib: e.libelle,
+          compte_num: l.compte_num,
+          compte_lib: l.compte_lib,
+          libelle: l.libelle || e.libelle,
+          debit: l.debit,
+          credit: l.credit,
+          line_id: l.id,
+        })
+      }
+    }
+    return rows
+  }, [entries])
+
+  const filteredRows = useMemo(() => {
+    let rows = allRows
+    if (filterJournal) rows = rows.filter(r => r.journal_code === filterJournal)
     if (search) {
       const q = search.toLowerCase()
-      rows = rows.filter(e =>
-        e.libelle?.toLowerCase().includes(q) ||
-        e.piece_ref?.toLowerCase().includes(q) ||
-        e.journal_lines?.some(l => l.compte_num?.includes(q) || l.libelle?.toLowerCase().includes(q))
+      rows = rows.filter(r =>
+        r.compte_num?.includes(q) ||
+        r.compte_lib?.toLowerCase().includes(q) ||
+        r.libelle?.toLowerCase().includes(q) ||
+        r.piece_ref?.toLowerCase().includes(q)
       )
     }
     return rows
-  }, [entries, search, filterJournal])
+  }, [allRows, search, filterJournal])
+
+  const totalPages = Math.max(1, Math.ceil(filteredRows.length / PAGE_SIZE))
+  const pagedRows  = filteredRows.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE)
+  const sumDebit   = filteredRows.reduce((s, r) => s + (r.debit || 0), 0)
+  const sumCredit  = filteredRows.reduce((s, r) => s + (r.credit || 0), 0)
 
   const journauxExistants = useMemo(() =>
     [...new Set(entries.map(e => e.journal_code))].sort()
@@ -236,7 +267,7 @@ export default function SaisieEcriturePage() {
       )}
 
       {selectedSociete?.id && (
-        <div className="saisie-ecriture-layout">
+        <div className="saisie-ecriture-layout-vertical">
 
           {/* ── FORMULAIRE ───────────────────────────── */}
           <div className="saisie-ecriture-form-wrap">
@@ -401,21 +432,21 @@ export default function SaisieEcriturePage() {
           <div className="saisie-ecriture-list-wrap">
             <div className="saisie-ecriture-card">
               <h2 className="saisie-ecriture-section-title">
-                Écritures saisies
-                <span className="badge-count">{filteredEntries.length}</span>
+                Balance générale
+                <span className="badge-count">{filteredRows.length} lignes</span>
               </h2>
 
               <div className="table-toolbar" style={{ marginBottom: '.75rem' }}>
                 <input
                   className="table-search"
                   value={search}
-                  onChange={e => setSearch(e.target.value)}
-                  placeholder="Rechercher…"
+                  onChange={e => { setSearch(e.target.value); setPage(1) }}
+                  placeholder="Compte, libellé, pièce…"
                 />
                 <select
                   className="table-pagesize"
                   value={filterJournal}
-                  onChange={e => setFilterJournal(e.target.value)}
+                  onChange={e => { setFilterJournal(e.target.value); setPage(1) }}
                 >
                   <option value="">Tous journaux</option>
                   {journauxExistants.map(j => <option key={j} value={j}>{j}</option>)}
@@ -424,66 +455,74 @@ export default function SaisieEcriturePage() {
 
               {loading ? (
                 <p style={{ textAlign: 'center', padding: '2rem', color: 'var(--text-muted)' }}>Chargement…</p>
-              ) : filteredEntries.length === 0 ? (
+              ) : filteredRows.length === 0 ? (
                 <p style={{ textAlign: 'center', padding: '2rem', color: 'var(--text-muted)' }}>
                   Aucune écriture pour l'instant.
                 </p>
               ) : (
-                <div className="saisie-liste">
-                  {filteredEntries.map(entry => {
-                    const lines = entry.journal_lines || []
-                    const total = lines.reduce((s, l) => s + (l.debit || 0), 0)
-                    const isOpen = expandedId === entry.id
-                    return (
-                      <div key={entry.id} className={`saisie-entry ${isOpen ? 'saisie-entry--open' : ''}`}>
-                        <div className="saisie-entry-head" onClick={() => setExpandedId(isOpen ? null : entry.id)}>
-                          <span className="fec-journal-badge">{entry.journal_code}</span>
-                          <span className="saisie-entry-date">{entry.date}</span>
-                          {entry.piece_ref && <span className="saisie-entry-piece">{entry.piece_ref}</span>}
-                          <span className="saisie-entry-lib">{entry.libelle || '—'}</span>
-                          <span className="saisie-entry-montant">{fmtNum(total)} €</span>
-                          <span className="saisie-entry-lines-count">{lines.length} ligne{lines.length > 1 ? 's' : ''}</span>
-                          <span className="saisie-entry-chevron">{isOpen ? '▾' : '▸'}</span>
-                          <button
-                            className="saisie-entry-del"
-                            onClick={e => { e.stopPropagation(); deleteEntry(entry.id) }}
-                            title="Supprimer"
-                          >🗑</button>
-                        </div>
-                        {isOpen && (
-                          <div className="saisie-entry-lines">
-                            <table className="saisie-lines-table">
-                              <thead>
-                                <tr>
-                                  <th>Compte</th>
-                                  <th>Libellé compte</th>
-                                  <th>Libellé ligne</th>
-                                  <th style={{ textAlign: 'right' }}>Débit</th>
-                                  <th style={{ textAlign: 'right' }}>Crédit</th>
-                                </tr>
-                              </thead>
-                              <tbody>
-                                {lines.map(l => (
-                                  <tr key={l.id}>
-                                    <td><strong>{l.compte_num}</strong></td>
-                                    <td>{l.compte_lib}</td>
-                                    <td>{l.libelle}</td>
-                                    <td style={{ textAlign: 'right', color: l.debit > 0 ? '#1a5c82' : '#cbd5e1' }}>
-                                      {l.debit > 0 ? fmtNum(l.debit) : '—'}
-                                    </td>
-                                    <td style={{ textAlign: 'right', color: l.credit > 0 ? '#16a34a' : '#cbd5e1' }}>
-                                      {l.credit > 0 ? fmtNum(l.credit) : '—'}
-                                    </td>
-                                  </tr>
-                                ))}
-                              </tbody>
-                            </table>
-                          </div>
-                        )}
-                      </div>
-                    )
-                  })}
-                </div>
+                <>
+                  {/* Totaux */}
+                  <div className="fec-totals" style={{ marginBottom: '.5rem' }}>
+                    <span>Débit total : <strong>{fmtNum(sumDebit)} €</strong></span>
+                    <span>Crédit total : <strong>{fmtNum(sumCredit)} €</strong></span>
+                    <span style={{ color: Math.abs(sumDebit - sumCredit) < 0.01 ? '#16a34a' : '#dc2626', fontWeight: 600 }}>
+                      {Math.abs(sumDebit - sumCredit) < 0.01 ? '✓ Équilibrée' : `Écart : ${fmtNum(Math.abs(sumDebit - sumCredit))} €`}
+                    </span>
+                  </div>
+
+                  <div style={{ overflowX: 'auto' }}>
+                    <table className="users-table" style={{ width: '100%' }}>
+                      <thead>
+                        <tr>
+                          <th>Date</th>
+                          <th>Journal</th>
+                          <th>Pièce</th>
+                          <th>Compte</th>
+                          <th>Libellé</th>
+                          <th style={{ textAlign: 'right' }}>Débit</th>
+                          <th style={{ textAlign: 'right' }}>Crédit</th>
+                          <th></th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {pagedRows.map((r, i) => (
+                          <tr key={r.line_id || i} className="users-table-row">
+                            <td style={{ whiteSpace: 'nowrap', color: 'var(--text-muted)', fontSize: '.8rem' }}>{r.date}</td>
+                            <td><span className="fec-journal-badge">{r.journal_code}</span></td>
+                            <td style={{ color: 'var(--text-muted)', fontSize: '.78rem' }}>{r.piece_ref || '—'}</td>
+                            <td><strong style={{ fontVariantNumeric: 'tabular-nums' }}>{r.compte_num}</strong><br /><span style={{ fontSize: '.75rem', color: 'var(--text-muted)' }}>{r.compte_lib}</span></td>
+                            <td style={{ maxWidth: 180, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                              {r.libelle || '—'}
+                            </td>
+                            <td style={{ textAlign: 'right', fontVariantNumeric: 'tabular-nums', fontWeight: 600, color: r.debit > 0 ? '#1a5c82' : 'var(--text-muted)', fontSize: '.82rem' }}>
+                              {r.debit > 0 ? fmtNum(r.debit) : '—'}
+                            </td>
+                            <td style={{ textAlign: 'right', fontVariantNumeric: 'tabular-nums', fontWeight: 600, color: r.credit > 0 ? '#16a34a' : 'var(--text-muted)', fontSize: '.82rem' }}>
+                              {r.credit > 0 ? fmtNum(r.credit) : '—'}
+                            </td>
+                            <td>
+                              <button
+                                className="saisie-entry-del"
+                                onClick={() => deleteEntry(r.entry_id)}
+                                title="Supprimer l'écriture"
+                              >🗑</button>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+
+                  {totalPages > 1 && (
+                    <div className="pagination">
+                      <button disabled={page === 1} onClick={() => setPage(1)}>«</button>
+                      <button disabled={page === 1} onClick={() => setPage(p => p - 1)}>‹</button>
+                      <span>Page {page} / {totalPages}</span>
+                      <button disabled={page === totalPages} onClick={() => setPage(p => p + 1)}>›</button>
+                      <button disabled={page === totalPages} onClick={() => setPage(totalPages)}>»</button>
+                    </div>
+                  )}
+                </>
               )}
             </div>
           </div>

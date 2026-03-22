@@ -4041,3 +4041,12 @@ button:disabled { opacity: .6; cursor: not-allowed; }
   border-bottom: 1px solid var(--border);
 }
 .saisie-lines-table tr:last-child td { border-bottom: none; }
+
+.saisie-ecriture-layout-vertical {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+.saisie-ecriture-layout-vertical .saisie-ecriture-list-wrap .saisie-ecriture-card {
+  max-height: none;
+}
