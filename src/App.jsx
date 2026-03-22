@@ -24,6 +24,7 @@ import EquipePage from './pages/activite/EquipePage'
 import ValidationPage from './pages/manager/ValidationPage'
 import AbsencesPage from './pages/activite/AbsencesPage'
 import PlanificationPage from './pages/temps/PlanificationPage'
+import FacturationPage from './pages/facturation/FacturationPage'
 import ComptaPage from './pages/compta/ComptaPage'
 import ComptaImportPage from './pages/compta/ComptaImportPage'
 import ComptaEcrituresPage from './pages/compta/ComptaEcrituresPage'
@@ -103,6 +104,9 @@ function AppRoutes() {
         <ProtectedRoute roles={['admin','comptable']}><Layout><SaisieEcriturePage /></Layout></ProtectedRoute>
       } />
       <Route path="/finance/comptabilite/analyse" element={<Navigate to="/finance/comptabilite" replace />} />
+      <Route path="/finance/facturation" element={
+        <ProtectedRoute roles={['admin','comptable']}><Layout><FacturationPage /></Layout></ProtectedRoute>
+      } />
       <Route path="/finance/previsionnel" element={
         <ProtectedRoute roles={['admin','comptable']}><Layout><PrevisionnelPage /></Layout></ProtectedRoute>
       } />

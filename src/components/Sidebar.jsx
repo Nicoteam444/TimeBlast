@@ -40,12 +40,13 @@ const SECTIONS = [
   {
     id: 'finance',
     icon: '💰',
-    label: 'Finance',
+    label: 'Gestion',
     roles: ['admin', 'comptable'],
     items: [
       { to: '/finance/comptabilite',        icon: '📊', label: 'Tableau de bord' },
       { to: '/finance/saisie-ecriture',     icon: '✍️', label: 'Comptabilité' },
       { to: '/finance/ecritures',           icon: '📒', label: 'Écritures FEC' },
+      { to: '/finance/facturation',         icon: '🧾', label: 'Facturation' },
       { to: '/finance/previsionnel',        icon: '📈', label: 'Prévisionnel' },
     ],
   },
