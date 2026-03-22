@@ -6,16 +6,24 @@ import { useAppearance } from '../contexts/AppearanceContext'
 
 const SECTIONS = [
   {
+    id: 'calendrier',
+    icon: '📆',
+    label: 'Calendrier',
+    roles: ['admin', 'manager', 'collaborateur'],
+    items: [
+      { to: '/activite/saisie',     icon: '✏️', label: 'Saisie des temps' },
+      { to: '/activite/validation', icon: '✅', label: 'Validations', roles: ['admin', 'manager'] },
+      { to: '/activite/absences',   icon: '🏖', label: 'Absences', roles: ['admin', 'manager', 'collaborateur'] },
+    ],
+  },
+  {
     id: 'activite',
     icon: '⏱',
     label: 'Activité',
     roles: ['admin', 'manager', 'collaborateur'],
     items: [
-      { to: '/activite/saisie',        icon: '✏️', label: 'Saisie des temps' },
       { to: '/activite/planification', icon: '📅', label: 'Planification', roles: ['admin', 'manager'] },
-      { to: '/activite/projets',       icon: '📁', label: 'Projets' },
-      { to: '/activite/validation',    icon: '✅', label: 'Validations', roles: ['admin', 'manager'] },
-      { to: '/activite/absences',      icon: '🏖', label: 'Absences', roles: ['admin', 'manager', 'collaborateur'] },
+      { to: '/activite/projets',       icon: '📁', label: 'Gestion de projet' },
     ],
   },
   {
@@ -52,7 +60,7 @@ export default function Sidebar() {
   const navigate = useNavigate()
   const location = useLocation()
 
-  const [openSections, setOpenSections] = useState({ commerce: true, activite: true, finance: true })
+  const [openSections, setOpenSections] = useState({ calendrier: true, activite: true, commerce: true, finance: true })
   const userRole = profile?.role
 
   function toggleSection(id) {

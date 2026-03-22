@@ -1,5 +1,4 @@
 import { useState, useEffect, useMemo } from 'react'
-import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
 import { useDemo } from '../contexts/DemoContext'
 import { DEMO_USERS, DEMO_TEAM_SAISIES, DEMO_PROJETS, DEMO_TRANSACTIONS } from '../data/demoData'
@@ -41,34 +40,28 @@ function hhmm2height(hhmm1, hhmm2) {
   return Math.max(18, ((h2 * 60 + m2) - (h1 * 60 + m1)) / 60 * HOUR_H)
 }
 
-// ── Module list ───────────────────────────────────────────────
-const MODULES = [
-  {
-    key: 'activite', roles: ['admin', 'manager', 'collaborateur'],
-    icon: '⏱', label: 'Activité', desc: 'Saisie des temps, planification et suivi des projets',
-    items: [
-      { path: '/activite/saisie', label: 'Saisie des temps' },
-      { path: '/activite/planification', label: 'Planification', roles: ['admin', 'manager'] },
-      { path: '/activite/projets', label: 'Projets' },
-    ],
-  },
-  {
-    key: 'commerce', roles: ['admin', 'manager', 'collaborateur'],
-    icon: '🏢', label: 'Commerce', desc: 'Gérez vos clients et transactions commerciales',
-    items: [
-      { path: '/commerce/clients', label: 'Clients' },
-      { path: '/commerce/transactions', label: 'Transactions', roles: ['admin', 'manager'] },
-    ],
-  },
-  {
-    key: 'finance', roles: ['admin', 'comptable'],
-    icon: '💰', label: 'Finance', desc: 'Comptabilité, import FEC et projections financières',
-    items: [
-      { path: '/finance/comptabilite', label: 'Comptabilité' },
-      { path: '/finance/previsionnel', label: 'Prévisionnel' },
-    ],
-  },
-]
+// ── Layout: répartit les événements qui se chevauchent en colonnes ──
+function layoutEvents(events) {
+  if (!events.length) return []
+  const sorted = [...events].sort((a, b) => a.h_debut.localeCompare(b.h_debut))
+  const result = sorted.map(e => ({ ...e, col: 0, cols: 1 }))
+  let i = 0
+  while (i < result.length) {
+    let clusterEnd = result[i].h_fin
+    let j = i + 1
+    while (j < result.length && result[j].h_debut < clusterEnd) {
+      if (result[j].h_fin > clusterEnd) clusterEnd = result[j].h_fin
+      j++
+    }
+    const clusterSize = j - i
+    for (let k = i; k < j; k++) {
+      result[k].col = k - i
+      result[k].cols = clusterSize
+    }
+    i = j
+  }
+  return result
+}
 
 // ── KPI helpers ───────────────────────────────────────────────
 function fmtEuros(n) {
@@ -78,9 +71,8 @@ function fmtEuros(n) {
 }
 
 export default function DashboardPage() {
-  const { profile, hasRole } = useAuth()
+  const { profile } = useAuth()
   const { isDemoMode } = useDemo()
-  const navigate = useNavigate()
   const firstName = profile?.full_name?.split(' ')[0] || 'vous'
 
   const [monday, setMonday] = useState(() => getMon(new Date()))
@@ -250,26 +242,6 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      {/* Module shortcuts */}
-      <div className="home-modules">
-        {MODULES.filter(m => hasRole(...m.roles)).map(m => (
-          <div key={m.key} className="home-module-card">
-            <div className="home-module-icon">{m.icon}</div>
-            <div className="home-module-body">
-              <h2>{m.label}</h2>
-              <p>{m.desc}</p>
-              <div className="home-module-links">
-                {m.items.filter(i => !i.roles || hasRole(...i.roles)).map(i => (
-                  <button key={i.path} className="home-module-link" onClick={() => navigate(i.path)}>
-                    {i.label} →
-                  </button>
-                ))}
-              </div>
-            </div>
-          </div>
-        ))}
-      </div>
-
       {/* ── Team planning ────────────────────────────────────── */}
       <div className="planning-section">
         <div className="planning-header">
@@ -340,7 +312,7 @@ export default function DashboardPage() {
 
               {DAYS_FR.map((_, i) => {
                 const iso = toISO(addDays(monday, i))
-                const events = byDate[iso] || []
+                const events = layoutEvents(byDate[iso] || [])
                 const isToday = iso === todayISO
                 return (
                   <div key={i} className={`planning-cal-col ${isToday ? 'planning-cal-col--today' : ''}`} style={{ height: TOTAL_H }}>
@@ -352,11 +324,17 @@ export default function DashboardPage() {
                       const top = hhmm2y(s.h_debut)
                       const height = hhmm2height(s.h_debut, s.h_fin)
                       const userName = users.find(u => u.id === s.user_id)?.full_name?.split(' ')[0] || ''
+                      const pct = 100 / s.cols
                       return (
                         <div
                           key={s.id}
                           className="planning-cal-event"
-                          style={{ top, height, background: c.bg, borderLeftColor: c.border, color: c.text }}
+                          style={{
+                            top, height,
+                            left: `${s.col * pct}%`,
+                            width: `calc(${pct}% - 2px)`,
+                            background: c.bg, borderLeftColor: c.border, color: c.text,
+                          }}
                           title={`${userName} — ${s.projet_name}\n${s.h_debut}–${s.h_fin}${s.note ? '\n' + s.note : ''}`}
                         >
                           <span className="planning-cal-event-user">{userName}</span>
