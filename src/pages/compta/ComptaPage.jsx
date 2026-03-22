@@ -147,12 +147,24 @@ function BilanTreemap({ sums }) {
   )
 }
 
-// ── Chargement paginé de toutes les écritures ─────────────────
-const PAGE_SIZE = 5000
-async function fetchAllEcritures(importId) {
+// ── Chargement paginé + dédoublonnage des écritures ──────────
+const PAGE_SIZE = 1000  // Limite serveur Supabase PostgREST
+
+function deduplicateEcritures(all) {
+  const seen = new Set()
+  const unique = []
+  for (const e of all) {
+    const key = `${e.ecriture_num}|${e.compte_num}|${e.ecriture_date}|${e.debit}|${e.credit}|${e.ecriture_lib}`
+    if (!seen.has(key)) { seen.add(key); unique.push(e) }
+  }
+  return unique
+}
+
+async function fetchAllEcritures(importId, signal) {
   let all = []
   let page = 0
   while (true) {
+    if (signal?.aborted) return []
     const from = page * PAGE_SIZE
     const to   = from + PAGE_SIZE - 1
     const { data, error } = await supabase
@@ -160,13 +172,14 @@ async function fetchAllEcritures(importId) {
       .select('data')
       .eq('import_id', importId)
       .range(from, to)
+    if (signal?.aborted) return []
     if (error || !data || data.length === 0) break
     const parsed = data.map(r => { let d = {}; try { d = JSON.parse(r.data || '{}') } catch {}; return d })
     all = all.concat(parsed)
     if (data.length < PAGE_SIZE) break
     page++
   }
-  return all
+  return deduplicateEcritures(all)
 }
 
 // ── Page principale ───────────────────────────────────────────
@@ -210,13 +223,14 @@ export default function ComptaPage() {
       })
   }, [isDemoMode])
 
-  // Charger écritures
+  // Charger écritures (avec abort controller pour éviter les race conditions)
   useEffect(() => {
     if (!selectedId) return
     if (isDemoMode) {
       setEcritures(DEMO_ECRITURES[selectedId] || [])
       return
     }
+    const controller = new AbortController()
     setLoadingEc(true)
     setLoadingEcProgress(0)
     const imp = imports.find(i => i.id === selectedId)
@@ -225,21 +239,26 @@ export default function ComptaPage() {
       let all = []
       let page = 0
       while (true) {
+        if (controller.signal.aborted) return
         const from = page * PAGE_SIZE
         const to   = from + PAGE_SIZE - 1
         const { data, error } = await supabase
           .from('fec_ecritures').select('data').eq('import_id', selectedId).range(from, to)
+        if (controller.signal.aborted) return
         if (error || !data || data.length === 0) break
         const parsed = data.map(r => { let d = {}; try { d = JSON.parse(r.data || '{}') } catch {}; return d })
         all = all.concat(parsed)
         if (total > 0) setLoadingEcProgress(Math.min(99, Math.round(all.length / total * 100)))
-        if (data.length < PAGE_SIZE) break
+        if (data.length < PAGE_SIZE) break  // dernière page
         page++
       }
-      setEcritures(all)
+      if (controller.signal.aborted) return
+      const unique = deduplicateEcritures(all)
+      setEcritures(unique)
       setLoadingEcProgress(100)
       setLoadingEc(false)
     })()
+    return () => controller.abort()
   }, [selectedId, isDemoMode])
 
   // Calcul KPIs pour l'historique (tous imports)
@@ -286,8 +305,14 @@ export default function ComptaPage() {
     [...new Set(ecritures.map(e => e.ecriture_date?.slice(0, 4)).filter(Boolean))].sort()
   , [ecritures])
 
+  // Quand les années changent : si l'exercice couvre plusieurs années civiles → "tout" par défaut
   useEffect(() => {
-    if (availableYears.length > 0) setSelectedYear(availableYears[availableYears.length - 1])
+    if (availableYears.length === 0) return
+    if (availableYears.length > 1) {
+      setSelectedYear(null)  // null = exercice complet
+    } else {
+      setSelectedYear(availableYears[0])
+    }
   }, [availableYears.join(',')])
 
   const ecrituresFiltrees = useMemo(() =>
@@ -474,6 +499,11 @@ export default function ComptaPage() {
             <div style={{ display: 'flex', gap: '.5rem', alignItems: 'center' }}>
               {availableYears.length > 0 && (
                 <div className="analyse-year-tabs">
+                  {availableYears.length > 1 && (
+                    <button
+                      className={`analyse-year-tab ${selectedYear === null ? 'analyse-year-tab--active' : ''}`}
+                      onClick={() => setSelectedYear(null)}>Exercice complet</button>
+                  )}
                   {availableYears.map(y => (
                     <button key={y}
                       className={`analyse-year-tab ${selectedYear === y ? 'analyse-year-tab--active' : ''}`}
