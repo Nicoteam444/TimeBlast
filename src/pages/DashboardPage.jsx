@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo } from 'react'
 import { useAuth } from '../contexts/AuthContext'
 import { useDemo } from '../contexts/DemoContext'
+import { useSociete } from '../contexts/SocieteContext'
 import { DEMO_USERS, DEMO_TEAM_SAISIES, DEMO_PROJETS, DEMO_TRANSACTIONS } from '../data/demoData'
 import { supabase } from '../lib/supabase'
 
@@ -73,6 +74,7 @@ function fmtEuros(n) {
 export default function DashboardPage() {
   const { profile } = useAuth()
   const { isDemoMode } = useDemo()
+  const { selectedSociete } = useSociete()
   const firstName = profile?.full_name?.split(' ')[0] || 'vous'
 
   const [monday, setMonday] = useState(() => getMon(new Date()))
@@ -109,13 +111,14 @@ export default function DashboardPage() {
     if (isDemoMode) {
       setSaisies(DEMO_TEAM_SAISIES.filter(s => s.date >= from && s.date <= to))
     } else {
-      supabase.from('saisies_temps')
+      let q = supabase.from('saisies_temps')
         .select('id, user_id, date, heures, commentaire')
         .gte('date', from)
         .lte('date', to)
-        .then(({ data }) => setSaisies(data || []))
+      if (selectedSociete?.id) q = q.eq('societe_id', selectedSociete.id)
+      q.then(({ data }) => setSaisies(data || []))
     }
-  }, [isDemoMode, monday])
+  }, [isDemoMode, monday, selectedSociete?.id])
 
   // Load KPI data for current week (real mode)
   useEffect(() => {
@@ -124,25 +127,28 @@ export default function DashboardPage() {
     const from = toISO(curMonday)
     const to = toISO(addDays(curMonday, 6))
     // Heures équipe cette semaine
-    supabase.from('saisies_temps')
+    let qSaisies = supabase.from('saisies_temps')
       .select('heures')
       .gte('date', from)
       .lte('date', to)
-      .then(({ data }) => setKpiWeekSaisies(data || []))
+    if (selectedSociete?.id) qSaisies = qSaisies.eq('societe_id', selectedSociete.id)
+    qSaisies.then(({ data }) => setKpiWeekSaisies(data || []))
     // Projets actifs
-    supabase.from('projets').select('id', { count: 'exact' }).eq('statut', 'actif')
-      .then(({ count }) => setKpiProjetsActifs(count || 0))
+    let qProjets = supabase.from('projets').select('id', { count: 'exact' }).eq('statut', 'actif')
+    if (selectedSociete?.id) qProjets = qProjets.eq('societe_id', selectedSociete.id)
+    qProjets.then(({ count }) => setKpiProjetsActifs(count || 0))
     // Pipeline commercial
-    supabase.from('transactions').select('montant, phase')
-      .then(({ data }) => {
-        if (data) {
-          const total = data
-            .filter(t => t.phase !== 'perdu' && t.phase !== 'ferme')
-            .reduce((sum, t) => sum + (t.montant || 0), 0)
-          setKpiPipeline(total)
-        }
-      })
-  }, [isDemoMode])
+    let qTrans = supabase.from('transactions').select('montant, phase')
+    if (selectedSociete?.id) qTrans = qTrans.eq('societe_id', selectedSociete.id)
+    qTrans.then(({ data }) => {
+      if (data) {
+        const total = data
+          .filter(t => t.phase !== 'perdu' && t.phase !== 'ferme')
+          .reduce((sum, t) => sum + (t.montant || 0), 0)
+        setKpiPipeline(total)
+      }
+    })
+  }, [isDemoMode, selectedSociete?.id])
 
   function toggleUser(id) {
     setSelectedUsers(prev =>
