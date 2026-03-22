@@ -3944,8 +3944,9 @@ button:disabled { opacity: .6; cursor: not-allowed; }
   display: flex;
   align-items: center;
 }
-.saisie-balance--ok  { color: #16a34a; }
-.saisie-balance--err { color: #dc2626; }
+.saisie-balance--ok      { color: #16a34a; }
+.saisie-balance--err     { color: #dc2626; }
+.saisie-balance--neutral { color: var(--text-muted); }
 
 .btn-link {
   background: none;

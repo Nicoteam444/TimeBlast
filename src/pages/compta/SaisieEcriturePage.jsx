@@ -362,12 +362,14 @@ export default function SaisieEcriturePage() {
                   </div>
 
                   {/* Balance */}
-                  <div className={`saisie-balance ${balanced ? 'saisie-balance--ok' : 'saisie-balance--err'}`}>
+                  <div className={`saisie-balance ${balanced ? 'saisie-balance--ok' : totalDebit === 0 && totalCredit === 0 ? 'saisie-balance--neutral' : 'saisie-balance--err'}`}>
                     {balanced
                       ? '✓ Écriture équilibrée'
-                      : `Écart : ${fmtNum(Math.abs(totalDebit - totalCredit))} €`
+                      : totalDebit === 0 && totalCredit === 0
+                        ? 'Saisissez les montants débit / crédit'
+                        : `Écart : ${fmtNum(Math.abs(totalDebit - totalCredit))} €`
                     }
-                    {!balanced && totalDebit > 0 && totalCredit > 0 && (
+                    {!balanced && (totalDebit > 0 || totalCredit > 0) && totalDebit !== totalCredit && (
                       <button type="button" className="btn-link" onClick={autoBalance} style={{ marginLeft: '.75rem' }}>
                         Équilibrer auto
                       </button>
