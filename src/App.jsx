@@ -28,6 +28,7 @@ import ComptaPage from './pages/compta/ComptaPage'
 import ComptaImportPage from './pages/compta/ComptaImportPage'
 import ComptaEcrituresPage from './pages/compta/ComptaEcrituresPage'
 import ComptaAnalysePage from './pages/compta/ComptaAnalysePage'
+import SaisieEcriturePage from './pages/compta/SaisieEcriturePage'
 import PrevisionnelPage from './pages/finance/PrevisionnelPage'
 import SetPasswordPage from './pages/SetPasswordPage'
 import UnauthorizedPage from './pages/UnauthorizedPage'
@@ -94,8 +95,12 @@ function AppRoutes() {
       <Route path="/finance/comptabilite/import" element={
         <ProtectedRoute roles={['admin','comptable']}><Layout><ComptaImportPage /></Layout></ProtectedRoute>
       } />
-      <Route path="/finance/comptabilite/ecritures" element={
+      <Route path="/finance/ecritures" element={
         <ProtectedRoute roles={['admin','comptable']}><Layout><ComptaEcrituresPage /></Layout></ProtectedRoute>
+      } />
+      <Route path="/finance/comptabilite/ecritures" element={<Navigate to="/finance/ecritures" replace />} />
+      <Route path="/finance/saisie-ecriture" element={
+        <ProtectedRoute roles={['admin','comptable']}><Layout><SaisieEcriturePage /></Layout></ProtectedRoute>
       } />
       <Route path="/finance/comptabilite/analyse" element={<Navigate to="/finance/comptabilite" replace />} />
       <Route path="/finance/previsionnel" element={

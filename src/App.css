@@ -3775,3 +3775,268 @@ button:disabled { opacity: .6; cursor: not-allowed; }
     right: 1rem;
   }
 }
+
+/* ═══════════════════════════════════════════════════════
+   SAISIE ÉCRITURE COMPTABLE
+═══════════════════════════════════════════════════════ */
+.saisie-ecriture-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+  align-items: start;
+}
+@media (max-width: 1100px) {
+  .saisie-ecriture-layout { grid-template-columns: 1fr; }
+}
+
+.saisie-ecriture-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 1.5rem;
+}
+
+.saisie-ecriture-section-title {
+  font-size: 1rem;
+  font-weight: 700;
+  margin: 0 0 1.25rem;
+  display: flex;
+  align-items: center;
+  gap: .6rem;
+  color: var(--text);
+}
+
+.badge-count {
+  background: var(--primary);
+  color: #fff;
+  border-radius: 10px;
+  padding: .1rem .5rem;
+  font-size: .72rem;
+  font-weight: 600;
+}
+
+.badge-info {
+  background: var(--primary-light, #dbeafe);
+  color: var(--primary);
+  border-radius: 6px;
+  padding: .2rem .6rem;
+  font-size: .8rem;
+  font-weight: 600;
+}
+
+/* ── Header fields ── */
+.saisie-ecriture-header-fields {
+  display: grid;
+  grid-template-columns: 130px 1fr 80px 1fr;
+  gap: .75rem;
+  margin-bottom: 1.25rem;
+}
+.saisie-ecriture-header-fields .form-field {
+  display: flex;
+  flex-direction: column;
+  gap: .3rem;
+}
+.saisie-ecriture-header-fields label {
+  font-size: .75rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: .04em;
+}
+.saisie-ecriture-header-fields input,
+.saisie-ecriture-header-fields select {
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  padding: .45rem .65rem;
+  font-size: .85rem;
+  background: var(--bg);
+  color: var(--text);
+  font-family: inherit;
+  outline: none;
+}
+.saisie-ecriture-header-fields input:focus,
+.saisie-ecriture-header-fields select:focus {
+  border-color: var(--primary);
+}
+
+/* ── Lignes ── */
+.saisie-lignes-wrap {
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  overflow: hidden;
+  margin-bottom: 1rem;
+}
+
+.saisie-lignes-head {
+  display: flex;
+  gap: .4rem;
+  padding: .45rem .6rem;
+  background: var(--bg);
+  border-bottom: 1px solid var(--border);
+  font-size: .72rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: .04em;
+}
+
+.saisie-ligne-row {
+  display: flex;
+  gap: .4rem;
+  padding: .35rem .6rem;
+  border-bottom: 1px solid var(--border);
+  align-items: center;
+}
+.saisie-ligne-row:last-of-type { border-bottom: none; }
+
+.saisie-ligne-input {
+  border: 1px solid transparent;
+  border-radius: 5px;
+  padding: .3rem .45rem;
+  font-size: .82rem;
+  font-family: inherit;
+  background: transparent;
+  color: var(--text);
+  outline: none;
+  transition: border-color .15s, background .15s;
+}
+.saisie-ligne-input:focus {
+  border-color: var(--primary);
+  background: var(--bg);
+}
+.saisie-ligne-input--num { font-variant-numeric: tabular-nums; }
+.saisie-ligne-input--debit  { color: #1a5c82; font-weight: 600; }
+.saisie-ligne-input--credit { color: #16a34a; font-weight: 600; }
+
+.saisie-ligne-del {
+  flex: 0 0 28px;
+  width: 28px;
+  height: 28px;
+  border: none;
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  border-radius: 5px;
+  font-size: .75rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background .15s, color .15s;
+}
+.saisie-ligne-del:hover:not(:disabled) { background: #fee2e2; color: #dc2626; }
+.saisie-ligne-del:disabled { opacity: .3; cursor: default; }
+
+.saisie-totaux-row {
+  display: flex;
+  gap: .4rem;
+  padding: .45rem .6rem;
+  background: var(--bg);
+  border-top: 2px solid var(--border);
+  font-size: .82rem;
+  font-weight: 600;
+  align-items: center;
+}
+
+.saisie-balance {
+  padding: .5rem .75rem;
+  font-size: .82rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+}
+.saisie-balance--ok  { color: #16a34a; }
+.saisie-balance--err { color: #dc2626; }
+
+.btn-link {
+  background: none;
+  border: none;
+  color: var(--primary);
+  cursor: pointer;
+  font-size: .82rem;
+  text-decoration: underline;
+  padding: 0;
+  font-family: inherit;
+}
+
+.saisie-actions {
+  display: flex;
+  gap: .75rem;
+  margin-top: 1rem;
+  justify-content: flex-end;
+}
+
+.saisie-error   { margin-top: .75rem; color: #dc2626; font-size: .85rem; }
+.saisie-success { margin-top: .75rem; color: #16a34a; font-size: .85rem; font-weight: 600; }
+
+/* ── Liste écritures ── */
+.saisie-liste {
+  display: flex;
+  flex-direction: column;
+  gap: .5rem;
+  max-height: 65vh;
+  overflow-y: auto;
+}
+
+.saisie-entry {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+}
+.saisie-entry--open { border-color: var(--primary); }
+
+.saisie-entry-head {
+  display: flex;
+  align-items: center;
+  gap: .6rem;
+  padding: .55rem .75rem;
+  cursor: pointer;
+  background: var(--surface);
+  font-size: .82rem;
+  transition: background .15s;
+}
+.saisie-entry-head:hover { background: var(--bg); }
+
+.saisie-entry-date  { color: var(--text-muted); white-space: nowrap; }
+.saisie-entry-piece { color: var(--text-muted); font-size: .75rem; }
+.saisie-entry-lib   { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 500; }
+.saisie-entry-montant { font-weight: 700; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.saisie-entry-lines-count { color: var(--text-muted); font-size: .75rem; white-space: nowrap; }
+.saisie-entry-chevron { color: var(--text-muted); font-size: .75rem; }
+
+.saisie-entry-del {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: .8rem;
+  padding: .2rem .3rem;
+  border-radius: 4px;
+  color: var(--text-muted);
+  transition: background .15s, color .15s;
+}
+.saisie-entry-del:hover { background: #fee2e2; color: #dc2626; }
+
+.saisie-entry-lines {
+  border-top: 1px solid var(--border);
+  background: var(--bg);
+  padding: .5rem .75rem;
+}
+
+.saisie-lines-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: .8rem;
+}
+.saisie-lines-table th {
+  text-align: left;
+  padding: .3rem .4rem;
+  color: var(--text-muted);
+  font-weight: 600;
+  font-size: .72rem;
+  text-transform: uppercase;
+  border-bottom: 1px solid var(--border);
+}
+.saisie-lines-table td {
+  padding: .3rem .4rem;
+  border-bottom: 1px solid var(--border);
+}
+.saisie-lines-table tr:last-child td { border-bottom: none; }
