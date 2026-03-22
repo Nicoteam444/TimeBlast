@@ -147,6 +147,28 @@ function BilanTreemap({ sums }) {
   )
 }
 
+// ── Chargement paginé de toutes les écritures ─────────────────
+const PAGE_SIZE = 5000
+async function fetchAllEcritures(importId) {
+  let all = []
+  let page = 0
+  while (true) {
+    const from = page * PAGE_SIZE
+    const to   = from + PAGE_SIZE - 1
+    const { data, error } = await supabase
+      .from('fec_ecritures')
+      .select('data')
+      .eq('import_id', importId)
+      .range(from, to)
+    if (error || !data || data.length === 0) break
+    const parsed = data.map(r => { let d = {}; try { d = JSON.parse(r.data || '{}') } catch {}; return d })
+    all = all.concat(parsed)
+    if (data.length < PAGE_SIZE) break
+    page++
+  }
+  return all
+}
+
 // ── Page principale ───────────────────────────────────────────
 export default function ComptaPage() {
   const navigate = useNavigate()
@@ -158,6 +180,7 @@ export default function ComptaPage() {
   const [selectedId, setSelectedId]   = useState(null)
   const [ecritures, setEcritures]     = useState([])
   const [loadingEc, setLoadingEc]     = useState(false)
+  const [loadingEcProgress, setLoadingEcProgress] = useState(0)
   const [selectedYear, setSelectedYear] = useState(null)
   const [filterSociete, setFilterSociete] = useState('')
   // Historique : KPIs pré-calculés par import
@@ -195,15 +218,28 @@ export default function ComptaPage() {
       return
     }
     setLoadingEc(true)
-    supabase.from('fec_ecritures').select('id, import_id, data').eq('import_id', selectedId)
-      .then(({ data }) => {
-        const parsed = (data || []).map(r => {
-          let d = {}; try { d = JSON.parse(r.data || '{}') } catch {}
-          return { id: r.id, ...d }
-        })
-        setEcritures(parsed)
-        setLoadingEc(false)
-      })
+    setLoadingEcProgress(0)
+    const imp = imports.find(i => i.id === selectedId)
+    const total = imp?.nb_lignes || 0
+    ;(async () => {
+      let all = []
+      let page = 0
+      while (true) {
+        const from = page * PAGE_SIZE
+        const to   = from + PAGE_SIZE - 1
+        const { data, error } = await supabase
+          .from('fec_ecritures').select('data').eq('import_id', selectedId).range(from, to)
+        if (error || !data || data.length === 0) break
+        const parsed = data.map(r => { let d = {}; try { d = JSON.parse(r.data || '{}') } catch {}; return d })
+        all = all.concat(parsed)
+        if (total > 0) setLoadingEcProgress(Math.min(99, Math.round(all.length / total * 100)))
+        if (data.length < PAGE_SIZE) break
+        page++
+      }
+      setEcritures(all)
+      setLoadingEcProgress(100)
+      setLoadingEc(false)
+    })()
   }, [selectedId, isDemoMode])
 
   // Calcul KPIs pour l'historique (tous imports)
@@ -221,20 +257,15 @@ export default function ComptaPage() {
       setLoadingHist(false)
       return
     }
-    // Mode réel : charger toutes les écritures en une requête
+    // Mode réel : charger les écritures de chaque import (paginé)
     try {
       const ids = imports.map(i => i.id)
       if (ids.length === 0) { setLoadingHist(false); return }
-      const { data } = await supabase
-        .from('fec_ecritures').select('import_id, data').in('import_id', ids)
-      const byImport = {}
-      for (const row of data || []) {
-        let d = {}; try { d = JSON.parse(row.data || '{}') } catch {}
-        if (!byImport[row.import_id]) byImport[row.import_id] = []
-        byImport[row.import_id].push(d)
-      }
       const result = {}
-      for (const id of ids) result[id] = computeKPIs(byImport[id] || [])
+      for (const id of ids) {
+        const ecritures = await fetchAllEcritures(id)
+        result[id] = computeKPIs(ecritures)
+      }
       setHistKpis(result)
     } catch {}
     setLoadingHist(false)
@@ -457,7 +488,12 @@ export default function ComptaPage() {
           </div>
 
           {loadingEc ? (
-            <p style={{ textAlign: 'center', padding: '3rem', color: 'var(--text-muted)' }}>Calcul en cours…</p>
+            <div style={{ textAlign: 'center', padding: '3rem', color: 'var(--text-muted)' }}>
+              <p style={{ marginBottom: '1rem' }}>Chargement des écritures… {loadingEcProgress}%</p>
+              <div style={{ maxWidth: 300, margin: '0 auto', height: 6, background: 'var(--border)', borderRadius: 3 }}>
+                <div style={{ height: '100%', width: `${loadingEcProgress}%`, background: 'var(--primary)', borderRadius: 3, transition: 'width .3s' }} />
+              </div>
+            </div>
           ) : (
             <>
               <div className="analyse-kpi-row">
