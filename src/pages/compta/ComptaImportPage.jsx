@@ -2,16 +2,36 @@ import { useState, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { supabase } from '../../lib/supabase'
 import { useAuth } from '../../contexts/AuthContext'
+import * as XLSX from 'xlsx'
 
 // ── Parser FEC ───────────────────────────────────────────────
 function parseFecDate(s) {
-  if (!s || s.length !== 8) return null
-  return `${s.slice(0, 4)}-${s.slice(4, 6)}-${s.slice(6, 8)}`
+  if (!s) return null
+  const str = String(s).trim()
+  // Format YYYYMMDD (standard FEC)
+  if (/^\d{8}$/.test(str)) return `${str.slice(0, 4)}-${str.slice(4, 6)}-${str.slice(6, 8)}`
+  // Format DD/MM/YYYY
+  if (/^\d{2}\/\d{2}\/\d{4}$/.test(str)) {
+    const [d, m, y] = str.split('/')
+    return `${y}-${m}-${d}`
+  }
+  // Format YYYY-MM-DD (already ISO)
+  if (/^\d{4}-\d{2}-\d{2}$/.test(str)) return str
+  // Excel serial date number
+  if (/^\d+$/.test(str)) {
+    const n = parseInt(str)
+    if (n > 40000 && n < 60000) {
+      const d = new Date(Math.round((n - 25569) * 86400 * 1000))
+      return d.toISOString().slice(0, 10)
+    }
+  }
+  return null
 }
 
 function parseFecNum(s) {
-  if (!s || s.trim() === '') return 0
-  return parseFloat(s.trim().replace(',', '.')) || 0
+  if (s === null || s === undefined || s === '') return 0
+  if (typeof s === 'number') return s
+  return parseFloat(String(s).trim().replace(/\s/g, '').replace(',', '.')) || 0
 }
 
 function detectSep(line) {
@@ -23,69 +43,132 @@ function detectSep(line) {
   return ';'
 }
 
-function parseFec(text) {
+// Normalise un nom de colonne pour la correspondance
+function normHeader(h) {
+  return String(h).toLowerCase().trim()
+    .replace(/\s+/g, '')
+    .replace(/[_\-]/g, '')
+    .replace(/é|è|ê/g, 'e')
+    .replace(/[^a-z0-9]/g, '')
+}
+
+// Correspondances flexibles (alias normalisés → clé interne)
+const HEADER_MAP = {
+  journalcode:   'journal_code',
+  codejournal:   'journal_code',
+  journallib:    'journal_lib',
+  libellejournal:'journal_lib',
+  ecriturenum:   'ecriture_num',
+  numerocriture: 'ecriture_num',
+  ecrituredate:  'ecriture_date',
+  datecriture:   'ecriture_date',
+  date:          'ecriture_date',
+  comptenum:     'compte_num',
+  numerocompte:  'compte_num',
+  numcompte:     'compte_num',
+  comptelib:     'compte_lib',
+  libellecompte: 'compte_lib',
+  compauxnum:    'comp_aux_num',
+  compteauxnum:  'comp_aux_num',
+  compauxlib:    'comp_aux_lib',
+  compteauxlib:  'comp_aux_lib',
+  pieceref:      'piece_ref',
+  reference:     'piece_ref',
+  piecedate:     'piece_date',
+  ecriturelib:   'ecriture_lib',
+  libelle:       'ecriture_lib',
+  libellecriture:'ecriture_lib',
+  debit:         'debit',
+  montantdebit:  'debit',
+  credit:        'credit',
+  montantcredit: 'credit',
+  ecriturelet:   'ecriture_let',
+  lettrage:      'ecriture_let',
+  datelet:       'date_let',
+  validdate:     'valid_date',
+  datevalidation:'valid_date',
+  montantdevise: 'montant_devise',
+  idevise:       'idevise',
+  devise:        'idevise',
+}
+
+function buildRowFromObj(obj) {
+  // Normalise les clés de l'objet
+  const mapped = {}
+  for (const [k, v] of Object.entries(obj)) {
+    const norm = normHeader(k)
+    const key = HEADER_MAP[norm]
+    if (key) mapped[key] = v
+  }
+  return {
+    journal_code:   String(mapped.journal_code || '').trim(),
+    journal_lib:    String(mapped.journal_lib   || '').trim(),
+    ecriture_num:   String(mapped.ecriture_num  || '').trim(),
+    ecriture_date:  parseFecDate(mapped.ecriture_date),
+    compte_num:     String(mapped.compte_num    || '').trim(),
+    compte_lib:     String(mapped.compte_lib    || '').trim(),
+    comp_aux_num:   mapped.comp_aux_num ? String(mapped.comp_aux_num).trim() : null,
+    comp_aux_lib:   mapped.comp_aux_lib ? String(mapped.comp_aux_lib).trim() : null,
+    piece_ref:      mapped.piece_ref    ? String(mapped.piece_ref).trim()    : null,
+    piece_date:     parseFecDate(mapped.piece_date),
+    ecriture_lib:   String(mapped.ecriture_lib  || '').trim(),
+    debit:          parseFecNum(mapped.debit),
+    credit:         parseFecNum(mapped.credit),
+    ecriture_let:   mapped.ecriture_let ? String(mapped.ecriture_let).trim() : null,
+    date_let:       parseFecDate(mapped.date_let) || null,
+    valid_date:     parseFecDate(mapped.valid_date) || null,
+    montant_devise: mapped.montant_devise ? parseFecNum(mapped.montant_devise) : null,
+    idevise:        mapped.idevise ? String(mapped.idevise).trim() : null,
+  }
+}
+
+function parseFecText(text) {
   if (text.charCodeAt(0) === 0xFEFF) text = text.slice(1)
   const lines = text.split(/\r?\n/).filter(l => l.trim())
   if (lines.length < 2) throw new Error('Fichier vide ou invalide')
-
   const sep = detectSep(lines[0])
-  const headers = lines[0].split(sep).map(h => h.trim().toLowerCase().replace(/\s/g, ''))
-
-  const ALIAS = {
-    journal_code:  'journalcode',
-    journal_lib:   'journallib',
-    ecriture_num:  'ecriturenum',
-    ecriture_date: 'ecrituredate',
-    compte_num:    'comptenum',
-    compte_lib:    'comptelib',
-    comp_aux_num:  'compauxnum',
-    comp_aux_lib:  'compauxlib',
-    piece_ref:     'pieceref',
-    piece_date:    'piecedate',
-    ecriture_lib:  'ecriturelib',
-    debit:         'debit',
-    credit:        'credit',
-    ecriture_let:  'ecriturelet',
-    date_let:      'datelet',
-    valid_date:    'validdate',
-    montant_devise:'montantdevise',
-    idevise:       'idevise',
-  }
-
-  const idx = {}
-  for (const [key, alias] of Object.entries(ALIAS)) {
-    idx[key] = headers.indexOf(alias)
-  }
-
-  const get = (cols, key) => idx[key] >= 0 ? (cols[idx[key]] || '').trim() : ''
-
+  const rawHeaders = lines[0].split(sep)
   const rows = []
   for (let i = 1; i < lines.length; i++) {
     const cols = lines[i].split(sep)
     if (cols.length < 3) continue
-    rows.push({
-      journal_code:   get(cols, 'journal_code'),
-      journal_lib:    get(cols, 'journal_lib'),
-      ecriture_num:   get(cols, 'ecriture_num'),
-      ecriture_date:  parseFecDate(get(cols, 'ecriture_date')),
-      compte_num:     get(cols, 'compte_num'),
-      compte_lib:     get(cols, 'compte_lib'),
-      comp_aux_num:   get(cols, 'comp_aux_num') || null,
-      comp_aux_lib:   get(cols, 'comp_aux_lib') || null,
-      piece_ref:      get(cols, 'piece_ref') || null,
-      piece_date:     parseFecDate(get(cols, 'piece_date')),
-      ecriture_lib:   get(cols, 'ecriture_lib'),
-      debit:          parseFecNum(get(cols, 'debit')),
-      credit:         parseFecNum(get(cols, 'credit')),
-      ecriture_let:   get(cols, 'ecriture_let') || null,
-      date_let:       parseFecDate(get(cols, 'date_let')) || null,
-      valid_date:     parseFecDate(get(cols, 'valid_date')) || null,
-      montant_devise: parseFecNum(get(cols, 'montant_devise')) || null,
-      idevise:        get(cols, 'idevise') || null,
-    })
+    const obj = {}
+    rawHeaders.forEach((h, idx) => { obj[h] = cols[idx] || '' })
+    const row = buildRowFromObj(obj)
+    if (!row.compte_num && !row.ecriture_date) continue
+    rows.push(row)
   }
   if (rows.length === 0) throw new Error('Aucune écriture détectée — vérifiez le format du fichier')
   return rows
+}
+
+function parseFecXlsx(buffer) {
+  const wb = XLSX.read(buffer, { type: 'array', cellDates: false })
+  const sheetName = wb.SheetNames[0]
+  const ws = wb.Sheets[sheetName]
+  // raw: true pour garder les nombres Excel bruts (dates sérielles incluses)
+  const jsonRows = XLSX.utils.sheet_to_json(ws, { raw: true, defval: '' })
+  if (!jsonRows.length) throw new Error('Feuille Excel vide ou non reconnue')
+  const rows = jsonRows.map(buildRowFromObj).filter(r => r.compte_num || r.ecriture_date)
+  if (rows.length === 0) throw new Error('Aucune écriture détectée — vérifiez les colonnes du fichier Excel')
+  return rows
+}
+
+async function parseFec(file) {
+  const isXlsx = /\.(xlsx|xls|xlsm)$/i.test(file.name)
+  if (isXlsx) {
+    const buffer = await file.arrayBuffer()
+    return parseFecXlsx(new Uint8Array(buffer))
+  }
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader()
+    reader.onload = (e) => {
+      try { resolve(parseFecText(e.target.result)) }
+      catch (err) { reject(err) }
+    }
+    reader.onerror = () => reject(new Error('Erreur de lecture du fichier'))
+    reader.readAsText(file, 'UTF-8')
+  })
 }
 
 function fmtNum(n) {
@@ -160,7 +243,7 @@ export default function ComptaImportPage() {
     setFileName(''); setSociete(''); setExercice('')
   }
 
-  function handleFile(file) {
+  async function handleFile(file) {
     if (!file) return
     setFileName(file.name)
     setError(null)
@@ -171,20 +254,14 @@ export default function ComptaImportPage() {
     const year = file.name.match(/20\d{2}/)
     if (year) setExercice(year[0])
 
-    const reader = new FileReader()
-    reader.onload = (e) => {
-      try {
-        const parsed = parseFec(e.target.result)
-        setRows(parsed)
-        if (!year && parsed[0]?.ecriture_date) setExercice(parsed[0].ecriture_date.slice(0, 4))
-        setStep(2)
-      } catch (err) {
-        setError(err.message)
-      }
+    try {
+      const parsed = await parseFec(file)
+      setRows(parsed)
+      if (!year && parsed[0]?.ecriture_date) setExercice(parsed[0].ecriture_date.slice(0, 4))
+      setStep(2)
+    } catch (err) {
+      setError(err.message)
     }
-    reader.onerror = () => setError('Erreur de lecture du fichier')
-    // Try UTF-8 first
-    reader.readAsText(file, 'UTF-8')
   }
 
   function onDrop(e) {
@@ -279,11 +356,11 @@ export default function ComptaImportPage() {
           onDrop={onDrop}
           onClick={() => fileRef.current?.click()}
         >
-          <input ref={fileRef} type="file" accept=".txt,.csv,.tsv" style={{ display: 'none' }}
+          <input ref={fileRef} type="file" accept=".txt,.csv,.tsv,.xlsx,.xls,.xlsm" style={{ display: 'none' }}
             onChange={e => handleFile(e.target.files[0])} />
           <div className="fec-dropzone-icon">📁</div>
           <p className="fec-dropzone-label">Glissez votre fichier FEC ici</p>
-          <p className="fec-dropzone-sub">ou cliquez pour sélectionner · Formats acceptés : .txt, .csv (TAB, pipe ou point-virgule)</p>
+          <p className="fec-dropzone-sub">ou cliquez pour sélectionner · Formats acceptés : .txt, .csv (TAB, pipe, ;) · .xlsx, .xls</p>
           {error && error !== 'TABLE_MISSING' && <p className="fec-error">⚠ {error}</p>}
         </div>
       )}
