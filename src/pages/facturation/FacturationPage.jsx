@@ -337,7 +337,7 @@ export default function FacturationPage() {
         </div>
 
         {/* Tableau */}
-        <div style={{overflowX:'auto'}}>
+        <div className="users-table-wrapper" style={{overflowX:'auto'}}>
           <table className="users-table" style={{width:'100%'}}>
             <thead>
               <tr>
