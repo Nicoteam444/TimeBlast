@@ -324,7 +324,7 @@ export default function ChatWidget() {
               value={input}
               onChange={e => setInput(e.target.value)}
               onKeyDown={handleKeyDown}
-              rows={1}
+              rows={3}
               disabled={loading || ctxLoading}
             />
             <button
