@@ -20,6 +20,7 @@ import TransactionsPage from './pages/commerce/TransactionsPage'
 import TransactionDetailPage from './pages/commerce/TransactionDetailPage'
 import ProjetsWrapper from './pages/commerce/ProjetsWrapper'
 import SaisiePage from './pages/activite/SaisiePage'
+import EquipePage from './pages/activite/EquipePage'
 import ValidationPage from './pages/manager/ValidationPage'
 import AbsencesPage from './pages/activite/AbsencesPage'
 import PlanificationPage from './pages/temps/PlanificationPage'
@@ -81,6 +82,9 @@ function AppRoutes() {
       } />
       <Route path="/activite/absences" element={
         <ProtectedRoute roles={['admin','manager','collaborateur']}><Layout><AbsencesPage /></Layout></ProtectedRoute>
+      } />
+      <Route path="/activite/equipe" element={
+        <ProtectedRoute roles={['admin','manager']}><Layout><EquipePage /></Layout></ProtectedRoute>
       } />
 
       {/* Finance */}

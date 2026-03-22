@@ -24,6 +24,7 @@ const SECTIONS = [
     items: [
       { to: '/activite/planification', icon: '📅', label: 'Planification', roles: ['admin', 'manager'] },
       { to: '/activite/projets',       icon: '📁', label: 'Gestion de projet' },
+      { to: '/activite/equipe',        icon: '👥', label: 'Équipe', roles: ['admin', 'manager'] },
     ],
   },
   {

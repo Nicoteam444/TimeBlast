@@ -1901,6 +1901,25 @@ button:disabled { opacity: .6; cursor: not-allowed; }
 }
 .table-search:focus { border-color: var(--primary); }
 
+.table-filter-select {
+  padding: .5rem .75rem;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-size: .875rem;
+  background: var(--surface);
+  color: var(--text);
+  outline: none;
+  cursor: pointer;
+  transition: border-color .15s;
+}
+.table-filter-select:focus { border-color: var(--primary); }
+
+.sortable { cursor: pointer; user-select: none; white-space: nowrap; }
+.sortable:hover { color: var(--primary); }
+.sort-icon { margin-left: .25rem; font-size: .65rem; }
+.sort-icon--inactive { opacity: .3; }
+.sort-icon--active { color: var(--primary); }
+
 .table-pagesize {
   display: flex;
   align-items: center;
