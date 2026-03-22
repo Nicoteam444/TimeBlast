@@ -44,7 +44,7 @@ const SECTIONS = [
     roles: ['admin', 'comptable'],
     items: [
       { to: '/finance/comptabilite',        icon: '📊', label: 'Tableau de bord' },
-      { to: '/finance/saisie-ecriture',     icon: '✍️', label: 'Saisie d\'écriture' },
+      { to: '/finance/saisie-ecriture',     icon: '✍️', label: 'Comptabilité' },
       { to: '/finance/ecritures',           icon: '📒', label: 'Écritures FEC' },
       { to: '/finance/previsionnel',        icon: '📈', label: 'Prévisionnel' },
     ],
