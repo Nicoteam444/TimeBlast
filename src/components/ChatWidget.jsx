@@ -140,7 +140,7 @@ export default function ChatWidget() {
           'Authorization': `Bearer ${API_KEY}`,
         },
         body: JSON.stringify({
-          model: 'gpt-4o',
+          model: 'gpt-4o-mini',
           max_tokens: 1024,
           stream: true,
           messages: [
