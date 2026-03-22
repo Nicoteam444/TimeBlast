@@ -4050,3 +4050,67 @@ button:disabled { opacity: .6; cursor: not-allowed; }
 .saisie-ecriture-layout-vertical .saisie-ecriture-list-wrap .saisie-ecriture-card {
   max-height: none;
 }
+
+/* ═══ PLAN MODAL ═══════════════════════════════════════════ */
+.plan-modal-overlay {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,.45);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 1000;
+}
+.plan-modal {
+  background: var(--surface);
+  border-radius: 14px;
+  box-shadow: 0 20px 60px rgba(0,0,0,.25);
+  width: 420px; max-width: 95vw;
+  overflow: hidden;
+}
+.plan-modal-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 1.1rem 1.25rem .75rem;
+  border-bottom: 1px solid var(--border);
+}
+.plan-modal-header h3 { margin: 0; font-size: 1rem; font-weight: 700; }
+.plan-modal-close {
+  background: none; border: none; cursor: pointer;
+  color: var(--text-muted); font-size: 1rem;
+  width: 28px; height: 28px; border-radius: 6px;
+  display: flex; align-items: center; justify-content: center;
+  transition: background .15s;
+}
+.plan-modal-close:hover { background: var(--bg); }
+.plan-modal-body { padding: 1.25rem; display: flex; flex-direction: column; gap: .9rem; }
+.plan-modal-field { display: flex; flex-direction: column; gap: .3rem; }
+.plan-modal-field label { font-size: .75rem; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: .04em; }
+.plan-modal-field input {
+  border: 1px solid var(--border); border-radius: 7px;
+  padding: .5rem .7rem; font-size: .875rem;
+  background: var(--bg); color: var(--text); font-family: inherit; outline: none;
+}
+.plan-modal-field input:focus { border-color: var(--primary); }
+.plan-modal-row { display: grid; grid-template-columns: 1fr 1fr; gap: .75rem; }
+.plan-color-picker { display: flex; flex-wrap: wrap; gap: .4rem; }
+.plan-color-swatch {
+  width: 26px; height: 26px; border-radius: 50%; border: 2px solid transparent;
+  cursor: pointer; transition: transform .15s, border-color .15s;
+}
+.plan-color-swatch:hover { transform: scale(1.2); }
+.plan-color-swatch--active { border-color: var(--text); transform: scale(1.15); }
+.plan-modal-actions { display: flex; gap: .5rem; padding-top: .25rem; }
+.btn-danger {
+  background: #fee2e2; color: #dc2626; border: none;
+  border-radius: 8px; padding: .45rem .9rem; font-size: .875rem;
+  cursor: pointer; font-family: inherit; font-weight: 600;
+  transition: background .15s;
+}
+.btn-danger:hover { background: #fecaca; }
+
+/* ── Bloc dragging ── */
+.plan-block--dragging {
+  opacity: .8;
+  box-shadow: 0 4px 16px rgba(0,0,0,.2);
+  z-index: 10;
+  cursor: grabbing !important;
+}
+.plan-block { cursor: grab; transition: box-shadow .1s; }
+.plan-block:hover { box-shadow: 0 2px 8px rgba(0,0,0,.15); z-index: 5; }
