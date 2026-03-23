@@ -33,7 +33,7 @@ function buildSystemPrompt(societe, ctx) {
       ? [
           `Pipeline total : ${fmtEur(ctx.transactions.reduce((s, t) => s + (parseFloat(t.montant) || 0), 0))}`,
           ...ctx.transactions.slice(0, 30).map(t =>
-            `• ${t.nom || '—'} | ${t.client_name || '—'} | ${fmtEur(t.montant)} | ${t.statut || '—'}`
+            `• ${t.name || '—'} | ${t.client_name || '—'} | ${fmtEur(t.montant)} | phase: ${t.phase || '—'}`
           ),
           ctx.transactions.length > 30 ? `  ... et ${ctx.transactions.length - 30} autres` : '',
         ].filter(Boolean).join('\n')
@@ -54,12 +54,12 @@ function buildSystemPrompt(societe, ctx) {
     ctx.factures?.length > 0
       ? [
           ...ctx.factures.slice(0, 20).map(f =>
-            `• ${f.numero || '—'} | ${f.client_name || '—'} | ${fmtEur(f.montant_ttc)} | ${f.statut || '—'} | ${f.date_emission || '—'}`
+            `• ${f.num_facture || '—'} | ${f.client_nom || '—'} | ${fmtEur(f.total_ttc)} | ${f.statut || '—'} | ${f.date_emission || '—'} | ${f.objet || ''}`
           ),
-          `Brouillon: ${fmtEur(ctx.factures.filter(f => f.statut === 'brouillon').reduce((s, f) => s + (parseFloat(f.montant_ttc) || 0), 0))}`,
-          `Envoyées: ${fmtEur(ctx.factures.filter(f => f.statut === 'envoyee').reduce((s, f) => s + (parseFloat(f.montant_ttc) || 0), 0))}`,
-          `Payées: ${fmtEur(ctx.factures.filter(f => f.statut === 'payee').reduce((s, f) => s + (parseFloat(f.montant_ttc) || 0), 0))}`,
-          `En retard: ${fmtEur(ctx.factures.filter(f => f.statut === 'en_retard').reduce((s, f) => s + (parseFloat(f.montant_ttc) || 0), 0))}`,
+          `Brouillon: ${fmtEur(ctx.factures.filter(f => f.statut === 'brouillon').reduce((s, f) => s + (parseFloat(f.total_ttc) || 0), 0))}`,
+          `Envoyées: ${fmtEur(ctx.factures.filter(f => f.statut === 'envoyee').reduce((s, f) => s + (parseFloat(f.total_ttc) || 0), 0))}`,
+          `Payées: ${fmtEur(ctx.factures.filter(f => f.statut === 'payee').reduce((s, f) => s + (parseFloat(f.total_ttc) || 0), 0))}`,
+          `En retard: ${fmtEur(ctx.factures.filter(f => f.statut === 'en_retard').reduce((s, f) => s + (parseFloat(f.total_ttc) || 0), 0))}`,
         ].join('\n')
       : `Aucune facture.`,
     ``,
@@ -205,12 +205,21 @@ export default function ChatWidget() {
       sunday.setDate(monday.getDate() + 6)
       const toISO = d => d.toISOString().slice(0, 10)
 
+      // Clients : societe_id souvent null, on charge sans filtre societe si vide
+      const filterOrAll = async (table, select, order, limit) => {
+        let data = await safeQuery(filter(supabase.from(table).select(select).order(order).limit(limit)))
+        if (data.length === 0 && sid) {
+          data = await safeQuery(supabase.from(table).select(select).order(order).limit(limit))
+        }
+        return data
+      }
+
       const [clients, transactions, projets, factures, equipe, immos, achats, fecImports, saisies] = await Promise.all([
-        safeQuery(filter(supabase.from('clients').select('name, ville').order('name').limit(50))),
-        safeQuery(filter(supabase.from('transactions').select('nom, montant, statut, clients(name)').order('created_at', { ascending: false }).limit(50))),
+        filterOrAll('clients', 'name, ville', 'name', 50),
+        safeQuery(filter(supabase.from('transactions').select('name, montant, phase, clients(name)').order('created_at', { ascending: false }).limit(50))),
         safeQuery(filter(supabase.from('projets').select('name, statut, clients(name)').order('name').limit(50))),
-        safeQuery(filter(supabase.from('factures').select('numero, montant_ttc, statut, date_emission, clients(name)').order('date_emission', { ascending: false }).limit(30))),
-        safeQuery(filter(supabase.from('equipe').select('full_name, poste').order('full_name').limit(50))),
+        safeQuery(filter(supabase.from('factures').select('num_facture, total_ttc, statut, date_emission, client_nom, objet').order('date_emission', { ascending: false }).limit(30))),
+        safeQuery(filter(supabase.from('equipe').select('nom, prenom, poste').order('nom').limit(50))),
         safeQuery(filter(supabase.from('immobilisations').select('libelle, categorie, valeur_brute, statut').order('libelle').limit(30))),
         safeQuery(filter(supabase.from('achats').select('fournisseur, reference, montant, categorie').order('created_at', { ascending: false }).limit(20))),
         safeQuery(filter(supabase.from('fec_imports').select('meta').order('created_at', { ascending: false }).limit(5))),
@@ -225,8 +234,8 @@ export default function ChatWidget() {
         clients,
         transactions: transactions.map(t => ({ ...t, client_name: t.clients?.name })),
         projets: projets.map(p => ({ ...p, client_name: p.clients?.name })),
-        factures: factures.map(f => ({ ...f, client_name: f.clients?.name })),
-        equipe,
+        factures,
+        equipe: equipe.map(e => ({ ...e, full_name: [e.prenom, e.nom].filter(Boolean).join(' ') || '—' })),
         immos,
         achats,
         fecImports,
