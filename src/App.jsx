@@ -16,6 +16,8 @@ import AdminSocietesPage from './pages/admin/AdminSocietesPage'
 import AdminSocieteDetailPage from './pages/admin/AdminSocieteDetailPage'
 import AdminGroupesPage from './pages/admin/AdminGroupesPage'
 import AdminOrganigrammePage from './pages/admin/AdminOrganigrammePage'
+import WorkflowsPage from './pages/admin/WorkflowsPage'
+import AnalyticsPage from './pages/admin/AnalyticsPage'
 import ParametresPage from './pages/parametres/ParametresPage'
 import ClientDetailPage from './pages/clients/ClientDetailPage'
 import ClientsPage from './pages/temps/ClientsPage'
@@ -26,7 +28,9 @@ import AchatsPage from './pages/commerce/AchatsPage'
 import StockPage from './pages/commerce/StockPage'
 import ProduitsPage from './pages/commerce/ProduitsPage'
 import AbonnementsPage from './pages/commerce/AbonnementsPage'
+import DevisPage from './pages/commerce/DevisPage'
 import ReportingPage from './pages/activite/ReportingPage'
+import RentabilitePage from './pages/activite/RentabilitePage'
 import SaisiePage from './pages/activite/SaisiePage'
 import EquipePage from './pages/activite/EquipePage'
 import ValidationPage from './pages/manager/ValidationPage'
@@ -40,6 +44,7 @@ import ComptaAnalysePage from './pages/compta/ComptaAnalysePage'
 import SaisieEcriturePage from './pages/compta/SaisieEcriturePage'
 import PrevisionnelPage from './pages/finance/PrevisionnelPage'
 import ImmobilisationsPage from './pages/finance/ImmobilisationsPage'
+import RapprochementPage from './pages/finance/RapprochementPage'
 import TrombinosccopePage from './pages/equipe/TrombinosccopePage'
 import CollaborateurPage from './pages/equipe/CollaborateurPage'
 import OrganigrammePage from './pages/equipe/OrganigrammePage'
@@ -48,6 +53,7 @@ import CompetencesPage from './pages/equipe/CompetencesPage'
 import SetPasswordPage from './pages/SetPasswordPage'
 import UnauthorizedPage from './pages/UnauthorizedPage'
 import SearchPage from './pages/SearchPage'
+import NotificationsPage from './pages/NotificationsPage'
 import './App.css'
 
 function InviteHandler() {
@@ -94,6 +100,9 @@ function AppRoutes() {
       <Route path="/commerce/abonnements" element={
         <ProtectedRoute roles={['admin','manager','comptable']}><Layout><AbonnementsPage /></Layout></ProtectedRoute>
       } />
+      <Route path="/commerce/devis" element={
+        <ProtectedRoute roles={['admin','manager','comptable']}><Layout><DevisPage /></Layout></ProtectedRoute>
+      } />
 
       {/* Activité */}
       <Route path="/activite/saisie" element={
@@ -116,6 +125,9 @@ function AppRoutes() {
       } />
       <Route path="/activite/reporting" element={
         <ProtectedRoute roles={['admin','manager']}><Layout><ReportingPage /></Layout></ProtectedRoute>
+      } />
+      <Route path="/activite/rentabilite" element={
+        <ProtectedRoute roles={['admin','manager']}><Layout><RentabilitePage /></Layout></ProtectedRoute>
       } />
 
       {/* Finance */}
@@ -141,6 +153,9 @@ function AppRoutes() {
       } />
       <Route path="/finance/immobilisations" element={
         <ProtectedRoute roles={['admin','comptable']}><Layout><ImmobilisationsPage /></Layout></ProtectedRoute>
+      } />
+      <Route path="/finance/rapprochement" element={
+        <ProtectedRoute roles={['admin','comptable']}><Layout><RapprochementPage /></Layout></ProtectedRoute>
       } />
 
       {/* Équipe */}
@@ -182,6 +197,12 @@ function AppRoutes() {
       <Route path="/admin/organigramme" element={
         <ProtectedRoute roles={['admin']}><Layout><AdminOrganigrammePage /></Layout></ProtectedRoute>
       } />
+      <Route path="/admin/workflows" element={
+        <ProtectedRoute roles={['admin','manager']}><Layout><WorkflowsPage /></Layout></ProtectedRoute>
+      } />
+      <Route path="/admin/analytics" element={
+        <ProtectedRoute roles={['admin','manager']}><Layout><AnalyticsPage /></Layout></ProtectedRoute>
+      } />
       <Route path="/parametres" element={
         <ProtectedRoute roles={['admin']}><Layout><ParametresPage /></Layout></ProtectedRoute>
       } />
@@ -194,6 +215,10 @@ function AppRoutes() {
       {/* Anciens liens → redirect */}
       <Route path="/compta/*" element={<Navigate to="/finance/comptabilite" replace />} />
       <Route path="/commerce/projets" element={<Navigate to="/activite/projets" replace />} />
+
+      <Route path="/notifications" element={
+        <ProtectedRoute><Layout><NotificationsPage /></Layout></ProtectedRoute>
+      } />
 
       <Route path="/recherche" element={
         <ProtectedRoute><Layout><SearchPage /></Layout></ProtectedRoute>

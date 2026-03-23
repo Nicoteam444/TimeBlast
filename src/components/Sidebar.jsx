@@ -27,6 +27,7 @@ const SECTIONS = [
       { to: '/activite/planification', icon: '📅', label: 'Planification',      roles: ['admin', 'manager'] },
       { to: '/activite/projets',       icon: '📁', label: 'Gestion de projet' },
       { to: '/activite/reporting',     icon: '📊', label: 'Reporting temps',    roles: ['admin', 'manager'] },
+      { to: '/activite/rentabilite',   icon: '💹', label: 'Rentabilité',        roles: ['admin', 'manager'] },
     ],
   },
   {
@@ -52,6 +53,7 @@ const SECTIONS = [
     items: [
       { to: '/commerce/clients',      icon: '👤', label: 'Clients' },
       { to: '/commerce/transactions', icon: '💼', label: 'Transactions',  roles: ['admin', 'manager'] },
+      { to: '/commerce/devis',       icon: '📝', label: 'Devis',         roles: ['admin', 'manager', 'comptable'] },
       { to: '/commerce/produits',     icon: '🏷️', label: 'Produits',      roles: ['admin', 'manager', 'comptable'] },
       { to: '/commerce/abonnements',  icon: '🔄', label: 'Abonnements',   roles: ['admin', 'manager', 'comptable'] },
       { to: '/commerce/achats',       icon: '🛒', label: 'Achats',        roles: ['admin', 'manager', 'comptable'] },
@@ -70,6 +72,7 @@ const SECTIONS = [
       { to: '/finance/facturation',     icon: '🧾', label: 'Facturation' },
       { to: '/finance/previsionnel',    icon: '📈', label: 'Prévisionnel' },
       { to: '/finance/immobilisations', icon: '🏢', label: 'Immobilisations' },
+      { to: '/finance/rapprochement',   icon: '🔗', label: 'Rapprochement' },
     ],
   },
 ]
@@ -86,6 +89,8 @@ const ADMIN_SECTION = {
     { to: '/admin/groupes',      icon: '🏛', label: 'Groupes',           roles: ['admin'] },
     { to: '/admin/organigramme', icon: '🗂', label: 'Organigramme',      roles: ['admin'] },
     { to: '/admin/audit',        icon: '📋', label: "Journal d'audit",   roles: ['admin'] },
+    { to: '/admin/workflows',    icon: '✅', label: 'Approbations',      roles: ['admin', 'manager'] },
+    { to: '/admin/analytics',    icon: '📊', label: 'Analytics',         roles: ['admin', 'manager'] },
     { to: '/parametres',         icon: '🔧', label: 'Paramètres',        roles: ['admin'] },
   ],
 }

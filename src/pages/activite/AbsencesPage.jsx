@@ -7,10 +7,17 @@ import { supabase } from '../../lib/supabase'
 const STORAGE_KEY = 'absences_data'
 
 const ABSENCE_TYPES = {
-  conge:    { color: '#6366f1', bg: '#eef2ff', label: 'Congé' },
+  conge:    { color: '#6366f1', bg: '#eef2ff', label: 'Conge' },
   RTT:      { color: '#0ea5e9', bg: '#e0f2fe', label: 'RTT' },
   maladie:  { color: '#dc2626', bg: '#fef2f2', label: 'Maladie' },
-  ferie:    { color: '#f59e0b', bg: '#fffbeb', label: 'Férié' },
+  ferie:    { color: '#f59e0b', bg: '#fffbeb', label: 'Ferie' },
+}
+
+const STATUT_META = {
+  brouillon:  { label: 'Brouillon',   color: '#64748b', bg: '#f1f5f9' },
+  en_attente: { label: 'En attente',  color: '#f59e0b', bg: '#fffbeb' },
+  approuve:   { label: 'Approuve',    color: '#22c55e', bg: '#f0fdf4' },
+  rejete:     { label: 'Rejete',      color: '#ef4444', bg: '#fef2f2' },
 }
 
 function getMonday(d) {
@@ -55,6 +62,21 @@ function TypeBadge({ type }) {
   )
 }
 
+function StatutBadge({ statut }) {
+  const cfg = STATUT_META[statut] || STATUT_META.brouillon
+  return (
+    <span style={{
+      display: 'inline-flex', alignItems: 'center',
+      padding: '.2rem .65rem', borderRadius: 20,
+      fontSize: '.78rem', fontWeight: 700,
+      background: cfg.bg, color: cfg.color,
+      border: `1px solid ${cfg.color}33`,
+    }}>
+      {cfg.label}
+    </span>
+  )
+}
+
 function generateDemoAbsences() {
   const monday = getMonday(new Date())
   return [
@@ -65,6 +87,7 @@ function generateDemoAbsences() {
       date_debut: toISO(addDays(monday, -7)),
       date_fin: toISO(addDays(monday, -3)),
       note: 'Vacances d\'hiver',
+      statut: 'approuve',
     },
     {
       id: 'abs-2',
@@ -73,6 +96,7 @@ function generateDemoAbsences() {
       date_debut: toISO(addDays(monday, 1)),
       date_fin: toISO(addDays(monday, 1)),
       note: '',
+      statut: 'en_attente',
     },
     {
       id: 'abs-3',
@@ -80,7 +104,8 @@ function generateDemoAbsences() {
       type: 'maladie',
       date_debut: toISO(addDays(monday, -2)),
       date_fin: toISO(addDays(monday, -1)),
-      note: 'Arrêt médical',
+      note: 'Arret medical',
+      statut: 'approuve',
     },
     {
       id: 'abs-4',
@@ -88,7 +113,8 @@ function generateDemoAbsences() {
       type: 'ferie',
       date_debut: toISO(addDays(monday, 14)),
       date_fin: toISO(addDays(monday, 14)),
-      note: 'Jour férié',
+      note: 'Jour ferie',
+      statut: 'en_attente',
     },
     {
       id: 'abs-5',
@@ -96,7 +122,8 @@ function generateDemoAbsences() {
       type: 'conge',
       date_debut: toISO(addDays(monday, 21)),
       date_fin: toISO(addDays(monday, 25)),
-      note: 'Congés printemps',
+      note: 'Conges printemps',
+      statut: 'brouillon',
     },
   ]
 }
@@ -123,16 +150,19 @@ export default function AbsencesPage() {
   })
   const [saving, setSaving] = useState(false)
   const [filterType, setFilterType] = useState('')
+  const [filterStatut, setFilterStatut] = useState('')
 
   async function loadAbsences() {
     setLoading(true)
     if (isDemoMode) {
       const stored = loadLocalAbsences()
-      setAbsences(stored || generateDemoAbsences())
+      // Ensure demo data has statut field
+      const data = stored || generateDemoAbsences()
+      setAbsences(data.map(a => ({ ...a, statut: a.statut || 'brouillon' })))
     } else {
       try {
         const { data } = await supabase.from('absences').select('*').order('date_debut', { ascending: false })
-        setAbsences(data || [])
+        setAbsences((data || []).map(a => ({ ...a, statut: a.statut || 'brouillon' })))
       } catch {
         setAbsences([])
       }
@@ -156,6 +186,7 @@ export default function AbsencesPage() {
     const newAbs = {
       id: `abs-${Date.now()}`,
       ...form,
+      statut: 'brouillon',
     }
     if (isDemoMode) {
       const updated = [newAbs, ...absences]
@@ -169,6 +200,7 @@ export default function AbsencesPage() {
           date_debut: form.date_debut,
           date_fin: form.date_fin,
           note: form.note || null,
+          statut: 'brouillon',
         })
         await loadAbsences()
       } catch {
@@ -179,6 +211,22 @@ export default function AbsencesPage() {
     setSaving(false)
     setShowForm(false)
     setForm({ user_id: '', type: 'conge', date_debut: toISO(new Date()), date_fin: toISO(new Date()), note: '' })
+  }
+
+  async function handleStatut(id, newStatut) {
+    if (isDemoMode) {
+      const updated = absences.map(a => a.id === id ? { ...a, statut: newStatut } : a)
+      setAbsences(updated)
+      saveLocalAbsences(updated)
+    } else {
+      try {
+        await supabase.from('absences').update({ statut: newStatut }).eq('id', id)
+        await loadAbsences()
+      } catch {
+        const updated = absences.map(a => a.id === id ? { ...a, statut: newStatut } : a)
+        setAbsences(updated)
+      }
+    }
   }
 
   async function handleDelete(id) {
@@ -199,8 +247,19 @@ export default function AbsencesPage() {
   }
 
   const users = isDemoMode ? DEMO_USERS : (profile ? [{ id: profile.id, full_name: profile.full_name, role: profile.role }] : [])
+  const canManage = ['admin', 'manager'].includes(profile?.role)
 
-  const filtered = filterType ? absences.filter(a => a.type === filterType) : absences
+  const filtered = absences.filter(a => {
+    const matchType = !filterType || a.type === filterType
+    const matchStatut = !filterStatut || a.statut === filterStatut
+    return matchType && matchStatut
+  })
+
+  const countByStatut = {
+    en_attente: absences.filter(a => a.statut === 'en_attente').length,
+    approuve: absences.filter(a => a.statut === 'approuve').length,
+    rejete: absences.filter(a => a.statut === 'rejete').length,
+  }
 
   return (
     <div className="admin-page">
@@ -208,12 +267,30 @@ export default function AbsencesPage() {
         <div>
           <h1>Absences</h1>
           <p style={{ color: 'var(--text-muted)', fontSize: '.9rem', marginTop: '.25rem' }}>
-            Congés, RTT, maladies et jours fériés
+            Conges, RTT, maladies et jours feries
           </p>
         </div>
         <button className="btn-primary" onClick={() => setShowForm(v => !v)}>
           {showForm ? 'Annuler' : '+ Ajouter'}
         </button>
+      </div>
+
+      {/* KPIs workflow */}
+      <div style={{ display: 'flex', gap: '1rem', marginBottom: '1.25rem', flexWrap: 'wrap' }}>
+        {[
+          { label: 'En attente', value: countByStatut.en_attente, color: '#f59e0b' },
+          { label: 'Approuvees', value: countByStatut.approuve, color: '#22c55e' },
+          { label: 'Rejetees', value: countByStatut.rejete, color: '#ef4444' },
+          { label: 'Total', value: absences.length, color: 'var(--primary)' },
+        ].map(k => (
+          <div key={k.label} style={{
+            background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 10,
+            padding: '.6rem 1rem', minWidth: 110, flex: '1 1 110px',
+          }}>
+            <div style={{ fontSize: '.72rem', color: 'var(--text-muted)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '.05em' }}>{k.label}</div>
+            <div style={{ fontSize: '1.4rem', fontWeight: 800, color: k.color, marginTop: '.1rem' }}>{k.value}</div>
+          </div>
+        ))}
       </div>
 
       {/* Formulaire d'ajout */}
@@ -228,7 +305,7 @@ export default function AbsencesPage() {
               <div className="field" style={{ flex: '1 1 180px' }}>
                 <label>Collaborateur</label>
                 <select value={form.user_id} onChange={e => setForm(f => ({ ...f, user_id: e.target.value }))} required>
-                  <option value="">Sélectionner...</option>
+                  <option value="">Selectionner...</option>
                   {users.map(u => (
                     <option key={u.id} value={u.id}>{u.full_name}</option>
                   ))}
@@ -243,7 +320,7 @@ export default function AbsencesPage() {
                 </select>
               </div>
               <div className="field" style={{ flex: '1 1 140px' }}>
-                <label>Date début</label>
+                <label>Date debut</label>
                 <input type="date" value={form.date_debut} onChange={e => setForm(f => ({ ...f, date_debut: e.target.value }))} required />
               </div>
               <div className="field" style={{ flex: '1 1 140px' }}>
@@ -252,7 +329,7 @@ export default function AbsencesPage() {
               </div>
               <div className="field" style={{ flex: '2 1 220px' }}>
                 <label>Note (optionnel)</label>
-                <input type="text" value={form.note} onChange={e => setForm(f => ({ ...f, note: e.target.value }))} placeholder="Ex: Arrêt médical" />
+                <input type="text" value={form.note} onChange={e => setForm(f => ({ ...f, note: e.target.value }))} placeholder="Ex: Arret medical" />
               </div>
             </div>
             <div style={{ display: 'flex', gap: '.5rem', marginTop: '.75rem' }}>
@@ -266,7 +343,7 @@ export default function AbsencesPage() {
       )}
 
       {/* Filtres */}
-      <div style={{ display: 'flex', gap: '.5rem', marginBottom: '1rem', flexWrap: 'wrap' }}>
+      <div style={{ display: 'flex', gap: '.5rem', marginBottom: '1rem', flexWrap: 'wrap', alignItems: 'center' }}>
         <button
           className={`btn-secondary ${!filterType ? 'btn-secondary--active' : ''}`}
           style={{ fontSize: '.8rem', ...((!filterType) ? { background: 'var(--primary)', color: 'white', borderColor: 'var(--primary)' } : {}) }}
@@ -288,6 +365,21 @@ export default function AbsencesPage() {
             {cfg.label}
           </button>
         ))}
+        <span style={{ width: 1, height: 20, background: 'var(--border)', margin: '0 .25rem' }} />
+        <select
+          value={filterStatut}
+          onChange={e => setFilterStatut(e.target.value)}
+          style={{
+            fontSize: '.8rem', padding: '.3rem .6rem', borderRadius: 8,
+            border: '1px solid var(--border)', background: 'var(--surface)', color: 'var(--text)',
+            cursor: 'pointer',
+          }}
+        >
+          <option value="">Tous les statuts</option>
+          {Object.entries(STATUT_META).map(([k, v]) => (
+            <option key={k} value={k}>{v.label}</option>
+          ))}
+        </select>
       </div>
 
       {/* Tableau */}
@@ -300,9 +392,10 @@ export default function AbsencesPage() {
               <tr className="data-table-header">
                 <th>Collaborateur</th>
                 <th>Type</th>
-                <th>Début</th>
+                <th>Debut</th>
                 <th>Fin</th>
-                <th>Durée</th>
+                <th>Duree</th>
+                <th>Statut</th>
                 <th>Note</th>
                 <th style={{ textAlign: 'right' }}>Actions</th>
               </tr>
@@ -319,25 +412,61 @@ export default function AbsencesPage() {
                       {countWorkdays(absence.date_debut, absence.date_fin)}j
                     </span>
                   </td>
+                  <td>
+                    {canManage && absence.statut === 'en_attente' ? (
+                      <div style={{ display: 'flex', gap: '.3rem' }}>
+                        <button
+                          className="btn-icon"
+                          style={{ color: '#22c55e', fontSize: '.8rem' }}
+                          title="Approuver"
+                          onClick={() => handleStatut(absence.id, 'approuve')}
+                        >✓</button>
+                        <button
+                          className="btn-icon"
+                          style={{ color: '#ef4444', fontSize: '.8rem' }}
+                          title="Rejeter"
+                          onClick={() => handleStatut(absence.id, 'rejete')}
+                        >✕</button>
+                      </div>
+                    ) : (
+                      <StatutBadge statut={absence.statut} />
+                    )}
+                  </td>
                   <td style={{ color: 'var(--text-muted)', fontSize: '.85rem' }}>{absence.note || '—'}</td>
                   <td style={{ textAlign: 'right' }}>
-                    <button
-                      style={{
-                        background: 'none', border: '1px solid #dc262633',
-                        color: '#dc2626', borderRadius: 6, padding: '.25rem .6rem',
-                        cursor: 'pointer', fontSize: '.78rem', fontWeight: 600,
-                      }}
-                      onClick={() => handleDelete(absence.id)}
-                    >
-                      Supprimer
-                    </button>
+                    <div style={{ display: 'flex', gap: '.35rem', justifyContent: 'flex-end' }}>
+                      {absence.statut === 'brouillon' && (
+                        <button
+                          style={{
+                            background: 'none', border: '1px solid #f59e0b33',
+                            color: '#f59e0b', borderRadius: 6, padding: '.25rem .6rem',
+                            cursor: 'pointer', fontSize: '.78rem', fontWeight: 600,
+                          }}
+                          onClick={() => handleStatut(absence.id, 'en_attente')}
+                        >
+                          Soumettre
+                        </button>
+                      )}
+                      {(absence.statut === 'brouillon' || canManage) && (
+                        <button
+                          style={{
+                            background: 'none', border: '1px solid #dc262633',
+                            color: '#dc2626', borderRadius: 6, padding: '.25rem .6rem',
+                            cursor: 'pointer', fontSize: '.78rem', fontWeight: 600,
+                          }}
+                          onClick={() => handleDelete(absence.id)}
+                        >
+                          Supprimer
+                        </button>
+                      )}
+                    </div>
                   </td>
                 </tr>
               ))}
               {filtered.length === 0 && (
                 <tr>
-                  <td colSpan={7} style={{ textAlign: 'center', padding: '2rem', color: 'var(--text-muted)' }}>
-                    Aucune absence enregistrée
+                  <td colSpan={8} style={{ textAlign: 'center', padding: '2rem', color: 'var(--text-muted)' }}>
+                    Aucune absence enregistree
                   </td>
                 </tr>
               )}

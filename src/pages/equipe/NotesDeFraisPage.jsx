@@ -180,14 +180,37 @@ export default function NotesDeFraisPage() {
       {/* KPIs */}
       <div className="ndf-kpi-bar">
         {[
-          { label: 'Total affiché',  value: fmtMontant(total),        color: '#3b82f6' },
-          { label: 'Validé / Remb.', value: fmtMontant(totalValide),  color: '#22c55e' },
+          { label: 'Total affiche',  value: fmtMontant(total),        color: '#3b82f6' },
+          { label: 'Valide / Remb.', value: fmtMontant(totalValide),  color: '#22c55e' },
           { label: 'En attente',     value: fmtMontant(totalSoumis),  color: '#f59e0b' },
+          { label: 'Brouillons',     value: String(notes.filter(n => n.statut === 'brouillon').length), color: '#64748b' },
+          { label: 'Refuses',        value: String(notes.filter(n => n.statut === 'refuse').length),    color: '#ef4444' },
         ].map(k => (
           <div key={k.label} className="ndf-kpi-chip">
             <span className="ndf-kpi-label">{k.label}</span>
             <span className="ndf-kpi-value" style={{ color: k.color }}>{k.value}</span>
           </div>
+        ))}
+      </div>
+
+      {/* Workflow progress legend */}
+      <div style={{
+        display: 'flex', alignItems: 'center', gap: '1.5rem', padding: '.6rem 1rem',
+        background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 8,
+        marginBottom: '1rem', fontSize: '.78rem', flexWrap: 'wrap',
+      }}>
+        <span style={{ fontWeight: 700, color: 'var(--text-muted)' }}>Circuit de validation :</span>
+        {[
+          { label: 'Brouillon', color: '#64748b' },
+          { label: 'Soumis', color: '#f59e0b' },
+          { label: 'Valide', color: '#22c55e' },
+          { label: 'Rembourse', color: '#6366f1' },
+        ].map((s, i, arr) => (
+          <span key={s.label} style={{ display: 'flex', alignItems: 'center', gap: '.3rem' }}>
+            <span style={{ width: 8, height: 8, borderRadius: '50%', background: s.color }} />
+            <span style={{ fontWeight: 600, color: s.color }}>{s.label}</span>
+            {i < arr.length - 1 && <span style={{ color: 'var(--text-muted)', margin: '0 .15rem' }}>→</span>}
+          </span>
         ))}
       </div>
 
@@ -293,7 +316,7 @@ export default function NotesDeFraisPage() {
                 <th>Description</th>
                 <th>Montant</th>
                 <th>Statut</th>
-                {canManage && <th>Actions</th>}
+                <th>Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -341,37 +364,37 @@ export default function NotesDeFraisPage() {
                         </span>
                       )}
                     </td>
-                    {canManage && (
-                      <td>
+                    <td>
                         <div style={{ display: 'flex', gap: '.35rem' }}>
-                          {n.statut === 'valide' && (
+                          {canManage && n.statut === 'valide' && (
                             <button
                               className="btn-icon"
-                              title="Marquer remboursé"
+                              title="Marquer rembourse"
                               onClick={() => handleStatut(n.id, 'rembourse')}
                             >💸</button>
                           )}
                           {n.statut === 'brouillon' && (
                             <button
                               className="btn-icon"
-                              title="Soumettre"
+                              title="Soumettre pour validation"
                               onClick={() => handleStatut(n.id, 'soumis')}
                             >📤</button>
                           )}
-                          <button
-                            className="btn-icon btn-icon--danger"
-                            title="Supprimer"
-                            onClick={() => handleDelete(n.id)}
-                          >🗑</button>
+                          {(n.statut === 'brouillon' || canManage) && (
+                            <button
+                              className="btn-icon btn-icon--danger"
+                              title="Supprimer"
+                              onClick={() => handleDelete(n.id)}
+                            >🗑</button>
+                          )}
                         </div>
                       </td>
-                    )}
                   </tr>
                 )
               })}
               {filtered.length === 0 && (
                 <tr>
-                  <td colSpan={canManage ? 7 : 5} style={{ textAlign: 'center', color: 'var(--text-muted)', padding: '3rem' }}>
+                  <td colSpan={canManage ? 7 : 6} style={{ textAlign: 'center', color: 'var(--text-muted)', padding: '3rem' }}>
                     Aucune note de frais.
                   </td>
                 </tr>

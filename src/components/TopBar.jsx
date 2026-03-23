@@ -182,9 +182,11 @@ export default function TopBar() {
                   ))
               }
             </div>
-            <div className="notif-footer">
+            <div className="notif-footer" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <button style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '.8rem', color: 'var(--text-muted)' }}
                 onClick={() => setNotifOpen(false)}>Fermer</button>
+              <button style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '.8rem', color: 'var(--primary)', fontWeight: 600 }}
+                onClick={() => { setNotifOpen(false); navigate('/notifications') }}>Voir toutes →</button>
             </div>
           </div>
         )}

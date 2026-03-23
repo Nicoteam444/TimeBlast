@@ -30,6 +30,13 @@ const ADMIN_CARDS = [
     desc: 'Dessiner librement l\'organigramme du groupe avec mini-groupes et droits de visibilité',
   },
   {
+    to: '/admin/workflows',
+    icon: '✅',
+    color: '#22c55e',
+    title: 'Workflows d\'approbation',
+    desc: 'Configurer les circuits de validation : notes de frais, conges, temps',
+  },
+  {
     to: '/admin/audit',
     icon: '📋',
     color: '#f59e0b',

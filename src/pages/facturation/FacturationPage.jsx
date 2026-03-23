@@ -1,6 +1,7 @@
 import { useState, useMemo, useEffect, useCallback, useRef } from 'react'
 import { supabase } from '../../lib/supabase'
 import { useSociete } from '../../contexts/SocieteContext'
+import { generateInvoicePDF } from '../../lib/pdfGenerator'
 
 // ── Helpers ───────────────────────────────────────────────────
 function fmtE(n) {
@@ -458,7 +459,15 @@ export default function FacturationPage() {
           <span className="fac-preview-label">Prévisualisation</span>
           <div style={{display:'flex',gap:'.4rem'}}>
             {selected && <button className="btn-secondary" style={{fontSize:'.78rem'}} onClick={()=>setModal(selected)}>✏️ Modifier</button>}
-            {selected && <button className="btn-primary" style={{fontSize:'.78rem'}} onClick={()=>window.print()}>🖨 PDF</button>}
+            {selected && <button className="btn-primary" style={{fontSize:'.78rem'}} onClick={()=>{ const doc = generateInvoicePDF(selected); doc.save(`${selected.num_facture || 'facture'}.pdf`) }}>📄 PDF</button>}
+            {selected && <button className="btn-secondary" style={{fontSize:'.78rem'}} onClick={()=>{
+              const email = prompt('Email du destinataire :')
+              if (email) {
+                import('../../lib/emailService').then(m => m.sendInvoiceEmail(selected, email))
+                  .then(() => alert('Email envoyé !'))
+                  .catch(e => alert('Erreur : ' + e.message))
+              }
+            }}>📧 Envoyer</button>}
           </div>
         </div>
         <div className="fac-right-scroll">
