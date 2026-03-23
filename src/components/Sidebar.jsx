@@ -88,7 +88,7 @@ export default function Sidebar() {
   const navigate = useNavigate()
   const location = useLocation()
   const [hoveredId, setHoveredId] = useState(null)
-  const [flyoutTop, setFlyoutTop] = useState(0)
+  const [flyoutPos, setFlyoutPos] = useState({ top: 0 })
   const hideTimer = useRef(null)
   const userRole = profile?.role
 
@@ -104,7 +104,13 @@ export default function Sidebar() {
     clearTimeout(hideTimer.current)
     const rect = e.currentTarget.getBoundingClientRect()
     setHoveredId(id)
-    setFlyoutTop(rect.top)
+    // Si l'item est dans le tiers bas de l'écran, ancrer le flyout par le bas
+    const spaceBelow = window.innerHeight - rect.top
+    if (spaceBelow < 320) {
+      setFlyoutPos({ bottom: window.innerHeight - rect.bottom })
+    } else {
+      setFlyoutPos({ top: rect.top })
+    }
   }
 
   function scheduleHide() {
@@ -195,7 +201,7 @@ export default function Sidebar() {
       {flyoutSection && (
         <div
           className="rail-flyout"
-          style={{ top: flyoutTop, left: railW }}
+          style={{ ...flyoutPos, left: railW }}
           onMouseEnter={keepOpen}
           onMouseLeave={scheduleHide}
         >
