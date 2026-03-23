@@ -192,21 +192,45 @@ export default function ReportingPage() {
       return true
     })
 
-    // Group by projet
+    // Group by projet (via lot_id ou commentaire JSON)
     const byProjet = {}
     for (const s of filteredSaisies) {
+      let projetId = null
+      let projetName = null
+      let clientName = '—'
+
+      // Méthode 1 : via lot_id
       const lot = lotMap[s.lot_id]
-      const projetId = lot?.projet_id
+      if (lot?.projet_id) {
+        projetId = lot.projet_id
+        const projet = projetMap[projetId]
+        if (projet) {
+          projetName = projet.name
+          clientName = clientMap[projet.client_id]?.name || '—'
+        }
+      }
+
+      // Méthode 2 : via commentaire JSON (saisies créées depuis le calendrier)
+      if (!projetId && s.commentaire) {
+        try {
+          const meta = typeof s.commentaire === 'string' ? JSON.parse(s.commentaire) : s.commentaire
+          if (meta.projet_id) {
+            projetId = meta.projet_id
+            const projet = projetMap[projetId]
+            projetName = projet?.name || meta.projet_name || '—'
+            clientName = projet ? (clientMap[projet.client_id]?.name || '—') : '—'
+          }
+        } catch {}
+      }
+
       if (!projetId) continue
-      const projet = projetMap[projetId]
-      if (!projet) continue
       if (t1Projet && projetId !== t1Projet) continue
 
       if (!byProjet[projetId]) {
         byProjet[projetId] = {
           projetId,
-          projetName: projet.name,
-          clientName: clientMap[projet.client_id]?.name || '—',
+          projetName: projetName || '—',
+          clientName,
           totalHeures: 0,
           intervenants: new Set(),
         }
@@ -300,22 +324,37 @@ export default function ReportingPage() {
     }).sort((a, b) => a.projet.name.localeCompare(b.projet.name))
   }, [projets, lots, saisies, clientMap])
 
+  // ── Helper: extraire projetId depuis lot_id ou commentaire ──
+  function getProjetInfo(s) {
+    const lot = lotMap[s.lot_id]
+    if (lot?.projet_id) {
+      const projet = projetMap[lot.projet_id]
+      return { projetId: lot.projet_id, projetName: projet?.name || '—', lotName: lot.name || '—' }
+    }
+    try {
+      const meta = typeof s.commentaire === 'string' ? JSON.parse(s.commentaire) : s.commentaire
+      if (meta?.projet_id) {
+        const projet = projetMap[meta.projet_id]
+        return { projetId: meta.projet_id, projetName: projet?.name || meta.projet_name || '—', lotName: '—' }
+      }
+    } catch {}
+    return { projetId: null, projetName: '—', lotName: '—' }
+  }
+
   // ── Tab 4: Détail saisies ─────────────────────────────────────
   const t4Filtered = useMemo(() => {
     return saisies.filter(s => {
       if (t4Collab && s.user_id !== t4Collab) return false
       if (t4Projet) {
-        const lot = lotMap[s.lot_id]
-        if (!lot || lot.projet_id !== t4Projet) return false
+        const info = getProjetInfo(s)
+        if (info.projetId !== t4Projet) return false
       }
       if (t4Search) {
         const q = t4Search.toLowerCase()
         const collab = collabMap[s.user_id]?.full_name?.toLowerCase() || ''
-        const lot = lotMap[s.lot_id]?.name?.toLowerCase() || ''
-        const lot_projet_id = lotMap[s.lot_id]?.projet_id
-        const projet = projetMap[lot_projet_id]?.name?.toLowerCase() || ''
-        const comment = (s.commentaire || '').toLowerCase()
-        if (!collab.includes(q) && !lot.includes(q) && !projet.includes(q) && !comment.includes(q)) return false
+        const info = getProjetInfo(s)
+        const comment = (typeof s.commentaire === 'string' ? s.commentaire : '').toLowerCase()
+        if (!collab.includes(q) && !info.projetName.toLowerCase().includes(q) && !comment.includes(q)) return false
       }
       return true
     }).sort((a, b) => b.date.localeCompare(a.date))
@@ -327,16 +366,15 @@ export default function ReportingPage() {
   function exportT4CSV() {
     const headers = ['Date', 'Collaborateur', 'Projet', 'Lot', 'Heures', 'Commentaire']
     const rows = t4Filtered.map(s => {
-      const lot = lotMap[s.lot_id]
-      const projet = projetMap[lot?.projet_id]
+      const info = getProjetInfo(s)
       const collab = collabMap[s.user_id]
       return [
         fmtDate(s.date),
         collab?.full_name || s.user_id,
-        projet?.name || '—',
-        lot?.name || '—',
+        info.projetName,
+        info.lotName,
         fmtNum(s.heures, 2),
-        s.commentaire || '',
+        typeof s.commentaire === 'string' ? s.commentaire : '',
       ]
     })
     downloadCSV('detail-saisies.csv', rows, headers)
@@ -656,18 +694,22 @@ export default function ReportingPage() {
                   </thead>
                   <tbody>
                     {t4Paginated.map(s => {
-                      const lot = lotMap[s.lot_id]
-                      const projet = projetMap[lot?.projet_id]
+                      const info = getProjetInfo(s)
                       const collab = collabMap[s.user_id]
+                      let commentDisplay = ''
+                      try {
+                        const meta = typeof s.commentaire === 'string' ? JSON.parse(s.commentaire) : null
+                        commentDisplay = meta?.note || ''
+                      } catch { commentDisplay = s.commentaire || '' }
                       return (
                         <tr key={s.id}>
                           <td style={{ whiteSpace: 'nowrap' }}>{fmtDate(s.date)}</td>
                           <td>{collab?.full_name || '—'}</td>
-                          <td>{projet?.name || '—'}</td>
-                          <td>{lot?.name || '—'}</td>
+                          <td>{info.projetName}</td>
+                          <td>{info.lotName}</td>
                           <td className="text-right">{fmtNum(s.heures, 1)} h</td>
                           <td style={{ color: 'var(--text-muted)', fontSize: '.85rem' }}>
-                            {s.commentaire || ''}
+                            {commentDisplay}
                           </td>
                         </tr>
                       )
