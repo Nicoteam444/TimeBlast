@@ -441,6 +441,8 @@ export default function SaisiePage() {
   const [events, setEvents] = useState({})
   const [loading, setLoading] = useState(true)
   const [dragPreview, setDragPreview] = useState(null) // { date, startMin, endMin }
+  const [movingEvent, setMovingEvent] = useState(null)   // { ev, date, startMin, endMin }
+  const movingRef = useRef(null)
   const [selectedEvent, setSelectedEvent] = useState(null)
   const [newEvent, setNewEvent] = useState(null)        // { date, startMin, endMin }
 
@@ -518,6 +520,64 @@ export default function SaisiePage() {
   async function handleDeleteEvent(id) {
     await supabase.from('saisies_temps').delete().eq('id', id)
     fetchWeek()
+  }
+
+  // ── Drag-to-move existing event ────────────────────────────
+  function handleEventDragStart(e, ev, colEl) {
+    e.stopPropagation()
+    e.preventDefault()
+    const rect = colEl.getBoundingClientRect()
+    const offsetY = e.clientY - rect.top - minToY(ev.startMin)
+    const duration = ev.endMin - ev.startMin
+    const wdISO = weekDates.map(d => toISO(d))
+
+    movingRef.current = { ev, date: ev.date, startMin: ev.startMin, endMin: ev.endMin }
+    setMovingEvent(movingRef.current)
+
+    const onMove = (me) => {
+      const cols = document.querySelectorAll('.cal-col')
+      let targetDate = ev.date
+      let targetCol = colEl
+      for (let i = 0; i < cols.length; i++) {
+        const cr = cols[i].getBoundingClientRect()
+        if (me.clientX >= cr.left && me.clientX <= cr.right) {
+          targetDate = wdISO[i] || targetDate
+          targetCol = cols[i]
+          break
+        }
+      }
+      const tr = targetCol.getBoundingClientRect()
+      const newStart = clampMin(yToMin30(me.clientY - tr.top - offsetY))
+      const newEnd = clampMin(newStart + duration)
+      movingRef.current = { ev, date: targetDate, startMin: newStart, endMin: newEnd }
+      setMovingEvent({ ...movingRef.current })
+    }
+
+    const onUp = async () => {
+      document.removeEventListener('mousemove', onMove)
+      document.removeEventListener('mouseup', onUp)
+      const m = movingRef.current
+      movingRef.current = null
+      if (!m) { setMovingEvent(null); return }
+      const heures = Math.round((m.endMin - m.startMin) / 60 * 10) / 10
+      const meta = JSON.stringify({
+        projet_id: ev.projets?.id,
+        projet_name: ev.projets?.name,
+        h_debut: fmtTime(m.startMin),
+        h_fin: fmtTime(m.endMin),
+        note: ev.noteText || null,
+      })
+      await supabase.from('saisies_temps').update({
+        date: m.date,
+        heures,
+        commentaire: meta,
+      }).eq('id', ev.id)
+      setMovingEvent(null)
+      fetchWeek()
+    }
+
+    document.addEventListener('mousemove', onMove)
+    document.addEventListener('mouseup', onUp)
   }
 
   const totalWeek = Object.values(events).flat().reduce((s, e) => s + (e.heures || 0), 0)
@@ -601,20 +661,40 @@ export default function SaisiePage() {
 
                 {/* Événements */}
                 {!loading && dayEvents.map(ev => {
+                  const isMoving = movingEvent?.ev?.id === ev.id
                   const top = minToY(ev.startMin)
                   const height = Math.max(20, minToY(ev.endMin) - top)
                   const color = colorFor(ev.projets?.id)
                   return (
                     <div key={ev.id} className="cal-event"
-                      style={{ top, height, background: color + '22', borderLeftColor: color }}
-                      onMouseDown={e => e.stopPropagation()}
-                      onClick={e => { e.stopPropagation(); setSelectedEvent(ev) }}
+                      style={{
+                        top, height, background: color + '22', borderLeftColor: color,
+                        opacity: isMoving ? 0.3 : 1, cursor: 'grab',
+                      }}
+                      onMouseDown={e => handleEventDragStart(e, ev, e.currentTarget.parentElement)}
+                      onClick={e => { e.stopPropagation(); if (!movingEvent) setSelectedEvent(ev) }}
                     >
                       <div className="cal-event-title">{ev.projets?.name || '—'}</div>
                       <div className="cal-event-time">{fmtTime(ev.startMin)}–{fmtTime(ev.endMin)}</div>
                     </div>
                   )
                 })}
+
+                {/* Ghost de l'événement en cours de déplacement */}
+                {movingEvent && movingEvent.date === iso && (
+                  <div className="cal-event cal-event--moving"
+                    style={{
+                      top: minToY(movingEvent.startMin),
+                      height: Math.max(20, minToY(movingEvent.endMin) - minToY(movingEvent.startMin)),
+                      background: colorFor(movingEvent.ev.projets?.id) + '44',
+                      borderLeftColor: colorFor(movingEvent.ev.projets?.id),
+                      pointerEvents: 'none',
+                    }}
+                  >
+                    <div className="cal-event-title">{movingEvent.ev.projets?.name || '—'}</div>
+                    <div className="cal-event-time">{fmtTime(movingEvent.startMin)}–{fmtTime(movingEvent.endMin)}</div>
+                  </div>
+                )}
 
                 {/* Preview drag (pendant le drag) */}
                 {dragPreview?.date === iso && (

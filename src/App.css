@@ -2785,6 +2785,8 @@ button:disabled { opacity: .6; cursor: not-allowed; }
   z-index: 5;
 }
 
+.cal-event--moving { z-index: 10; box-shadow: 0 4px 12px rgba(0,0,0,.15); border-style: dashed; }
+
 .cal-event-title {
   font-size: .72rem;
   font-weight: 700;
