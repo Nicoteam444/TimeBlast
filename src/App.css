@@ -1098,6 +1098,11 @@ button:disabled { opacity: .6; cursor: not-allowed; }
   padding: 2rem 2.5rem;
   max-width: 960px;
 }
+.page-content {
+  padding: 2rem 2.5rem;
+  overflow: auto;
+  flex: 1;
+}
 
 .admin-page-header {
   display: flex;
@@ -5496,6 +5501,7 @@ button:disabled { opacity: .6; cursor: not-allowed; }
 .reporting-tab-btn:hover:not(.reporting-tab-btn--active) { color: var(--text); background: var(--surface); }
 .reporting-filters { display: flex; gap: .75rem; flex-wrap: wrap; align-items: center; margin-bottom: 1.25rem; padding: .75rem 1rem; background: var(--surface); border: 1.5px solid var(--border); border-radius: 10px; }
 .reporting-filters select, .reporting-filters input { padding: .35rem .6rem; border: 1.5px solid var(--border); border-radius: 7px; font-size: .85rem; background: var(--bg); color: var(--text); }
+.reporting-table-wrapper { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; margin-top: .75rem; }
 .reporting-table { width: 100%; border-collapse: collapse; font-size: .87rem; }
 .reporting-table th { background: var(--surface); padding: .55rem .75rem; text-align: left; font-size: .78rem; color: var(--text-muted); font-weight: 600; border-bottom: 1.5px solid var(--border); white-space: nowrap; }
 .reporting-table td { padding: .5rem .75rem; border-bottom: 1px solid var(--border); color: var(--text); }
