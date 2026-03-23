@@ -260,6 +260,9 @@ function IntegrationsTab() {
         </div>
       </div>
 
+      {/* Vérification des tiers */}
+      <TiersVerificationBlock />
+
       <div className="integration-card integration-card--disabled">
         <div className="integration-card-header">
           <div className="integration-logo">📅</div>
@@ -271,6 +274,110 @@ function IntegrationsTab() {
             <span className="status-badge" style={{ color: '#64748b', background: '#f8fafc' }}>Bientôt</span>
           </div>
         </div>
+      </div>
+    </div>
+  )
+}
+
+function TiersVerificationBlock() {
+  const [query, setQuery] = useState('')
+  const [results, setResults] = useState([])
+  const [searching, setSearching] = useState(false)
+  const [searchError, setSearchError] = useState(null)
+  const [enrichResult, setEnrichResult] = useState(null)
+  const debounceRef = useRef(null)
+
+  async function searchSirene(q) {
+    if (!q.trim() || q.trim().length < 3) { setResults([]); return }
+    setSearching(true); setSearchError(null)
+    try {
+      const res = await fetch(`https://recherche-entreprises.api.gouv.fr/search?q=${encodeURIComponent(q)}&page=1&per_page=8`)
+      if (!res.ok) throw new Error(`HTTP ${res.status}`)
+      const data = await res.json()
+      setResults(data.results || [])
+    } catch (e) { setSearchError(e.message); setResults([]) }
+    setSearching(false)
+  }
+
+  function handleInput(e) {
+    setQuery(e.target.value); setEnrichResult(null)
+    clearTimeout(debounceRef.current)
+    debounceRef.current = setTimeout(() => searchSirene(e.target.value), 400)
+  }
+
+  async function enrichClient(ent) {
+    const nom = (ent.nom_complet || ent.nom_raison_sociale || '').toUpperCase()
+    const siege = ent.siege || {}
+    const ville = siege.libelle_commune || ''
+
+    const { data: existing } = await supabase.from('clients').select('id, name').ilike('name', `%${nom}%`).limit(1)
+    if (existing?.length > 0) {
+      setEnrichResult({ type: 'exists', nom, siren: ent.siren, ville })
+    } else {
+      const { error } = await supabase.from('clients').insert({ name: nom, ville })
+      if (error) { setEnrichResult({ type: 'error', message: error.message }) }
+      else { setEnrichResult({ type: 'created', nom, siren: ent.siren, ville }) }
+    }
+  }
+
+  const effectifMap = { '00':'0','01':'1-2','02':'3-5','03':'6-9','11':'10-19','12':'20-49','21':'50-99','22':'100-199','31':'200-249','32':'250-499','41':'500-999','42':'1000-1999','51':'2000-4999','52':'5000-9999','53':'10000+' }
+
+  return (
+    <div className="integration-card">
+      <div className="integration-card-header">
+        <div className="integration-logo">🏛</div>
+        <div className="integration-info">
+          <h2>Vérification des tiers</h2>
+          <p>Recherche SIRENE — vérifiez la conformité et enrichissez vos clients</p>
+        </div>
+        <div className="integration-status">
+          <span className="status-badge" style={{ color: '#16a34a', background: '#f0fdf4' }}>API publique</span>
+        </div>
+      </div>
+
+      <div style={{ padding: '0 1.25rem 1.25rem' }}>
+        <div style={{ display: 'flex', gap: '.5rem', marginBottom: '1rem' }}>
+          <input type="text" value={query} onChange={handleInput}
+            placeholder="Rechercher par nom, SIREN ou SIRET..."
+            style={{ flex: 1, padding: '.6rem .85rem', border: '1.5px solid var(--border)', borderRadius: 8, fontSize: '.9rem', background: 'var(--bg)', color: 'var(--text)' }} />
+          <button className="btn-primary" onClick={() => searchSirene(query)} disabled={searching || query.length < 3}>
+            {searching ? '...' : '🔍 Rechercher'}
+          </button>
+        </div>
+
+        {searchError && <p className="error" style={{ marginBottom: '.75rem' }}>Erreur : {searchError}</p>}
+
+        {enrichResult && (
+          <div style={{ padding: '.75rem 1rem', borderRadius: 10, marginBottom: '1rem',
+            background: enrichResult.type === 'created' ? '#f0fdf4' : enrichResult.type === 'exists' ? '#fffbeb' : '#fef2f2',
+            border: `1px solid ${enrichResult.type === 'created' ? '#86efac' : enrichResult.type === 'exists' ? '#fcd34d' : '#fca5a5'}`,
+            fontSize: '.9rem',
+          }}>
+            {enrichResult.type === 'created' && <p style={{ color: '#166534' }}>✅ Client <strong>{enrichResult.nom}</strong> créé ! (SIREN : {enrichResult.siren})</p>}
+            {enrichResult.type === 'exists' && <p style={{ color: '#92400e' }}>⚠ <strong>{enrichResult.nom}</strong> existe déjà dans votre base.</p>}
+            {enrichResult.type === 'error' && <p style={{ color: '#dc2626' }}>❌ {enrichResult.message}</p>}
+          </div>
+        )}
+
+        {results.length > 0 && (
+          <div style={{ border: '1px solid var(--border)', borderRadius: 10, overflow: 'hidden' }}>
+            <table className="users-table" style={{ margin: 0 }}>
+              <thead><tr><th>Entreprise</th><th>SIREN</th><th>Ville</th><th>NAF</th><th>Effectif</th><th></th></tr></thead>
+              <tbody>
+                {results.map((r, i) => (
+                  <tr key={i}>
+                    <td style={{ fontWeight: 500 }}>{r.nom_complet || r.nom_raison_sociale || '—'}</td>
+                    <td style={{ fontFamily: 'monospace', fontSize: '.82rem', color: 'var(--text-muted)' }}>{r.siren || '—'}</td>
+                    <td style={{ fontSize: '.85rem' }}>{r.siege?.libelle_commune || '—'} {r.siege?.code_postal ? `(${r.siege.code_postal})` : ''}</td>
+                    <td style={{ fontSize: '.82rem', color: 'var(--text-muted)' }}>{r.activite_principale || '—'}</td>
+                    <td style={{ fontSize: '.82rem' }}>{effectifMap[r.tranche_effectif_salarie] || '—'}</td>
+                    <td><button className="btn-primary" style={{ padding: '.25rem .65rem', fontSize: '.78rem' }} onClick={() => enrichClient(r)}>+ Ajouter</button></td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
       </div>
     </div>
   )
