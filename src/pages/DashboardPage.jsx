@@ -119,6 +119,9 @@ export default function DashboardPage() {
   const [kpiFactures,     setKpiFactures]     = useState([])
   const [kpiTransPhases,  setKpiTransPhases]  = useState([])
   const [kpiTopTrans,     setKpiTopTrans]     = useState([])
+  const [kpiImmos,        setKpiImmos]        = useState({ count: 0, vnc: 0 })
+  const [kpiAchats,       setKpiAchats]       = useState({ count: 0, total: 0 })
+  const [kpiCompetences,  setKpiCompetences]  = useState({ count: 0, avgLevel: 0 })
 
   // Load users
   useEffect(() => {
@@ -196,6 +199,45 @@ export default function DashboardPage() {
         groups[f.statut].total += f.total_ttc || 0
       }
       setKpiFactures(Object.entries(groups).map(([statut, v]) => ({ statut, ...v })))
+    })
+
+    // Immobilisations
+    let q6 = supabase.from('immobilisations').select('valeur_brute, duree_amort, date_acquisition, statut')
+    if (sid) q6 = q6.eq('societe_id', sid)
+    q6.then(({ data }) => {
+      if (!data) { setKpiImmos({ count: 0, vnc: 0 }); return }
+      const actifs = data.filter(i => i.statut === 'actif')
+      const now = new Date()
+      let totalVNC = 0
+      for (const i of actifs) {
+        const vb = parseFloat(i.valeur_brute) || 0
+        const da = parseFloat(i.duree_amort) || 5
+        if (i.date_acquisition) {
+          const annees = (now - new Date(i.date_acquisition)) / (365.25 * 24 * 60 * 60 * 1000)
+          totalVNC += Math.max(0, vb - Math.min(vb, (vb / da) * annees))
+        } else {
+          totalVNC += vb
+        }
+      }
+      setKpiImmos({ count: actifs.length, vnc: Math.round(totalVNC) })
+    })
+
+    // Achats
+    let q7 = supabase.from('achats').select('montant')
+    if (sid) q7 = q7.eq('societe_id', sid)
+    q7.then(({ data }) => {
+      if (!data) { setKpiAchats({ count: 0, total: 0 }); return }
+      setKpiAchats({ count: data.length, total: data.reduce((s, a) => s + (parseFloat(a.montant) || 0), 0) })
+    })
+
+    // Compétences
+    supabase.from('competence_evaluations').select('niveau').then(({ data }) => {
+      if (!data || data.length === 0) { setKpiCompetences({ count: 0, avgLevel: 0 }); return }
+      const withLevel = data.filter(e => e.niveau > 0)
+      setKpiCompetences({
+        count: withLevel.length,
+        avgLevel: withLevel.length > 0 ? Math.round(withLevel.reduce((s, e) => s + e.niveau, 0) / withLevel.length * 10) / 10 : 0,
+      })
     })
   }, [isDemoMode, selectedSociete?.id])
 
@@ -363,6 +405,63 @@ export default function DashboardPage() {
                 })}
               </div>
             )}
+          </div>
+        </div>
+
+        {/* ── Quick KPIs row 2 ── */}
+        <div className="dash-widgets">
+          {/* Immobilisations */}
+          <div className="dash-widget" onClick={() => navigate('/finance/immobilisations')} style={{ cursor: 'pointer' }}>
+            <div className="dash-widget-header">
+              <span className="dash-widget-title">🏢 Immobilisations</span>
+              <button className="dash-widget-link">Voir →</button>
+            </div>
+            <div style={{ display: 'flex', gap: '1.5rem', padding: '.5rem 0' }}>
+              <div>
+                <div style={{ fontSize: '1.5rem', fontWeight: 700, color: 'var(--primary)' }}>{kpiImmos.count}</div>
+                <div style={{ fontSize: '.78rem', color: 'var(--text-muted)' }}>actifs</div>
+              </div>
+              <div>
+                <div style={{ fontSize: '1.5rem', fontWeight: 700, color: '#16a34a' }}>{fmtEuros(kpiImmos.vnc)}</div>
+                <div style={{ fontSize: '.78rem', color: 'var(--text-muted)' }}>valeur nette</div>
+              </div>
+            </div>
+          </div>
+
+          {/* Achats */}
+          <div className="dash-widget" onClick={() => navigate('/commerce/achats')} style={{ cursor: 'pointer' }}>
+            <div className="dash-widget-header">
+              <span className="dash-widget-title">🛒 Achats</span>
+              <button className="dash-widget-link">Voir →</button>
+            </div>
+            <div style={{ display: 'flex', gap: '1.5rem', padding: '.5rem 0' }}>
+              <div>
+                <div style={{ fontSize: '1.5rem', fontWeight: 700, color: 'var(--primary)' }}>{kpiAchats.count}</div>
+                <div style={{ fontSize: '.78rem', color: 'var(--text-muted)' }}>commandes</div>
+              </div>
+              <div>
+                <div style={{ fontSize: '1.5rem', fontWeight: 700, color: '#f59e0b' }}>{fmtEuros(kpiAchats.total)}</div>
+                <div style={{ fontSize: '.78rem', color: 'var(--text-muted)' }}>total achats</div>
+              </div>
+            </div>
+          </div>
+
+          {/* Compétences */}
+          <div className="dash-widget" onClick={() => navigate('/equipe/competences')} style={{ cursor: 'pointer' }}>
+            <div className="dash-widget-header">
+              <span className="dash-widget-title">🎯 Compétences</span>
+              <button className="dash-widget-link">Voir →</button>
+            </div>
+            <div style={{ display: 'flex', gap: '1.5rem', padding: '.5rem 0' }}>
+              <div>
+                <div style={{ fontSize: '1.5rem', fontWeight: 700, color: 'var(--primary)' }}>{kpiCompetences.count}</div>
+                <div style={{ fontSize: '.78rem', color: 'var(--text-muted)' }}>évaluations</div>
+              </div>
+              <div>
+                <div style={{ fontSize: '1.5rem', fontWeight: 700, color: kpiCompetences.avgLevel >= 3 ? '#16a34a' : '#f59e0b' }}>{kpiCompetences.avgLevel}/5</div>
+                <div style={{ fontSize: '.78rem', color: 'var(--text-muted)' }}>niveau moyen</div>
+              </div>
+            </div>
           </div>
         </div>
 
