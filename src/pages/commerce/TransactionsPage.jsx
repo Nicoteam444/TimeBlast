@@ -77,13 +77,6 @@ function KanbanColumn({ phase, cards, onDragStart, onDrop, onClick }) {
           {cards.length}
         </span>
       </div>
-      <div className="kanban-col-total">
-        {total > 0
-          ? <span style={{ color: phase.color, fontWeight: 700 }}>
-              {total >= 1000 ? `${Math.round(total / 1000)} k€` : formatMontant(total)}
-            </span>
-          : <span style={{ color: 'var(--text-muted)' }}>0 €</span>}
-      </div>
       <div className="kanban-col-cards">
         {cards.map(t => (
           <KanbanCard key={t.id} t={t} onDragStart={onDragStart} onClick={onClick} />
@@ -92,6 +85,10 @@ function KanbanColumn({ phase, cards, onDragStart, onDrop, onClick }) {
           <div className="kanban-col-empty">Déposez ici</div>
         )}
       </div>
+      <div className="kanban-col-footer">
+        <span>{total >= 1000000 ? `${(total / 1000000).toFixed(1).replace('.', ',')} M€` : total >= 1000 ? `${Math.round(total / 1000)} k€` : formatMontant(total)}</span>
+        <span style={{ color: 'var(--text-muted)' }}>Montant total</span>
+      </div>
     </div>
   )
 }
@@ -99,7 +96,7 @@ function KanbanColumn({ phase, cards, onDragStart, onDrop, onClick }) {
 // ── Main Page ─────────────────────────────────────────────────────────────────
 export default function TransactionsPage() {
   const navigate = useNavigate()
-  const { selectedSociete } = useSociete()
+  const { selectedSociete, societes } = useSociete()
   const [transactions, setTransactions] = useState([])
   const [loading, setLoading] = useState(true)
   const [showForm, setShowForm] = useState(false)
@@ -107,6 +104,7 @@ export default function TransactionsPage() {
   const [selectedClient, setSelectedClient] = useState(null)
   const [error, setError] = useState(null)
   const [filter, setFilter] = useState('')
+  const [filterSociete, setFilterSociete] = useState('')
   const [pageSize, setPageSize] = useState(20)
   const [page, setPage] = useState(1)
   const [view, setView] = useState('kanban')
@@ -118,7 +116,7 @@ export default function TransactionsPage() {
     setLoading(true)
     const query = supabase
       .from('transactions')
-      .select('*, clients(name)')
+      .select('*, clients(name), societes(name)')
       .order('created_at', { ascending: false })
     const { data, error } = await query
     if (error) setError(error.message)
@@ -153,28 +151,34 @@ export default function TransactionsPage() {
   }
 
   const filtered = useMemo(() => {
+    let list = transactions
+    if (filterSociete) list = list.filter(t => t.societe_id === filterSociete)
     const q = filter.toLowerCase()
-    return q ? transactions.filter(t =>
+    if (q) list = list.filter(t =>
       t.name.toLowerCase().includes(q) || (t.clients?.name || '').toLowerCase().includes(q)
-    ) : transactions
-  }, [transactions, filter])
+    )
+    return list
+  }, [transactions, filter, filterSociete])
 
   const totalPages = Math.ceil(filtered.length / pageSize)
   const paginated = filtered.slice((page - 1) * pageSize, page * pageSize)
 
-  // KPI totaux pipeline actif (hors perdu)
-  const pipeline = transactions.filter(t => t.phase !== 'perdu').reduce((s, t) => s + (t.montant || 0), 0)
-  const gained = transactions.filter(t => t.phase === 'ferme').reduce((s, t) => s + (t.montant || 0), 0)
+  // KPI totaux sur les transactions filtrées
+  const pipeline = filtered.filter(t => t.phase !== 'perdu').reduce((s, t) => s + (t.montant || 0), 0)
+  const gained = filtered.filter(t => t.phase === 'ferme').reduce((s, t) => s + (t.montant || 0), 0)
 
   return (
     <div className="admin-page">
       <div className="admin-page-header">
         <div>
           <h1>Transactions</h1>
-          <p style={{ display: 'flex', alignItems: 'center', gap: '.5rem', flexWrap: 'wrap' }}>
-            <span>{transactions.length} transaction{transactions.length > 1 ? 's' : ''}</span>
-            {pipeline > 0 && <span style={{ padding: '.1rem .5rem', background: '#eef2ff', color: '#6366f1', borderRadius: 4, fontSize: '.8rem', fontWeight: 600 }}>Pipeline : {formatMontant(pipeline)}</span>}
-            {gained > 0 && <span style={{ padding: '.1rem .5rem', background: '#f0fdf4', color: '#16a34a', borderRadius: 4, fontSize: '.8rem', fontWeight: 600 }}>Gagné : {formatMontant(gained)}</span>}
+          <p style={{ color: 'var(--text-muted)', fontSize: '.9rem' }}>
+            {filtered.length} transaction{filtered.length > 1 ? 's' : ''}
+            {filterSociete && societes?.length > 0 && (
+              <span style={{ marginLeft: '.5rem' }}>
+                — {societes.find(s => s.id === filterSociete)?.name || ''}
+              </span>
+            )}
           </p>
         </div>
         <div style={{ display: 'flex', gap: '.5rem', alignItems: 'center' }}>
@@ -258,6 +262,21 @@ export default function TransactionsPage() {
           <strong>Erreur :</strong> {error}
         </div>
       )}
+
+      {/* Filtre société + totaux */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', flexWrap: 'wrap', marginBottom: '1rem' }}>
+        <select
+          className="table-select"
+          value={filterSociete}
+          onChange={e => setFilterSociete(e.target.value)}
+          style={{ minWidth: 180 }}
+        >
+          <option value="">Toutes les sociétés</option>
+          {(societes || []).map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
+        </select>
+        {pipeline > 0 && <span style={{ fontSize: '.85rem', color: '#6366f1', fontWeight: 600 }}>Pipeline : {formatMontant(pipeline)}</span>}
+        {gained > 0 && <span style={{ fontSize: '.85rem', color: '#16a34a', fontWeight: 600 }}>Gagné : {formatMontant(gained)}</span>}
+      </div>
 
       {loading ? <div className="loading-inline">Chargement...</div> : (
         view === 'kanban' ? (
