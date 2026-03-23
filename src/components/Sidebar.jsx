@@ -65,13 +65,21 @@ const SECTIONS = [
   },
 ]
 
-const ADMIN_ITEMS = [
-  { to: '/admin',                icon: '⚙️', label: 'Administration',  roles: ['admin'] },
-  { to: '/admin/societes',       icon: '🏢', label: 'Sociétés',         roles: ['admin'] },
-  { to: '/admin/groupes',        icon: '🏛', label: 'Groupes',          roles: ['admin'] },
-  { to: '/admin/organigramme',   icon: '🗂', label: 'Organigramme',     roles: ['admin'] },
-  { to: '/admin/audit',          icon: '📋', label: "Journal d'audit",  roles: ['admin'] },
-]
+const ADMIN_SECTION = {
+  id: 'admin',
+  icon: '⚙️',
+  label: 'Administration',
+  roles: ['admin'],
+  items: [
+    { to: '/admin',              icon: '🏠', label: 'Vue d\'ensemble',   roles: ['admin'] },
+    { to: '/admin/utilisateurs', icon: '👥', label: 'Utilisateurs',      roles: ['admin'] },
+    { to: '/admin/societes',     icon: '🏢', label: 'Sociétés',          roles: ['admin'] },
+    { to: '/admin/groupes',      icon: '🏛', label: 'Groupes',           roles: ['admin'] },
+    { to: '/admin/organigramme', icon: '🗂', label: 'Organigramme',      roles: ['admin'] },
+    { to: '/admin/audit',        icon: '📋', label: "Journal d'audit",   roles: ['admin'] },
+    { to: '/parametres',         icon: '🔧', label: 'Paramètres',        roles: ['admin'] },
+  ],
+}
 
 export default function Sidebar() {
   const { profile } = useAuth()
@@ -108,6 +116,7 @@ export default function Sidebar() {
   }
 
   const flyoutSection = visibleSections.find(s => s.id === hoveredId)
+    || (hoveredId === 'admin' && userRole === 'admin' ? ADMIN_SECTION : null)
   const railW = sidebarOpen ? 180 : 52
 
   return (
@@ -163,23 +172,23 @@ export default function Sidebar() {
         </nav>
 
         {/* ── Admin en bas ── */}
-        <div className="sidebar-bottom">
-          {ADMIN_ITEMS.map(item => {
-            if (!item.roles.includes(userRole)) return null
-            return (
-              <NavLink
-                key={item.to}
-                to={item.to}
-                className={({ isActive }) => `rail-item ${isActive ? 'rail-item--active' : ''}`}
-                onMouseEnter={scheduleHide}
-                onClick={() => { if (window.innerWidth <= 768 && sidebarOpen) toggleSidebar() }}
+        {userRole === 'admin' && (() => {
+          const adminPaths = ADMIN_SECTION.items.map(i => i.to)
+          const isAdminActive = adminPaths.some(p => location.pathname.startsWith(p))
+          return (
+            <div className="sidebar-bottom">
+              <div
+                className={`rail-item ${isAdminActive ? 'rail-item--active' : ''} ${hoveredId === 'admin' ? 'rail-item--hover' : ''}`}
+                onMouseEnter={e => showFlyout('admin', e)}
+                onMouseLeave={scheduleHide}
               >
-                <span className="rail-item-icon">{item.icon}</span>
-                {sidebarOpen && <span className="rail-item-label">{item.label}</span>}
-              </NavLink>
-            )
-          })}
-        </div>
+                <span className="rail-item-icon">{ADMIN_SECTION.icon}</span>
+                {sidebarOpen && <span className="rail-item-label">{ADMIN_SECTION.label}</span>}
+                {isAdminActive && <span className="rail-item-dot" />}
+              </div>
+            </div>
+          )
+        })()}
       </aside>
 
       {/* ── Flyout panel — position fixed, hors du aside ── */}
