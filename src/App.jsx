@@ -54,6 +54,10 @@ import SetPasswordPage from './pages/SetPasswordPage'
 import UnauthorizedPage from './pages/UnauthorizedPage'
 import SearchPage from './pages/SearchPage'
 import NotificationsPage from './pages/NotificationsPage'
+import CrmContactsPage from './pages/crm/ContactsPage'
+import CrmEntreprisesPage from './pages/crm/EntreprisesPage'
+import CrmLeadsPage from './pages/crm/LeadsPage'
+import CrmContactDetailPage from './pages/crm/ContactDetailPage'
 import './App.css'
 
 function InviteHandler() {
@@ -76,6 +80,20 @@ function AppRoutes() {
 
       <Route path="/" element={
         <ProtectedRoute><Layout><DashboardPage /></Layout></ProtectedRoute>
+      } />
+
+      {/* CRM */}
+      <Route path="/crm/contacts" element={
+        <ProtectedRoute roles={['admin','manager','collaborateur']}><Layout><CrmContactsPage /></Layout></ProtectedRoute>
+      } />
+      <Route path="/crm/contacts/:id" element={
+        <ProtectedRoute roles={['admin','manager','collaborateur']}><Layout><CrmContactDetailPage /></Layout></ProtectedRoute>
+      } />
+      <Route path="/crm/entreprises" element={
+        <ProtectedRoute roles={['admin','manager','collaborateur']}><Layout><CrmEntreprisesPage /></Layout></ProtectedRoute>
+      } />
+      <Route path="/crm/leads" element={
+        <ProtectedRoute roles={['admin','manager']}><Layout><CrmLeadsPage /></Layout></ProtectedRoute>
       } />
 
       {/* Commerce */}

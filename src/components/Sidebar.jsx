@@ -46,6 +46,17 @@ const SECTIONS = [
     ],
   },
   {
+    id: 'crm',
+    icon: '🎯',
+    label: 'CRM',
+    roles: ['admin', 'manager', 'collaborateur'],
+    items: [
+      { to: '/crm/contacts',     icon: '👤', label: 'Contacts' },
+      { to: '/crm/entreprises',  icon: '🏢', label: 'Entreprises' },
+      { to: '/crm/leads',        icon: '🚀', label: 'Leads',        roles: ['admin', 'manager'] },
+    ],
+  },
+  {
     id: 'commerce',
     icon: '🤝',
     label: 'Commerce',
