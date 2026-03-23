@@ -243,7 +243,7 @@ export default function TopBar() {
                   className="topbar-dropdown-item"
                   onMouseEnter={() => setShowSocietes(true)}
                 >
-                  🏢 {selectedSociete?.name || 'Changer de société'} <span style={{ marginLeft: 'auto', color: 'var(--text-muted)', fontSize: '.75rem' }}>◀</span>
+                  {selectedSociete?.name || 'Changer de société'}
                 </button>
               )}
               <hr className="topbar-dropdown-divider" />
