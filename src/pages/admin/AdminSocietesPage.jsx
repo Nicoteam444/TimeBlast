@@ -3,35 +3,40 @@ import { supabase } from '../../lib/supabase'
 
 export default function AdminSocietesPage() {
   const [societes, setSocietes]       = useState([])
+  const [groupes, setGroupes]         = useState([])
   const [loading, setLoading]         = useState(true)
   const [showForm, setShowForm]       = useState(false)
-  const [editItem, setEditItem]       = useState(null)       // null = création
-  const [form, setForm]               = useState({ name: '', siren: '', ville: '' })
+  const [editItem, setEditItem]       = useState(null)
+  const [form, setForm]               = useState({ name: '', siren: '', ville: '', groupe_id: '' })
   const [formLoading, setFormLoading] = useState(false)
   const [formError, setFormError]     = useState(null)
   const [deleteConfirm, setDeleteConfirm] = useState(null)
   const [sqlMissing, setSqlMissing]   = useState(false)
 
-  useEffect(() => { fetchSocietes() }, [])
+  useEffect(() => { fetchAll() }, [])
 
-  async function fetchSocietes() {
+  async function fetchAll() {
     setLoading(true)
-    const { data, error } = await supabase.from('societes').select('*').order('name')
+    const [{ data, error }, { data: g }] = await Promise.all([
+      supabase.from('societes').select('*, groupes(id, name, color)').order('name'),
+      supabase.from('groupes').select('id, name, color').order('name'),
+    ])
     if (error?.code === '42P01') { setSqlMissing(true); setLoading(false); return }
     setSocietes(data || [])
+    setGroupes(g || [])
     setLoading(false)
   }
 
   function openCreate() {
     setEditItem(null)
-    setForm({ name: '', siren: '', ville: '' })
+    setForm({ name: '', siren: '', ville: '', groupe_id: '' })
     setFormError(null)
     setShowForm(true)
   }
 
   function openEdit(s) {
     setEditItem(s)
-    setForm({ name: s.name || '', siren: s.siren || '', ville: s.ville || '' })
+    setForm({ name: s.name || '', siren: s.siren || '', ville: s.ville || '', groupe_id: s.groupe_id || '' })
     setFormError(null)
     setShowForm(true)
   }
@@ -42,7 +47,12 @@ export default function AdminSocietesPage() {
     setFormLoading(true)
     setFormError(null)
 
-    const payload = { name: form.name.trim(), siren: form.siren.trim() || null, ville: form.ville.trim() || null }
+    const payload = {
+      name: form.name.trim(),
+      siren: form.siren.trim() || null,
+      ville: form.ville.trim() || null,
+      groupe_id: form.groupe_id || null,
+    }
     let error
 
     if (editItem) {
@@ -54,7 +64,7 @@ export default function AdminSocietesPage() {
     setFormLoading(false)
     if (error) { setFormError(error.message); return }
     setShowForm(false)
-    fetchSocietes()
+    fetchAll()
   }
 
   async function handleDelete(id) {
@@ -157,6 +167,23 @@ ALTER TABLE profiles ADD COLUMN IF NOT EXISTS societe_id uuid REFERENCES societe
                   placeholder="Ex : Paris"
                 />
               </div>
+              <div className="field">
+                <label>Groupe</label>
+                <select
+                  value={form.groupe_id}
+                  onChange={e => setForm(f => ({ ...f, groupe_id: e.target.value }))}
+                >
+                  <option value="">— Aucun groupe —</option>
+                  {groupes.map(g => (
+                    <option key={g.id} value={g.id}>{g.name}</option>
+                  ))}
+                </select>
+                {groupes.length === 0 && (
+                  <p style={{ fontSize: '.75rem', color: 'var(--text-muted)', marginTop: '.3rem' }}>
+                    Créez d'abord un groupe dans <em>Admin → Groupes</em>.
+                  </p>
+                )}
+              </div>
               {formError && <p className="error">{formError}</p>}
               <div className="modal-actions">
                 <button type="button" className="btn-secondary" onClick={() => setShowForm(false)}>Annuler</button>
@@ -201,6 +228,7 @@ ALTER TABLE profiles ADD COLUMN IF NOT EXISTS societe_id uuid REFERENCES societe
             <thead>
               <tr>
                 <th>Société</th>
+                <th>Groupe</th>
                 <th>SIREN</th>
                 <th>Ville</th>
                 <th>Créée le</th>
@@ -208,15 +236,31 @@ ALTER TABLE profiles ADD COLUMN IF NOT EXISTS societe_id uuid REFERENCES societe
               </tr>
             </thead>
             <tbody>
-              {societes.map(s => (
+              {societes.map(s => {
+                const groupe = s.groupes
+                return (
                 <tr key={s.id}>
                   <td>
                     <div className="user-cell">
-                      <span className="user-avatar" style={{ background: 'var(--primary)', fontSize: '.75rem' }}>
+                      <span className="user-avatar" style={{ background: groupe?.color || 'var(--primary)', fontSize: '.75rem' }}>
                         {s.name.split(/\s+/).map(w => w[0]).join('').toUpperCase().slice(0, 2)}
                       </span>
                       <span className="user-name">{s.name}</span>
                     </div>
+                  </td>
+                  <td>
+                    {groupe ? (
+                      <span className="status-badge" style={{
+                        color: groupe.color,
+                        background: groupe.color + '18',
+                        fontSize: '.72rem',
+                        fontWeight: 600,
+                      }}>
+                        🏛 {groupe.name}
+                      </span>
+                    ) : (
+                      <span style={{ color: 'var(--text-muted)', fontSize: '.82rem' }}>—</span>
+                    )}
                   </td>
                   <td style={{ color: 'var(--text-muted)', fontSize: '.85rem' }}>{s.siren || '—'}</td>
                   <td style={{ color: 'var(--text-muted)', fontSize: '.85rem' }}>{s.ville || '—'}</td>
@@ -228,7 +272,8 @@ ALTER TABLE profiles ADD COLUMN IF NOT EXISTS societe_id uuid REFERENCES societe
                     <button className="btn-icon btn-icon--danger" onClick={() => setDeleteConfirm(s)} title="Supprimer">🗑</button>
                   </td>
                 </tr>
-              ))}
+                )
+              })}
             </tbody>
           </table>
         </div>

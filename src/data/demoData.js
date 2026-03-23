@@ -273,3 +273,52 @@ export const DEMO_ECRITURES = {
   'demo-2024': DEMO_ECRITURES_2024,
   'demo-2023': DEMO_ECRITURES_2023,
 }
+
+// ── Notes de frais démo ───────────────────────────────────────
+// Données réalistes pour une ESN — 5 collaborateurs, 3 mois glissants
+function daysAgo(n) { return fmt(addDays(new Date(), -n)) }
+
+export const DEMO_NOTES_DE_FRAIS = [
+  // ── Nicolas (u1 — admin / chef de projet) ──────────────────
+  { id: 'ndf-01', user_id: 'u1', user_name: 'Nicolas Nabhan',   date: daysAgo(2),  categorie: 'repas',       description: 'Déjeuner client — Groupe Altéa (3 pers.)',          montant: 87.50,  statut: 'soumis',    justificatif: 'FAC-2026-0312' },
+  { id: 'ndf-02', user_id: 'u1', user_name: 'Nicolas Nabhan',   date: daysAgo(8),  categorie: 'transport',   description: 'Train Paris–Lyon A/R — mission Meridian Finance',   montant: 142.00, statut: 'valide',    justificatif: 'SNCF-26048712' },
+  { id: 'ndf-03', user_id: 'u1', user_name: 'Nicolas Nabhan',   date: daysAgo(10), categorie: 'hebergement', description: 'Nuit hôtel Lyon — mission Meridian (1 nuit)',         montant: 128.00, statut: 'valide',    justificatif: 'HTL-00291' },
+  { id: 'ndf-04', user_id: 'u1', user_name: 'Nicolas Nabhan',   date: daysAgo(22), categorie: 'repas',       description: 'Repas d\'équipe — rétrospective sprint',             montant: 156.80, statut: 'rembourse', justificatif: 'FAC-2026-0289' },
+  { id: 'ndf-05', user_id: 'u1', user_name: 'Nicolas Nabhan',   date: daysAgo(35), categorie: 'transport',   description: 'Taxi aéroport CDG → bureau',                        montant: 58.00,  statut: 'rembourse', justificatif: 'UBER-26-0219' },
+  { id: 'ndf-06', user_id: 'u1', user_name: 'Nicolas Nabhan',   date: daysAgo(45), categorie: 'materiel',    description: 'Câble HDMI + hub USB-C pour présentation client',    montant: 43.90,  statut: 'rembourse', justificatif: 'AMZN-FR-0182' },
+  { id: 'ndf-07', user_id: 'u1', user_name: 'Nicolas Nabhan',   date: daysAgo(60), categorie: 'formation',   description: 'Conférence Agile France — inscription',             montant: 490.00, statut: 'rembourse', justificatif: 'AGILE-2026-042' },
+
+  // ── Alice (u2 — manager / commercial) ──────────────────────
+  { id: 'ndf-08', user_id: 'u2', user_name: 'Alice Martin',     date: daysAgo(1),  categorie: 'repas',       description: 'Déjeuner prospect — TechForge SAS (2 pers.)',       montant: 64.00,  statut: 'brouillon', justificatif: '' },
+  { id: 'ndf-09', user_id: 'u2', user_name: 'Alice Martin',     date: daysAgo(5),  categorie: 'transport',   description: 'TGV Paris–Bordeaux — salon commercial',            montant: 118.50, statut: 'soumis',    justificatif: 'SNCF-26051090' },
+  { id: 'ndf-10', user_id: 'u2', user_name: 'Alice Martin',     date: daysAgo(5),  categorie: 'hebergement', description: 'Hôtel Bordeaux — salon commercial (1 nuit)',        montant: 145.00, statut: 'soumis',    justificatif: 'HTL-BDX-0055' },
+  { id: 'ndf-11', user_id: 'u2', user_name: 'Alice Martin',     date: daysAgo(18), categorie: 'repas',       description: 'Business lunch Datavision Group (4 pers.)',         montant: 210.00, statut: 'valide',    justificatif: 'FAC-2026-0301' },
+  { id: 'ndf-12', user_id: 'u2', user_name: 'Alice Martin',     date: daysAgo(28), categorie: 'transport',   description: 'Location voiture — mission Industriel Nord (3 j)', montant: 215.00, statut: 'valide',    justificatif: 'HERTZ-26-1103' },
+  { id: 'ndf-13', user_id: 'u2', user_name: 'Alice Martin',     date: daysAgo(30), categorie: 'hebergement', description: 'Hôtel Lille ×2 nuits — mission Industriel Nord',    montant: 276.00, statut: 'valide',    justificatif: 'HTL-LIL-0391' },
+  { id: 'ndf-14', user_id: 'u2', user_name: 'Alice Martin',     date: daysAgo(50), categorie: 'autre',       description: 'Abonnement LinkedIn Sales Navigator (1 mois)',      montant: 89.99,  statut: 'refuse',    justificatif: 'LI-2026-02' },
+  { id: 'ndf-15', user_id: 'u2', user_name: 'Alice Martin',     date: daysAgo(62), categorie: 'repas',       description: 'Déjeuner équipe commerciale — bilan Q1',            montant: 185.00, statut: 'rembourse', justificatif: 'FAC-2026-0241' },
+
+  // ── Bob (u3 — développeur) ──────────────────────────────────
+  { id: 'ndf-16', user_id: 'u3', user_name: 'Bob Dupont',       date: daysAgo(3),  categorie: 'transport',   description: 'Métro/RER — déplacements client semaine',          montant: 22.10,  statut: 'brouillon', justificatif: '' },
+  { id: 'ndf-17', user_id: 'u3', user_name: 'Bob Dupont',       date: daysAgo(12), categorie: 'materiel',    description: 'Clavier mécanique ergonomique — télétravail',      montant: 134.99, statut: 'soumis',    justificatif: 'AMZN-FR-0341' },
+  { id: 'ndf-18', user_id: 'u3', user_name: 'Bob Dupont',       date: daysAgo(25), categorie: 'repas',       description: 'Repas chez client Meridian (mission déjeuner)',     montant: 18.50,  statut: 'valide',    justificatif: 'FAC-2026-0277' },
+  { id: 'ndf-19', user_id: 'u3', user_name: 'Bob Dupont',       date: daysAgo(40), categorie: 'formation',   description: 'Udemy — cours certification AWS',                   montant: 19.99,  statut: 'valide',    justificatif: 'UDEMY-2026-031' },
+  { id: 'ndf-20', user_id: 'u3', user_name: 'Bob Dupont',       date: daysAgo(55), categorie: 'transport',   description: 'Train Paris–Nantes A/R — audit infra client',      montant: 98.00,  statut: 'rembourse', justificatif: 'SNCF-26038890' },
+  { id: 'ndf-21', user_id: 'u3', user_name: 'Bob Dupont',       date: daysAgo(57), categorie: 'hebergement', description: 'Hôtel Nantes — audit infra (1 nuit)',               montant: 112.00, statut: 'rembourse', justificatif: 'HTL-NTS-0612' },
+
+  // ── Claire (u4 — consultante fonctionnelle) ─────────────────
+  { id: 'ndf-22', user_id: 'u4', user_name: 'Claire Petit',     date: daysAgo(4),  categorie: 'repas',       description: 'Atelier client Pharma Innov — déjeuner (5 pers.)', montant: 145.00, statut: 'soumis',    justificatif: 'FAC-2026-0318' },
+  { id: 'ndf-23', user_id: 'u4', user_name: 'Claire Petit',     date: daysAgo(14), categorie: 'transport',   description: 'Taxi vers aéroport CDG — vol mission Pharma',      montant: 65.00,  statut: 'valide',    justificatif: 'BOLT-26-0441' },
+  { id: 'ndf-24', user_id: 'u4', user_name: 'Claire Petit',     date: daysAgo(15), categorie: 'hebergement', description: 'Hôtel Strasbourg ×2 nuits — séminaire RGPD',       montant: 258.00, statut: 'valide',    justificatif: 'HTL-STR-0187' },
+  { id: 'ndf-25', user_id: 'u4', user_name: 'Claire Petit',     date: daysAgo(16), categorie: 'transport',   description: 'TGV Paris–Strasbourg A/R — séminaire RGPD',        montant: 134.00, statut: 'valide',    justificatif: 'SNCF-26044211' },
+  { id: 'ndf-26', user_id: 'u4', user_name: 'Claire Petit',     date: daysAgo(38), categorie: 'materiel',    description: 'Fournitures bureau — post-its, marqueurs atelier',  montant: 31.40,  statut: 'rembourse', justificatif: 'LFDUP-2026-089' },
+  { id: 'ndf-27', user_id: 'u4', user_name: 'Claire Petit',     date: daysAgo(70), categorie: 'formation',   description: 'Certification PMP — frais d\'inscription',          montant: 555.00, statut: 'rembourse', justificatif: 'PMI-2026-CLR' },
+
+  // ── David (u5 — ingénieur infra) ───────────────────────────
+  { id: 'ndf-28', user_id: 'u5', user_name: 'David Lemaire',    date: daysAgo(6),  categorie: 'transport',   description: 'Essence voiture perso — mission Industriel Nord',  montant: 78.40,  statut: 'brouillon', justificatif: '' },
+  { id: 'ndf-29', user_id: 'u5', user_name: 'David Lemaire',    date: daysAgo(9),  categorie: 'repas',       description: 'Repas sur site client Industriel Nord',            montant: 24.90,  statut: 'soumis',    justificatif: 'FAC-2026-0309' },
+  { id: 'ndf-30', user_id: 'u5', user_name: 'David Lemaire',    date: daysAgo(20), categorie: 'materiel',    description: 'Disque SSD externe — sauvegarde audit client',      montant: 89.99,  statut: 'valide',    justificatif: 'AMZN-FR-0398' },
+  { id: 'ndf-31', user_id: 'u5', user_name: 'David Lemaire',    date: daysAgo(33), categorie: 'hebergement', description: 'Hôtel Valenciennes ×3 nuits — déploiement infra',   montant: 324.00, statut: 'rembourse', justificatif: 'HTL-VAL-0044' },
+  { id: 'ndf-32', user_id: 'u5', user_name: 'David Lemaire',    date: daysAgo(35), categorie: 'transport',   description: 'Train Paris–Valenciennes A/R — mission infra',     montant: 87.00,  statut: 'rembourse', justificatif: 'SNCF-26041775' },
+  { id: 'ndf-33', user_id: 'u5', user_name: 'David Lemaire',    date: daysAgo(48), categorie: 'autre',       description: 'Parking aéroport 4 jours — déplacement client',    montant: 72.00,  statut: 'rembourse', justificatif: 'PARK-CDG-4412' },
+]

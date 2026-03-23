@@ -35,6 +35,7 @@ function formatDateTime(date) {
 export default function AdminUtilisateursPage() {
   const [users, setUsers]             = useState([])
   const [societes, setSocietes]       = useState([])
+  const [groupes, setGroupes]         = useState([])
   const [loading, setLoading]         = useState(true)
   const [showForm, setShowForm]       = useState(false)
   const [form, setForm]               = useState({ full_name: '', email: '', password: '', role: 'collaborateur', societe_id: '', send_invite: true })
@@ -44,7 +45,10 @@ export default function AdminUtilisateursPage() {
 
   useEffect(() => {
     fetchUsers()
-    supabase.from('societes').select('id, name').order('name').then(({ data }) => setSocietes(data || []))
+    supabase.from('societes').select('id, name, groupe_id, groupes(id, name, color)').order('name')
+      .then(({ data }) => setSocietes(data || []))
+    supabase.from('groupes').select('id, name, color').order('name')
+      .then(({ data }) => setGroupes(data || []))
   }, [])
 
   async function fetchUsers() {
@@ -236,6 +240,7 @@ export default function AdminUtilisateursPage() {
               <tr>
                 <th>Utilisateur</th>
                 <th>Société</th>
+                <th>Groupe</th>
                 <th>Rôle</th>
                 <th>Statut</th>
                 <th>Dernière connexion</th>
@@ -273,6 +278,24 @@ export default function AdminUtilisateursPage() {
                       ) : (
                         <span style={{ color: 'var(--text-muted)', fontSize: '.82rem' }}>—</span>
                       )}
+                    </td>
+                    <td>
+                      {(() => {
+                        const societe = societes.find(s => s.id === user.societe_id)
+                        const groupe = societe?.groupes
+                        return groupe ? (
+                          <span className="status-badge" style={{
+                            color: groupe.color,
+                            background: groupe.color + '18',
+                            fontSize: '.72rem',
+                            fontWeight: 600,
+                          }}>
+                            🏛 {groupe.name}
+                          </span>
+                        ) : (
+                          <span style={{ color: 'var(--text-muted)', fontSize: '.82rem' }}>—</span>
+                        )
+                      })()}
                     </td>
                     <td>
                       <select

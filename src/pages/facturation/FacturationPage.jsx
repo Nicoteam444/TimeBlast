@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect, useCallback } from 'react'
+import { useState, useMemo, useEffect, useCallback, useRef } from 'react'
 import { supabase } from '../../lib/supabase'
 import { useSociete } from '../../contexts/SocieteContext'
 
@@ -17,11 +17,33 @@ const STATUTS = [
 ]
 function statutMeta(s) { return STATUTS.find(x => x.id === s) || STATUTS[0] }
 
-// ── Prévisualisation ──────────────────────────────────────────
+// ── Prévisualisation A4 ───────────────────────────────────────
+// Dimensions de référence : A4 à 96dpi → 794 × 1123 px
+const A4_W = 794
+const A4_H = 1123
+const PAD  = 20   // marge intérieure du conteneur gris
+
 function InvoicePreview({ fac }) {
+  const containerRef = useRef(null)
+  const [scale, setScale] = useState(1)
+
+  useEffect(() => {
+    const el = containerRef.current
+    if (!el) return
+    const compute = () => {
+      const w = el.offsetWidth  - PAD * 2
+      const h = el.offsetHeight - PAD * 2
+      setScale(Math.min(w / A4_W, h / A4_H))
+    }
+    compute()
+    const obs = new ResizeObserver(compute)
+    obs.observe(el)
+    return () => obs.disconnect()
+  }, [])
+
   if (!fac) return (
-    <div className="fac-preview fac-preview--empty">
-      <div style={{ textAlign: 'center', color: '#ccc', marginTop: '4rem' }}>
+    <div ref={containerRef} className="fac-a4-container">
+      <div className="fac-a4-empty-inner">
         <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>🧾</div>
         <div>Sélectionnez une facture<br />pour la prévisualiser</div>
       </div>
@@ -31,69 +53,92 @@ function InvoicePreview({ fac }) {
   const lignes = typeof fac.lignes === 'string' ? JSON.parse(fac.lignes || '[]') : (fac.lignes || [])
   const tvaMap = {}
   for (const l of lignes) {
-    const t = parseN(l.qte) * parseN(l.pu || l.montant / parseN(l.qte) || 0)
+    const t = parseN(l.qte) * parseN(l.pu || 0)
     tvaMap[l.tva] = (tvaMap[l.tva] || 0) + t * (l.tva / 100)
   }
   const sm = statutMeta(fac.statut)
 
   return (
-    <div className="fac-preview">
-      <div className="fac-p-header">
-        <div className="fac-p-emetteur">
-          <div className="fac-p-em-name">{fac.emetteur_nom}</div>
-          {fac.emetteur_adresse && <div className="fac-p-em-addr">{fac.emetteur_adresse.split('\n').map((l,i)=><span key={i}>{l}<br/></span>)}</div>}
-          {fac.emetteur_siret && <div className="fac-p-em-detail">SIRET : {fac.emetteur_siret}</div>}
-          {fac.emetteur_email && <div className="fac-p-em-detail">{fac.emetteur_email}</div>}
-        </div>
-        <div className="fac-p-facture-box">
-          <div className="fac-p-facture-title">FACTURE</div>
-          <div className="fac-p-facture-num">{fac.num_facture}</div>
-          <div className="fac-p-facture-meta"><span>Émise le</span><strong>{new Date(fac.date_emission).toLocaleDateString('fr-FR')}</strong></div>
-          <div className="fac-p-facture-meta"><span>Échéance</span><strong>{new Date(fac.date_echeance).toLocaleDateString('fr-FR')}</strong></div>
-          <div style={{ marginTop: '.5rem', textAlign: 'right' }}>
-            <span style={{ background: sm.bg, color: sm.color, borderRadius: 4, padding: '2px 8px', fontSize: 10, fontWeight: 700 }}>{sm.label}</span>
+    <div ref={containerRef} className="fac-a4-container">
+      {/* Wrapper dimensionné exactement au scale calculé */}
+      <div
+        className="fac-a4-wrap"
+        style={{ width: A4_W * scale, height: A4_H * scale }}
+      >
+        {/* Page intérieure à taille fixe, scalée depuis le coin supérieur gauche */}
+        <div
+          className="fac-a4-paper"
+          style={{
+            width: A4_W,
+            height: A4_H,
+            transform: `scale(${scale})`,
+            transformOrigin: 'top left',
+          }}
+        >
+        {/* ── En-tête émetteur / facture ── */}
+        <div className="fac-p-header">
+          <div className="fac-p-emetteur">
+            <div className="fac-p-em-name">{fac.emetteur_nom}</div>
+            {fac.emetteur_adresse && <div className="fac-p-em-addr">{fac.emetteur_adresse.split('\n').map((l,i)=><span key={i}>{l}<br/></span>)}</div>}
+            {fac.emetteur_siret && <div className="fac-p-em-detail">SIRET : {fac.emetteur_siret}</div>}
+            {fac.emetteur_email && <div className="fac-p-em-detail">{fac.emetteur_email}</div>}
+          </div>
+          <div className="fac-p-facture-box">
+            <div className="fac-p-facture-title">FACTURE</div>
+            <div className="fac-p-facture-num">{fac.num_facture}</div>
+            <div className="fac-p-facture-meta"><span>Émise le</span><strong>{new Date(fac.date_emission).toLocaleDateString('fr-FR')}</strong></div>
+            <div className="fac-p-facture-meta"><span>Échéance</span><strong>{new Date(fac.date_echeance).toLocaleDateString('fr-FR')}</strong></div>
+            <div style={{ marginTop: '.5rem', textAlign: 'right' }}>
+              <span style={{ background: sm.bg, color: sm.color, borderRadius: 4, padding: '2px 8px', fontSize: 10, fontWeight: 700 }}>{sm.label}</span>
+            </div>
           </div>
         </div>
+
+        {/* ── Destinataire ── */}
+        <div className="fac-p-destinataire">
+          <div className="fac-p-dest-label">Facturé à</div>
+          <div className="fac-p-dest-name">{fac.client_nom}</div>
+          {fac.client_adresse && <div className="fac-p-dest-addr">{fac.client_adresse.split('\n').map((l,i)=><span key={i}>{l}<br/></span>)}</div>}
+          {fac.client_siret && <div className="fac-p-dest-detail">SIRET : {fac.client_siret}</div>}
+        </div>
+
+        {fac.objet && <div className="fac-p-objet">Objet : <strong>{fac.objet}</strong></div>}
+
+        {/* ── Lignes ── */}
+        <table className="fac-p-table">
+          <thead><tr>
+            <th>Description</th>
+            <th style={{width:60,textAlign:'center'}}>Qté</th>
+            <th style={{width:100,textAlign:'right'}}>P.U. HT</th>
+            <th style={{width:60,textAlign:'center'}}>TVA</th>
+            <th style={{width:110,textAlign:'right'}}>Total HT</th>
+          </tr></thead>
+          <tbody>{lignes.map((l,i) => (
+            <tr key={i} className={i%2===0?'fac-p-row-even':''}>
+              <td>{l.desc}</td>
+              <td style={{textAlign:'center'}}>{l.qte}</td>
+              <td style={{textAlign:'right'}}>{fmtE(parseN(l.pu))}</td>
+              <td style={{textAlign:'center'}}>{l.tva}%</td>
+              <td style={{textAlign:'right',fontWeight:600}}>{fmtE(l.montant || parseN(l.qte)*parseN(l.pu))}</td>
+            </tr>
+          ))}</tbody>
+        </table>
+
+        {/* ── Totaux ── */}
+        <div className="fac-p-totaux">
+          <div className="fac-p-total-row"><span>Total HT</span><span>{fmtE(fac.total_ht)}</span></div>
+          {Object.entries(tvaMap).filter(([,v])=>v>0).map(([r,v])=>(
+            <div key={r} className="fac-p-total-row"><span>TVA {r}%</span><span>{fmtE(v)}</span></div>
+          ))}
+          <div className="fac-p-total-row fac-p-total-ttc"><span>TOTAL TTC</span><span>{fmtE(fac.total_ttc)}</span></div>
+        </div>
+
+        {fac.notes && <div className="fac-p-notes">{fac.notes.split('\n').map((l,i)=><div key={i}>{l}</div>)}</div>}
+
+        {/* ── Pied de page collé en bas ── */}
+        <div className="fac-p-footer">{fac.emetteur_nom}{fac.emetteur_siret ? ` · SIRET ${fac.emetteur_siret}` : ''}</div>
+        </div>
       </div>
-
-      <div className="fac-p-destinataire">
-        <div className="fac-p-dest-label">Facturé à</div>
-        <div className="fac-p-dest-name">{fac.client_nom}</div>
-        {fac.client_adresse && <div className="fac-p-dest-addr">{fac.client_adresse.split('\n').map((l,i)=><span key={i}>{l}<br/></span>)}</div>}
-        {fac.client_siret && <div className="fac-p-dest-detail">SIRET : {fac.client_siret}</div>}
-      </div>
-
-      {fac.objet && <div className="fac-p-objet">Objet : <strong>{fac.objet}</strong></div>}
-
-      <table className="fac-p-table">
-        <thead><tr>
-          <th>Description</th>
-          <th style={{width:50,textAlign:'center'}}>Qté</th>
-          <th style={{width:90,textAlign:'right'}}>P.U. HT</th>
-          <th style={{width:50,textAlign:'center'}}>TVA</th>
-          <th style={{width:90,textAlign:'right'}}>Total HT</th>
-        </tr></thead>
-        <tbody>{lignes.map((l,i) => (
-          <tr key={i} className={i%2===0?'fac-p-row-even':''}>
-            <td>{l.desc}</td>
-            <td style={{textAlign:'center'}}>{l.qte}</td>
-            <td style={{textAlign:'right'}}>{fmtE(parseN(l.pu))}</td>
-            <td style={{textAlign:'center'}}>{l.tva}%</td>
-            <td style={{textAlign:'right',fontWeight:600}}>{fmtE(l.montant || parseN(l.qte)*parseN(l.pu))}</td>
-          </tr>
-        ))}</tbody>
-      </table>
-
-      <div className="fac-p-totaux">
-        <div className="fac-p-total-row"><span>Total HT</span><span>{fmtE(fac.total_ht)}</span></div>
-        {Object.entries(tvaMap).filter(([,v])=>v>0).map(([r,v])=>(
-          <div key={r} className="fac-p-total-row"><span>TVA {r}%</span><span>{fmtE(v)}</span></div>
-        ))}
-        <div className="fac-p-total-row fac-p-total-ttc"><span>TOTAL TTC</span><span>{fmtE(fac.total_ttc)}</span></div>
-      </div>
-
-      {fac.notes && <div className="fac-p-notes">{fac.notes.split('\n').map((l,i)=><div key={i}>{l}</div>)}</div>}
-      <div className="fac-p-footer">{fac.emetteur_nom}{fac.emetteur_siret ? ` · SIRET ${fac.emetteur_siret}` : ''}</div>
     </div>
   )
 }
@@ -253,13 +298,19 @@ export default function FacturationPage() {
   const [page, setPage]               = useState(1)
   const PAGE_SIZE = 50
 
-  function loadFactures() {
+  function loadFactures(keepSelection = false) {
     if (!selectedSociete?.id) { setFactures([]); setLoading(false); return }
     setLoading(true)
     supabase.from('factures').select('*')
       .eq('societe_id', selectedSociete.id)
       .order('date_emission', { ascending: false })
-      .then(({ data }) => { setFactures(data||[]); setLoading(false) })
+      .then(({ data }) => {
+        const rows = data || []
+        setFactures(rows)
+        setLoading(false)
+        // Auto-sélectionne la première facture si rien n'est sélectionné
+        if (!keepSelection && rows.length > 0) setSelected(rows[0])
+      })
   }
   useEffect(() => { loadFactures() }, [selectedSociete?.id])
 
@@ -293,7 +344,7 @@ export default function FacturationPage() {
   }, [factures])
 
   function handleSave(fac) {
-    loadFactures()
+    loadFactures(true)
     setSelected(fac)
     setModal(null)
   }
@@ -311,24 +362,34 @@ export default function FacturationPage() {
   }
 
   return (
+    <div className="fac-page">
+
+      {/* Titre de page */}
+      <div className="admin-page-header" style={{marginBottom: '1rem', flexShrink: 0}}>
+        <div>
+          <h1>Facturation</h1>
+          <p>{factures.length} facture{factures.length !== 1 ? 's' : ''}{selectedSociete ? ` · ${selectedSociete.name}` : ''}</p>
+        </div>
+        <button className="btn-primary" onClick={() => setModal('new')}>+ Nouvelle facture</button>
+      </div>
+
+      {/* KPIs — pleine largeur */}
+      <div className="fac-kpi-bar" style={{flexShrink: 0}}>
+        {STATUTS.map(s => (
+          <div key={s.id} className="fac-kpi-chip" style={{borderColor: s.color}}>
+            <span className="fac-kpi-label" style={{color: s.color}}>{s.label}</span>
+            <span className="fac-kpi-val">{fmtE(totauxStatuts[s.id]||0)}</span>
+          </div>
+        ))}
+      </div>
+
     <div className="fac-main-layout">
 
-      {/* ── COLONNE GAUCHE : header + tableau ── */}
+      {/* ── COLONNE GAUCHE : toolbar + tableau ── */}
       <div className="fac-left-col">
-
-        {/* KPIs */}
-        <div className="fac-kpi-bar">
-          {STATUTS.map(s => (
-            <div key={s.id} className="fac-kpi-chip" style={{borderColor: s.color}}>
-              <span className="fac-kpi-label" style={{color: s.color}}>{s.label}</span>
-              <span className="fac-kpi-val">{fmtE(totauxStatuts[s.id]||0)}</span>
-            </div>
-          ))}
-        </div>
 
         {/* Toolbar */}
         <div className="table-toolbar">
-          <button className="btn-primary" onClick={() => setModal('new')}>+ Nouvelle facture</button>
           <input className="table-search" value={search} onChange={e=>{setSearch(e.target.value);setPage(1)}} placeholder="Rechercher…" />
           <select className="table-pagesize" value={filterStatut} onChange={e=>{setFilterStatut(e.target.value);setPage(1)}}>
             <option value="">Tous statuts</option>
@@ -362,14 +423,14 @@ export default function FacturationPage() {
                 return (
                   <tr key={f.id} className={`users-table-row ${isSelected?'fac-row--selected':''}`}
                     onClick={() => setSelected(f)} style={{cursor:'pointer'}}>
-                    <td style={{fontWeight:600,fontSize:'.8rem'}}>{f.num_facture}</td>
+                    <td style={{fontWeight:600}}>{f.num_facture}</td>
                     <td style={{fontWeight:500}}>{f.client_nom}</td>
-                    <td style={{color:'var(--text-muted)',fontSize:'.8rem',maxWidth:150,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{f.objet}</td>
-                    <td style={{color:'var(--text-muted)',fontSize:'.8rem',whiteSpace:'nowrap'}}>{new Date(f.date_emission).toLocaleDateString('fr-FR')}</td>
-                    <td style={{color:'var(--text-muted)',fontSize:'.8rem',whiteSpace:'nowrap'}}>{new Date(f.date_echeance).toLocaleDateString('fr-FR')}</td>
+                    <td style={{color:'var(--text-muted)'}}>{f.objet}</td>
+                    <td style={{color:'var(--text-muted)'}}>{new Date(f.date_emission).toLocaleDateString('fr-FR')}</td>
+                    <td style={{color:'var(--text-muted)'}}>{new Date(f.date_echeance).toLocaleDateString('fr-FR')}</td>
                     <td><span className="fac-statut-badge" style={{color:sm.color,background:sm.bg}}>{sm.label}</span></td>
-                    <td style={{textAlign:'right',fontWeight:700,fontVariantNumeric:'tabular-nums',fontSize:'.85rem'}}>{fmtE(f.total_ttc)}</td>
-                    <td style={{whiteSpace:'nowrap'}}>
+                    <td style={{textAlign:'right',fontWeight:700,fontVariantNumeric:'tabular-nums'}}>{fmtE(f.total_ttc)}</td>
+                    <td>
                       <button className="btn-icon" title="Modifier" onClick={e=>{e.stopPropagation();setModal(f)}}>✏️</button>
                       <button className="btn-icon" title="Supprimer" onClick={e=>{e.stopPropagation();handleDelete(f.id)}}>🗑</button>
                     </td>
@@ -404,6 +465,8 @@ export default function FacturationPage() {
           <InvoicePreview fac={selected} />
         </div>
       </div>
+
+    </div>
 
       {/* Modal */}
       {modal && (

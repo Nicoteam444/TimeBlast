@@ -13,6 +13,7 @@ import AdminPage from './pages/admin/AdminPage'
 import AdminUtilisateursPage from './pages/admin/AdminUtilisateursPage'
 import AdminAuditPage from './pages/admin/AdminAuditPage'
 import AdminSocietesPage from './pages/admin/AdminSocietesPage'
+import AdminGroupesPage from './pages/admin/AdminGroupesPage'
 import ParametresPage from './pages/parametres/ParametresPage'
 import ClientDetailPage from './pages/clients/ClientDetailPage'
 import ClientsPage from './pages/temps/ClientsPage'
@@ -31,6 +32,9 @@ import ComptaEcrituresPage from './pages/compta/ComptaEcrituresPage'
 import ComptaAnalysePage from './pages/compta/ComptaAnalysePage'
 import SaisieEcriturePage from './pages/compta/SaisieEcriturePage'
 import PrevisionnelPage from './pages/finance/PrevisionnelPage'
+import TrombinosccopePage from './pages/equipe/TrombinosccopePage'
+import OrganigrammePage from './pages/equipe/OrganigrammePage'
+import NotesDeFraisPage from './pages/equipe/NotesDeFraisPage'
 import SetPasswordPage from './pages/SetPasswordPage'
 import UnauthorizedPage from './pages/UnauthorizedPage'
 import SearchPage from './pages/SearchPage'
@@ -111,6 +115,17 @@ function AppRoutes() {
         <ProtectedRoute roles={['admin','comptable']}><Layout><PrevisionnelPage /></Layout></ProtectedRoute>
       } />
 
+      {/* Équipe */}
+      <Route path="/equipe/trombinoscope" element={
+        <ProtectedRoute roles={['admin','manager']}><Layout><TrombinosccopePage /></Layout></ProtectedRoute>
+      } />
+      <Route path="/equipe/organigramme" element={
+        <ProtectedRoute roles={['admin','manager']}><Layout><OrganigrammePage /></Layout></ProtectedRoute>
+      } />
+      <Route path="/equipe/notes-de-frais" element={
+        <ProtectedRoute roles={['admin','manager','collaborateur']}><Layout><NotesDeFraisPage /></Layout></ProtectedRoute>
+      } />
+
       {/* Admin */}
       <Route path="/admin" element={
         <ProtectedRoute roles={['admin']}><Layout><AdminPage /></Layout></ProtectedRoute>
@@ -123,6 +138,9 @@ function AppRoutes() {
       } />
       <Route path="/admin/societes" element={
         <ProtectedRoute roles={['admin']}><Layout><AdminSocietesPage /></Layout></ProtectedRoute>
+      } />
+      <Route path="/admin/groupes" element={
+        <ProtectedRoute roles={['admin']}><Layout><AdminGroupesPage /></Layout></ProtectedRoute>
       } />
       <Route path="/parametres" element={
         <ProtectedRoute roles={['admin']}><Layout><ParametresPage /></Layout></ProtectedRoute>
