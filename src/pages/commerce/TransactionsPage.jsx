@@ -78,7 +78,11 @@ function KanbanColumn({ phase, cards, onDragStart, onDrop, onClick }) {
         </span>
       </div>
       <div className="kanban-col-total">
-        {total > 0 ? formatMontant(total) : <span style={{ color: 'var(--text-muted)' }}>—</span>}
+        {total > 0
+          ? <span style={{ color: phase.color, fontWeight: 700 }}>
+              {total >= 1000 ? `${Math.round(total / 1000)} k€` : formatMontant(total)}
+            </span>
+          : <span style={{ color: 'var(--text-muted)' }}>0 €</span>}
       </div>
       <div className="kanban-col-cards">
         {cards.map(t => (
@@ -108,15 +112,14 @@ export default function TransactionsPage() {
   const [view, setView] = useState('kanban')
   const dragCard = useRef(null)
 
-  useEffect(() => { fetchTransactions() }, [selectedSociete?.id])
+  useEffect(() => { fetchTransactions() }, [])
 
   async function fetchTransactions() {
     setLoading(true)
-    let query = supabase
+    const query = supabase
       .from('transactions')
       .select('*, clients(name)')
       .order('created_at', { ascending: false })
-    if (selectedSociete?.id) query = query.eq('societe_id', selectedSociete.id)
     const { data, error } = await query
     if (error) setError(error.message)
     setTransactions(data || [])
