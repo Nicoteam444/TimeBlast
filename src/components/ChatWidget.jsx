@@ -3,7 +3,8 @@ import { supabase } from '../lib/supabase'
 import { useSociete } from '../contexts/SocieteContext'
 import { useAuth } from '../contexts/AuthContext'
 
-const API_KEY = import.meta.env.VITE_OPENAI_API_KEY
+const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL
+const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY
 
 function buildSystemPrompt(societe, ctx) {
   const lines = [
@@ -111,11 +112,6 @@ export default function ChatWidget() {
     const text = input.trim()
     if (!text || loading) return
 
-    if (!API_KEY) {
-      setError('Clé API OpenAI non configurée (VITE_OPENAI_API_KEY manquante).')
-      return
-    }
-
     setError(null)
     setInput('')
     const userMsg = { role: 'user', content: text }
@@ -133,27 +129,24 @@ export default function ChatWidget() {
 
       abortRef.current = new AbortController()
 
-      const response = await fetch('https://api.openai.com/v1/chat/completions', {
+      const { data: { session } } = await supabase.auth.getSession()
+      const response = await fetch(`${SUPABASE_URL}/functions/v1/chat-ai`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${API_KEY}`,
+          'Authorization': `Bearer ${session?.access_token || ''}`,
+          'apikey': SUPABASE_ANON_KEY,
         },
         body: JSON.stringify({
-          model: 'gpt-4o-mini',
-          max_tokens: 1024,
-          stream: true,
-          messages: [
-            { role: 'system', content: systemPrompt },
-            ...newMessages.map(m => ({ role: m.role, content: m.content })),
-          ],
+          system: systemPrompt,
+          messages: newMessages.map(m => ({ role: m.role, content: m.content })),
         }),
         signal: abortRef.current.signal,
       })
 
       if (!response.ok) {
         const errBody = await response.json().catch(() => ({}))
-        throw new Error(errBody?.error?.message || `HTTP ${response.status}`)
+        throw new Error(errBody?.error || `HTTP ${response.status}`)
       }
 
       const reader = response.body.getReader()
@@ -174,13 +167,13 @@ export default function ChatWidget() {
           if (data === '[DONE]') continue
           try {
             const evt = JSON.parse(data)
-            const delta = evt.choices?.[0]?.delta?.content
-            if (delta) {
+            // Claude streaming format: content_block_delta events
+            if (evt.type === 'content_block_delta' && evt.delta?.text) {
               setMessages(prev => {
                 const updated = [...prev]
                 updated[updated.length - 1] = {
                   ...updated[updated.length - 1],
-                  content: updated[updated.length - 1].content + delta,
+                  content: updated[updated.length - 1].content + evt.delta.text,
                 }
                 return updated
               })
@@ -190,7 +183,7 @@ export default function ChatWidget() {
       }
     } catch (err) {
       if (err.name === 'AbortError') return
-      console.error('OpenAI API error', err)
+      console.error('Claude API error', err)
       setMessages(prev => {
         const updated = [...prev]
         updated[updated.length - 1] = {
