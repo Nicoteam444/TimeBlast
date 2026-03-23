@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { supabase } from '../../lib/supabase'
 import { useSociete } from '../../contexts/SocieteContext'
 
@@ -27,6 +28,7 @@ function SortIcon({ active, dir }) {
 }
 
 export default function EquipePage() {
+  const navigate = useNavigate()
   const { selectedSociete } = useSociete()
   const [equipe, setEquipe]       = useState([])
   const [loading, setLoading]     = useState(true)
@@ -181,7 +183,7 @@ export default function EquipePage() {
                   const initials = `${e.prenom[0] || ''}${e.nom[0] || ''}`.toUpperCase()
                   const anc = calcAnciennete(e.date_embauche)
                   return (
-                    <tr key={e.id}>
+                    <tr key={e.id} style={{ cursor: 'pointer' }} onClick={() => navigate(`/equipe/collaborateurs/${e.id}`)}>
                       <td>
                         <div className="user-cell">
                           <span className="user-avatar" style={{ background: avatarColor(e.poste), fontSize: '.72rem' }}>
