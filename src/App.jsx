@@ -24,6 +24,9 @@ import TransactionDetailPage from './pages/commerce/TransactionDetailPage'
 import ProjetsWrapper from './pages/commerce/ProjetsWrapper'
 import AchatsPage from './pages/commerce/AchatsPage'
 import StockPage from './pages/commerce/StockPage'
+import ProduitsPage from './pages/commerce/ProduitsPage'
+import AbonnementsPage from './pages/commerce/AbonnementsPage'
+import ReportingPage from './pages/activite/ReportingPage'
 import SaisiePage from './pages/activite/SaisiePage'
 import EquipePage from './pages/activite/EquipePage'
 import ValidationPage from './pages/manager/ValidationPage'
@@ -83,6 +86,12 @@ function AppRoutes() {
       <Route path="/commerce/stock" element={
         <ProtectedRoute roles={['admin','manager','comptable']}><Layout><StockPage /></Layout></ProtectedRoute>
       } />
+      <Route path="/commerce/produits" element={
+        <ProtectedRoute roles={['admin','manager','comptable']}><Layout><ProduitsPage /></Layout></ProtectedRoute>
+      } />
+      <Route path="/commerce/abonnements" element={
+        <ProtectedRoute roles={['admin','manager','comptable']}><Layout><AbonnementsPage /></Layout></ProtectedRoute>
+      } />
 
       {/* Activité */}
       <Route path="/activite/saisie" element={
@@ -102,6 +111,9 @@ function AppRoutes() {
       } />
       <Route path="/activite/equipe" element={
         <ProtectedRoute roles={['admin','manager']}><Layout><EquipePage /></Layout></ProtectedRoute>
+      } />
+      <Route path="/activite/reporting" element={
+        <ProtectedRoute roles={['admin','manager']}><Layout><ReportingPage /></Layout></ProtectedRoute>
       } />
 
       {/* Finance */}

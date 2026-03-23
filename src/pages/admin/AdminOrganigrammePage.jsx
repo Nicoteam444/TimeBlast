@@ -401,7 +401,7 @@ function AddNodeModal({ onClose, onAdd, societes }) {
               <select value={form.societe_id} onChange={e => setForm(f => ({ ...f, societe_id: e.target.value }))}>
                 <option value="">— Aucune —</option>
                 {societes.map(s => (
-                  <option key={s.id} value={s.id}>{s.nom}</option>
+                  <option key={s.id} value={s.id}>{s.name}</option>
                 ))}
               </select>
             </label>
@@ -528,7 +528,7 @@ function EditNodeModal({ node, onClose, onSave, onDelete, societes }) {
               <select value={form.societe_id} onChange={e => setForm(f => ({ ...f, societe_id: e.target.value }))}>
                 <option value="">— Aucune —</option>
                 {societes.map(s => (
-                  <option key={s.id} value={s.id}>{s.nom}</option>
+                  <option key={s.id} value={s.id}>{s.name}</option>
                 ))}
               </select>
             </label>
@@ -656,7 +656,7 @@ function PropertiesPanel({ node, onUpdate, onDelete, societes }) {
           <select value={societeId} onChange={e => applySociete(e.target.value)}>
             <option value="">— Aucune —</option>
             {societes.map(s => (
-              <option key={s.id} value={s.id}>{s.nom}</option>
+              <option key={s.id} value={s.id}>{s.name}</option>
             ))}
           </select>
         </div>
@@ -740,9 +740,9 @@ export default function AdminOrganigrammePage() {
 
       // Load societes & groupes
       try {
-        const { data: sData } = await supabase.from('societes').select('id, nom, color').order('nom')
+        const { data: sData } = await supabase.from('societes').select('id, name, groupe_id').order('name')
         if (sData) fetchedSocietes = sData
-        const { data: gData } = await supabase.from('groupes').select('id, nom, color').order('nom')
+        const { data: gData } = await supabase.from('groupes').select('id, name, color').order('name')
         if (gData) fetchedGroupes = gData
       } catch { /* ignore network errors */ }
 
@@ -759,7 +759,7 @@ export default function AdminOrganigrammePage() {
         if (nErr && nErr.code === '42P01') {
           // Table doesn't exist
           setShowSql(true)
-        } else if (nData) {
+        } else if (nData && nData.length > 0) {
           const { data: eData } = await supabase
             .from('org_edges')
             .select('*')
@@ -783,6 +783,9 @@ export default function AdminOrganigrammePage() {
           setEdges(eData || [])
           setSupabaseAvail(true)
           loaded = true
+        } else if (nData) {
+          // Table exists but empty — mark Supabase as available for saving
+          setSupabaseAvail(true)
         }
       } catch {
         setShowSql(true)

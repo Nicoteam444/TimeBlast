@@ -20,8 +20,9 @@ const SECTIONS = [
     label: 'Activité',
     roles: ['admin', 'manager', 'collaborateur'],
     items: [
-      { to: '/activite/planification', icon: '📅', label: 'Planification', roles: ['admin', 'manager'] },
+      { to: '/activite/planification', icon: '📅', label: 'Planification',      roles: ['admin', 'manager'] },
       { to: '/activite/projets',       icon: '📁', label: 'Gestion de projet' },
+      { to: '/activite/reporting',     icon: '📊', label: 'Reporting temps',    roles: ['admin', 'manager'] },
     ],
   },
   {
@@ -46,6 +47,8 @@ const SECTIONS = [
     items: [
       { to: '/commerce/clients',      icon: '👤', label: 'Clients' },
       { to: '/commerce/transactions', icon: '💼', label: 'Transactions',  roles: ['admin', 'manager'] },
+      { to: '/commerce/produits',     icon: '🏷️', label: 'Produits',      roles: ['admin', 'manager', 'comptable'] },
+      { to: '/commerce/abonnements',  icon: '🔄', label: 'Abonnements',   roles: ['admin', 'manager', 'comptable'] },
       { to: '/commerce/achats',       icon: '🛒', label: 'Achats',        roles: ['admin', 'manager', 'comptable'] },
       { to: '/commerce/stock',        icon: '📦', label: 'Stock',         roles: ['admin', 'manager', 'comptable'] },
     ],

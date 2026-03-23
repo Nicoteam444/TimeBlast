@@ -1,15 +1,15 @@
-import { useState, useEffect, useMemo } from 'react'
+import { useState, useEffect, useMemo, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { supabase } from '../../lib/supabase'
 import ClientAutocomplete from '../../components/ClientAutocomplete'
 import { useSociete } from '../../contexts/SocieteContext'
 
 const PHASES = [
-  { id: 'qualification',   label: 'Qualification',    color: '#6366f1', bg: '#eef2ff' },
-  { id: 'short_list',      label: 'Short list',       color: '#f59e0b', bg: '#fffbeb' },
-  { id: 'ferme_a_gagner',  label: 'Ferme à gagner',   color: '#0ea5e9', bg: '#f0f9ff' },
-  { id: 'ferme',           label: 'Ferme',             color: '#16a34a', bg: '#f0fdf4' },
-  { id: 'perdu',           label: 'Perdu',             color: '#dc2626', bg: '#fef2f2' },
+  { id: 'qualification',  label: 'Qualification',   color: '#6366f1', bg: '#eef2ff' },
+  { id: 'short_list',     label: 'Short list',      color: '#f59e0b', bg: '#fffbeb' },
+  { id: 'ferme_a_gagner', label: 'Fermé à gagner',  color: '#0ea5e9', bg: '#f0f9ff' },
+  { id: 'ferme',          label: 'Fermé ✓',         color: '#16a34a', bg: '#f0fdf4' },
+  { id: 'perdu',          label: 'Perdu',            color: '#dc2626', bg: '#fef2f2' },
 ]
 
 export function phaseInfo(id) {
@@ -21,6 +21,78 @@ const EMPTY_FORM = {
   date_fermeture_prevue: '', notes: '',
 }
 
+function formatMontant(v) {
+  if (!v && v !== 0) return '—'
+  return new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 }).format(v)
+}
+function formatDate(d) {
+  if (!d) return '—'
+  return new Date(d).toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric' })
+}
+
+// ── Kanban Card ──────────────────────────────────────────────────────────────
+function KanbanCard({ t, onDragStart, onClick }) {
+  const p = phaseInfo(t.phase)
+  const overdue = t.date_fermeture_prevue && new Date(t.date_fermeture_prevue) < new Date()
+  return (
+    <div
+      className="kanban-card"
+      draggable
+      onDragStart={() => onDragStart(t)}
+      onClick={() => onClick(t.id)}
+    >
+      <div className="kanban-card-name">{t.name}</div>
+      {t.clients?.name && (
+        <div className="kanban-card-client">👤 {t.clients.name}</div>
+      )}
+      <div className="kanban-card-footer">
+        {t.montant ? (
+          <span className="kanban-card-montant">{formatMontant(t.montant)}</span>
+        ) : <span />}
+        {t.date_fermeture_prevue && (
+          <span className={`kanban-card-date ${overdue && t.phase !== 'perdu' ? 'kanban-card-date--overdue' : ''}`}>
+            📅 {formatDate(t.date_fermeture_prevue)}
+          </span>
+        )}
+      </div>
+    </div>
+  )
+}
+
+// ── Kanban Column ─────────────────────────────────────────────────────────────
+function KanbanColumn({ phase, cards, onDragStart, onDrop, onClick }) {
+  const [dragOver, setDragOver] = useState(false)
+  const total = cards.reduce((s, c) => s + (c.montant || 0), 0)
+
+  return (
+    <div
+      className={`kanban-col ${dragOver ? 'kanban-col--dragover' : ''}`}
+      onDragOver={e => { e.preventDefault(); setDragOver(true) }}
+      onDragLeave={() => setDragOver(false)}
+      onDrop={e => { e.preventDefault(); setDragOver(false); onDrop(phase.id) }}
+    >
+      <div className="kanban-col-header" style={{ borderTopColor: phase.color }}>
+        <span className="kanban-col-title">{phase.label}</span>
+        <span className="kanban-col-count" style={{ background: phase.bg, color: phase.color }}>
+          {cards.length}
+        </span>
+      </div>
+      <div className="kanban-col-total">
+        {total > 0 ? formatMontant(total) : <span style={{ color: 'var(--text-muted)' }}>—</span>}
+      </div>
+      <div className="kanban-col-cards">
+        {cards.map(t => (
+          <KanbanCard key={t.id} t={t} onDragStart={onDragStart} onClick={onClick} />
+        ))}
+        {cards.length === 0 && (
+          <div className="kanban-col-empty">Déposez ici</div>
+        )}
+      </div>
+    </div>
+  )
+}
+
+// ── Main Page ─────────────────────────────────────────────────────────────────
 export default function TransactionsPage() {
   const navigate = useNavigate()
   const { selectedSociete } = useSociete()
@@ -33,6 +105,8 @@ export default function TransactionsPage() {
   const [filter, setFilter] = useState('')
   const [pageSize, setPageSize] = useState(20)
   const [page, setPage] = useState(1)
+  const [view, setView] = useState('kanban')
+  const dragCard = useRef(null)
 
   useEffect(() => { fetchTransactions() }, [selectedSociete?.id])
 
@@ -61,20 +135,18 @@ export default function TransactionsPage() {
       notes: form.notes || null,
     })
     if (error) { setError(error.message); return }
-    setShowForm(false)
-    setForm(EMPTY_FORM)
-    setSelectedClient(null)
+    setShowForm(false); setForm(EMPTY_FORM); setSelectedClient(null)
     fetchTransactions()
   }
 
-  function formatMontant(v) {
-    if (!v) return '—'
-    return new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 }).format(v)
-  }
-
-  function formatDate(d) {
-    if (!d) return '—'
-    return new Date(d).toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric' })
+  async function handleDrop(targetPhase) {
+    const card = dragCard.current
+    if (!card || card.phase === targetPhase) return
+    const { error } = await supabase.from('transactions').update({ phase: targetPhase }).eq('id', card.id)
+    if (!error) {
+      setTransactions(prev => prev.map(t => t.id === card.id ? { ...t, phase: targetPhase } : t))
+    }
+    dragCard.current = null
   }
 
   const filtered = useMemo(() => {
@@ -87,24 +159,37 @@ export default function TransactionsPage() {
   const totalPages = Math.ceil(filtered.length / pageSize)
   const paginated = filtered.slice((page - 1) * pageSize, page * pageSize)
 
-  function handleFilterChange(e) { setFilter(e.target.value); setPage(1) }
-  function handlePageSizeChange(e) { setPageSize(Number(e.target.value)); setPage(1) }
+  // KPI totaux pipeline actif (hors perdu)
+  const pipeline = transactions.filter(t => t.phase !== 'perdu').reduce((s, t) => s + (t.montant || 0), 0)
+  const gained = transactions.filter(t => t.phase === 'ferme').reduce((s, t) => s + (t.montant || 0), 0)
 
   return (
     <div className="admin-page">
       <div className="admin-page-header">
         <div>
           <h1>Transactions</h1>
-          <p>
-            {filtered.length} transaction{filtered.length > 1 ? 's' : ''}{filter ? ` sur ${transactions.length}` : ''}
-            {selectedSociete && (
-              <span style={{ marginLeft: '.5rem', padding: '.1rem .5rem', background: 'var(--primary-light, #eef2ff)', color: 'var(--primary)', borderRadius: 4, fontSize: '.8rem', fontWeight: 500 }}>
-                {selectedSociete.name}
-              </span>
-            )}
+          <p style={{ display: 'flex', alignItems: 'center', gap: '.5rem', flexWrap: 'wrap' }}>
+            <span>{transactions.length} transaction{transactions.length > 1 ? 's' : ''}</span>
+            {pipeline > 0 && <span style={{ padding: '.1rem .5rem', background: '#eef2ff', color: '#6366f1', borderRadius: 4, fontSize: '.8rem', fontWeight: 600 }}>Pipeline : {formatMontant(pipeline)}</span>}
+            {gained > 0 && <span style={{ padding: '.1rem .5rem', background: '#f0fdf4', color: '#16a34a', borderRadius: 4, fontSize: '.8rem', fontWeight: 600 }}>Gagné : {formatMontant(gained)}</span>}
           </p>
         </div>
-        <button className="btn-primary" onClick={() => setShowForm(true)}>+ Nouvelle transaction</button>
+        <div style={{ display: 'flex', gap: '.5rem', alignItems: 'center' }}>
+          {/* View toggle */}
+          <div className="view-toggle">
+            <button
+              className={`view-toggle-btn ${view === 'kanban' ? 'view-toggle-btn--active' : ''}`}
+              onClick={() => setView('kanban')}
+              title="Vue Kanban"
+            >⊞ Kanban</button>
+            <button
+              className={`view-toggle-btn ${view === 'list' ? 'view-toggle-btn--active' : ''}`}
+              onClick={() => setView('list')}
+              title="Vue liste"
+            >☰ Liste</button>
+          </div>
+          <button className="btn-primary" onClick={() => setShowForm(true)}>+ Nouvelle</button>
+        </div>
       </div>
 
       {/* Modale création */}
@@ -118,7 +203,8 @@ export default function TransactionsPage() {
             <form onSubmit={handleCreate}>
               <div className="field">
                 <label>Nom de la transaction</label>
-                <input type="text" value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))}
+                <input type="text" value={form.name}
+                  onChange={e => setForm(f => ({ ...f, name: e.target.value }))}
                   placeholder="Ex : Refonte SI Groupe SRA" required autoFocus />
               </div>
               <div className="field">
@@ -167,60 +253,68 @@ export default function TransactionsPage() {
       {error && (
         <div style={{ background: '#fef2f2', border: '1px solid #fca5a5', borderRadius: 8, padding: '1rem', margin: '1rem 0', color: '#dc2626', fontSize: '.9rem' }}>
           <strong>Erreur :</strong> {error}
-          {error.includes('relation') && <span> — La table <code>transactions</code> n'existe pas encore. Lance le SQL dans Supabase.</span>}
         </div>
       )}
 
-      {/* Toolbar */}
-      <div className="table-toolbar">
-        <input className="table-search" type="text" placeholder="Filtrer par nom ou client..."
-          value={filter} onChange={handleFilterChange} />
-        <div className="table-pagesize">
-          <label>Afficher</label>
-          <select value={pageSize} onChange={handlePageSizeChange}>
-            <option value={10}>10</option>
-            <option value={20}>20</option>
-            <option value={50}>50</option>
-          </select>
-          <span>lignes</span>
-        </div>
-      </div>
-
       {loading ? <div className="loading-inline">Chargement...</div> : (
-        <>
-          <div className="transactions-list">
-            <div className="transactions-header-row">
-              <span>Transaction</span>
-              <span>Client</span>
-              <span>Phase</span>
-              <span>Montant</span>
-              <span>Fermeture</span>
-            </div>
-            {paginated.map(t => {
-              const p = phaseInfo(t.phase)
-              return (
-                <div key={t.id} className="transaction-row" onClick={() => navigate(`/commerce/transactions/${t.id}`)}>
-                  <span className="transaction-name">{t.name}</span>
-                  <span className="transaction-client">{t.clients?.name || '—'}</span>
-                  <span><span className="status-badge" style={{ color: p.color, background: p.bg }}>{p.label}</span></span>
-                  <span className="transaction-montant">{formatMontant(t.montant)}</span>
-                  <span className="transaction-date">{formatDate(t.date_fermeture_prevue)}</span>
-                </div>
-              )
-            })}
-            {paginated.length === 0 && (
-              <p className="empty-state">Aucune transaction trouvée.</p>
-            )}
+        view === 'kanban' ? (
+          // ── KANBAN VIEW ──
+          <div className="kanban-board">
+            {PHASES.map(phase => (
+              <KanbanColumn
+                key={phase.id}
+                phase={phase}
+                cards={filtered.filter(t => t.phase === phase.id)}
+                onDragStart={t => { dragCard.current = t }}
+                onDrop={handleDrop}
+                onClick={id => navigate(`/commerce/transactions/${id}`)}
+              />
+            ))}
           </div>
-
-          {totalPages > 1 && (
-            <div className="table-pagination">
-              <button className="btn-secondary" disabled={page === 1} onClick={() => setPage(p => p - 1)}>← Précédent</button>
-              <span>Page {page} / {totalPages}</span>
-              <button className="btn-secondary" disabled={page === totalPages} onClick={() => setPage(p => p + 1)}>Suivant →</button>
+        ) : (
+          // ── LIST VIEW ──
+          <>
+            <div className="table-toolbar">
+              <input className="table-search" type="text" placeholder="Filtrer par nom ou client..."
+                value={filter} onChange={e => { setFilter(e.target.value); setPage(1) }} />
+              <div className="table-pagesize">
+                <label>Afficher</label>
+                <select value={pageSize} onChange={e => { setPageSize(Number(e.target.value)); setPage(1) }}>
+                  <option value={10}>10</option>
+                  <option value={20}>20</option>
+                  <option value={50}>50</option>
+                </select>
+                <span>lignes</span>
+              </div>
             </div>
-          )}
-        </>
+            <div className="transactions-list">
+              <div className="transactions-header-row">
+                <span>Transaction</span><span>Client</span><span>Phase</span>
+                <span>Montant</span><span>Fermeture</span>
+              </div>
+              {paginated.map(t => {
+                const p = phaseInfo(t.phase)
+                return (
+                  <div key={t.id} className="transaction-row" onClick={() => navigate(`/commerce/transactions/${t.id}`)}>
+                    <span className="transaction-name">{t.name}</span>
+                    <span className="transaction-client">{t.clients?.name || '—'}</span>
+                    <span><span className="status-badge" style={{ color: p.color, background: p.bg }}>{p.label}</span></span>
+                    <span className="transaction-montant">{formatMontant(t.montant)}</span>
+                    <span className="transaction-date">{formatDate(t.date_fermeture_prevue)}</span>
+                  </div>
+                )
+              })}
+              {paginated.length === 0 && <p className="empty-state">Aucune transaction trouvée.</p>}
+            </div>
+            {totalPages > 1 && (
+              <div className="table-pagination">
+                <button className="btn-secondary" disabled={page === 1} onClick={() => setPage(p => p - 1)}>← Précédent</button>
+                <span>Page {page} / {totalPages}</span>
+                <button className="btn-secondary" disabled={page === totalPages} onClick={() => setPage(p => p + 1)}>Suivant →</button>
+              </div>
+            )}
+          </>
+        )
       )}
     </div>
   )
