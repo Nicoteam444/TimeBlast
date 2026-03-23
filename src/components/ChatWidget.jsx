@@ -6,37 +6,129 @@ import { useAuth } from '../contexts/AuthContext'
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL
 const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY
 
+function fmtEur(n) {
+  return (n || 0).toLocaleString('fr-FR', { style: 'currency', currency: 'EUR' })
+}
+
 function buildSystemPrompt(societe, ctx) {
   const lines = [
-    `Tu es un assistant intelligent intégré à la plateforme TimeBlast, un outil de gestion du temps et des activités.`,
+    `Tu es un assistant intelligent intégré à la plateforme TimeBlast, un outil de gestion du temps, de la facturation et de la comptabilité.`,
     `Tu réponds toujours en français, de façon concise et professionnelle.`,
+    `Tu as accès aux données réelles de la société ci-dessous. Utilise-les pour répondre précisément.`,
     ``,
-    `=== CONTEXTE PLATEFORME ===`,
-    societe
-      ? `Société active : ${societe.name} (ID: ${societe.id})`
-      : `Aucune société sélectionnée.`,
+    `=== SOCIÉTÉ ACTIVE ===`,
+    societe ? `${societe.name}` : `Aucune société sélectionnée.`,
     ``,
-    `=== DONNÉES DE LA SOCIÉTÉ ===`,
-    `• Clients : ${ctx.nbClients} client${ctx.nbClients !== 1 ? 's' : ''}`,
-    `• Transactions : ${ctx.nbTransactions} transaction${ctx.nbTransactions !== 1 ? 's' : ''}`,
-    `  - Montant total : ${ctx.totalTransactions.toLocaleString('fr-FR', { style: 'currency', currency: 'EUR' })}`,
-    `• Équipe : ${ctx.nbEquipe} collaborateur${ctx.nbEquipe !== 1 ? 's' : ''}`,
-    `• Projets actifs : ${ctx.nbProjets}`,
+
+    // --- Clients ---
+    `=== CLIENTS (${ctx.clients?.length || 0}) ===`,
+    ctx.clients?.length > 0
+      ? ctx.clients.map(c => `• ${c.name}${c.ville ? ' — ' + c.ville : ''}`).join('\n')
+      : `Aucun client.`,
     ``,
-    `=== DONNÉES FINANCIÈRES (FEC) ===`,
-    ctx.fecImports.length > 0
+
+    // --- Transactions / Pipeline ---
+    `=== TRANSACTIONS (${ctx.transactions?.length || 0}) ===`,
+    ctx.transactions?.length > 0
+      ? [
+          `Pipeline total : ${fmtEur(ctx.transactions.reduce((s, t) => s + (parseFloat(t.montant) || 0), 0))}`,
+          ...ctx.transactions.slice(0, 30).map(t =>
+            `• ${t.nom || '—'} | ${t.client_name || '—'} | ${fmtEur(t.montant)} | ${t.statut || '—'}`
+          ),
+          ctx.transactions.length > 30 ? `  ... et ${ctx.transactions.length - 30} autres` : '',
+        ].filter(Boolean).join('\n')
+      : `Aucune transaction.`,
+    ``,
+
+    // --- Projets ---
+    `=== PROJETS (${ctx.projets?.length || 0}) ===`,
+    ctx.projets?.length > 0
+      ? ctx.projets.slice(0, 30).map(p =>
+          `• ${p.name}${p.client_name ? ' — client: ' + p.client_name : ''} | ${p.statut || 'actif'}`
+        ).join('\n')
+      : `Aucun projet.`,
+    ``,
+
+    // --- Factures ---
+    `=== FACTURES (${ctx.factures?.length || 0}) ===`,
+    ctx.factures?.length > 0
+      ? [
+          ...ctx.factures.slice(0, 20).map(f =>
+            `• ${f.numero || '—'} | ${f.client_name || '—'} | ${fmtEur(f.montant_ttc)} | ${f.statut || '—'} | ${f.date_emission || '—'}`
+          ),
+          `Brouillon: ${fmtEur(ctx.factures.filter(f => f.statut === 'brouillon').reduce((s, f) => s + (parseFloat(f.montant_ttc) || 0), 0))}`,
+          `Envoyées: ${fmtEur(ctx.factures.filter(f => f.statut === 'envoyee').reduce((s, f) => s + (parseFloat(f.montant_ttc) || 0), 0))}`,
+          `Payées: ${fmtEur(ctx.factures.filter(f => f.statut === 'payee').reduce((s, f) => s + (parseFloat(f.montant_ttc) || 0), 0))}`,
+          `En retard: ${fmtEur(ctx.factures.filter(f => f.statut === 'en_retard').reduce((s, f) => s + (parseFloat(f.montant_ttc) || 0), 0))}`,
+        ].join('\n')
+      : `Aucune facture.`,
+    ``,
+
+    // --- Équipe ---
+    `=== ÉQUIPE (${ctx.equipe?.length || 0} collaborateurs) ===`,
+    ctx.equipe?.length > 0
+      ? ctx.equipe.slice(0, 30).map(e =>
+          `• ${e.full_name || '—'} | ${e.poste || '—'}`
+        ).join('\n')
+      : `Aucun collaborateur.`,
+    ``,
+
+    // --- Immobilisations ---
+    `=== IMMOBILISATIONS (${ctx.immos?.length || 0}) ===`,
+    ctx.immos?.length > 0
+      ? [
+          `Valeur brute totale : ${fmtEur(ctx.immos.reduce((s, i) => s + (parseFloat(i.valeur_brute) || 0), 0))}`,
+          ...ctx.immos.slice(0, 20).map(i =>
+            `• ${i.libelle} | ${i.categorie || '—'} | ${fmtEur(i.valeur_brute)} | ${i.statut || 'actif'}`
+          ),
+        ].join('\n')
+      : `Aucune immobilisation.`,
+    ``,
+
+    // --- Achats ---
+    `=== ACHATS (${ctx.achats?.length || 0}) ===`,
+    ctx.achats?.length > 0
+      ? [
+          `Total achats : ${fmtEur(ctx.achats.reduce((s, a) => s + (parseFloat(a.montant) || 0), 0))}`,
+          ...ctx.achats.slice(0, 15).map(a =>
+            `• ${a.fournisseur || '—'} | ${a.reference || '—'} | ${fmtEur(a.montant)} | ${a.categorie || '—'}`
+          ),
+        ].join('\n')
+      : `Aucun achat.`,
+    ``,
+
+    // --- FEC ---
+    `=== DONNÉES COMPTABLES (FEC) ===`,
+    ctx.fecImports?.length > 0
       ? ctx.fecImports.map(f => {
           const meta = typeof f.meta === 'string' ? JSON.parse(f.meta) : f.meta
-          return `  - Exercice ${meta?.exercice || '?'} : ${meta?.nb_lignes || '?'} écritures importées`
+          return `• Exercice ${meta?.exercice || '?'} : ${meta?.nb_lignes || '?'} écritures`
         }).join('\n')
-      : `  Aucun import FEC disponible.`,
+      : `Aucun import FEC.`,
     ``,
+
+    // --- Saisies temps ---
+    `=== SAISIES TEMPS (semaine en cours) ===`,
+    ctx.saisies?.length > 0
+      ? `${ctx.saisies.reduce((s, st) => s + (parseFloat(st.heures) || 0), 0)}h saisies cette semaine sur ${ctx.saisies.length} entrée(s)`
+      : `Aucune saisie cette semaine.`,
+    ``,
+
     `=== INSTRUCTIONS ===`,
-    `Réponds uniquement aux questions relatives aux données ci-dessus ou à la gestion du temps/activité.`,
-    `Si une question dépasse tes données, indique-le poliment.`,
+    `Réponds aux questions en utilisant les données réelles ci-dessus.`,
+    `Sois précis avec les chiffres. Si une donnée manque, dis-le.`,
     `Ne génère jamais de fausses données.`,
   ]
   return lines.join('\n')
+}
+
+const HISTORY_KEY = 'timeblast_chat_history'
+
+function loadHistory() {
+  try { return JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]') } catch { return [] }
+}
+function saveHistory(history) {
+  try { localStorage.setItem(HISTORY_KEY, JSON.stringify(history.slice(0, 20))) } catch {}
 }
 
 export default function ChatWidget() {
@@ -50,10 +142,34 @@ export default function ChatWidget() {
   const [ctx, setCtx] = useState(null)
   const [ctxLoading, setCtxLoading] = useState(false)
   const [error, setError] = useState(null)
+  const [showHistory, setShowHistory] = useState(false)
+  const [history, setHistory] = useState(() => loadHistory())
+  const [activeConvId, setActiveConvId] = useState(null)
 
   const messagesEndRef = useRef(null)
   const inputRef = useRef(null)
   const abortRef = useRef(null)
+
+  // Sauvegarder la conversation active dans l'historique
+  useEffect(() => {
+    if (messages.length < 2) return // au moins 1 user + 1 assistant
+    const lastAssistant = messages.filter(m => m.role === 'assistant' && m.content && !m.isError)
+    if (lastAssistant.length === 0) return
+
+    const title = messages.find(m => m.role === 'user')?.content?.slice(0, 50) || 'Conversation'
+    const convId = activeConvId || Date.now().toString()
+    if (!activeConvId) setActiveConvId(convId)
+
+    setHistory(prev => {
+      const existing = prev.filter(c => c.id !== convId)
+      const updated = [
+        { id: convId, title, messages, date: new Date().toISOString(), societe: selectedSociete?.name },
+        ...existing,
+      ].slice(0, 20)
+      saveHistory(updated)
+      return updated
+    })
+  }, [messages])
 
   useEffect(() => {
     if (!open) return
@@ -74,35 +190,51 @@ export default function ChatWidget() {
       const sid = selectedSociete?.id
       const filter = q => sid ? q.eq('societe_id', sid) : q
 
-      const [
-        { count: nbClients },
-        { count: nbTransactions },
-        { data: transactions },
-        { count: nbEquipe },
-        { count: nbProjets },
-        { data: fecImports },
-      ] = await Promise.all([
-        filter(supabase.from('clients').select('*', { count: 'exact', head: true })),
-        filter(supabase.from('transactions').select('*', { count: 'exact', head: true })),
-        filter(supabase.from('transactions').select('montant')),
-        filter(supabase.from('equipe').select('*', { count: 'exact', head: true })),
-        filter(supabase.from('projets').select('*', { count: 'exact', head: true })),
-        filter(supabase.from('fec_imports').select('meta').order('created_at', { ascending: false }).limit(5)),
+      // Helper pour requêtes sécurisées (table peut ne pas exister)
+      const safeQuery = async (query) => {
+        try { const { data } = await query; return data || [] }
+        catch { return [] }
+      }
+
+      // Semaine en cours pour saisies temps
+      const now = new Date()
+      const day = now.getDay()
+      const monday = new Date(now)
+      monday.setDate(now.getDate() - (day === 0 ? 6 : day - 1))
+      const sunday = new Date(monday)
+      sunday.setDate(monday.getDate() + 6)
+      const toISO = d => d.toISOString().slice(0, 10)
+
+      const [clients, transactions, projets, factures, equipe, immos, achats, fecImports, saisies] = await Promise.all([
+        safeQuery(filter(supabase.from('clients').select('name, ville').order('name').limit(50))),
+        safeQuery(filter(supabase.from('transactions').select('nom, montant, statut, clients(name)').order('created_at', { ascending: false }).limit(50))),
+        safeQuery(filter(supabase.from('projets').select('name, statut, clients(name)').order('name').limit(50))),
+        safeQuery(filter(supabase.from('factures').select('numero, montant_ttc, statut, date_emission, clients(name)').order('date_emission', { ascending: false }).limit(30))),
+        safeQuery(filter(supabase.from('equipe').select('full_name, poste').order('full_name').limit(50))),
+        safeQuery(filter(supabase.from('immobilisations').select('libelle, categorie, valeur_brute, statut').order('libelle').limit(30))),
+        safeQuery(filter(supabase.from('achats').select('fournisseur, reference, montant, categorie').order('created_at', { ascending: false }).limit(20))),
+        safeQuery(filter(supabase.from('fec_imports').select('meta').order('created_at', { ascending: false }).limit(5))),
+        safeQuery(
+          profile?.id
+            ? supabase.from('saisies_temps').select('heures, date').eq('user_id', profile.id).gte('date', toISO(monday)).lte('date', toISO(sunday))
+            : Promise.resolve({ data: [] })
+        ),
       ])
 
-      const totalTransactions = (transactions || []).reduce((sum, t) => sum + (parseFloat(t.montant) || 0), 0)
-
       setCtx({
-        nbClients: nbClients || 0,
-        nbTransactions: nbTransactions || 0,
-        totalTransactions,
-        nbEquipe: nbEquipe || 0,
-        nbProjets: nbProjets || 0,
-        fecImports: fecImports || [],
+        clients,
+        transactions: transactions.map(t => ({ ...t, client_name: t.clients?.name })),
+        projets: projets.map(p => ({ ...p, client_name: p.clients?.name })),
+        factures: factures.map(f => ({ ...f, client_name: f.clients?.name })),
+        equipe,
+        immos,
+        achats,
+        fecImports,
+        saisies,
       })
     } catch (e) {
       console.error('ChatWidget context error', e)
-      setCtx({ nbClients: 0, nbTransactions: 0, totalTransactions: 0, nbEquipe: 0, nbProjets: 0, fecImports: [] })
+      setCtx({ clients: [], transactions: [], projets: [], factures: [], equipe: [], immos: [], achats: [], fecImports: [], saisies: [] })
     }
     setCtxLoading(false)
   }
@@ -216,6 +348,24 @@ export default function ChatWidget() {
     if (loading && abortRef.current) abortRef.current.abort()
     setMessages([])
     setError(null)
+    setActiveConvId(null)
+  }
+
+  function loadConversation(conv) {
+    setMessages(conv.messages)
+    setActiveConvId(conv.id)
+    setShowHistory(false)
+    setError(null)
+  }
+
+  function deleteConversation(convId, e) {
+    e.stopPropagation()
+    setHistory(prev => {
+      const updated = prev.filter(c => c.id !== convId)
+      saveHistory(updated)
+      return updated
+    })
+    if (activeConvId === convId) clearChat()
   }
 
   return (
@@ -245,9 +395,12 @@ export default function ChatWidget() {
               </div>
             </div>
             <div className="chat-panel-actions">
+              <button className="chat-panel-clear" onClick={() => setShowHistory(!showHistory)} title="Historique" style={{ opacity: showHistory ? 1 : 0.6 }}>
+                📋
+              </button>
               {messages.length > 0 && (
-                <button className="chat-panel-clear" onClick={clearChat} title="Effacer">
-                  🗑
+                <button className="chat-panel-clear" onClick={clearChat} title="Nouvelle conversation">
+                  ✚
                 </button>
               )}
               <button className="chat-panel-close" onClick={handleClose} title="Fermer">
@@ -256,8 +409,39 @@ export default function ChatWidget() {
             </div>
           </div>
 
+          {/* Historique */}
+          {showHistory && (
+            <div className="chat-history-panel">
+              <div className="chat-history-title">Conversations récentes</div>
+              {history.length === 0 ? (
+                <p style={{ color: 'var(--text-muted)', fontSize: '.85rem', padding: '.5rem 0' }}>Aucun historique.</p>
+              ) : (
+                history.map(conv => (
+                  <div
+                    key={conv.id}
+                    className={`chat-history-item ${conv.id === activeConvId ? 'chat-history-item--active' : ''}`}
+                    onClick={() => loadConversation(conv)}
+                  >
+                    <div className="chat-history-item-content">
+                      <span className="chat-history-item-title">{conv.title}</span>
+                      <span className="chat-history-item-meta">
+                        {conv.societe && <span>{conv.societe}</span>}
+                        {conv.date && <span>{new Date(conv.date).toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' })}</span>}
+                      </span>
+                    </div>
+                    <button
+                      className="chat-history-item-delete"
+                      onClick={(e) => deleteConversation(conv.id, e)}
+                      title="Supprimer"
+                    >✕</button>
+                  </div>
+                ))
+              )}
+            </div>
+          )}
+
           {/* Messages */}
-          <div className="chat-messages">
+          <div className="chat-messages" style={{ display: showHistory ? 'none' : undefined }}>
             {ctxLoading && messages.length === 0 && (
               <div className="chat-loading-ctx">
                 <span className="chat-dots"><span /><span /><span /></span>
