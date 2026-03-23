@@ -46,7 +46,6 @@ export default function LoginPage() {
       <nav className="landing-nav">
         <div className="landing-nav-inner">
           <div className="landing-logo">
-            <img src="/logo.png" alt="TimeBlast" style={{ height: 32 }} onError={e => { e.target.style.display = 'none' }} />
             <span className="landing-logo-text">TimeBlast</span>
           </div>
           <div className="landing-nav-links">
