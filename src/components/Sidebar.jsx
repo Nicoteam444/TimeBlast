@@ -41,6 +41,7 @@ const SECTIONS = [
       { to: '/equipe/notes-de-frais',  icon: '🧾',  label: 'Notes de frais' },
       { to: '/equipe/trombinoscope',   icon: '🪪',  label: 'Trombinoscope',  roles: ['admin', 'manager'] },
       { to: '/equipe/organigramme',    icon: '🏢',  label: 'Organigramme',   roles: ['admin', 'manager'] },
+      { to: '/equipe/competences',     icon: '🎯',  label: 'Compétences',    roles: ['admin', 'manager'] },
     ],
   },
   {

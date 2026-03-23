@@ -5523,3 +5523,18 @@ button:disabled { opacity: .6; cursor: not-allowed; }
 .taux-cell--yellow { background: #fffbeb; color: #92400e; }
 .taux-cell--red { background: #fef2f2; color: #991b1b; }
 .taux-cell--empty { background: var(--bg); color: var(--text-muted); }
+
+/* ── Compétences ─────────────────────────────── */
+.comp-level-bar { display: flex; gap: 2px; cursor: pointer; justify-content: center; padding: .2rem 0; }
+.comp-level-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--border); transition: background .15s; }
+.comp-level-dot--filled { box-shadow: 0 0 0 1px rgba(0,0,0,.08); }
+.comp-level-bar:hover .comp-level-dot { transform: scale(1.15); }
+
+.comp-level-picker { display: flex; flex-wrap: wrap; gap: .4rem; }
+.comp-level-option {
+  display: flex; align-items: center; gap: .4rem;
+  padding: .4rem .7rem; border: 1.5px solid var(--border); border-radius: 8px;
+  background: var(--bg); cursor: pointer; font-size: .82rem; transition: all .15s;
+}
+.comp-level-option:hover { border-color: var(--primary); }
+.comp-level-option--active { font-weight: 600; }

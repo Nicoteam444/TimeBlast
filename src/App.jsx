@@ -44,6 +44,7 @@ import TrombinosccopePage from './pages/equipe/TrombinosccopePage'
 import CollaborateurPage from './pages/equipe/CollaborateurPage'
 import OrganigrammePage from './pages/equipe/OrganigrammePage'
 import NotesDeFraisPage from './pages/equipe/NotesDeFraisPage'
+import CompetencesPage from './pages/equipe/CompetencesPage'
 import SetPasswordPage from './pages/SetPasswordPage'
 import UnauthorizedPage from './pages/UnauthorizedPage'
 import SearchPage from './pages/SearchPage'
@@ -154,6 +155,9 @@ function AppRoutes() {
       } />
       <Route path="/equipe/notes-de-frais" element={
         <ProtectedRoute roles={['admin','manager','collaborateur']}><Layout><NotesDeFraisPage /></Layout></ProtectedRoute>
+      } />
+      <Route path="/equipe/competences" element={
+        <ProtectedRoute roles={['admin','manager']}><Layout><CompetencesPage /></Layout></ProtectedRoute>
       } />
 
       {/* Admin */}
