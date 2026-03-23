@@ -116,20 +116,6 @@ ALTER TABLE profiles ADD COLUMN IF NOT EXISTS societe_id uuid REFERENCES societe
         <button className="btn-primary" onClick={openCreate}>+ Nouvelle société</button>
       </div>
 
-      {/* SQL migration colonne societe_id */}
-      <div className="fec-sql-box" style={{ marginBottom: '1.5rem' }}>
-        <p style={{ marginBottom: '.5rem' }}>
-          💡 Pour lier les utilisateurs à une société, exécutez cette migration SQL si elle n'est pas encore faite :
-        </p>
-        <pre style={{ fontSize: '.78rem' }}>
-          {`ALTER TABLE profiles ADD COLUMN IF NOT EXISTS societe_id uuid REFERENCES societes(id);`}
-        </pre>
-        <button className="btn-secondary" style={{ marginTop: '.5rem' }}
-          onClick={() => navigator.clipboard.writeText('ALTER TABLE profiles ADD COLUMN IF NOT EXISTS societe_id uuid REFERENCES societes(id);')}>
-          Copier
-        </button>
-      </div>
-
       {/* Formulaire création / édition */}
       {showForm && (
         <div className="modal-overlay" onClick={() => setShowForm(false)}>

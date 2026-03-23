@@ -2651,12 +2651,14 @@ button:disabled { opacity: .6; cursor: not-allowed; }
 .cal-col-date--today {
   background: var(--primary);
   color: #fff;
-  border-radius: 50%;
-  width: 24px;
+  border-radius: 12px;
+  padding: 0 6px;
+  min-width: 24px;
   height: 24px;
   display: flex;
   align-items: center;
   justify-content: center;
+  white-space: nowrap;
 }
 
 .cal-col-total {

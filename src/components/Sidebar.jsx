@@ -64,6 +64,7 @@ const SECTIONS = [
       { to: '/finance/ecritures',       icon: '📒', label: 'Écritures FEC' },
       { to: '/finance/facturation',     icon: '🧾', label: 'Facturation' },
       { to: '/finance/previsionnel',    icon: '📈', label: 'Prévisionnel' },
+      { to: '/finance/immobilisations', icon: '🏢', label: 'Immobilisations' },
     ],
   },
 ]

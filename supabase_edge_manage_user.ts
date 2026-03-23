@@ -36,24 +36,38 @@ Deno.serve(async (req) => {
 
     const { action, ...payload } = await req.json()
 
-    // --- Inviter un utilisateur (envoie un email avec lien de création de mot de passe) ---
+    // --- Créer un utilisateur ---
     if (action === 'create') {
-      const { email, full_name, role } = payload
+      const { email, full_name, role, password, send_invite } = payload
+      let created
 
-      const { data: invited, error } = await supabaseAdmin.auth.admin.inviteUserByEmail(email, {
-        data: { full_name },
-        redirectTo: `${Deno.env.get('SITE_URL') ?? ''}/set-password`,
-      })
-
-      if (error) throw error
+      if (send_invite === false && password) {
+        // Mode mot de passe direct : créer avec email confirmé
+        const { data, error } = await supabaseAdmin.auth.admin.createUser({
+          email,
+          password,
+          email_confirm: true,
+          user_metadata: { full_name },
+        })
+        if (error) throw error
+        created = data.user
+      } else {
+        // Mode invitation par email
+        const { data, error } = await supabaseAdmin.auth.admin.inviteUserByEmail(email, {
+          data: { full_name },
+          redirectTo: `${Deno.env.get('SITE_URL') ?? ''}/set-password`,
+        })
+        if (error) throw error
+        created = data.user
+      }
 
       // Mettre à jour le profil créé automatiquement par le trigger
       await supabaseAdmin
         .from('profiles')
         .update({ full_name, role })
-        .eq('id', invited.user.id)
+        .eq('id', created.id)
 
-      return new Response(JSON.stringify({ user: invited.user }), {
+      return new Response(JSON.stringify({ user: created }), {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         status: 200,
       })

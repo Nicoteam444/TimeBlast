@@ -39,6 +39,7 @@ import ComptaEcrituresPage from './pages/compta/ComptaEcrituresPage'
 import ComptaAnalysePage from './pages/compta/ComptaAnalysePage'
 import SaisieEcriturePage from './pages/compta/SaisieEcriturePage'
 import PrevisionnelPage from './pages/finance/PrevisionnelPage'
+import ImmobilisationsPage from './pages/finance/ImmobilisationsPage'
 import TrombinosccopePage from './pages/equipe/TrombinosccopePage'
 import CollaborateurPage from './pages/equipe/CollaborateurPage'
 import OrganigrammePage from './pages/equipe/OrganigrammePage'
@@ -136,6 +137,9 @@ function AppRoutes() {
       } />
       <Route path="/finance/previsionnel" element={
         <ProtectedRoute roles={['admin','comptable']}><Layout><PrevisionnelPage /></Layout></ProtectedRoute>
+      } />
+      <Route path="/finance/immobilisations" element={
+        <ProtectedRoute roles={['admin','comptable']}><Layout><ImmobilisationsPage /></Layout></ProtectedRoute>
       } />
 
       {/* Équipe */}
