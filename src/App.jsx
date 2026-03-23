@@ -13,6 +13,7 @@ import AdminPage from './pages/admin/AdminPage'
 import AdminUtilisateursPage from './pages/admin/AdminUtilisateursPage'
 import AdminAuditPage from './pages/admin/AdminAuditPage'
 import AdminSocietesPage from './pages/admin/AdminSocietesPage'
+import AdminSocieteDetailPage from './pages/admin/AdminSocieteDetailPage'
 import AdminGroupesPage from './pages/admin/AdminGroupesPage'
 import AdminOrganigrammePage from './pages/admin/AdminOrganigrammePage'
 import ParametresPage from './pages/parametres/ParametresPage'
@@ -151,6 +152,9 @@ function AppRoutes() {
       } />
       <Route path="/admin/societes" element={
         <ProtectedRoute roles={['admin']}><Layout><AdminSocietesPage /></Layout></ProtectedRoute>
+      } />
+      <Route path="/admin/societes/:id" element={
+        <ProtectedRoute roles={['admin']}><Layout><AdminSocieteDetailPage /></Layout></ProtectedRoute>
       } />
       <Route path="/admin/groupes" element={
         <ProtectedRoute roles={['admin']}><Layout><AdminGroupesPage /></Layout></ProtectedRoute>

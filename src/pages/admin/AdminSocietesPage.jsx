@@ -1,7 +1,9 @@
 import { useState, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { supabase } from '../../lib/supabase'
 
 export default function AdminSocietesPage() {
+  const navigate = useNavigate()
   const [societes, setSocietes]       = useState([])
   const [groupes, setGroupes]         = useState([])
   const [loading, setLoading]         = useState(true)
@@ -239,7 +241,7 @@ ALTER TABLE profiles ADD COLUMN IF NOT EXISTS societe_id uuid REFERENCES societe
               {societes.map(s => {
                 const groupe = s.groupes
                 return (
-                <tr key={s.id}>
+                <tr key={s.id} style={{ cursor: 'pointer' }} onClick={() => navigate('/admin/societes/' + s.id)}>
                   <td>
                     <div className="user-cell">
                       <span className="user-avatar" style={{ background: groupe?.color || 'var(--primary)', fontSize: '.75rem' }}>
@@ -268,8 +270,8 @@ ALTER TABLE profiles ADD COLUMN IF NOT EXISTS societe_id uuid REFERENCES societe
                     {s.created_at ? new Date(s.created_at).toLocaleDateString('fr-FR') : '—'}
                   </td>
                   <td style={{ display: 'flex', gap: '.5rem', justifyContent: 'flex-end' }}>
-                    <button className="btn-sm btn-secondary" onClick={() => openEdit(s)}>✏ Modifier</button>
-                    <button className="btn-icon btn-icon--danger" onClick={() => setDeleteConfirm(s)} title="Supprimer">🗑</button>
+                    <button className="btn-sm btn-secondary" onClick={e => { e.stopPropagation(); openEdit(s) }}>✏ Modifier</button>
+                    <button className="btn-icon btn-icon--danger" onClick={e => { e.stopPropagation(); setDeleteConfirm(s) }} title="Supprimer">🗑</button>
                   </td>
                 </tr>
                 )

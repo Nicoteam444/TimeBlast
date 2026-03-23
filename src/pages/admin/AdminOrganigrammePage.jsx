@@ -802,42 +802,122 @@ export default function AdminOrganigrammePage() {
       }
 
       // Default: auto-create from groupes + societes if nothing saved
-      if (!loaded && (fetchedGroupes.length > 0 || fetchedSocietes.length > 0)) {
+      if (!loaded) {
         const defaultNodes = []
-        const cols = 2
-        fetchedGroupes.slice(0, 6).forEach((g, i) => {
-          const col = i % cols
-          const row = Math.floor(i / cols)
+        const defaultEdges = []
+
+        // Find SRA TEST in fetched societes
+        const holdingSociete = fetchedSocietes.find(s => s.name === 'SRA TEST')
+        const holdingId = 'holding_sra_test'
+        const canvasCenter = 860
+
+        // 1. Holding node (SRA TEST)
+        defaultNodes.push({
+          id: holdingId,
+          type: 'societe',
+          label: holdingSociete?.name || 'SRA TEST',
+          color: '#0d1b24',
+          x: canvasCenter - 120,
+          y: 40,
+          width: 240,
+          height: 75,
+          societe_id: holdingSociete?.id || null,
+          visibility_roles: [],
+          meta: { holding: true },
+        })
+
+        // 2. Groupe nodes in a row, and société nodes inside
+        const groupeSpacing = 400
+        const groupeStartX = 60
+        const groupeY = 200
+
+        fetchedGroupes.forEach((g, gi) => {
+          const gx = groupeStartX + gi * groupeSpacing
+          const gy = groupeY
+          const societesInGroupe = fetchedSocietes.filter(s => s.groupe_id === g.id && s.name !== 'SRA TEST')
+          const nodeHeight = Math.max(240, 80 + societesInGroupe.length * 90)
+          const groupeNodeId = 'g_' + g.id
+
           defaultNodes.push({
-            id: 'g_' + g.id,
+            id: groupeNodeId,
             type: 'groupe',
-            label: g.nom,
+            label: g.name,
             color: g.color || '#1a5c82',
-            x: 40 + col * 380,
-            y: 40 + row * 280,
+            x: gx,
+            y: gy,
             width: 340,
-            height: 240,
+            height: nodeHeight,
             societe_id: null,
             visibility_roles: [],
             meta: {},
           })
+
+          // Edge from holding to groupe
+          defaultEdges.push({
+            id: 'e_' + holdingId + '_' + groupeNodeId,
+            source_id: holdingId,
+            target_id: groupeNodeId,
+            canvas_id: 'admin_global',
+            label: '',
+          })
+
+          // Société nodes inside groupe
+          societesInGroupe.forEach((s, si) => {
+            defaultNodes.push({
+              id: 's_' + s.id,
+              type: 'societe',
+              label: s.name,
+              color: g.color || '#1a5c82',
+              x: gx + 20,
+              y: gy + 60 + si * 90,
+              width: 300,
+              height: 70,
+              societe_id: s.id,
+              visibility_roles: [],
+              meta: {},
+            })
+          })
         })
-        fetchedSocietes.slice(0, 12).forEach((s, i) => {
+
+        // Societes with no groupe (except SRA TEST)
+        const orphans = fetchedSocietes.filter(s => !s.groupe_id && s.name !== 'SRA TEST')
+        if (orphans.length > 0) {
+          const orphanGx = groupeStartX + fetchedGroupes.length * groupeSpacing
           defaultNodes.push({
-            id: 's_' + s.id,
-            type: 'societe',
-            label: s.nom,
-            color: s.color || '#1a5c82',
-            x: 60 + (i % 4) * 180,
-            y: 60 + Math.floor(i / 4) * 110 + (fetchedGroupes.length > 0 ? 600 : 0),
-            width: DEFAULT_SIZES.societe.w,
-            height: DEFAULT_SIZES.societe.h,
-            societe_id: s.id,
+            id: 'g_orphans',
+            type: 'groupe',
+            label: 'Sans groupe',
+            color: '#64748b',
+            x: orphanGx,
+            y: groupeY,
+            width: 340,
+            height: Math.max(200, 80 + orphans.length * 90),
+            societe_id: null,
             visibility_roles: [],
             meta: {},
           })
-        })
+          orphans.forEach((s, si) => {
+            defaultNodes.push({
+              id: 's_' + s.id,
+              type: 'societe',
+              label: s.name,
+              color: '#64748b',
+              x: orphanGx + 20,
+              y: groupeY + 60 + si * 90,
+              width: 300,
+              height: 70,
+              societe_id: s.id,
+              visibility_roles: [],
+              meta: {},
+            })
+          })
+        }
+
         setNodes(defaultNodes)
+        setEdges(defaultEdges)
+        // Clear old localStorage so new layout is used
+        localStorage.removeItem('org_admin_nodes')
+        localStorage.removeItem('org_admin_edges')
       }
 
       setLoading(false)

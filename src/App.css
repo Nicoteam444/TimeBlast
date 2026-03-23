@@ -5166,3 +5166,29 @@ button:disabled { opacity: .6; cursor: not-allowed; }
   flex-shrink: 0;
   align-self: center;
 }
+
+/* ── Holding Org Chart ── */
+.holding-chart-wrap { overflow-x: auto; padding: 1.5rem; background: var(--bg); border-radius: 12px; margin-top: .5rem; }
+.holding-node-root { background: #0d1b24; color: #fff; border-radius: 14px; padding: 1rem 2rem; text-align: center; max-width: 320px; margin: 0 auto; box-shadow: 0 4px 20px rgba(0,0,0,.3); }
+.holding-root-title { font-size: 1.2rem; font-weight: 800; margin: .3rem 0 .1rem; }
+.holding-root-sub { font-size: .78rem; opacity: .7; }
+.holding-connector { width: 2px; height: 40px; background: #cbd5e1; margin: 0 auto; }
+.holding-groups-row { display: flex; gap: 20px; justify-content: center; flex-wrap: wrap; padding: 0 1rem; }
+.holding-group-col { background: var(--surface); border: 1.5px solid var(--border); border-radius: 12px; overflow: hidden; min-width: 180px; flex: 1; max-width: 220px; }
+.holding-group-header { padding: .5rem .75rem; font-size: .8rem; font-weight: 700; color: #fff; }
+.holding-group-body { padding: .5rem; display: flex; flex-direction: column; gap: .4rem; }
+.holding-societe-card { background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: .4rem .6rem; display: flex; align-items: center; gap: .5rem; font-size: .8rem; font-weight: 600; color: var(--text); }
+.holding-societe-avatar { width: 24px; height: 24px; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: .62rem; font-weight: 700; color: #fff; flex-shrink: 0; }
+.holding-societe-ville { font-size: .72rem; color: var(--text-muted); margin-left: auto; }
+
+/* ── Société dossier ── */
+.societe-detail-header { display: flex; align-items: flex-start; gap: 1.25rem; padding: 1.25rem 1.5rem; background: var(--surface); border: 1.5px solid var(--border); border-radius: 14px; margin-bottom: 1.5rem; flex-wrap: wrap; }
+.societe-detail-avatar { width: 68px; height: 68px; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; font-weight: 800; color: #fff; flex-shrink: 0; }
+.societe-detail-name { font-size: 1.3rem; font-weight: 800; color: var(--text); margin-bottom: .35rem; }
+.societe-detail-meta { display: flex; gap: .5rem; flex-wrap: wrap; align-items: center; }
+.societe-detail-actions { margin-left: auto; display: flex; gap: .5rem; align-items: flex-start; }
+.societe-stat-row { display: flex; gap: 1rem; flex-wrap: wrap; margin-bottom: 1.5rem; }
+.societe-stat-chip { background: var(--surface); border: 1.5px solid var(--border); border-radius: 10px; padding: .6rem 1rem; display: flex; align-items: center; gap: .5rem; flex: 1; min-width: 110px; }
+.societe-stat-icon { font-size: 1.1rem; }
+.societe-stat-val { font-size: 1rem; font-weight: 700; color: var(--text); }
+.societe-stat-label { font-size: .72rem; color: var(--text-muted); }
