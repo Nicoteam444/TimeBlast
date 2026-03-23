@@ -1,8 +1,12 @@
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { NavLink, useNavigate, useLocation } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
 import { useLayout } from '../contexts/LayoutContext'
 import { useAppearance } from '../contexts/AppearanceContext'
+
+const FAV_KEY = 'timeblast_favorites'
+function loadFavorites() { try { return JSON.parse(localStorage.getItem(FAV_KEY) || '[]') } catch { return [] } }
+function saveFavorites(favs) { try { localStorage.setItem(FAV_KEY, JSON.stringify(favs)) } catch {} }
 
 const SECTIONS = [
   {
@@ -95,6 +99,21 @@ export default function Sidebar() {
   const [flyoutPos, setFlyoutPos] = useState({ top: 0 })
   const hideTimer = useRef(null)
   const userRole = profile?.role
+  const [favorites, setFavorites] = useState(() => loadFavorites())
+
+  function toggleFavorite(to, e) {
+    e.preventDefault()
+    e.stopPropagation()
+    setFavorites(prev => {
+      const next = prev.includes(to) ? prev.filter(f => f !== to) : [...prev, to]
+      saveFavorites(next)
+      return next
+    })
+  }
+
+  // Build favorites items from all sections
+  const allItems = [...SECTIONS.flatMap(s => s.items), ...ADMIN_SECTION.items]
+  const favItems = favorites.map(to => allItems.find(i => i.to === to)).filter(Boolean)
 
   function filterItems(items) {
     return items.filter(i => !i.roles || i.roles.includes(userRole))
@@ -125,8 +144,10 @@ export default function Sidebar() {
     clearTimeout(hideTimer.current)
   }
 
-  const flyoutSection = visibleSections.find(s => s.id === hoveredId)
-    || (hoveredId === 'admin' && userRole === 'admin' ? ADMIN_SECTION : null)
+  const flyoutSection = hoveredId === '_favs'
+    ? { id: '_favs', icon: '⭐', label: 'Favoris', items: favItems }
+    : visibleSections.find(s => s.id === hoveredId)
+      || (hoveredId === 'admin' && userRole === 'admin' ? ADMIN_SECTION : null)
   const railW = sidebarOpen ? 180 : 52
 
   return (
@@ -163,6 +184,20 @@ export default function Sidebar() {
 
         {/* ── Rail de navigation ── */}
         <nav className="sidebar-nav">
+          {/* Favoris */}
+          {favItems.length > 0 && (
+            <>
+              <div
+                className={`rail-item ${hoveredId === '_favs' ? 'rail-item--hover' : ''}`}
+                onMouseEnter={e => showFlyout('_favs', e)}
+                onMouseLeave={scheduleHide}
+              >
+                <span className="rail-item-icon">⭐</span>
+                {sidebarOpen && <span className="rail-item-label">Favoris</span>}
+              </div>
+              <div className="sidebar-separator" />
+            </>
+          )}
           {visibleSections.map(section => {
             const items = filterItems(section.items)
             const isActive = items.some(i => location.pathname.startsWith(i.to))
@@ -214,18 +249,26 @@ export default function Sidebar() {
             <span>{flyoutSection.label}</span>
           </div>
           {filterItems(flyoutSection.items).map(item => (
-            <NavLink
-              key={item.to}
-              to={item.to}
-              className={({ isActive }) => `rail-flyout-link ${isActive ? 'rail-flyout-link--active' : ''}`}
-              onClick={() => {
-                setHoveredId(null)
-                if (window.innerWidth <= 768 && sidebarOpen) toggleSidebar()
-              }}
-            >
-              <span className="rail-flyout-icon">{item.icon}</span>
-              <span>{item.label}</span>
-            </NavLink>
+            <div key={item.to} className="rail-flyout-link-wrap">
+              <NavLink
+                to={item.to}
+                className={({ isActive }) => `rail-flyout-link ${isActive ? 'rail-flyout-link--active' : ''}`}
+                onClick={() => {
+                  setHoveredId(null)
+                  if (window.innerWidth <= 768 && sidebarOpen) toggleSidebar()
+                }}
+              >
+                <span className="rail-flyout-icon">{item.icon}</span>
+                <span>{item.label}</span>
+              </NavLink>
+              <button
+                className={`rail-flyout-fav ${favorites.includes(item.to) ? 'rail-flyout-fav--active' : ''}`}
+                onClick={e => toggleFavorite(item.to, e)}
+                title={favorites.includes(item.to) ? 'Retirer des favoris' : 'Ajouter aux favoris'}
+              >
+                {favorites.includes(item.to) ? '★' : '☆'}
+              </button>
+            </div>
           ))}
         </div>
       )}

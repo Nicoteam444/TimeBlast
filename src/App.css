@@ -428,6 +428,20 @@ button:disabled { opacity: .6; cursor: not-allowed; }
 .rail-flyout-link--active     { color: #fff; font-weight: 600; border-left-color: rgba(255,255,255,0.6); background: rgba(255,255,255,0.05); }
 .rail-flyout-icon             { font-size: .9rem; width: 18px; text-align: center; flex-shrink: 0; }
 
+/* Flyout link with favorite star */
+.rail-flyout-link-wrap { display: flex; align-items: center; }
+.rail-flyout-link-wrap .rail-flyout-link { flex: 1; }
+.rail-flyout-fav {
+  background: none; border: none; cursor: pointer;
+  font-size: .85rem; padding: .3rem .6rem; color: rgba(255,255,255,0.25);
+  transition: color .15s; flex-shrink: 0;
+}
+.rail-flyout-fav:hover { color: #facc15; }
+.rail-flyout-fav--active { color: #facc15; }
+
+/* Sidebar separator */
+.sidebar-separator { height: 1px; background: rgba(255,255,255,0.1); margin: .3rem .75rem; }
+
 /* ── Mobile : tab d'ouverture ── */
 .sidebar-mobile-tab { display: none; }
 
