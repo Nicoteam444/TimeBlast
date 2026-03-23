@@ -127,7 +127,7 @@ function buildSystemPrompt(societe, ctx) {
     `- Créer des projets (table: projets)`,
     `Quand l'utilisateur te demande de créer quelque chose, utilise directement l'outil insert_record.`,
     `Si tu as besoin d'un client_id pour une transaction, utilise d'abord query_records pour le trouver.`,
-    selectedSociete ? `Utilise societe_id: "${selectedSociete.id}" pour les nouveaux enregistrements.` : '',
+    societe ? `Utilise societe_id: "${societe.id}" pour les nouveaux enregistrements.` : '',
   ]
   return lines.join('\n')
 }
