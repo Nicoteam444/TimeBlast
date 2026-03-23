@@ -45,7 +45,9 @@ const SECTIONS = [
     roles: ['admin', 'manager', 'collaborateur'],
     items: [
       { to: '/commerce/clients',      icon: '👤', label: 'Clients' },
-      { to: '/commerce/transactions', icon: '💼', label: 'Transactions', roles: ['admin', 'manager'] },
+      { to: '/commerce/transactions', icon: '💼', label: 'Transactions',  roles: ['admin', 'manager'] },
+      { to: '/commerce/achats',       icon: '🛒', label: 'Achats',        roles: ['admin', 'manager', 'comptable'] },
+      { to: '/commerce/stock',        icon: '📦', label: 'Stock',         roles: ['admin', 'manager', 'comptable'] },
     ],
   },
   {
@@ -64,10 +66,11 @@ const SECTIONS = [
 ]
 
 const ADMIN_ITEMS = [
-  { to: '/admin',          icon: '⚙️', label: 'Administration', roles: ['admin'] },
-  { to: '/admin/societes', icon: '🏢', label: 'Sociétés',        roles: ['admin'] },
-  { to: '/admin/groupes',  icon: '🏛', label: 'Groupes',         roles: ['admin'] },
-  { to: '/admin/audit',    icon: '📋', label: "Journal d'audit", roles: ['admin'] },
+  { to: '/admin',                icon: '⚙️', label: 'Administration',  roles: ['admin'] },
+  { to: '/admin/societes',       icon: '🏢', label: 'Sociétés',         roles: ['admin'] },
+  { to: '/admin/groupes',        icon: '🏛', label: 'Groupes',          roles: ['admin'] },
+  { to: '/admin/organigramme',   icon: '🗂', label: 'Organigramme',     roles: ['admin'] },
+  { to: '/admin/audit',          icon: '📋', label: "Journal d'audit",  roles: ['admin'] },
 ]
 
 export default function Sidebar() {

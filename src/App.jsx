@@ -14,12 +14,15 @@ import AdminUtilisateursPage from './pages/admin/AdminUtilisateursPage'
 import AdminAuditPage from './pages/admin/AdminAuditPage'
 import AdminSocietesPage from './pages/admin/AdminSocietesPage'
 import AdminGroupesPage from './pages/admin/AdminGroupesPage'
+import AdminOrganigrammePage from './pages/admin/AdminOrganigrammePage'
 import ParametresPage from './pages/parametres/ParametresPage'
 import ClientDetailPage from './pages/clients/ClientDetailPage'
 import ClientsPage from './pages/temps/ClientsPage'
 import TransactionsPage from './pages/commerce/TransactionsPage'
 import TransactionDetailPage from './pages/commerce/TransactionDetailPage'
 import ProjetsWrapper from './pages/commerce/ProjetsWrapper'
+import AchatsPage from './pages/commerce/AchatsPage'
+import StockPage from './pages/commerce/StockPage'
 import SaisiePage from './pages/activite/SaisiePage'
 import EquipePage from './pages/activite/EquipePage'
 import ValidationPage from './pages/manager/ValidationPage'
@@ -33,6 +36,7 @@ import ComptaAnalysePage from './pages/compta/ComptaAnalysePage'
 import SaisieEcriturePage from './pages/compta/SaisieEcriturePage'
 import PrevisionnelPage from './pages/finance/PrevisionnelPage'
 import TrombinosccopePage from './pages/equipe/TrombinosccopePage'
+import CollaborateurPage from './pages/equipe/CollaborateurPage'
 import OrganigrammePage from './pages/equipe/OrganigrammePage'
 import NotesDeFraisPage from './pages/equipe/NotesDeFraisPage'
 import SetPasswordPage from './pages/SetPasswordPage'
@@ -71,6 +75,12 @@ function AppRoutes() {
       } />
       <Route path="/commerce/transactions/:id" element={
         <ProtectedRoute roles={['admin','manager']}><Layout><TransactionDetailPage /></Layout></ProtectedRoute>
+      } />
+      <Route path="/commerce/achats" element={
+        <ProtectedRoute roles={['admin','manager','comptable']}><Layout><AchatsPage /></Layout></ProtectedRoute>
+      } />
+      <Route path="/commerce/stock" element={
+        <ProtectedRoute roles={['admin','manager','comptable']}><Layout><StockPage /></Layout></ProtectedRoute>
       } />
 
       {/* Activité */}
@@ -119,6 +129,9 @@ function AppRoutes() {
       <Route path="/equipe/trombinoscope" element={
         <ProtectedRoute roles={['admin','manager']}><Layout><TrombinosccopePage /></Layout></ProtectedRoute>
       } />
+      <Route path="/equipe/collaborateurs/:id" element={
+        <ProtectedRoute roles={['admin','manager']}><Layout><CollaborateurPage /></Layout></ProtectedRoute>
+      } />
       <Route path="/equipe/organigramme" element={
         <ProtectedRoute roles={['admin','manager']}><Layout><OrganigrammePage /></Layout></ProtectedRoute>
       } />
@@ -141,6 +154,9 @@ function AppRoutes() {
       } />
       <Route path="/admin/groupes" element={
         <ProtectedRoute roles={['admin']}><Layout><AdminGroupesPage /></Layout></ProtectedRoute>
+      } />
+      <Route path="/admin/organigramme" element={
+        <ProtectedRoute roles={['admin']}><Layout><AdminOrganigrammePage /></Layout></ProtectedRoute>
       } />
       <Route path="/parametres" element={
         <ProtectedRoute roles={['admin']}><Layout><ParametresPage /></Layout></ProtectedRoute>

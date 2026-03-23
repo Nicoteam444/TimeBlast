@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { supabase } from '../../lib/supabase'
 import { useSociete } from '../../contexts/SocieteContext'
 
@@ -44,6 +45,7 @@ function getColor(poste) {
 
 export default function TrombinosccopePage() {
   const { selectedSociete } = useSociete()
+  const navigate = useNavigate()
   const [equipe, setEquipe] = useState([])
   const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState('')
@@ -138,7 +140,7 @@ export default function TrombinosccopePage() {
             const initials = `${(e.prenom || '')[0] || ''}${(e.nom || '')[0] || ''}`.toUpperCase()
             const anc = calcAnciennete(e.date_embauche)
             return (
-              <div key={e.id} className="trombi-card">
+              <div key={e.id} className="trombi-card" style={{ cursor: 'pointer' }} onClick={() => navigate(`/equipe/collaborateurs/${e.id}`)}>
                 <div className="trombi-avatar" style={{ background: color + '22', border: `2.5px solid ${color}` }}>
                   <span style={{ color, fontWeight: 700, fontSize: '1.4rem', letterSpacing: '-.02em' }}>{initials || '?'}</span>
                 </div>
@@ -155,6 +157,11 @@ export default function TrombinosccopePage() {
                   <div className="trombi-tel">📞 {e.telephone}</div>
                 )}
                 <div className="trombi-anc">🗓 {anc}</div>
+                <button
+                  className="btn-secondary btn-sm"
+                  style={{ marginTop: '.5rem', width: '100%' }}
+                  onClick={ev => { ev.stopPropagation(); navigate(`/equipe/collaborateurs/${e.id}`) }}
+                >→ Voir dossier</button>
               </div>
             )
           })}
@@ -177,7 +184,7 @@ export default function TrombinosccopePage() {
                 const initials = `${(e.prenom || '')[0] || ''}${(e.nom || '')[0] || ''}`.toUpperCase()
                 const anc = calcAnciennete(e.date_embauche)
                 return (
-                  <tr key={e.id}>
+                  <tr key={e.id} style={{ cursor: 'pointer' }} onClick={() => navigate(`/equipe/collaborateurs/${e.id}`)}>
                     <td>
                       <div className="user-cell">
                         <span className="user-avatar" style={{ background: color, fontSize: '.72rem' }}>{initials}</span>
@@ -187,7 +194,7 @@ export default function TrombinosccopePage() {
                     <td>
                       <span className="status-badge" style={{ color, background: color + '18' }}>{e.poste || '—'}</span>
                     </td>
-                    <td>{e.email ? <a href={`mailto:${e.email}`}>{e.email}</a> : '—'}</td>
+                    <td onClick={ev => ev.stopPropagation()}>{e.email ? <a href={`mailto:${e.email}`}>{e.email}</a> : '—'}</td>
                     <td>{e.telephone || '—'}</td>
                     <td className="date-cell">{anc}</td>
                   </tr>
