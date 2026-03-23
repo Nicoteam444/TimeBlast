@@ -145,7 +145,7 @@ export default function Sidebar() {
   }
 
   const flyoutSection = hoveredId === '_favs'
-    ? { id: '_favs', icon: '⭐', label: 'Favoris', items: favItems }
+    ? { id: '_favs', icon: '🔖', label: 'Favoris', items: favItems }
     : visibleSections.find(s => s.id === hoveredId)
       || (hoveredId === 'admin' && userRole === 'admin' ? ADMIN_SECTION : null)
   const railW = sidebarOpen ? 180 : 52
@@ -192,7 +192,7 @@ export default function Sidebar() {
                 onMouseEnter={e => showFlyout('_favs', e)}
                 onMouseLeave={scheduleHide}
               >
-                <span className="rail-item-icon">⭐</span>
+                <span className="rail-item-icon">🔖</span>
                 {sidebarOpen && <span className="rail-item-label">Favoris</span>}
               </div>
               <div className="sidebar-separator" />
@@ -266,7 +266,9 @@ export default function Sidebar() {
                 onClick={e => toggleFavorite(item.to, e)}
                 title={favorites.includes(item.to) ? 'Retirer des favoris' : 'Ajouter aux favoris'}
               >
-                {favorites.includes(item.to) ? '★' : '☆'}
+                <svg width="14" height="14" viewBox="0 0 24 24" fill={favorites.includes(item.to) ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="2">
+                  <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/>
+                </svg>
               </button>
             </div>
           ))}
