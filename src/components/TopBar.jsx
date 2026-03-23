@@ -201,52 +201,47 @@ export default function TopBar() {
         </button>
 
         {userMenuOpen && (
-          <div className="topbar-dropdown">
-            <div className="topbar-dropdown-header">
-              <span className="topbar-avatar topbar-avatar--lg">{initials}</span>
-              <div>
-                <p className="topbar-dropdown-name">{profile?.full_name}</p>
-                <p className="topbar-dropdown-role">{profile?.role}</p>
-              </div>
-            </div>
-            <hr className="topbar-dropdown-divider" />
-            <button className="topbar-dropdown-item" onClick={() => { navigate('/parametres'); setUserMenuOpen(false) }}>
-              Mon profil
-            </button>
-
-            {/* ── Sélecteur de société dans le menu ── */}
-            {societes.length > 0 && (
-              <>
-                <hr className="topbar-dropdown-divider" />
-                <div className="topbar-dropdown-section">
-                  <span className="topbar-dropdown-section-label">Société</span>
-                  {canSwitch && societes.length > 1 ? (
-                    societes.map(s => (
-                      <button
-                        key={s.id}
-                        className={`topbar-dropdown-item topbar-dropdown-societe-item ${s.id === selectedSociete?.id ? 'topbar-dropdown-item--societe-active' : ''}`}
-                        onClick={() => { setSelectedSociete(s); setUserMenuOpen(false) }}
-                      >
-                        <span className="topbar-societe-item-dot"
-                          style={{ background: s.id === selectedSociete?.id ? 'var(--primary)' : 'var(--border)' }} />
-                        <span style={{ flex: 1 }}>{s.name}</span>
-                        {s.id === selectedSociete?.id && <span style={{ color: 'var(--primary)', fontSize: '.8rem' }}>✓</span>}
-                      </button>
-                    ))
-                  ) : (
-                    <div className="topbar-dropdown-societe-badge">
-                      <span className="topbar-societe-item-dot" style={{ background: 'var(--primary)' }} />
-                      <span>{selectedSociete?.name}</span>
-                    </div>
-                  )}
+          <div className="topbar-dropdown topbar-dropdown--duo">
+            {/* Colonne gauche : sociétés */}
+            {canSwitch && societes.length > 1 && (
+              <div className="topbar-dropdown-societes">
+                <div className="topbar-dropdown-section-label">Société</div>
+                <div className="topbar-dropdown-societes-list">
+                  {societes.map(s => (
+                    <button
+                      key={s.id}
+                      className={`topbar-dropdown-societe-btn ${s.id === selectedSociete?.id ? 'topbar-dropdown-societe-btn--active' : ''}`}
+                      onClick={() => { setSelectedSociete(s); setUserMenuOpen(false) }}
+                    >
+                      <span className="topbar-societe-initial" style={{ background: s.id === selectedSociete?.id ? 'var(--primary)' : '#94a3b8' }}>
+                        {s.name.split(/\s+/).map(w => w[0]).join('').toUpperCase().slice(0, 2)}
+                      </span>
+                      <span className="topbar-societe-name">{s.name}</span>
+                      {s.id === selectedSociete?.id && <span style={{ color: 'var(--primary)', fontSize: '.75rem', marginLeft: 'auto' }}>✓</span>}
+                    </button>
+                  ))}
                 </div>
-              </>
+              </div>
             )}
 
-            <hr className="topbar-dropdown-divider" />
-            <button className="topbar-dropdown-item topbar-dropdown-item--danger" onClick={handleSignOut}>
-              Déconnexion
-            </button>
+            {/* Colonne droite : compte */}
+            <div className="topbar-dropdown-account">
+              <div className="topbar-dropdown-header">
+                <span className="topbar-avatar topbar-avatar--lg">{initials}</span>
+                <div>
+                  <p className="topbar-dropdown-name">{profile?.full_name}</p>
+                  <p className="topbar-dropdown-role">{profile?.role}</p>
+                </div>
+              </div>
+              <hr className="topbar-dropdown-divider" />
+              <button className="topbar-dropdown-item" onClick={() => { navigate('/parametres'); setUserMenuOpen(false) }}>
+                Mon profil
+              </button>
+              <hr className="topbar-dropdown-divider" />
+              <button className="topbar-dropdown-item topbar-dropdown-item--danger" onClick={handleSignOut}>
+                Déconnexion
+              </button>
+            </div>
           </div>
         )}
       </div>
