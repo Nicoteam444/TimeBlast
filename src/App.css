@@ -5396,15 +5396,15 @@ button:disabled { opacity: .6; cursor: not-allowed; }
 }
 
 /* ── Kanban Board ── */
-.kanban-board { display: flex; gap: 12px; padding-bottom: 1rem; align-items: flex-start; overflow-y: auto; max-height: calc(100vh - 220px); }
-.kanban-col { background: var(--surface); border: 1.5px solid var(--border); border-radius: 12px; min-width: 0; flex: 1; display: flex; flex-direction: column; }
+.kanban-board { display: flex; gap: 14px; height: calc(100vh - 260px); min-height: 400px; }
+.kanban-col { background: var(--surface); border: 1.5px solid var(--border); border-radius: 12px; min-width: 0; flex: 1; display: flex; flex-direction: column; overflow: hidden; }
 .kanban-col--dragover { border-color: var(--primary); background: #f0f7ff; box-shadow: 0 0 0 2px var(--primary); }
 .kanban-col-header { display: flex; align-items: center; justify-content: space-between; padding: .7rem .85rem .3rem; border-top: 3px solid; border-radius: 10px 10px 0 0; }
 .kanban-col-title { font-size: .85rem; font-weight: 700; color: var(--text); }
 .kanban-col-count { font-size: .75rem; font-weight: 700; padding: .15rem .45rem; border-radius: 99px; }
 .kanban-col-footer { padding: .6rem .85rem; border-top: 1px solid var(--border); font-size: .8rem; font-weight: 600; color: var(--text); display: flex; flex-direction: column; gap: .1rem; }
 .kanban-col-footer span:last-child { font-weight: 400; font-size: .72rem; }
-.kanban-col-cards { padding: .6rem .5rem; display: flex; flex-direction: column; gap: .5rem; flex: 1; }
+.kanban-col-cards { padding: .6rem .5rem; display: flex; flex-direction: column; gap: .5rem; flex: 1; overflow-y: auto; min-height: 0; }
 .kanban-col-empty { padding: 1.5rem .5rem; text-align: center; color: var(--text-muted); font-size: .8rem; border: 1.5px dashed var(--border); border-radius: 8px; }
 .kanban-card { background: var(--bg); border: 1.5px solid var(--border); border-radius: 8px; padding: .6rem .75rem; cursor: grab; user-select: none; transition: box-shadow .15s, transform .1s; }
 .kanban-card:hover { box-shadow: 0 3px 12px rgba(0,0,0,.1); transform: translateY(-1px); }
