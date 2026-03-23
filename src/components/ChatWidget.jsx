@@ -118,6 +118,16 @@ function buildSystemPrompt(societe, ctx) {
     `Réponds aux questions en utilisant les données réelles ci-dessus.`,
     `Sois précis avec les chiffres. Si une donnée manque, dis-le.`,
     `Ne génère jamais de fausses données.`,
+    ``,
+    `Tu peux CRÉER et MODIFIER des données dans la base via les outils disponibles :`,
+    `- Créer des transactions commerciales (table: transactions)`,
+    `- Saisir des interventions/temps (table: saisies_temps)`,
+    `- Ajouter des collaborateurs (table: equipe)`,
+    `- Créer des clients (table: clients)`,
+    `- Créer des projets (table: projets)`,
+    `Quand l'utilisateur te demande de créer quelque chose, utilise directement l'outil insert_record.`,
+    `Si tu as besoin d'un client_id pour une transaction, utilise d'abord query_records pour le trouver.`,
+    selectedSociete ? `Utilise societe_id: "${selectedSociete.id}" pour les nouveaux enregistrements.` : '',
   ]
   return lines.join('\n')
 }
@@ -285,43 +295,21 @@ export default function ChatWidget() {
         signal: abortRef.current.signal,
       })
 
+      const body = await response.json()
+
       if (!response.ok) {
-        const errBody = await response.json().catch(() => ({}))
-        throw new Error(errBody?.error || `HTTP ${response.status}`)
+        throw new Error(body?.error || `HTTP ${response.status}`)
       }
 
-      const reader = response.body.getReader()
-      const decoder = new TextDecoder()
-      let buffer = ''
-
-      while (true) {
-        const { done, value } = await reader.read()
-        if (done) break
-
-        buffer += decoder.decode(value, { stream: true })
-        const lines = buffer.split('\n')
-        buffer = lines.pop()
-
-        for (const line of lines) {
-          if (!line.startsWith('data: ')) continue
-          const data = line.slice(6).trim()
-          if (data === '[DONE]') continue
-          try {
-            const evt = JSON.parse(data)
-            // Claude streaming format: content_block_delta events
-            if (evt.type === 'content_block_delta' && evt.delta?.text) {
-              setMessages(prev => {
-                const updated = [...prev]
-                updated[updated.length - 1] = {
-                  ...updated[updated.length - 1],
-                  content: updated[updated.length - 1].content + evt.delta.text,
-                }
-                return updated
-              })
-            }
-          } catch (_) { /* skip malformed */ }
+      const text = body.text || body.error || 'Pas de réponse.'
+      setMessages(prev => {
+        const updated = [...prev]
+        updated[updated.length - 1] = {
+          ...updated[updated.length - 1],
+          content: text,
         }
-      }
+        return updated
+      })
     } catch (err) {
       if (err.name === 'AbortError') return
       console.error('Claude API error', err)
