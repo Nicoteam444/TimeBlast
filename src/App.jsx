@@ -180,7 +180,7 @@ function AppRoutes() {
       <Route path="/finance/facturation" element={
         <ProtectedRoute roles={['admin','comptable']}><Layout><FacturationPage /></Layout></ProtectedRoute>
       } />
-      <Route path="/finance/factures-fournisseurs" element={
+      <Route path="/gestion/achats" element={
         <ProtectedRoute roles={['admin','comptable']}><Layout><FacturesFournisseursPage /></Layout></ProtectedRoute>
       } />
       <Route path="/finance/previsionnel" element={

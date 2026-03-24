@@ -67,7 +67,7 @@ const SECTIONS = [
       { to: '/gestion/tableau-de-bord',        icon: '📊', label: 'Tableau de bord' },
       { to: '/gestion/transactions',           icon: '🏦', label: 'Transactions' },
       { to: '/finance/facturation',            icon: '📤', label: 'Ventes' },
-      { to: '/finance/factures-fournisseurs',  icon: '📥', label: 'Achats' },
+      { to: '/gestion/achats',  icon: '📥', label: 'Achats' },
       { to: '/commerce/stock',                 icon: '📦', label: 'Stock' },
     ],
   },

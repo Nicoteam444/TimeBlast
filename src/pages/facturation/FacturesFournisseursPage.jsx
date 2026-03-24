@@ -80,7 +80,7 @@ export default function FacturesFournisseursPage() {
   }
 
   return (
-    <div className="fac-page">
+    <div>
       {/* Header */}
       <div className="admin-page-header" style={{ marginBottom: '1rem', flexShrink: 0 }}>
         <div>
