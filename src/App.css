@@ -59,67 +59,170 @@ body {
 }
 
 /* ── Landing Page ───────────────────────────── */
-.landing { min-height: 100vh; background: #fff; color: #1a2332; font-family: inherit; }
+/* ═══════════════════════════════════════════════════════════════
+   LANDING PAGE — Multiprise intelligente (Charte SRA)
+   Couleurs SRA : Bleu #0F4C75, Bleu clair #4CB0F8, Vert sauge #98BA9C,
+                   Magenta #F8B35A, Or #F8B35A
+   ═══════════════════════════════════════════════════════════════ */
+.landing { min-height: 100vh; background: #fff; color: #1a2332; font-family: 'Roboto', system-ui, sans-serif; overflow-x: hidden; }
 
-.landing-nav { position: fixed; top: 0; left: 0; right: 0; z-index: 50; background: rgba(255,255,255,0.92); backdrop-filter: blur(12px); border-bottom: 1px solid #e5e7eb; }
+/* Navbar — style SRA blanc avec accent bleu */
+.landing-nav { position: fixed; top: 0; left: 0; right: 0; z-index: 50; background: rgba(255,255,255,0.95); backdrop-filter: blur(12px); border-bottom: 1px solid #e5e7eb; }
 .landing-nav-inner { max-width: 1200px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; padding: .75rem 2rem; }
 .landing-logo { display: flex; align-items: center; gap: .5rem; }
-.landing-logo-text { font-size: 1.3rem; font-weight: 800; color: #1a5c82; letter-spacing: -.5px; }
+.landing-logo-icon { font-size: 1.4rem; }
+.landing-logo-text { font-size: 1.3rem; font-weight: 800; color: #0F4C75; letter-spacing: -.5px; }
 .landing-nav-links { display: flex; gap: 2rem; }
 .landing-nav-links a { text-decoration: none; color: #475569; font-size: .9rem; font-weight: 500; transition: color .15s; }
-.landing-nav-links a:hover { color: #1a5c82; }
-.landing-nav-btn { background: #1a5c82; color: #fff; border: none; padding: .5rem 1.25rem; border-radius: 8px; font-size: .875rem; font-weight: 600; cursor: pointer; transition: background .15s; }
-.landing-nav-btn:hover { background: #14496a; }
+.landing-nav-links a:hover { color: #0F4C75; }
+.landing-nav-btn { background: #0F4C75; color: #fff; border: none; padding: .5rem 1.25rem; border-radius: 8px; font-size: .875rem; font-weight: 700; cursor: pointer; transition: all .15s; }
+.landing-nav-btn:hover { background: #0a3a5a; box-shadow: 0 4px 16px rgba(15,76,117,0.25); }
 
-.landing-hero { position: relative; padding: 10rem 2rem 6rem; text-align: center; overflow: hidden; }
-.landing-hero-bg { position: absolute; inset: 0; background: linear-gradient(160deg, #0d1b24 0%, #1a5c82 50%, #2a7fad 100%); z-index: 0; }
-.landing-hero-content { position: relative; z-index: 1; max-width: 800px; margin: 0 auto; }
-.landing-hero-title { font-size: 3rem; font-weight: 800; line-height: 1.15; color: #fff; margin-bottom: 1.25rem; letter-spacing: -.5px; }
-.landing-hero-accent { color: #67e8f9; }
-.landing-hero-subtitle { font-size: 1.15rem; color: rgba(255,255,255,0.75); line-height: 1.7; margin-bottom: 2.5rem; max-width: 600px; margin-left: auto; margin-right: auto; }
-.landing-hero-actions { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
+/* Hero — fond blanc, texte bleu SRA, multiprise sur fond clair */
+.landing-hero { position: relative; padding: 7rem 2rem 4rem; overflow: hidden; }
+.landing-hero-bg { position: absolute; inset: 0; background: linear-gradient(170deg, #f8fafc 0%, #eef6fb 50%, #e8f4f0 100%); z-index: 0; }
+.landing-hero-bg::after { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse at 70% 40%, rgba(76,176,248,0.08) 0%, transparent 60%); }
+.landing-hero-grid { position: relative; z-index: 1; max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: 1fr 1fr; align-items: center; gap: 2rem; }
+.landing-hero-text { text-align: left; }
+.landing-hero-badge { display: inline-block; background: rgba(15,76,117,0.06); border: 1px solid rgba(15,76,117,0.15); color: #0F4C75; padding: .4rem 1rem; border-radius: 20px; font-size: .82rem; font-weight: 600; margin-bottom: 1.5rem; }
+.landing-hero-title { font-size: 2.8rem; font-weight: 800; line-height: 1.12; color: #0F4C75; margin-bottom: 1.25rem; letter-spacing: -.5px; }
+.landing-hero-accent { color: #4CB0F8; display: block; }
+.landing-hero-subtitle { font-size: 1.05rem; color: #475569; line-height: 1.7; margin-bottom: 2rem; }
+.landing-hero-subtitle strong { color: #0F4C75; font-weight: 700; }
+.landing-hero-actions { display: flex; gap: 1rem; flex-wrap: wrap; }
+.landing-hero-visual { display: flex; justify-content: center; align-items: center; }
 
-.landing-btn-primary { background: #67e8f9; color: #0d1b24; border: none; padding: .75rem 2rem; border-radius: 10px; font-size: 1rem; font-weight: 700; cursor: pointer; transition: all .15s; }
-.landing-btn-primary:hover { background: #a5f3fc; transform: translateY(-1px); box-shadow: 0 8px 24px rgba(103,232,249,0.3); }
-.landing-btn-secondary { background: transparent; color: #fff; border: 1.5px solid rgba(255,255,255,0.3); padding: .75rem 2rem; border-radius: 10px; font-size: 1rem; font-weight: 600; cursor: pointer; text-decoration: none; transition: all .15s; }
-.landing-btn-secondary:hover { border-color: #fff; background: rgba(255,255,255,0.08); }
+/* Buttons — style SRA */
+.landing-btn-primary { background: #0F4C75; color: #fff; border: none; padding: .75rem 2rem; border-radius: 8px; font-size: 1rem; font-weight: 700; cursor: pointer; transition: all .15s; }
+.landing-btn-primary:hover { background: #0a3a5a; transform: translateY(-1px); box-shadow: 0 8px 24px rgba(15,76,117,0.25); }
+.landing-btn-secondary { background: transparent; color: #0F4C75; border: 1.5px solid #0F4C75; padding: .75rem 2rem; border-radius: 8px; font-size: 1rem; font-weight: 600; cursor: pointer; text-decoration: none; transition: all .15s; display: inline-block; }
+.landing-btn-secondary:hover { background: rgba(15,76,117,0.05); box-shadow: 0 4px 12px rgba(15,76,117,0.1); }
 .landing-btn-lg { padding: 1rem 2.5rem; font-size: 1.1rem; }
 
-.landing-stats { display: flex; justify-content: center; gap: 3rem; padding: 3rem 2rem; background: #f8fafc; flex-wrap: wrap; }
+/* ── Multiprise SVG ── */
+.multiprise-container { width: 100%; max-width: 480px; margin: 0 auto; background: rgba(15,76,117,0.03); border-radius: 50%; padding: 1rem; }
+.multiprise-svg { width: 100%; height: auto; }
+.multiprise-hub { animation: pulse-hub 3s ease-in-out infinite; }
+.multiprise-ambient { animation: pulse-ambient 4s ease-in-out infinite; }
+.multiprise-line--active { animation: line-glow .8s ease-out; }
+.multiprise-node { transition: all .4s ease; }
+.multiprise-node--active circle { filter: url(#glow); }
+.multiprise-particle { animation: float-particle 6s ease-in-out infinite; }
+.multiprise-particle.p2 { animation-delay: -1.5s; }
+.multiprise-particle.p3 { animation-delay: -3s; }
+.multiprise-particle.p4 { animation-delay: -4.5s; }
+
+@keyframes pulse-hub {
+  0%, 100% { stroke-opacity: 1; }
+  50% { stroke-opacity: .5; stroke-width: 4; }
+}
+@keyframes pulse-ambient {
+  0%, 100% { r: 120; opacity: 1; }
+  50% { r: 140; opacity: .6; }
+}
+@keyframes line-glow {
+  0% { opacity: 0; stroke-width: 0; }
+  50% { opacity: 1; stroke-width: 3; }
+  100% { opacity: 1; stroke-width: 2.5; }
+}
+@keyframes float-particle {
+  0%, 100% { transform: translate(0, 0); }
+  25% { transform: translate(8px, -12px); }
+  50% { transform: translate(-5px, -20px); }
+  75% { transform: translate(10px, -8px); }
+}
+
+/* Stats — fond vert sauge léger */
+.landing-stats { display: flex; justify-content: center; gap: 3rem; padding: 3rem 2rem; background: #f5f9f6; border-top: 1px solid #dce8df; border-bottom: 1px solid #dce8df; flex-wrap: wrap; }
 .landing-stat { text-align: center; }
-.landing-stat-value { display: block; font-size: 2.2rem; font-weight: 800; color: #1a5c82; }
+.landing-stat-value { display: block; font-size: 2.4rem; font-weight: 800; color: #0F4C75; }
+.landing-stat-suffix { font-size: 1rem; font-weight: 600; color: #4CB0F8; margin-left: .2rem; }
 .landing-stat-label { display: block; font-size: .85rem; color: #64748b; margin-top: .2rem; }
 
-.landing-features { max-width: 1200px; margin: 0 auto; padding: 5rem 2rem; }
-.landing-section-title { text-align: center; font-size: 2rem; font-weight: 800; color: #1a2332; margin-bottom: .5rem; }
+/* Steps — Comment ça marche */
+.landing-steps { max-width: 1000px; margin: 0 auto; padding: 5rem 2rem; }
+.landing-steps-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2rem; }
+.landing-step-card { background: #fff; border: 1.5px solid #e5e7eb; border-radius: 12px; padding: 2rem 1.5rem; text-align: center; position: relative; transition: all .2s; }
+.landing-step-card:hover { transform: translateY(-4px); box-shadow: 0 12px 32px rgba(15,76,117,.08); border-color: #0F4C75; }
+.landing-step-number { position: absolute; top: -14px; left: 50%; transform: translateX(-50%); background: #F8B35A; color: #0F4C75; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: .8rem; font-weight: 800; }
+.landing-step-icon { font-size: 2.5rem; display: block; margin: .75rem 0; }
+.landing-step-card h3 { font-size: 1.05rem; font-weight: 700; margin-bottom: .5rem; color: #0F4C75; }
+.landing-step-card p { font-size: .85rem; color: #64748b; line-height: 1.55; }
+
+/* Connectors section */
+.landing-connectors { max-width: 1000px; margin: 0 auto; padding: 5rem 2rem; }
+.landing-cat-tabs { display: flex; flex-wrap: wrap; justify-content: center; gap: .4rem; margin-bottom: 2rem; }
+.landing-cat-tab { background: #f1f5f9; border: 1.5px solid transparent; border-radius: 20px; padding: .4rem 1rem; font-size: .82rem; font-weight: 600; color: #475569; cursor: pointer; transition: all .15s; }
+.landing-cat-tab:hover { border-color: #0F4C75; color: #0F4C75; }
+.landing-cat-tab--active { background: #0F4C75; color: #fff; border-color: #0F4C75; }
+.landing-connectors-grid { display: flex; flex-wrap: wrap; justify-content: center; gap: .6rem; }
+.landing-connector-chip { display: inline-flex; align-items: center; gap: .5rem; background: #fff; border: 1.5px solid #e5e7eb; border-radius: 8px; padding: .55rem 1rem; font-size: .85rem; font-weight: 600; color: #1a2332; transition: all .15s; cursor: default; }
+.landing-connector-chip:hover { border-color: var(--chip-color); transform: translateY(-2px); box-shadow: 0 4px 16px rgba(0,0,0,.06); }
+.landing-connector-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+
+/* Marquee — bandeau jaune/or SRA */
+.landing-marquee-section { background: #0F4C75; padding: 1.25rem 0; overflow: hidden; }
+.landing-marquee { position: relative; }
+.landing-marquee-track { display: flex; gap: 2.5rem; animation: marquee-scroll 40s linear infinite; white-space: nowrap; width: max-content; }
+.landing-marquee-item { font-size: .85rem; font-weight: 700; opacity: .6; flex-shrink: 0; }
+@keyframes marquee-scroll {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+/* Section titles */
+.landing-section-title { text-align: center; font-size: 2rem; font-weight: 800; color: #0F4C75; margin-bottom: .5rem; }
 .landing-section-subtitle { text-align: center; font-size: 1.05rem; color: #64748b; margin-bottom: 3rem; max-width: 550px; margin-left: auto; margin-right: auto; }
+
+/* Features — cards style SRA */
+.landing-features { max-width: 1200px; margin: 0 auto; padding: 5rem 2rem; }
 .landing-features-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; }
-.landing-feature-card { background: #f8fafc; border: 1px solid #e5e7eb; border-radius: 14px; padding: 1.75rem; transition: all .2s; }
-.landing-feature-card:hover { transform: translateY(-3px); box-shadow: 0 12px 32px rgba(0,0,0,.08); border-color: #1a5c82; }
+.landing-feature-card { background: #fff; border: 1.5px solid #e5e7eb; border-radius: 12px; padding: 1.75rem; transition: all .2s; }
+.landing-feature-card:hover { transform: translateY(-3px); box-shadow: 0 12px 32px rgba(15,76,117,.08); border-color: #0F4C75; }
 .landing-feature-icon { font-size: 1.8rem; display: block; margin-bottom: .75rem; }
-.landing-feature-card h3 { font-size: 1rem; font-weight: 700; margin-bottom: .4rem; color: #1a2332; }
+.landing-feature-card h3 { font-size: 1rem; font-weight: 700; margin-bottom: .4rem; color: #0F4C75; }
 .landing-feature-card p { font-size: .85rem; color: #64748b; line-height: 1.55; }
 
-.landing-cta { text-align: center; padding: 5rem 2rem; background: linear-gradient(160deg, #0d1b24, #1a5c82); color: #fff; }
+/* CTA — bleu SRA profond */
+.landing-cta { text-align: center; padding: 5rem 2rem; background: #0F4C75; color: #fff; position: relative; overflow: hidden; }
+.landing-cta::before { content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: radial-gradient(ellipse at center, rgba(76,176,248,0.08) 0%, transparent 50%); }
+.landing-cta-inner { position: relative; z-index: 1; }
+.landing-cta-icon { font-size: 3rem; display: block; margin-bottom: 1rem; }
 .landing-cta h2 { font-size: 2rem; font-weight: 800; margin-bottom: .75rem; }
-.landing-cta p { font-size: 1.05rem; color: rgba(255,255,255,0.7); margin-bottom: 2rem; }
+.landing-cta p { font-size: 1.05rem; color: rgba(255,255,255,0.65); margin-bottom: 2rem; }
+.landing-cta .landing-btn-primary { background: #fff; color: #0F4C75; }
+.landing-cta .landing-btn-primary:hover { background: #f0f9ff; box-shadow: 0 8px 24px rgba(255,255,255,0.25); }
 
-.landing-footer { background: #0d1b24; padding: 1.5rem 2rem; }
+/* Footer — bleu SRA foncé */
+.landing-footer { background: #0a2d44; padding: 1.5rem 2rem; }
 .landing-footer-inner { max-width: 1200px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; }
 
-.landing-modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); backdrop-filter: blur(4px); z-index: 100; display: flex; align-items: center; justify-content: center; }
-.landing-login-card { background: #fff; border-radius: 16px; padding: 2.5rem; width: 100%; max-width: 400px; box-shadow: 0 24px 48px rgba(0,0,0,0.2); position: relative; }
-.landing-login-card h2 { font-size: 1.5rem; font-weight: 700; color: #1a2332; margin-bottom: .25rem; }
+/* Login modal */
+.landing-modal-overlay { position: fixed; inset: 0; background: rgba(15,76,117,0.6); backdrop-filter: blur(8px); z-index: 100; display: flex; align-items: center; justify-content: center; }
+.landing-login-card { background: #fff; border-radius: 12px; padding: 2.5rem; width: 100%; max-width: 400px; box-shadow: 0 24px 64px rgba(15,76,117,0.3); position: relative; }
+.landing-login-card h2 { font-size: 1.5rem; font-weight: 700; color: #0F4C75; margin-bottom: .25rem; }
 .landing-login-close { position: absolute; top: 1rem; right: 1rem; background: none; border: none; font-size: 1.2rem; cursor: pointer; color: #94a3b8; }
-.landing-login-close:hover { color: #1a2332; }
+.landing-login-close:hover { color: #0F4C75; }
 .landing-login-card .field input { width: 100%; }
 
+/* ── Landing responsive ── */
+@media (max-width: 900px) {
+  .landing-hero-grid { grid-template-columns: 1fr; text-align: center; }
+  .landing-hero-text { text-align: center; }
+  .landing-hero-actions { justify-content: center; }
+  .multiprise-container { max-width: 340px; }
+  .landing-steps-grid { grid-template-columns: 1fr; max-width: 400px; margin: 0 auto; }
+}
 @media (max-width: 768px) {
+  .landing-hero { padding: 6rem 1.25rem 3rem; }
   .landing-hero-title { font-size: 2rem; }
+  .landing-hero-subtitle { font-size: .95rem; }
   .landing-features-grid { grid-template-columns: 1fr; }
   .landing-nav-links { display: none; }
   .landing-stats { gap: 1.5rem; }
-  .landing-stat-value { font-size: 1.6rem; }
+  .landing-stat-value { font-size: 1.8rem; }
+  .landing-cat-tabs { gap: .3rem; }
+  .landing-cat-tab { font-size: .75rem; padding: .35rem .7rem; }
 }
 
 .field {
