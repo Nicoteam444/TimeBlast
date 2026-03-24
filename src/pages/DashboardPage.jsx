@@ -64,6 +64,7 @@ if (typeof document !== 'undefined' && !document.getElementById(DASH_STYLE_ID)) 
     @keyframes dashPulse { 0%, 100% { opacity: 1; } 50% { opacity: .55; } }
     .dash-card { animation: dashFadeIn .45s ease both; transition: transform .2s, box-shadow .2s; }
     .dash-card:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(0,0,0,.08) !important; }
+    .dash-card:hover .dash-grip { opacity: 1 !important; }
   `
   document.head.appendChild(style)
 }
@@ -832,16 +833,17 @@ export default function DashboardPage() {
                 ...cardStyle, position: 'relative', cursor: 'default',
                 gridColumn: id === 'activity' ? '1 / -1' : undefined,
               }}>
-              {/* Grip visuel — coin haut gauche */}
-              <div style={{
+              {/* Grip visuel — visible uniquement au hover */}
+              <div className="dash-grip" style={{
                 position: 'absolute', top: 6, left: 8, zIndex: 2,
                 display: 'grid', gridTemplateColumns: '5px 5px', gap: 3,
                 cursor: 'grab', padding: 2, borderRadius: 4,
+                opacity: 0, transition: 'opacity .2s',
               }}>
-                <span style={{ width: 5, height: 5, borderRadius: '50%', background: '#cbd5e1' }} />
-                <span style={{ width: 5, height: 5, borderRadius: '50%', background: '#cbd5e1' }} />
-                <span style={{ width: 5, height: 5, borderRadius: '50%', background: '#cbd5e1' }} />
-                <span style={{ width: 5, height: 5, borderRadius: '50%', background: '#cbd5e1' }} />
+                <span style={{ width: 5, height: 5, borderRadius: '50%', background: '#94a3b8' }} />
+                <span style={{ width: 5, height: 5, borderRadius: '50%', background: '#94a3b8' }} />
+                <span style={{ width: 5, height: 5, borderRadius: '50%', background: '#94a3b8' }} />
+                <span style={{ width: 5, height: 5, borderRadius: '50%', background: '#94a3b8' }} />
               </div>
               {content}
             </div>
