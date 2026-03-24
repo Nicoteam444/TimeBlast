@@ -11,7 +11,7 @@ export default function AdminSocietesPage() {
   const [loading, setLoading]         = useState(true)
   const [showForm, setShowForm]       = useState(false)
   const [editItem, setEditItem]       = useState(null)
-  const [form, setForm]               = useState({ name: '', siren: '', ville: '', groupe_id: '' })
+  const [form, setForm]               = useState({ name: '', siren: '', adresse: '', ville: '', code_postal: '', groupe_id: '' })
   const [formLoading, setFormLoading] = useState(false)
   const [formError, setFormError]     = useState(null)
   const [deleteConfirm, setDeleteConfirm] = useState(null)
@@ -33,14 +33,14 @@ export default function AdminSocietesPage() {
 
   function openCreate() {
     setEditItem(null)
-    setForm({ name: '', siren: '', ville: '', groupe_id: '' })
+    setForm({ name: '', siren: '', adresse: '', ville: '', code_postal: '', groupe_id: '' })
     setFormError(null)
     setShowForm(true)
   }
 
   function openEdit(s) {
     setEditItem(s)
-    setForm({ name: s.name || '', siren: s.siren || '', ville: s.ville || '', groupe_id: s.groupe_id || '' })
+    setForm({ name: s.name || '', siren: s.siren || '', adresse: s.adresse || '', ville: s.ville || '', code_postal: s.code_postal || '', groupe_id: s.groupe_id || '' })
     setFormError(null)
     setShowForm(true)
   }
@@ -54,7 +54,9 @@ export default function AdminSocietesPage() {
     const payload = {
       name: form.name.trim(),
       siren: form.siren.trim() || null,
+      adresse: form.adresse.trim() || null,
       ville: form.ville.trim() || null,
+      code_postal: form.code_postal.trim() || null,
       groupe_id: form.groupe_id || null,
     }
     let error
@@ -151,13 +153,34 @@ ALTER TABLE profiles ADD COLUMN IF NOT EXISTS societe_id uuid REFERENCES societe
                 />
               </div>
               <div className="field">
-                <label>Ville / Siège</label>
+                <label>Adresse</label>
                 <input
                   type="text"
-                  value={form.ville}
-                  onChange={e => setForm(f => ({ ...f, ville: e.target.value }))}
-                  placeholder="Ex : Paris"
+                  value={form.adresse}
+                  onChange={e => setForm(f => ({ ...f, adresse: e.target.value }))}
+                  placeholder="Ex : 12 rue de la Paix"
                 />
+              </div>
+              <div style={{ display: 'flex', gap: '.75rem' }}>
+                <div className="field" style={{ flex: 2 }}>
+                  <label>Ville</label>
+                  <input
+                    type="text"
+                    value={form.ville}
+                    onChange={e => setForm(f => ({ ...f, ville: e.target.value }))}
+                    placeholder="Ex : Paris"
+                  />
+                </div>
+                <div className="field" style={{ flex: 1 }}>
+                  <label>Code postal</label>
+                  <input
+                    type="text"
+                    value={form.code_postal}
+                    onChange={e => setForm(f => ({ ...f, code_postal: e.target.value }))}
+                    placeholder="75001"
+                    maxLength={5}
+                  />
+                </div>
               </div>
               <div className="field">
                 <label>Groupe</label>
@@ -222,6 +245,7 @@ ALTER TABLE profiles ADD COLUMN IF NOT EXISTS societe_id uuid REFERENCES societe
                 <SortableHeader label="Société" field="name" sortKey={sortKey} sortDir={sortDir} onSort={requestSort} />
                 <SortableHeader label="Groupe" field="groupes.name" sortKey={sortKey} sortDir={sortDir} onSort={requestSort} />
                 <SortableHeader label="SIREN" field="siren" sortKey={sortKey} sortDir={sortDir} onSort={requestSort} />
+                <SortableHeader label="Adresse" field="adresse" sortKey={sortKey} sortDir={sortDir} onSort={requestSort} />
                 <SortableHeader label="Ville" field="ville" sortKey={sortKey} sortDir={sortDir} onSort={requestSort} />
                 <SortableHeader label="Créée le" field="created_at" sortKey={sortKey} sortDir={sortDir} onSort={requestSort} />
                 <th></th>
@@ -255,7 +279,8 @@ ALTER TABLE profiles ADD COLUMN IF NOT EXISTS societe_id uuid REFERENCES societe
                     )}
                   </td>
                   <td style={{ color: 'var(--text-muted)', fontSize: '.85rem' }}>{s.siren || '—'}</td>
-                  <td style={{ color: 'var(--text-muted)', fontSize: '.85rem' }}>{s.ville || '—'}</td>
+                  <td style={{ color: 'var(--text-muted)', fontSize: '.85rem' }}>{s.adresse || '—'}</td>
+                  <td style={{ color: 'var(--text-muted)', fontSize: '.85rem' }}>{[s.ville, s.code_postal].filter(Boolean).join(' ') || '—'}</td>
                   <td style={{ color: 'var(--text-muted)', fontSize: '.82rem' }}>
                     {s.created_at ? new Date(s.created_at).toLocaleDateString('fr-FR') : '—'}
                   </td>

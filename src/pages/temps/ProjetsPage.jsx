@@ -15,7 +15,8 @@ export default function ProjetsPage({ onSelect }) {
   const [loading, setLoading] = useState(true)
   const [showForm, setShowForm] = useState(false)
   const [selectedClient, setSelectedClient] = useState(null)
-  const [form, setForm] = useState({ name: '', total_jours: '', date_debut: '', date_fin: '', statut: 'actif' })
+  const [form, setForm] = useState({ name: '', total_jours: '', date_debut: '', date_fin: '', statut: 'actif', societe_id: '' })
+  const [societes, setSocietes] = useState([])
   const [deleteConfirm, setDeleteConfirm] = useState(null)
   const [filter, setFilter] = useState('')
   const [pageSize, setPageSize] = useState(20)
@@ -23,20 +24,22 @@ export default function ProjetsPage({ onSelect }) {
 
   const [consumedHours, setConsumedHours] = useState({})
 
-  useEffect(() => { fetchProjets() }, [selectedSociete?.id])
+  useEffect(() => { fetchProjets(); fetchSocietes() }, [selectedSociete?.id])
+
+  async function fetchSocietes() {
+    const { data } = await supabase.from('societes').select('id, name').order('name')
+    setSocietes(data || [])
+  }
 
   async function fetchProjets() {
     setLoading(true)
     let query = supabase
       .from('projets')
-      .select('*, clients(name, societe_id), lots(count)')
+      .select('*, clients(name, societe_id), lots(count), societes:societe_id(id, name)')
       .order('created_at', { ascending: false })
-    if (selectedSociete?.id) query = query.eq('clients.societe_id', selectedSociete.id)
+    if (selectedSociete?.id) query = query.eq('societe_id', selectedSociete.id)
     const { data } = await query
-    // Filter client-side since PostgREST join filters can return rows with null client when using eq on joined table
-    const filtered_data = selectedSociete?.id
-      ? (data || []).filter(p => !p.clients || p.clients.societe_id === selectedSociete.id)
-      : (data || [])
+    const filtered_data = data || []
     setProjets(filtered_data)
 
     // Fetch consumed hours from saisies_temps
@@ -66,10 +69,11 @@ export default function ProjetsPage({ onSelect }) {
       date_debut: form.date_debut || null,
       date_fin: form.date_fin || null,
       statut: form.statut,
+      societe_id: form.societe_id || null,
     })
     setShowForm(false)
     setSelectedClient(null)
-    setForm({ name: '', total_jours: '', date_debut: '', date_fin: '', statut: 'actif' })
+    setForm({ name: '', total_jours: '', date_debut: '', date_fin: '', statut: 'actif', societe_id: '' })
     fetchProjets()
   }
 
@@ -120,6 +124,13 @@ export default function ProjetsPage({ onSelect }) {
               <div className="field">
                 <label>Nom du projet</label>
                 <input type="text" value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))} placeholder="Ex : Refonte site web" required autoFocus />
+              </div>
+              <div className="field">
+                <label>Société</label>
+                <select value={form.societe_id} onChange={e => setForm(f => ({ ...f, societe_id: e.target.value }))}>
+                  <option value="">— Toutes les sociétés —</option>
+                  {societes.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
+                </select>
               </div>
               <div className="field">
                 <label>Client</label>
@@ -203,6 +214,7 @@ export default function ProjetsPage({ onSelect }) {
           <div className="data-table data-table--projets">
             <div className="data-table-header">
               <span>Nom du projet</span>
+              <span>Société</span>
               <span>Client</span>
               <span>Statut</span>
               <span>Budget</span>
@@ -218,6 +230,7 @@ export default function ProjetsPage({ onSelect }) {
               return (
                 <div key={projet.id} className="data-table-row" onClick={() => onSelect?.(projet)}>
                   <span className="data-table-name">📁 {projet.name}</span>
+                  <span className="data-table-sub">{projet.societes?.name || '—'}</span>
                   <span className="data-table-sub">{projet.clients?.name || '—'}</span>
                   <span>
                     <span className="status-badge" style={{ color: s.color, background: s.bg }}>
