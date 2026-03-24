@@ -384,7 +384,7 @@ export default function FacturationPage() {
       {/* Titre de page */}
       <div className="admin-page-header" style={{marginBottom: '1rem', flexShrink: 0}}>
         <div>
-          <h1>Facturation</h1>
+          <h1>Ventes</h1>
           <p>{factures.length} facture{factures.length !== 1 ? 's' : ''}{selectedSociete ? ` · ${selectedSociete.name}` : ''}</p>
         </div>
         <button className="btn-primary" onClick={() => setModal('new')}>+ Nouvelle facture</button>

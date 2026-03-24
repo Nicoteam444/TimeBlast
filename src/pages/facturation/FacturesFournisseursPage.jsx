@@ -84,7 +84,7 @@ export default function FacturesFournisseursPage() {
       {/* Header */}
       <div className="admin-page-header" style={{ marginBottom: '1rem', flexShrink: 0 }}>
         <div>
-          <h1>📥 Factures Fournisseurs</h1>
+          <h1>📥 Achats</h1>
           <p>{factures.length} facture{factures.length !== 1 ? 's' : ''} reçue{factures.length !== 1 ? 's' : ''}{selectedSociete ? ` · ${selectedSociete.name}` : ''}</p>
         </div>
         <div style={{ display: 'flex', gap: '.75rem' }}>
