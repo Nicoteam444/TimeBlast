@@ -442,6 +442,27 @@ button:disabled { opacity: .6; cursor: not-allowed; }
 .app-content {
   flex: 1;
   overflow-y: auto;
+  padding: 2rem 2.5rem;
+}
+
+.back-to-home-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: .35rem;
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  font-size: .82rem;
+  font-weight: 500;
+  cursor: pointer;
+  padding: .25rem .5rem;
+  margin: 0 0 1rem -.5rem;
+  border-radius: 6px;
+  transition: all .15s;
+}
+.back-to-home-btn:hover {
+  color: var(--primary);
+  background: var(--primary-light);
 }
 
 /* ============================================================
@@ -864,7 +885,7 @@ button:disabled { opacity: .6; cursor: not-allowed; }
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 2rem 2.5rem 1.25rem;
+  padding: 0 0 1.25rem;
   border-bottom: 1px solid var(--border);
   background: var(--surface);
 }
@@ -1194,7 +1215,7 @@ button:disabled { opacity: .6; cursor: not-allowed; }
   display: flex;
   flex-direction: column;
   gap: 1px;
-  padding: 2rem 2.5rem;
+  padding: 0;
   gap: .875rem;
   max-width: 680px;
 }
@@ -1265,11 +1286,11 @@ button:disabled { opacity: .6; cursor: not-allowed; }
    ============================================================ */
 
 .admin-page {
-  padding: 2rem 2.5rem;
+  padding: 0;
   max-width: 960px;
 }
 .page-content {
-  padding: 2rem 2.5rem;
+  padding: 0;
   overflow: auto;
   flex: 1;
 }
@@ -5034,7 +5055,7 @@ button:disabled { opacity: .6; cursor: not-allowed; }
 
 /* ═══ FACTURATION - MISE EN PAGE ════════════════════════════ */
 .fac-page {
-  padding: 2rem 2.5rem;
+  padding: 0;
   height: 100%;
   box-sizing: border-box;
   overflow: hidden;
@@ -5733,7 +5754,7 @@ button:disabled { opacity: .6; cursor: not-allowed; }
    DEVIS — Page de gestion des devis
    ══════════════════════════════════════════ */
 .devis-page {
-  padding: 2rem 2.5rem;
+  padding: 0;
   height: 100%;
   box-sizing: border-box;
   overflow-y: auto;
