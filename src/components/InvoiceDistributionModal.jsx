@@ -136,7 +136,7 @@ export default function InvoiceDistributionModal({ invoice, company, client, onC
                 onClick={() => setMethod(m.id)}
                 style={{
                   padding: '1rem',
-                  border: `2px solid ${method === m.id ? '#0F4C75' : '#e5e7eb'}`,
+                  border: `2px solid ${method === m.id ? '#195C82' : '#e5e7eb'}`,
                   borderRadius: '8px',
                   background: method === m.id ? '#f0f5f9' : '#fff',
                   cursor: 'pointer',
@@ -289,7 +289,7 @@ export default function InvoiceDistributionModal({ invoice, company, client, onC
         }
 
         .modal-close:hover {
-          color: #0F4C75;
+          color: #195C82;
         }
 
         .form-group {
@@ -300,7 +300,7 @@ export default function InvoiceDistributionModal({ invoice, company, client, onC
         .form-group label {
           font-size: 0.875rem;
           font-weight: 600;
-          color: #0F4C75;
+          color: #195C82;
           margin-bottom: 0.5rem;
         }
 
@@ -315,7 +315,7 @@ export default function InvoiceDistributionModal({ invoice, company, client, onC
 
         .form-control:focus {
           outline: none;
-          border-color: #0F4C75;
+          border-color: #195C82;
           box-shadow: 0 0 0 3px rgba(15, 76, 117, 0.1);
         }
 
@@ -349,7 +349,7 @@ export default function InvoiceDistributionModal({ invoice, company, client, onC
         }
 
         .btn-primary {
-          background: #0F4C75;
+          background: #195C82;
           color: white;
         }
 

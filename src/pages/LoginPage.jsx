@@ -87,8 +87,8 @@ function MultipriseVisual() {
       <svg viewBox="0 0 500 500" className="multiprise-svg">
         <defs>
           <radialGradient id="hubGlow" cx="50%" cy="50%" r="50%">
-            <stop offset="0%" stopColor="#4CB0F8" stopOpacity="0.3" />
-            <stop offset="100%" stopColor="#4CB0F8" stopOpacity="0" />
+            <stop offset="0%" stopColor="#1D9BF0" stopOpacity="0.3" />
+            <stop offset="100%" stopColor="#1D9BF0" stopOpacity="0" />
           </radialGradient>
           <filter id="glow">
             <feGaussianBlur stdDeviation="3" result="blur" />
@@ -118,9 +118,9 @@ function MultipriseVisual() {
         })}
 
         {/* Hub central */}
-        <circle cx={cx} cy={cy} r={44} fill="#0F4C75" stroke="#4CB0F8" strokeWidth="2.5" className="multiprise-hub" />
+        <circle cx={cx} cy={cy} r={44} fill="#195C82" stroke="#1D9BF0" strokeWidth="2.5" className="multiprise-hub" />
         <text x={cx} y={cy - 6} textAnchor="middle" fill="#fff" fontSize="11" fontWeight="800" letterSpacing="1">TIME</text>
-        <text x={cx} y={cy + 10} textAnchor="middle" fill="#4CB0F8" fontSize="11" fontWeight="800" letterSpacing="1">BLAST</text>
+        <text x={cx} y={cy + 10} textAnchor="middle" fill="#1D9BF0" fontSize="11" fontWeight="800" letterSpacing="1">BLAST</text>
         <text x={cx} y={cy + 26} textAnchor="middle" fill="#98BA9C" fontSize="8" fontWeight="600" opacity="0.9">⚡ Connect All</text>
 
         {/* Nœuds connecteurs */}
@@ -140,7 +140,7 @@ function MultipriseVisual() {
         })}
 
         {/* Particules flottantes */}
-        <circle cx={100} cy={80} r="2" fill="#4CB0F8" opacity="0.3" className="multiprise-particle p1" />
+        <circle cx={100} cy={80} r="2" fill="#1D9BF0" opacity="0.3" className="multiprise-particle p1" />
         <circle cx={400} cy={120} r="1.5" fill="#98BA9C" opacity="0.3" className="multiprise-particle p2" />
         <circle cx={80} cy={400} r="1.5" fill="#F8B35A" opacity="0.3" className="multiprise-particle p3" />
         <circle cx={420} cy={380} r="2" fill="#991567" opacity="0.25" className="multiprise-particle p4" />
@@ -200,9 +200,8 @@ export default function LoginPage() {
           <div className="landing-hero-text">
             <div className="landing-hero-badge">⚡ La multiprise intelligente de votre entreprise</div>
             <h1 className="landing-hero-title">
-              Branchez tout.<br />
-              Gérez tout.<br />
-              <span className="landing-hero-accent">L'IA fait le reste.</span>
+              TimeBlast — connectez tout.<br />
+              <span className="landing-hero-accent">Gagnez du temps grâce à l'IA.</span>
             </h1>
             <p className="landing-hero-subtitle">
               TimeBlast connecte vos outils en une <strong>multiprise intelligente</strong>.

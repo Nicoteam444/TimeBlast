@@ -107,7 +107,7 @@ export default function ClientInvoicePortal() {
           boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
         }}>
           <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>❌</div>
-          <h2 style={{ marginBottom: '1rem', color: '#0F4C75' }}>Accès refusé</h2>
+          <h2 style={{ marginBottom: '1rem', color: '#195C82' }}>Accès refusé</h2>
           <p style={{ color: '#64748b', marginBottom: '1.5rem' }}>
             {error || 'Le lien d\'accès n\'est pas valide ou a expiré.'}
           </p>
@@ -115,7 +115,7 @@ export default function ClientInvoicePortal() {
             onClick={() => navigate('/')}
             style={{
               padding: '0.75rem 1.5rem',
-              background: '#0F4C75',
+              background: '#195C82',
               color: 'white',
               border: 'none',
               borderRadius: '8px',
@@ -154,7 +154,7 @@ export default function ClientInvoicePortal() {
         }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <div>
-              <h1 style={{ margin: 0, color: '#0F4C75', marginBottom: '.5rem' }}>
+              <h1 style={{ margin: 0, color: '#195C82', marginBottom: '.5rem' }}>
                 Facture n° {invoice.num_facture}
               </h1>
               <p style={{ margin: 0, color: '#64748b', fontSize: '.9rem' }}>
@@ -169,7 +169,7 @@ export default function ClientInvoicePortal() {
                 }}
                 style={{
                   padding: '0.75rem 1.5rem',
-                  background: '#0F4C75',
+                  background: '#195C82',
                   color: 'white',
                   border: 'none',
                   borderRadius: '8px',
@@ -197,7 +197,7 @@ export default function ClientInvoicePortal() {
               <h3 style={{ fontSize: '.85rem', color: '#94a3b8', textTransform: 'uppercase', marginBottom: '.5rem' }}>
                 Facturé par
               </h3>
-              <div style={{ color: '#0F4C75', fontWeight: 600 }}>{company?.name}</div>
+              <div style={{ color: '#195C82', fontWeight: 600 }}>{company?.name}</div>
               {company?.adresse && <div style={{ color: '#64748b', fontSize: '.9rem' }}>{company.adresse}</div>}
               {company?.code_postal && <div style={{ color: '#64748b', fontSize: '.9rem' }}>
                 {company.code_postal} {company.ville}
@@ -212,7 +212,7 @@ export default function ClientInvoicePortal() {
               <h3 style={{ fontSize: '.85rem', color: '#94a3b8', textTransform: 'uppercase', marginBottom: '.5rem' }}>
                 Facturé à
               </h3>
-              <div style={{ color: '#0F4C75', fontWeight: 600 }}>{invoice.client_nom}</div>
+              <div style={{ color: '#195C82', fontWeight: 600 }}>{invoice.client_nom}</div>
               {invoice.client_adresse && <div style={{ color: '#64748b', fontSize: '.9rem' }}>
                 {invoice.client_adresse}
               </div>}
@@ -223,13 +223,13 @@ export default function ClientInvoicePortal() {
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2rem', marginBottom: '2rem', paddingBottom: '2rem', borderBottom: '1px solid #e2e8f0' }}>
             <div>
               <div style={{ fontSize: '.85rem', color: '#94a3b8' }}>Date d'émission</div>
-              <div style={{ color: '#0F4C75', fontWeight: 600 }}>
+              <div style={{ color: '#195C82', fontWeight: 600 }}>
                 {new Date(invoice.date_emission).toLocaleDateString('fr-FR')}
               </div>
             </div>
             <div>
               <div style={{ fontSize: '.85rem', color: '#94a3b8' }}>Date d'échéance</div>
-              <div style={{ color: '#0F4C75', fontWeight: 600 }}>
+              <div style={{ color: '#195C82', fontWeight: 600 }}>
                 {new Date(invoice.date_echeance).toLocaleDateString('fr-FR')}
               </div>
             </div>
@@ -237,7 +237,7 @@ export default function ClientInvoicePortal() {
 
           {/* Lignes */}
           <div style={{ marginBottom: '2rem' }}>
-            <h3 style={{ marginBottom: '1rem', color: '#0F4C75' }}>Détails de la facture</h3>
+            <h3 style={{ marginBottom: '1rem', color: '#195C82' }}>Détails de la facture</h3>
             <table style={{ width: '100%', borderCollapse: 'collapse' }}>
               <thead>
                 <tr style={{ borderBottom: '2px solid #e2e8f0' }}>
@@ -255,11 +255,11 @@ export default function ClientInvoicePortal() {
                   const total = qty * pu
                   return (
                     <tr key={idx} style={{ borderBottom: '1px solid #f1f5f9' }}>
-                      <td style={{ padding: '1rem', color: '#0F4C75' }}>{line.desc}</td>
+                      <td style={{ padding: '1rem', color: '#195C82' }}>{line.desc}</td>
                       <td style={{ textAlign: 'right', padding: '1rem', color: '#64748b' }}>{qty.toFixed(2)}</td>
                       <td style={{ textAlign: 'right', padding: '1rem', color: '#64748b' }}>{pu.toFixed(2)} €</td>
                       <td style={{ textAlign: 'right', padding: '1rem', color: '#64748b' }}>{line.tva || 0}%</td>
-                      <td style={{ textAlign: 'right', padding: '1rem', color: '#0F4C75', fontWeight: 600 }}>
+                      <td style={{ textAlign: 'right', padding: '1rem', color: '#195C82', fontWeight: 600 }}>
                         {total.toFixed(2)} €
                       </td>
                     </tr>
@@ -281,15 +281,15 @@ export default function ClientInvoicePortal() {
             <div>
               <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1rem', paddingBottom: '1rem', borderBottom: '1px solid #e2e8f0' }}>
                 <span style={{ color: '#64748b' }}>Total HT</span>
-                <span style={{ color: '#0F4C75', fontWeight: 600 }}>{totalHT.toFixed(2)} €</span>
+                <span style={{ color: '#195C82', fontWeight: 600 }}>{totalHT.toFixed(2)} €</span>
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1rem', paddingBottom: '1rem', borderBottom: '1px solid #e2e8f0' }}>
                 <span style={{ color: '#64748b' }}>TVA</span>
-                <span style={{ color: '#0F4C75', fontWeight: 600 }}>{totalTax.toFixed(2)} €</span>
+                <span style={{ color: '#195C82', fontWeight: 600 }}>{totalTax.toFixed(2)} €</span>
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                <span style={{ color: '#0F4C75', fontWeight: 700, fontSize: '1.1rem' }}>Total TTC</span>
-                <span style={{ color: '#0F4C75', fontWeight: 700, fontSize: '1.1rem' }}>{totalTTC.toFixed(2)} €</span>
+                <span style={{ color: '#195C82', fontWeight: 700, fontSize: '1.1rem' }}>Total TTC</span>
+                <span style={{ color: '#195C82', fontWeight: 700, fontSize: '1.1rem' }}>{totalTTC.toFixed(2)} €</span>
               </div>
             </div>
           </div>
@@ -302,7 +302,7 @@ export default function ClientInvoicePortal() {
               borderTop: '1px solid #e2e8f0',
             }}>
               <h4 style={{ color: '#64748b', marginBottom: '.5rem' }}>Notes</h4>
-              <p style={{ color: '#0F4C75', whiteSpace: 'pre-wrap' }}>{invoice.notes}</p>
+              <p style={{ color: '#195C82', whiteSpace: 'pre-wrap' }}>{invoice.notes}</p>
             </div>
           )}
         </div>
