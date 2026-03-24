@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react'
+import React, { useState, useRef, useEffect } from 'react'
 import { supabase } from '../../lib/supabase'
 import { useAppearance } from '../../contexts/AppearanceContext'
 
@@ -435,6 +435,9 @@ function BaseDeDonneesTab() {
   const [stats, setStats] = useState([])
   const [loading, setLoading] = useState(true)
   const [totalRows, setTotalRows] = useState(0)
+  const [expandedTable, setExpandedTable] = useState(null)
+  const [detailLoading, setDetailLoading] = useState(false)
+  const [detailData, setDetailData] = useState({})
 
   useEffect(() => { fetchStats() }, [])
 
@@ -444,11 +447,7 @@ function BaseDeDonneesTab() {
     for (const table of DB_TABLES) {
       try {
         const { count, error } = await supabase.from(table.name).select('*', { count: 'exact', head: true })
-        results.push({
-          ...table,
-          count: error ? '—' : (count || 0),
-          error: error ? error.message : null,
-        })
+        results.push({ ...table, count: error ? '—' : (count || 0), error: error ? error.message : null })
       } catch {
         results.push({ ...table, count: '—', error: 'Table introuvable' })
       }
@@ -456,6 +455,38 @@ function BaseDeDonneesTab() {
     setStats(results)
     setTotalRows(results.reduce((s, r) => s + (typeof r.count === 'number' ? r.count : 0), 0))
     setLoading(false)
+  }
+
+  async function toggleDetail(tableName) {
+    if (expandedTable === tableName) { setExpandedTable(null); return }
+    setExpandedTable(tableName)
+    if (detailData[tableName]) return // déjà chargé
+    setDetailLoading(true)
+    const { data: socs } = await supabase.from('societes').select('id, name').order('name')
+    const bySociete = {}
+    const isKanban = ['kanban_tasks', 'kanban_columns'].includes(tableName)
+    const noSociete = ['profiles', 'societes', 'user_favorites'].includes(tableName)
+    if (!noSociete && socs) {
+      for (const soc of socs) {
+        if (isKanban) {
+          const { data: projIds } = await supabase.from('projets').select('id').eq('societe_id', soc.id)
+          if (projIds?.length) {
+            const { count } = await supabase.from(tableName).select('*', { count: 'exact', head: true }).in('projet_id', projIds.map(p => p.id))
+            if (count > 0) bySociete[soc.name] = count
+          }
+        } else {
+          const { count } = await supabase.from(tableName).select('*', { count: 'exact', head: true }).eq('societe_id', soc.id)
+          if (count > 0) bySociete[soc.name] = count
+        }
+      }
+    }
+    // Compter les sans société
+    if (!noSociete && !isKanban) {
+      const { count } = await supabase.from(tableName).select('*', { count: 'exact', head: true }).is('societe_id', null)
+      if (count > 0) bySociete['(Sans societe)'] = count
+    }
+    setDetailData(prev => ({ ...prev, [tableName]: bySociete }))
+    setDetailLoading(false)
   }
 
   return (
@@ -490,35 +521,70 @@ function BaseDeDonneesTab() {
               <thead>
                 <tr>
                   <th>Table</th>
-                  <th style={{ textAlign: 'right' }}>Enregistrements</th>
+                  <th style={{ textAlign: 'right' }}>Total</th>
                   <th>Statut</th>
                 </tr>
               </thead>
               <tbody>
                 {stats.sort((a, b) => (typeof b.count === 'number' ? b.count : -1) - (typeof a.count === 'number' ? a.count : -1)).map(s => (
-                  <tr key={s.name}>
-                    <td>
-                      <div className="user-cell">
-                        <span style={{ fontSize: '1rem' }}>{s.icon}</span>
-                        <div>
-                          <span className="user-name">{s.label}</span>
-                          <div style={{ fontSize: '.7rem', color: 'var(--text-muted)', fontFamily: 'monospace' }}>{s.name}</div>
+                  <React.Fragment key={s.name}>
+                    <tr
+                      style={{ cursor: 'pointer', background: expandedTable === s.name ? 'var(--hover-bg, #f8fafc)' : undefined }}
+                      onClick={() => toggleDetail(s.name)}
+                    >
+                      <td>
+                        <div className="user-cell">
+                          <span style={{ fontSize: '1rem' }}>{s.icon}</span>
+                          <div>
+                            <span className="user-name">{s.label}</span>
+                            <div style={{ fontSize: '.7rem', color: 'var(--text-muted)', fontFamily: 'monospace' }}>{s.name}</div>
+                          </div>
                         </div>
-                      </div>
-                    </td>
-                    <td style={{ textAlign: 'right', fontWeight: 700, fontSize: '1rem', color: s.count > 0 ? 'var(--text)' : 'var(--text-muted)' }}>
-                      {typeof s.count === 'number' ? s.count.toLocaleString('fr-FR') : s.count}
-                    </td>
-                    <td>
-                      {s.error ? (
-                        <span className="status-badge" style={{ color: '#dc2626', background: '#fef2f2' }}>Erreur</span>
-                      ) : s.count === 0 ? (
-                        <span className="status-badge" style={{ color: '#f59e0b', background: '#fffbeb' }}>Vide</span>
-                      ) : (
-                        <span className="status-badge" style={{ color: '#16a34a', background: '#f0fdf4' }}>OK</span>
-                      )}
-                    </td>
-                  </tr>
+                      </td>
+                      <td style={{ textAlign: 'right', fontWeight: 700, fontSize: '1rem', color: s.count > 0 ? 'var(--text)' : 'var(--text-muted)' }}>
+                        {typeof s.count === 'number' ? s.count.toLocaleString('fr-FR') : s.count}
+                        <span style={{ marginLeft: '.5rem', fontSize: '.7rem', color: 'var(--text-muted)' }}>
+                          {expandedTable === s.name ? '▲' : '▼'}
+                        </span>
+                      </td>
+                      <td>
+                        {s.error ? (
+                          <span className="status-badge" style={{ color: '#dc2626', background: '#fef2f2' }}>Erreur</span>
+                        ) : s.count === 0 ? (
+                          <span className="status-badge" style={{ color: '#f59e0b', background: '#fffbeb' }}>Vide</span>
+                        ) : (
+                          <span className="status-badge" style={{ color: '#16a34a', background: '#f0fdf4' }}>OK</span>
+                        )}
+                      </td>
+                    </tr>
+                    {expandedTable === s.name && (
+                      <tr>
+                        <td colSpan={3} style={{ padding: 0 }}>
+                          <div style={{ background: 'var(--hover-bg, #f8fafc)', padding: '.75rem 1rem .75rem 3rem', borderTop: '1px solid var(--border, #e2e8f0)' }}>
+                            {detailLoading ? (
+                              <span style={{ fontSize: '.8rem', color: 'var(--text-muted)' }}>Chargement...</span>
+                            ) : detailData[s.name] && Object.keys(detailData[s.name]).length > 0 ? (
+                              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '.5rem' }}>
+                                {Object.entries(detailData[s.name]).sort((a, b) => b[1] - a[1]).map(([socName, cnt]) => (
+                                  <div key={socName} style={{
+                                    display: 'flex', alignItems: 'center', gap: '.4rem',
+                                    padding: '.3rem .65rem', borderRadius: 6,
+                                    background: 'var(--card-bg, #fff)', border: '1px solid var(--border, #e2e8f0)',
+                                    fontSize: '.8rem',
+                                  }}>
+                                    <span style={{ fontWeight: 500 }}>{socName}</span>
+                                    <span style={{ fontWeight: 700, color: 'var(--primary)' }}>{cnt.toLocaleString('fr-FR')}</span>
+                                  </div>
+                                ))}
+                              </div>
+                            ) : (
+                              <span style={{ fontSize: '.8rem', color: 'var(--text-muted)' }}>Pas de ventilation par societe</span>
+                            )}
+                          </div>
+                        </td>
+                      </tr>
+                    )}
+                  </React.Fragment>
                 ))}
               </tbody>
             </table>
