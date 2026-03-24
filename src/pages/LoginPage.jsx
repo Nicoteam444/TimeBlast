@@ -178,7 +178,7 @@ export default function LoginPage() {
       <nav className="landing-nav">
         <div className="landing-nav-inner">
           <div className="landing-logo">
-            <img src="/logo-timeblast.png" alt="TimeBlast.ai" style={{ height: 28 }} />
+            <img src="/logo4.png" alt="TimeBlast.ai" style={{ height: 28 }} />
           </div>
           <div className="landing-nav-links">
             <a href="#connecteurs">Connecteurs</a>
@@ -330,7 +330,7 @@ export default function LoginPage() {
       {/* ── Footer ── */}
       <footer className="landing-footer">
         <div className="landing-footer-inner">
-          <img src="/logo-timeblast.png" alt="TimeBlast.ai" style={{ height: 24 }} />
+          <img src="/logo4.png" alt="TimeBlast.ai" style={{ height: 24 }} />
           <span style={{ color: 'rgba(255,255,255,0.4)', fontSize: '.82rem' }}>
             © {new Date().getFullYear()} — La multiprise intelligente pour votre entreprise
           </span>
