@@ -66,6 +66,9 @@ import CrmEntreprisesPage from './pages/crm/EntreprisesPage'
 import CrmLeadsPage from './pages/crm/LeadsPage'
 import CrmContactDetailPage from './pages/crm/ContactDetailPage'
 import CategoryLandingPage from './pages/CategoryLandingPage'
+import CampagnesPage from './pages/marketing/CampagnesPage'
+import DocumentsArchivePage from './pages/documents/DocumentsArchivePage'
+import TaskDetailPage from './pages/temps/TaskDetailPage'
 import './App.css'
 
 function InviteHandler() {
@@ -123,6 +126,25 @@ function AppRoutes() {
         <ProtectedRoute roles={['admin','manager']}><Layout><CrmLeadsPage /></Layout></ProtectedRoute>
       } />
 
+      {/* Marketing */}
+      <Route path="/marketing" element={
+        <ProtectedRoute roles={['admin','manager']}><Layout><CategoryLandingPage categoryId="marketing" /></Layout></ProtectedRoute>
+      } />
+      <Route path="/marketing/campagnes" element={
+        <ProtectedRoute roles={['admin','manager']}><Layout><CampagnesPage /></Layout></ProtectedRoute>
+      } />
+      <Route path="/marketing/leads" element={
+        <ProtectedRoute roles={['admin','manager']}><Layout><CrmLeadsPage /></Layout></ProtectedRoute>
+      } />
+
+      {/* Documents */}
+      <Route path="/documents" element={
+        <ProtectedRoute><Layout><CategoryLandingPage categoryId="documents" /></Layout></ProtectedRoute>
+      } />
+      <Route path="/documents/archives" element={
+        <ProtectedRoute><Layout><DocumentsArchivePage /></Layout></ProtectedRoute>
+      } />
+
       {/* Commerce */}
       <Route path="/commerce/clients" element={
         <ProtectedRoute roles={['admin','manager','collaborateur']}><Layout><ClientsPage /></Layout></ProtectedRoute>
@@ -161,6 +183,9 @@ function AppRoutes() {
       } />
       <Route path="/activite/projets/:projetId" element={
         <ProtectedRoute roles={['admin','manager','collaborateur']}><Layout><ProjetsWrapper /></Layout></ProtectedRoute>
+      } />
+      <Route path="/activite/projets/:projetId/taches/:taskId" element={
+        <ProtectedRoute roles={['admin','manager','collaborateur']}><Layout><TaskDetailPage /></Layout></ProtectedRoute>
       } />
       <Route path="/activite/validation" element={
         <ProtectedRoute roles={['admin','manager']}><Layout><ValidationPage /></Layout></ProtectedRoute>

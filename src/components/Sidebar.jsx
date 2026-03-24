@@ -59,12 +59,32 @@ const SECTIONS = [
     items: [
       { to: '/crm/contacts',          icon: '👤', label: 'Contacts' },
       { to: '/crm/entreprises',       icon: '🏢', label: 'Entreprises' },
-      { to: '/crm/leads',             icon: '🚀', label: 'Leads',          roles: ['admin', 'manager'] },
       { to: '/commerce/clients',      icon: '👥', label: 'Clients' },
-      { to: '/commerce/transactions', icon: '💼', label: 'Transactions',   roles: ['admin', 'manager'] },
+      { to: '/commerce/transactions', icon: '💼', label: 'Opportunités',   roles: ['admin', 'manager'] },
       { to: '/commerce/devis',        icon: '📝', label: 'Devis',          roles: ['admin', 'manager', 'comptable'] },
       { to: '/commerce/produits',     icon: '🏷️', label: 'Produits',       roles: ['admin', 'manager', 'comptable'] },
       { to: '/commerce/abonnements',  icon: '🔄', label: 'Abonnements',    roles: ['admin', 'manager', 'comptable'] },
+    ],
+  },
+  {
+    id: 'marketing',
+    icon: '📣',
+    label: 'Marketing',
+    landingTo: '/marketing',
+    roles: ['admin', 'manager'],
+    items: [
+      { to: '/marketing/campagnes', icon: '🎯', label: 'Campagnes' },
+      { to: '/marketing/leads',     icon: '🚀', label: 'Leads' },
+    ],
+  },
+  {
+    id: 'documents',
+    icon: '📁',
+    label: 'Documents',
+    landingTo: '/documents',
+    roles: ['admin', 'manager', 'collaborateur', 'comptable'],
+    items: [
+      { to: '/documents/archives', icon: '🗄️', label: 'Archives' },
     ],
   },
   {
@@ -138,7 +158,7 @@ export default function Sidebar() {
     gestion: 'Gestion', equipe: 'Équipe', admin: 'Admin',
     contacts: 'Contacts', entreprises: 'Entreprises', leads: 'Leads',
     clients: 'Clients', collaborateurs: 'Collaborateur', projets: 'Projet',
-    facturation: 'Facturation', transactions: 'Transactions',
+    facturation: 'Facturation', transactions: 'Opportunités',
   }
   const favItems = favorites.map(to => {
     const known = allItems.find(i => i.to === to)

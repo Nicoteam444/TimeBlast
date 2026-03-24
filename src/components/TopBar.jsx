@@ -17,6 +17,15 @@ function fmtNotifDate(iso) {
   return d.toLocaleDateString('fr-FR', { day: '2-digit', month: 'short' })
 }
 
+const QUICK_ADD_ITEMS = [
+  { key: 'contact',      icon: '👤', label: 'Contact',          table: 'contacts',     fields: ['prenom', 'nom', 'email', 'telephone'], path: '/crm/contacts' },
+  { key: 'entreprise',   icon: '🏢', label: 'Entreprise',       table: 'entreprises',  fields: ['nom', 'siret', 'ville'],               path: '/crm/entreprises' },
+  { key: 'opportunite',  icon: '💼', label: 'Opportunité',      table: 'transactions', fields: ['name', 'montant', 'phase'],             path: '/commerce/transactions' },
+  { key: 'projet',       icon: '📁', label: 'Projet',           table: 'projets',      fields: ['name', 'description', 'statut'],        path: '/activite/projets' },
+  { key: 'tache',        icon: '✅', label: 'Tâche',            table: 'kanban_tasks',  fields: ['title', 'description'],                 path: '/activite/projets' },
+  { key: 'temps',        icon: '⏱️', label: 'Saisie de temps',  table: 'saisies_temps', fields: ['date', 'heures', 'commentaire'],        path: '/activite/reporting' },
+]
+
 export default function TopBar() {
   const { profile, signOut } = useAuth()
   const { isDemoMode } = useDemo()
@@ -36,6 +45,15 @@ export default function TopBar() {
   const searchRef    = useRef(null)
   const searchDebounce = useRef(null)
 
+  // Quick Add state
+  const [quickAddOpen, setQuickAddOpen] = useState(false)
+  const [quickAddType, setQuickAddType] = useState(null)
+  const [quickAddForm, setQuickAddForm] = useState({})
+  const [quickAddSaving, setQuickAddSaving] = useState(false)
+  const [quickAddError, setQuickAddError] = useState('')
+  const [quickAddProjets, setQuickAddProjets] = useState([])
+  const quickAddRef = useRef(null)
+
   const canSwitch = profile?.role === 'admin' || profile?.role === 'comptable'
 
   // Fermer les menus si clic extérieur
@@ -44,10 +62,82 @@ export default function TopBar() {
       if (userMenuRef.current  && !userMenuRef.current.contains(e.target))  setUserMenuOpen(false)
       if (searchRef.current    && !searchRef.current.contains(e.target))    setSearchOpen(false)
       if (notifRef.current     && !notifRef.current.contains(e.target))     setNotifOpen(false)
+      if (quickAddRef.current  && !quickAddRef.current.contains(e.target))  { setQuickAddOpen(false); setQuickAddType(null) }
     }
     document.addEventListener('mousedown', handleClickOutside)
     return () => document.removeEventListener('mousedown', handleClickOutside)
   }, [])
+
+  async function openQuickAddForm(item) {
+    setQuickAddType(item)
+    setQuickAddForm({})
+    setQuickAddError('')
+    // Charger les projets pour tâche et temps
+    if (item.key === 'tache' || item.key === 'temps') {
+      let q = supabase.from('projets').select('id, name').eq('statut', 'actif').order('name')
+      if (selectedSociete?.id) q = q.eq('societe_id', selectedSociete.id)
+      const { data } = await q
+      setQuickAddProjets(data || [])
+    }
+  }
+
+  async function handleQuickAddSubmit(e) {
+    e.preventDefault()
+    if (!quickAddType) return
+    setQuickAddSaving(true)
+    setQuickAddError('')
+
+    const payload = { ...quickAddForm }
+    // Attach societe_id for relevant tables
+    if (selectedSociete?.id && ['contacts', 'entreprises', 'transactions', 'projets'].includes(quickAddType.table)) {
+      payload.societe_id = selectedSociete.id
+    }
+    // Set defaults per type
+    if (quickAddType.key === 'opportunite') {
+      payload.phase = payload.phase || 'qualification'
+      payload.montant = payload.montant ? parseFloat(payload.montant) : 0
+    }
+    if (quickAddType.key === 'projet') {
+      payload.statut = payload.statut || 'actif'
+      if (selectedSociete?.id) payload.societe_id = selectedSociete.id
+    }
+    if (quickAddType.key === 'tache') {
+      // kanban_tasks: title, projet_id, column_id, priority, estimated_hours, due_date
+      payload.projet_id = payload.projet_id || null
+      payload.priority = payload.priority || 'moyenne'
+      payload.estimated_hours = payload.estimated_hours ? parseFloat(payload.estimated_hours) : null
+      payload.due_date = payload.due_date || null
+      delete payload.description
+      // Find first column of selected project for column_id
+      if (payload.projet_id) {
+        const { data: cols } = await supabase.from('kanban_columns').select('id').eq('projet_id', payload.projet_id).order('"order"').limit(1)
+        if (cols?.[0]) payload.column_id = cols[0].id
+      }
+    }
+    if (quickAddType.key === 'temps') {
+      payload.date = payload.date || new Date().toISOString().slice(0, 10)
+      payload.heures = payload.heures ? parseFloat(payload.heures) : 0
+      payload.commentaire = payload.commentaire ? JSON.stringify({ note: payload.commentaire }) : null
+      delete payload.duree
+      delete payload.description
+      if (profile?.id) payload.user_id = profile.id
+      if (selectedSociete?.id) payload.societe_id = selectedSociete.id
+    }
+
+    const { data: inserted, error } = await supabase.from(quickAddType.table).insert([payload]).select()
+    setQuickAddSaving(false)
+    if (error) {
+      setQuickAddError(error.message)
+      return
+    }
+    const newId = inserted?.[0]?.id
+    const targetPath = quickAddType.key === 'temps' && newId
+      ? `/activite/reporting?highlight=${newId}`
+      : quickAddType.path
+    setQuickAddType(null)
+    setQuickAddOpen(false)
+    navigate(targetPath)
+  }
 
   function handleSearchInput(e) {
     const q = e.target.value
@@ -142,6 +232,157 @@ export default function TopBar() {
           <ul className="topbar-search-dropdown">
             <li className="topbar-search-empty">Aucun résultat</li>
           </ul>
+        )}
+      </div>
+
+      {/* Quick Add Button ⊕ */}
+      <div ref={quickAddRef} style={{ position: 'relative', marginLeft: '.5rem' }}>
+        <button
+          onClick={() => { setQuickAddOpen(v => !v); setQuickAddType(null) }}
+          title="Création rapide"
+          style={{
+            width: 34, height: 34, borderRadius: '50%',
+            border: '1px solid rgba(255,255,255,0.15)',
+            background: quickAddOpen ? 'rgba(255,255,255,0.15)' : 'rgba(255,255,255,0.08)',
+            color: 'rgba(255,255,255,0.7)',
+            fontSize: '1.2rem', fontWeight: 500, cursor: 'pointer',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            transition: 'all .15s', flexShrink: 0,
+          }}
+        >+</button>
+
+        {quickAddOpen && (
+          <div style={{
+            position: 'absolute', top: '100%', left: '50%', transform: 'translateX(-50%)',
+            marginTop: 8, background: 'var(--card-bg, #fff)', border: '1px solid var(--border, #e2e8f0)',
+            borderRadius: 12, boxShadow: '0 8px 30px rgba(0,0,0,.15)', zIndex: 999,
+            width: quickAddType ? 360 : 240, overflow: 'hidden',
+          }}>
+            {!quickAddType ? (
+              /* Type selection */
+              <div>
+                <div style={{ padding: '.75rem 1rem', borderBottom: '1px solid var(--border, #e2e8f0)', fontWeight: 700, fontSize: '.85rem', color: 'var(--text)' }}>
+                  Création rapide
+                  {selectedSociete && (
+                    <span style={{ display: 'block', fontSize: '.7rem', fontWeight: 400, color: 'var(--text-muted)', marginTop: 2 }}>
+                      dans {selectedSociete.name}
+                    </span>
+                  )}
+                </div>
+                {QUICK_ADD_ITEMS.map(item => (
+                  <button
+                    key={item.key}
+                    onClick={() => openQuickAddForm(item)}
+                    style={{
+                      display: 'flex', alignItems: 'center', gap: '.6rem', width: '100%',
+                      padding: '.6rem 1rem', border: 'none', background: 'none', cursor: 'pointer',
+                      fontSize: '.85rem', color: 'var(--text)', textAlign: 'left',
+                      transition: 'background .1s',
+                    }}
+                    onMouseEnter={e => e.currentTarget.style.background = 'var(--hover-bg, #f1f5f9)'}
+                    onMouseLeave={e => e.currentTarget.style.background = 'none'}
+                  >
+                    <span style={{ fontSize: '1.1rem' }}>{item.icon}</span>
+                    <span style={{ fontWeight: 500 }}>{item.label}</span>
+                  </button>
+                ))}
+              </div>
+            ) : (
+              /* Form for selected type */
+              <div>
+                <div style={{
+                  padding: '.6rem 1rem', borderBottom: '1px solid var(--border, #e2e8f0)',
+                  display: 'flex', alignItems: 'center', gap: '.5rem',
+                }}>
+                  <button onClick={() => setQuickAddType(null)} style={{ border: 'none', background: 'none', cursor: 'pointer', fontSize: '.9rem', padding: 0 }}>←</button>
+                  <span style={{ fontSize: '1rem' }}>{quickAddType.icon}</span>
+                  <span style={{ fontWeight: 700, fontSize: '.85rem' }}>Nouveau {quickAddType.label.toLowerCase()}</span>
+                </div>
+                <form onSubmit={handleQuickAddSubmit} style={{ padding: '.75rem 1rem', display: 'flex', flexDirection: 'column', gap: '.6rem' }}>
+                  {/* Dynamic fields */}
+                  {quickAddType.key === 'contact' && <>
+                    <QuickField label="Prénom" value={quickAddForm.prenom} onChange={v => setQuickAddForm(f => ({ ...f, prenom: v }))} required />
+                    <QuickField label="Nom" value={quickAddForm.nom} onChange={v => setQuickAddForm(f => ({ ...f, nom: v }))} required />
+                    <QuickField label="Email" value={quickAddForm.email} onChange={v => setQuickAddForm(f => ({ ...f, email: v }))} type="email" />
+                    <QuickField label="Téléphone" value={quickAddForm.telephone} onChange={v => setQuickAddForm(f => ({ ...f, telephone: v }))} />
+                  </>}
+                  {quickAddType.key === 'entreprise' && <>
+                    <QuickField label="Nom" value={quickAddForm.nom} onChange={v => setQuickAddForm(f => ({ ...f, nom: v }))} required />
+                    <QuickField label="SIRET" value={quickAddForm.siret} onChange={v => setQuickAddForm(f => ({ ...f, siret: v }))} />
+                    <QuickField label="Ville" value={quickAddForm.ville} onChange={v => setQuickAddForm(f => ({ ...f, ville: v }))} />
+                  </>}
+                  {quickAddType.key === 'opportunite' && <>
+                    <QuickField label="Nom" value={quickAddForm.name} onChange={v => setQuickAddForm(f => ({ ...f, name: v }))} required />
+                    <QuickField label="Montant (€)" value={quickAddForm.montant} onChange={v => setQuickAddForm(f => ({ ...f, montant: v }))} type="number" />
+                    <div>
+                      <div style={{ fontSize: '.72rem', fontWeight: 500, color: 'var(--text-muted)', marginBottom: 2 }}>Phase</div>
+                      <select
+                        value={quickAddForm.phase || 'qualification'}
+                        onChange={e => setQuickAddForm(f => ({ ...f, phase: e.target.value }))}
+                        style={qfInputStyle}
+                      >
+                        <option value="qualification">Qualification</option>
+                        <option value="short_list">Short list</option>
+                        <option value="ferme_a_gagner">Fermé à gagner</option>
+                        <option value="ferme">Fermé</option>
+                        <option value="perdu">Perdu</option>
+                      </select>
+                    </div>
+                  </>}
+                  {quickAddType.key === 'projet' && <>
+                    <QuickField label="Nom" value={quickAddForm.name} onChange={v => setQuickAddForm(f => ({ ...f, name: v }))} required />
+                    <QuickField label="Description" value={quickAddForm.description} onChange={v => setQuickAddForm(f => ({ ...f, description: v }))} />
+                  </>}
+                  {quickAddType.key === 'tache' && <>
+                    <div>
+                      <div style={{ fontSize: '.72rem', fontWeight: 500, color: 'var(--text-muted)', marginBottom: 2 }}>Projet <span style={{ color: '#dc2626' }}>*</span></div>
+                      <select value={quickAddForm.projet_id || ''} onChange={e => setQuickAddForm(f => ({ ...f, projet_id: e.target.value }))} style={qfInputStyle} required>
+                        <option value="">— Choisir un projet —</option>
+                        {quickAddProjets.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
+                      </select>
+                    </div>
+                    <QuickField label="Titre" value={quickAddForm.title} onChange={v => setQuickAddForm(f => ({ ...f, title: v }))} required />
+                    <div>
+                      <div style={{ fontSize: '.72rem', fontWeight: 500, color: 'var(--text-muted)', marginBottom: 2 }}>Priorité</div>
+                      <select value={quickAddForm.priority || 'moyenne'} onChange={e => setQuickAddForm(f => ({ ...f, priority: e.target.value }))} style={qfInputStyle}>
+                        <option value="haute">🔴 Haute</option>
+                        <option value="moyenne">🟡 Moyenne</option>
+                        <option value="basse">🟢 Basse</option>
+                      </select>
+                    </div>
+                    <QuickField label="Heures estimées" value={quickAddForm.estimated_hours} onChange={v => setQuickAddForm(f => ({ ...f, estimated_hours: v }))} type="number" />
+                    <QuickField label="Date d'échéance" value={quickAddForm.due_date} onChange={v => setQuickAddForm(f => ({ ...f, due_date: v }))} type="date" />
+                  </>}
+                  {quickAddType.key === 'temps' && <>
+                    <div>
+                      <div style={{ fontSize: '.72rem', fontWeight: 500, color: 'var(--text-muted)', marginBottom: 2 }}>Projet</div>
+                      <select value={quickAddForm.projet_id || ''} onChange={e => setQuickAddForm(f => ({ ...f, projet_id: e.target.value }))} style={qfInputStyle}>
+                        <option value="">— Aucun projet —</option>
+                        {quickAddProjets.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
+                      </select>
+                    </div>
+                    <QuickField label="Date" value={quickAddForm.date || new Date().toISOString().slice(0, 10)} onChange={v => setQuickAddForm(f => ({ ...f, date: v }))} type="date" />
+                    <QuickField label="Heures" value={quickAddForm.heures} onChange={v => setQuickAddForm(f => ({ ...f, heures: v }))} type="number" />
+                    <QuickField label="Commentaire" value={quickAddForm.commentaire} onChange={v => setQuickAddForm(f => ({ ...f, commentaire: v }))} />
+                  </>}
+
+                  {quickAddError && <div style={{ fontSize: '.75rem', color: '#dc2626', background: '#fef2f2', padding: '.35rem .5rem', borderRadius: 4 }}>{quickAddError}</div>}
+
+                  <div style={{ display: 'flex', gap: '.5rem', justifyContent: 'flex-end', marginTop: '.25rem' }}>
+                    <button type="button" onClick={() => setQuickAddType(null)} style={{
+                      padding: '.35rem .75rem', border: '1px solid var(--border, #e2e8f0)', borderRadius: 6,
+                      background: 'var(--card-bg, #fff)', cursor: 'pointer', fontSize: '.8rem',
+                    }}>Annuler</button>
+                    <button type="submit" disabled={quickAddSaving} style={{
+                      padding: '.35rem .75rem', border: 'none', borderRadius: 6,
+                      background: 'var(--primary, #3b82f6)', color: '#fff', cursor: 'pointer',
+                      fontSize: '.8rem', fontWeight: 600, opacity: quickAddSaving ? .6 : 1,
+                    }}>{quickAddSaving ? '...' : 'Créer'}</button>
+                  </div>
+                </form>
+              </div>
+            )}
+          </div>
         )}
       </div>
 
@@ -257,5 +498,29 @@ export default function TopBar() {
         )}
       </div>
     </header>
+  )
+}
+
+/* Quick Add field styles */
+const qfInputStyle = {
+  width: '100%', padding: '.35rem .5rem', border: '1px solid var(--border, #e2e8f0)',
+  borderRadius: 4, fontSize: '.82rem', background: 'var(--card-bg, #fff)', color: 'var(--text)',
+  outline: 'none',
+}
+
+function QuickField({ label, value, onChange, type = 'text', required }) {
+  return (
+    <div>
+      <div style={{ fontSize: '.72rem', fontWeight: 500, color: 'var(--text-muted)', marginBottom: 2 }}>
+        {label} {required && <span style={{ color: '#dc2626' }}>*</span>}
+      </div>
+      <input
+        type={type}
+        value={value || ''}
+        onChange={e => onChange(e.target.value)}
+        required={required}
+        style={qfInputStyle}
+      />
+    </div>
   )
 }

@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { supabase } from '../../lib/supabase'
+import { useBreadcrumb } from '../../contexts/BreadcrumbContext'
 import ClientAutocomplete from '../../components/ClientAutocomplete'
 import { phaseInfo } from './TransactionsPage'
 
@@ -15,6 +16,7 @@ const PHASES = [
 export default function TransactionDetailPage() {
   const { id } = useParams()
   const navigate = useNavigate()
+  const { setSegments, clearSegments } = useBreadcrumb() || {}
   const [transaction, setTransaction] = useState(null)
   const [loading, setLoading] = useState(true)
   const [editing, setEditing] = useState(false)
@@ -23,6 +25,7 @@ export default function TransactionDetailPage() {
   const [saving, setSaving] = useState(false)
 
   useEffect(() => { fetchTransaction() }, [id])
+  useEffect(() => () => clearSegments?.(), [])
 
   async function fetchTransaction() {
     setLoading(true)
@@ -41,6 +44,9 @@ export default function TransactionDetailPage() {
         notes: data.notes ?? '',
       })
       setSelectedClient(data.clients ? { id: data.clients.id, name: data.clients.name } : null)
+      if (setSegments) {
+        setSegments([{ id, label: data.name }])
+      }
     }
     setLoading(false)
   }

@@ -537,8 +537,8 @@ export default function RentabilitePage() {
           </div>
 
           {/* ── Table ──────────────────────────────────────── */}
-          <div className="reporting-table-wrapper">
-            <table className="reporting-table">
+          <div className="users-table-wrapper">
+            <table className="users-table">
               <thead>
                 <tr>
                   <SortableHeader label="Projet" field="projet.name" sortKey={sortKey} sortDir={sortDir} onSort={requestSort} />

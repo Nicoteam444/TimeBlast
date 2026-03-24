@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { supabase } from '../../lib/supabase'
 import { useAuth } from '../../contexts/AuthContext'
 import ConfirmDeleteModal from '../../components/ConfirmDeleteModal'
@@ -20,6 +21,7 @@ const PRIORITY_CONFIG = {
 
 export default function ProjetDetailPage({ projet, onBack }) {
   const { user } = useAuth()
+  const navigate = useNavigate()
   const [columns, setColumns] = useState([])
   const [tasks, setTasks] = useState([])
   const [timeEntries, setTimeEntries] = useState([])
@@ -159,6 +161,33 @@ export default function ProjetDetailPage({ projet, onBack }) {
   async function handleDeleteTask(taskId) {
     await supabase.from('kanban_tasks').delete().eq('id', taskId)
     fetchTasks(); fetchTimeEntries()
+  }
+
+  function openEditTask(task) {
+    setEditingTask(task)
+    setTaskForm({
+      title: task.title || '',
+      assigned_to: task.assigned_to || '',
+      priority: task.priority || 'moyenne',
+      estimated_hours: task.estimated_hours || '',
+      due_date: task.due_date || '',
+    })
+  }
+
+  async function handleUpdateTask(e) {
+    e.preventDefault()
+    if (!editingTask) return
+    await supabase.from('kanban_tasks').update({
+      title: taskForm.title,
+      assigned_to: taskForm.assigned_to || null,
+      priority: taskForm.priority,
+      estimated_hours: taskForm.estimated_hours ? parseFloat(taskForm.estimated_hours) : 0,
+      due_date: taskForm.due_date || null,
+      column_id: taskForm.column_id || editingTask.column_id,
+    }).eq('id', editingTask.id)
+    setEditingTask(null)
+    setTaskForm({ title: '', assigned_to: '', priority: 'moyenne', estimated_hours: '', due_date: '' })
+    fetchTasks()
   }
 
   // ── Time entry actions ──
@@ -363,7 +392,8 @@ export default function ProjetDetailPage({ projet, onBack }) {
                     const p = PRIORITY_CONFIG[task.priority || 'moyenne']
                     return (
                       <div key={task.id} className="kanban-card" draggable onDragStart={() => handleDragStart(task)}
-                        style={{ borderLeft: `3px solid ${p.color}` }}>
+                        onClick={() => navigate(`/activite/projets/${projet.id}/taches/${task.id}`)}
+                        style={{ borderLeft: `3px solid ${p.color}`, cursor: 'pointer' }}>
                         <div className="kanban-card-title">{task.title}</div>
                         <div style={{ display: 'flex', flexWrap: 'wrap', gap: '.35rem', marginTop: '.35rem', alignItems: 'center' }}>
                           <span style={{ fontSize: '.7rem', padding: '.1rem .4rem', borderRadius: 4, background: p.bg, color: p.color, fontWeight: 600 }}>
@@ -387,7 +417,7 @@ export default function ProjetDetailPage({ projet, onBack }) {
                         {task.profiles?.full_name && (
                           <div className="kanban-card-assignee">👤 {task.profiles.full_name}</div>
                         )}
-                        <div style={{ position: 'absolute', top: '.4rem', right: '.4rem', display: 'flex', gap: '.15rem' }}>
+                        <div style={{ position: 'absolute', top: '.4rem', right: '.4rem', display: 'flex', gap: '.15rem' }} onClick={e => e.stopPropagation()}>
                           <button onClick={() => { setShowTimeForm(task.id); setTimeForm({ hours: '', note: '', date: new Date().toISOString().slice(0, 10) }) }}
                             style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '.7rem', color: '#cbd5e1', padding: 0 }} title="Logger du temps">⏱</button>
                           <button onClick={() => handleDeleteTask(task.id)}
@@ -402,6 +432,11 @@ export default function ProjetDetailPage({ projet, onBack }) {
                       + Ajouter une tâche
                     </div>
                   )}
+                </div>
+                {/* Footer : total heures */}
+                <div className="kanban-col-footer">
+                  <span>⏱ {colTasks.reduce((s, t) => s + (timeByTask[t.id] || 0), 0).toFixed(1)}h / {colTasks.reduce((s, t) => s + parseFloat(t.estimated_hours || 0), 0)}h</span>
+                  <span style={{ color: 'var(--text-muted)' }}>Temps passé / estimé</span>
                 </div>
               </div>
             )
@@ -616,6 +651,79 @@ export default function ProjetDetailPage({ projet, onBack }) {
           onConfirm={handleDeleteColumn}
           onCancel={() => setDeleteCol(null)}
         />
+      )}
+
+      {/* ════ MODALE ÉDITION TÂCHE ════ */}
+      {editingTask && (
+        <div className="modal-overlay" onClick={() => setEditingTask(null)}>
+          <div className="modal" onClick={e => e.stopPropagation()} style={{ maxWidth: 560, width: '100%' }}>
+            <div className="modal-header">
+              <h2>Modifier la tâche</h2>
+              <button className="modal-close" onClick={() => setEditingTask(null)}>✕</button>
+            </div>
+            <form onSubmit={handleUpdateTask} style={{ padding: '1.25rem', display: 'flex', flexDirection: 'column', gap: '.85rem' }}>
+              <div className="field">
+                <label>Titre *</label>
+                <input type="text" value={taskForm.title} onChange={e => setTaskForm(f => ({ ...f, title: e.target.value }))} required autoFocus />
+              </div>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '.85rem' }}>
+                <div className="field">
+                  <label>Colonne</label>
+                  <select value={taskForm.column_id || editingTask.column_id} onChange={e => setTaskForm(f => ({ ...f, column_id: e.target.value }))}>
+                    {columns.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
+                  </select>
+                </div>
+                <div className="field">
+                  <label>Assigné à</label>
+                  <select value={taskForm.assigned_to} onChange={e => setTaskForm(f => ({ ...f, assigned_to: e.target.value }))}>
+                    <option value="">— Non assigné —</option>
+                    {assignableUsers.map(u => <option key={u.id} value={u.id}>{u.full_name}</option>)}
+                  </select>
+                </div>
+              </div>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '.85rem' }}>
+                <div className="field">
+                  <label>Priorité</label>
+                  <select value={taskForm.priority} onChange={e => setTaskForm(f => ({ ...f, priority: e.target.value }))}>
+                    <option value="haute">🔴 Haute</option>
+                    <option value="moyenne">🟡 Moyenne</option>
+                    <option value="basse">🟢 Basse</option>
+                  </select>
+                </div>
+                <div className="field">
+                  <label>Heures estimées</label>
+                  <input type="number" min="0" step="0.5" value={taskForm.estimated_hours} onChange={e => setTaskForm(f => ({ ...f, estimated_hours: e.target.value }))} />
+                </div>
+                <div className="field">
+                  <label>Échéance</label>
+                  <MiniCalendar value={taskForm.due_date} onChange={v => setTaskForm(f => ({ ...f, due_date: v }))} placeholder="Date" />
+                </div>
+              </div>
+              {/* Infos temps passé */}
+              {(() => {
+                const spent = timeByTask[editingTask.id] || 0
+                const est = parseFloat(editingTask.estimated_hours || 0)
+                return spent > 0 || est > 0 ? (
+                  <div style={{ background: 'var(--hover-bg, #f1f5f9)', borderRadius: 8, padding: '.6rem .85rem', fontSize: '.82rem' }}>
+                    <span style={{ fontWeight: 600 }}>⏱ Temps passé :</span>{' '}
+                    <span style={{ color: spent > est && est > 0 ? '#dc2626' : '#16a34a', fontWeight: 600 }}>{spent.toFixed(1)}h</span>
+                    {est > 0 && <span style={{ color: 'var(--text-muted)' }}> / {est}h estimées</span>}
+                  </div>
+                ) : null
+              })()}
+              <div style={{ display: 'flex', gap: '.5rem', justifyContent: 'space-between', marginTop: '.5rem' }}>
+                <button type="button" style={{ background: 'none', border: 'none', color: '#dc2626', cursor: 'pointer', fontSize: '.82rem', fontWeight: 600 }}
+                  onClick={() => { handleDeleteTask(editingTask.id); setEditingTask(null) }}>
+                  🗑 Supprimer
+                </button>
+                <div style={{ display: 'flex', gap: '.5rem' }}>
+                  <button type="button" className="btn-secondary" onClick={() => setEditingTask(null)}>Annuler</button>
+                  <button type="submit" className="btn-primary">Enregistrer</button>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
       )}
     </div>
   )

@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { supabase } from '../../lib/supabase'
+import { useBreadcrumb } from '../../contexts/BreadcrumbContext'
 
 function fmtK(n) {
   if (!n) return '0 €'
@@ -26,6 +27,7 @@ const PHASE_META = {
 export default function ContactDetailPage() {
   const { id } = useParams()
   const navigate = useNavigate()
+  const { setSegments, clearSegments } = useBreadcrumb() || {}
   const [contact, setContact] = useState(null)
   const [entreprise, setEntreprise] = useState(null)
   const [leads, setLeads] = useState([])
@@ -33,6 +35,7 @@ export default function ContactDetailPage() {
   const [editing, setEditing] = useState(false)
 
   useEffect(() => { loadContact() }, [id])
+  useEffect(() => () => clearSegments?.(), [])
 
   async function loadContact() {
     setLoading(true)
@@ -45,6 +48,10 @@ export default function ContactDetailPage() {
     const { data: l } = await supabase.from('leads').select('*').eq('contact_id', id).order('created_at', { ascending: false })
     setLeads(l || [])
     setLoading(false)
+    if (data && setSegments) {
+      const fullName = [data.prenom, data.nom].filter(Boolean).join(' ')
+      setSegments([{ id, label: fullName || 'Contact' }])
+    }
   }
 
   async function handleSave(e) {

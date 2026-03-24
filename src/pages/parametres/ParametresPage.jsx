@@ -408,10 +408,136 @@ function TiersVerificationBlock() {
   )
 }
 
+// ── Onglet Base de données ─────────────────────────────────────
+const DB_TABLES = [
+  { name: 'projets',           label: 'Projets',            icon: '📁' },
+  { name: 'kanban_tasks',      label: 'Taches Kanban',      icon: '✅' },
+  { name: 'kanban_columns',    label: 'Colonnes Kanban',    icon: '📋' },
+  { name: 'contacts',          label: 'Contacts',           icon: '👤' },
+  { name: 'clients',           label: 'Clients',            icon: '👥' },
+  { name: 'transactions',      label: 'Opportunites',       icon: '💼' },
+  { name: 'factures',          label: 'Factures',           icon: '🧾' },
+  { name: 'achats',            label: 'Achats',             icon: '📥' },
+  { name: 'campagnes',         label: 'Campagnes',          icon: '📣' },
+  { name: 'documents_archive', label: 'Documents',          icon: '📁' },
+  { name: 'saisies_temps',     label: 'Saisies temps',      icon: '⏱️' },
+  { name: 'profiles',          label: 'Utilisateurs',       icon: '🔑' },
+  { name: 'societes',          label: 'Societes',           icon: '🏢' },
+  { name: 'leads',             label: 'Leads',              icon: '🚀' },
+  { name: 'user_favorites',    label: 'Favoris',            icon: '⭐' },
+  { name: 'lots',              label: 'Lots',               icon: '📦' },
+  { name: 'devis',             label: 'Devis',              icon: '📝' },
+  { name: 'produits',          label: 'Produits',           icon: '🏷️' },
+  { name: 'abonnements',       label: 'Abonnements',        icon: '🔄' },
+]
+
+function BaseDeDonneesTab() {
+  const [stats, setStats] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [totalRows, setTotalRows] = useState(0)
+
+  useEffect(() => { fetchStats() }, [])
+
+  async function fetchStats() {
+    setLoading(true)
+    const results = []
+    for (const table of DB_TABLES) {
+      try {
+        const { count, error } = await supabase.from(table.name).select('*', { count: 'exact', head: true })
+        results.push({
+          ...table,
+          count: error ? '—' : (count || 0),
+          error: error ? error.message : null,
+        })
+      } catch {
+        results.push({ ...table, count: '—', error: 'Table introuvable' })
+      }
+    }
+    setStats(results)
+    setTotalRows(results.reduce((s, r) => s + (typeof r.count === 'number' ? r.count : 0), 0))
+    setLoading(false)
+  }
+
+  return (
+    <div className="param-sections">
+      <div className="param-section">
+        <div className="param-section-header">
+          <h2>Volumetrie de la base de donnees</h2>
+          <p>Nombre d'enregistrements par table</p>
+        </div>
+
+        {/* KPI */}
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1rem', marginBottom: '1.5rem' }}>
+          <div style={{ background: 'var(--hover-bg, #f1f5f9)', borderRadius: 10, padding: '1rem', textAlign: 'center' }}>
+            <div style={{ fontSize: '.75rem', color: 'var(--text-muted)', fontWeight: 500 }}>Tables</div>
+            <div style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--primary)' }}>{stats.filter(s => typeof s.count === 'number').length}</div>
+          </div>
+          <div style={{ background: 'var(--hover-bg, #f1f5f9)', borderRadius: 10, padding: '1rem', textAlign: 'center' }}>
+            <div style={{ fontSize: '.75rem', color: 'var(--text-muted)', fontWeight: 500 }}>Total enregistrements</div>
+            <div style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--primary)' }}>{totalRows.toLocaleString('fr-FR')}</div>
+          </div>
+          <div style={{ background: 'var(--hover-bg, #f1f5f9)', borderRadius: 10, padding: '1rem', textAlign: 'center' }}>
+            <div style={{ fontSize: '.75rem', color: 'var(--text-muted)', fontWeight: 500 }}>Tables vides</div>
+            <div style={{ fontSize: '1.5rem', fontWeight: 800, color: stats.filter(s => s.count === 0).length > 0 ? '#f59e0b' : '#16a34a' }}>
+              {stats.filter(s => s.count === 0).length}
+            </div>
+          </div>
+        </div>
+
+        {loading ? <div className="loading-inline">Chargement...</div> : (
+          <div className="users-table-wrapper">
+            <table className="users-table">
+              <thead>
+                <tr>
+                  <th>Table</th>
+                  <th style={{ textAlign: 'right' }}>Enregistrements</th>
+                  <th>Statut</th>
+                </tr>
+              </thead>
+              <tbody>
+                {stats.sort((a, b) => (typeof b.count === 'number' ? b.count : -1) - (typeof a.count === 'number' ? a.count : -1)).map(s => (
+                  <tr key={s.name}>
+                    <td>
+                      <div className="user-cell">
+                        <span style={{ fontSize: '1rem' }}>{s.icon}</span>
+                        <div>
+                          <span className="user-name">{s.label}</span>
+                          <div style={{ fontSize: '.7rem', color: 'var(--text-muted)', fontFamily: 'monospace' }}>{s.name}</div>
+                        </div>
+                      </div>
+                    </td>
+                    <td style={{ textAlign: 'right', fontWeight: 700, fontSize: '1rem', color: s.count > 0 ? 'var(--text)' : 'var(--text-muted)' }}>
+                      {typeof s.count === 'number' ? s.count.toLocaleString('fr-FR') : s.count}
+                    </td>
+                    <td>
+                      {s.error ? (
+                        <span className="status-badge" style={{ color: '#dc2626', background: '#fef2f2' }}>Erreur</span>
+                      ) : s.count === 0 ? (
+                        <span className="status-badge" style={{ color: '#f59e0b', background: '#fffbeb' }}>Vide</span>
+                      ) : (
+                        <span className="status-badge" style={{ color: '#16a34a', background: '#f0fdf4' }}>OK</span>
+                      )}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+
+        <button onClick={fetchStats} className="btn-secondary" style={{ marginTop: '1rem' }}>
+          🔄 Rafraichir
+        </button>
+      </div>
+    </div>
+  )
+}
+
 // ── Page principale ───────────────────────────────────────────
 const TABS = [
   { id: 'affichage',     label: 'Affichage',     icon: '🎨' },
   { id: 'integrations',  label: 'Intégrations',  icon: '🔗' },
+  { id: 'bdd',           label: 'Base de données', icon: '🗄️' },
 ]
 
 export default function ParametresPage() {
@@ -437,6 +563,7 @@ export default function ParametresPage() {
 
       {tab === 'affichage'    && <AffichageTab />}
       {tab === 'integrations' && <IntegrationsTab />}
+      {tab === 'bdd'          && <BaseDeDonneesTab />}
     </div>
   )
 }

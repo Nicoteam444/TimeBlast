@@ -2,6 +2,8 @@ import { useState, useEffect, useMemo } from 'react'
 import { supabase } from '../../lib/supabase'
 import ClientAutocomplete from '../../components/ClientAutocomplete'
 import { useSociete } from '../../contexts/SocieteContext'
+import useSortableTable from '../../hooks/useSortableTable'
+import SortableHeader from '../../components/SortableHeader'
 
 const STATUT_COLORS = {
   actif:    { color: '#16a34a', bg: '#f0fdf4' },
@@ -93,8 +95,9 @@ export default function ProjetsPage({ onSelect }) {
     ) : projets
   }, [projets, filter])
 
-  const totalPages = Math.ceil(filtered.length / pageSize) || 1
-  const paginated = filtered.slice((page - 1) * pageSize, page * pageSize)
+  const { sortedData, sortKey, sortDir, requestSort } = useSortableTable(filtered, 'name', 'asc')
+  const totalPages = Math.ceil(sortedData.length / pageSize) || 1
+  const paginated = sortedData.slice((page - 1) * pageSize, page * pageSize)
 
   return (
     <div className="admin-page">
@@ -211,62 +214,61 @@ export default function ProjetsPage({ onSelect }) {
 
       {loading ? <div className="loading-inline">Chargement...</div> : (
         <>
-          <div className="data-table data-table--projets">
-            <div className="data-table-header">
-              <span>Nom du projet</span>
-              <span>Société</span>
-              <span>Client</span>
-              <span>Statut</span>
-              <span>Budget</span>
-              <span>Action</span>
-            </div>
-            {paginated.map(projet => {
-              const s = STATUT_COLORS[projet.statut] || STATUT_COLORS.actif
-              const budgetJ = projet.total_jours
-              const budgetH = budgetJ ? budgetJ * 8 : null
-              const consumed = Math.round((consumedHours[projet.id] || 0) * 10) / 10
-              const pct = budgetH ? Math.min(100, Math.round(consumed / budgetH * 100)) : 0
-              const isOver = budgetH && consumed > budgetH
-              return (
-                <div key={projet.id} className="data-table-row" onClick={() => onSelect?.(projet)}>
-                  <span className="data-table-name">📁 {projet.name}</span>
-                  <span className="data-table-sub">{projet.societes?.name || '—'}</span>
-                  <span className="data-table-sub">{projet.clients?.name || '—'}</span>
-                  <span>
-                    <span className="status-badge" style={{ color: s.color, background: s.bg }}>
-                      {projet.statut}
-                    </span>
-                  </span>
-                  <span>
-                    {budgetH ? (
-                      <span style={{ display: 'inline-flex', alignItems: 'center', gap: '.35rem', fontSize: '.82rem', whiteSpace: 'nowrap' }}>
-                        <span style={{ color: isOver ? '#dc2626' : 'var(--text)' }}>
-                          {consumed}h / {budgetH}h
+          <div className="users-table-wrapper">
+            <table className="users-table">
+              <thead>
+                <tr>
+                  <SortableHeader label="Projet" field="name" sortKey={sortKey} sortDir={sortDir} onSort={requestSort} />
+                  <SortableHeader label="Société" field="societes.name" sortKey={sortKey} sortDir={sortDir} onSort={requestSort} />
+                  <SortableHeader label="Client" field="clients.name" sortKey={sortKey} sortDir={sortDir} onSort={requestSort} />
+                  <SortableHeader label="Statut" field="statut" sortKey={sortKey} sortDir={sortDir} onSort={requestSort} />
+                  <SortableHeader label="Début" field="date_debut" sortKey={sortKey} sortDir={sortDir} onSort={requestSort} />
+                  <SortableHeader label="Fin" field="date_fin" sortKey={sortKey} sortDir={sortDir} onSort={requestSort} />
+                  <SortableHeader label="Budget (h)" field="total_jours" sortKey={sortKey} sortDir={sortDir} onSort={requestSort} style={{ textAlign: 'right' }} />
+                  <th style={{ width: 60 }}>Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                {paginated.map(projet => {
+                  const s = STATUT_COLORS[projet.statut] || STATUT_COLORS.actif
+                  const budgetH = projet.total_jours ? projet.total_jours * 8 : null
+                  const consumed = Math.round((consumedHours[projet.id] || 0) * 10) / 10
+                  const fmtD = iso => iso ? new Date(iso + 'T12:00:00').toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric' }) : '—'
+                  return (
+                    <tr key={projet.id} style={{ cursor: 'pointer' }} onClick={() => onSelect?.(projet)}>
+                      <td>
+                        <div className="user-cell">
+                          <span className="user-avatar" style={{ background: '#3b82f6', fontSize: '.72rem' }}>📁</span>
+                          <span className="user-name">{projet.name}</span>
+                        </div>
+                      </td>
+                      <td>{projet.societes?.name || '—'}</td>
+                      <td>{projet.clients?.name || '—'}</td>
+                      <td>
+                        <span className="status-badge" style={{ color: s.color, background: s.bg }}>
+                          {projet.statut}
                         </span>
-                        <span className="budget-bar-wrap">
-                          <span
-                            className={`budget-bar-fill${isOver ? ' budget-bar-fill--over' : ''}`}
-                            style={{ width: `${pct}%` }}
-                          />
-                        </span>
-                      </span>
-                    ) : (
-                      <span style={{ color: 'var(--text-muted)', fontSize: '.82rem' }}>—</span>
-                    )}
-                  </span>
-                  <span onClick={e => e.stopPropagation()}>
-                    <button
-                      className="btn-icon btn-icon--danger"
-                      onClick={() => setDeleteConfirm(projet)}
-                      title="Supprimer"
-                    >🗑</button>
-                  </span>
-                </div>
-              )
-            })}
-            {paginated.length === 0 && (
-              <p className="empty-state">Aucun projet trouvé.</p>
-            )}
+                      </td>
+                      <td className="date-cell">{fmtD(projet.date_debut)}</td>
+                      <td className="date-cell">{fmtD(projet.date_fin)}</td>
+                      <td style={{ textAlign: 'right', fontWeight: 600, fontSize: '.85rem' }}>
+                        {budgetH ? (
+                          <span style={{ color: consumed > budgetH ? '#dc2626' : 'var(--text)' }}>
+                            {consumed}h / {budgetH}h
+                          </span>
+                        ) : '—'}
+                      </td>
+                      <td onClick={e => e.stopPropagation()}>
+                        <button className="btn-icon btn-icon--danger" onClick={() => setDeleteConfirm(projet)} title="Supprimer">🗑</button>
+                      </td>
+                    </tr>
+                  )
+                })}
+                {paginated.length === 0 && (
+                  <tr><td colSpan={8} style={{ textAlign: 'center', color: 'var(--text-muted)', padding: '3rem' }}>Aucun projet trouvé.</td></tr>
+                )}
+              </tbody>
+            </table>
           </div>
 
           {totalPages > 1 && (

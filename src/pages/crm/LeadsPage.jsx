@@ -1,6 +1,8 @@
 import { useState, useEffect, useMemo, useRef } from 'react'
 import { supabase } from '../../lib/supabase'
 import { useSociete } from '../../contexts/SocieteContext'
+import useSortableTable from '../../hooks/useSortableTable'
+import SortableHeader from '../../components/SortableHeader'
 
 const PHASES = [
   { id: 'nouveau',      label: 'Nouveau',      color: '#94a3b8', bg: '#f1f5f9' },
@@ -225,8 +227,9 @@ export default function LeadsPage() {
     return list
   }, [leads, filter, filterSociete])
 
-  const totalPages = Math.ceil(filtered.length / pageSize)
-  const paginated = filtered.slice((page - 1) * pageSize, page * pageSize)
+  const { sortedData: sortedFiltered, sortKey, sortDir, requestSort } = useSortableTable(filtered, 'created_at', 'desc')
+  const totalPages = Math.ceil(sortedFiltered.length / pageSize)
+  const paginated = sortedFiltered.slice((page - 1) * pageSize, page * pageSize)
 
   // KPIs
   const now = new Date()
@@ -423,37 +426,56 @@ export default function LeadsPage() {
                 <span>lignes</span>
               </div>
             </div>
-            <div className="transactions-list">
-              <div className="transactions-header-row">
-                <span>Titre</span><span>Contact</span><span>Entreprise</span>
-                <span>Source</span><span>Phase</span><span>Montant</span>
-                <span>Relance</span><span>Actions</span>
-              </div>
-              {paginated.map(l => {
-                const p = phaseInfo(l.phase)
-                return (
-                  <div key={l.id} className="transaction-row">
-                    <span className="transaction-name">{l.titre}</span>
-                    <span className="transaction-client">
-                      {l.contacts ? `${l.contacts.prenom} ${l.contacts.nom}` : '—'}
-                    </span>
-                    <span className="transaction-client">{l.clients?.name || '—'}</span>
-                    <span>
-                      {l.source ? (
-                        <span style={{ fontSize: '.78rem', background: '#f1f5f9', color: '#475569', borderRadius: 4, padding: '2px 8px' }}>{l.source}</span>
-                      ) : '—'}
-                    </span>
-                    <span><span className="status-badge" style={{ color: p.color, background: p.bg }}>{p.label}</span></span>
-                    <span className="transaction-montant">{formatMontant(l.montant_estime)}</span>
-                    <span className="transaction-date">{formatDate(l.date_relance)}</span>
-                    <span style={{ display: 'flex', gap: '.35rem' }}>
-                      <button className="btn-secondary" style={{ padding: '4px 10px', fontSize: '.8rem' }} onClick={() => openEdit(l)}>✏️</button>
-                      <button className="btn-secondary" style={{ padding: '4px 10px', fontSize: '.8rem', color: '#dc2626' }} onClick={() => handleDelete(l.id)}>🗑</button>
-                    </span>
-                  </div>
-                )
-              })}
-              {paginated.length === 0 && <p className="empty-state">Aucun lead trouvé.</p>}
+            <div className="users-table-wrapper">
+              <table className="users-table">
+                <thead>
+                  <tr>
+                    <SortableHeader label="Titre" field="titre" sortKey={sortKey} sortDir={sortDir} onSort={requestSort} />
+                    <SortableHeader label="Contact" field="contacts.nom" sortKey={sortKey} sortDir={sortDir} onSort={requestSort} />
+                    <SortableHeader label="Entreprise" field="clients.name" sortKey={sortKey} sortDir={sortDir} onSort={requestSort} />
+                    <SortableHeader label="Source" field="source" sortKey={sortKey} sortDir={sortDir} onSort={requestSort} />
+                    <SortableHeader label="Phase" field="phase" sortKey={sortKey} sortDir={sortDir} onSort={requestSort} />
+                    <SortableHeader label="Montant" field="montant_estime" sortKey={sortKey} sortDir={sortDir} onSort={requestSort} />
+                    <SortableHeader label="Relance" field="date_relance" sortKey={sortKey} sortDir={sortDir} onSort={requestSort} />
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {paginated.map(l => {
+                    const p = phaseInfo(l.phase)
+                    return (
+                      <tr key={l.id}>
+                        <td>
+                          <div className="user-cell">
+                            <span className="user-name">{l.titre}</span>
+                          </div>
+                        </td>
+                        <td>
+                          {l.contacts ? `${l.contacts.prenom} ${l.contacts.nom}` : '—'}
+                        </td>
+                        <td>{l.clients?.name || '—'}</td>
+                        <td>
+                          {l.source ? (
+                            <span style={{ fontSize: '.78rem', background: '#f1f5f9', color: '#475569', borderRadius: 4, padding: '2px 8px' }}>{l.source}</span>
+                          ) : '—'}
+                        </td>
+                        <td><span className="status-badge" style={{ color: p.color, background: p.bg }}>{p.label}</span></td>
+                        <td>{formatMontant(l.montant_estime)}</td>
+                        <td className="date-cell">{formatDate(l.date_relance)}</td>
+                        <td>
+                          <span style={{ display: 'flex', gap: '.35rem' }}>
+                            <button className="btn-secondary" style={{ padding: '4px 10px', fontSize: '.8rem' }} onClick={() => openEdit(l)}>✏️</button>
+                            <button className="btn-secondary" style={{ padding: '4px 10px', fontSize: '.8rem', color: '#dc2626' }} onClick={() => handleDelete(l.id)}>🗑</button>
+                          </span>
+                        </td>
+                      </tr>
+                    )
+                  })}
+                  {paginated.length === 0 && (
+                    <tr><td colSpan={8} style={{ textAlign: 'center', padding: '2rem' }}>Aucun lead trouvé.</td></tr>
+                  )}
+                </tbody>
+              </table>
             </div>
             {totalPages > 1 && (
               <div className="table-pagination">

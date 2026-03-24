@@ -18,9 +18,15 @@ function FavoriteButton() {
   const isFav = favorites.includes(path)
 
   function handleToggle() {
-    // Capture page title from first h1 on the page
-    const h1 = document.querySelector('.app-content h1')
-    const label = h1 ? h1.textContent.replace(/^[^\w\s]*\s*/, '').trim() : null
+    // Capture page title: try h1, then common name elements, then document title
+    const el = document.querySelector('.app-content h1')
+      || document.querySelector('.app-content .collab-header-name')
+      || document.querySelector('.app-content [class*="header-name"]')
+      || document.querySelector('.app-content [class*="page-title"]')
+    let label = el ? el.textContent.trim() : null
+    // Clean emoji prefixes
+    if (label) label = label.replace(/^[\p{Emoji}\p{Emoji_Presentation}\s]+/u, '').trim()
+    if (!label) label = document.title.replace(/\s*[-–|].*$/, '').trim() || null
     toggleFavorite(path, label)
   }
 

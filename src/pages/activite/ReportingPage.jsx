@@ -1,4 +1,5 @@
-import { useState, useEffect, useMemo } from 'react'
+import { useState, useEffect, useMemo, useRef } from 'react'
+import { useSearchParams } from 'react-router-dom'
 import { supabase } from '../../lib/supabase'
 import { useSociete } from '../../contexts/SocieteContext'
 import { useAuth } from '../../contexts/AuthContext'
@@ -118,6 +119,22 @@ function ProgressBar({ pct }) {
 export default function ReportingPage() {
   const { selectedSociete } = useSociete()
   const { profile } = useAuth()
+  const [searchParams, setSearchParams] = useSearchParams()
+  const highlightId = searchParams.get('highlight')
+  const highlightRef = useRef(null)
+
+  // Auto-scroll to highlighted row & clear param after 4s
+  useEffect(() => {
+    if (highlightId && highlightRef.current) {
+      highlightRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' })
+    }
+    if (highlightId) {
+      const timer = setTimeout(() => {
+        setSearchParams({}, { replace: true })
+      }, 4000)
+      return () => clearTimeout(timer)
+    }
+  }, [highlightId, highlightRef.current])
 
   const [activeTab, setActiveTab] = useState(0)
   const [loading, setLoading] = useState(true)
@@ -496,8 +513,8 @@ export default function ReportingPage() {
           {t1Rows.length === 0 ? (
             <div className="reporting-empty">Aucune saisie pour cette période.</div>
           ) : (
-            <div className="reporting-table-wrapper">
-              <table className="reporting-table">
+            <div className="users-table-wrapper">
+              <table className="users-table">
                 <thead>
                   <tr>
                     <SortableHeader label="Projet" field="projetName" sortKey={t1SortKey} sortDir={t1SortDir} onSort={t1RequestSort} />
@@ -601,8 +618,8 @@ export default function ReportingPage() {
           {t3Rows.length === 0 ? (
             <div className="reporting-empty">Aucun projet trouvé pour cette société.</div>
           ) : (
-            <div className="reporting-table-wrapper">
-              <table className="reporting-table">
+            <div className="users-table-wrapper">
+              <table className="users-table">
                 <thead>
                   <tr>
                     <SortableHeader label="Projet" field="projet.name" sortKey={t3SortKey} sortDir={t3SortDir} onSort={t3RequestSort} />
@@ -688,8 +705,8 @@ export default function ReportingPage() {
             <div className="reporting-empty">Aucune saisie ne correspond aux filtres.</div>
           ) : (
             <>
-              <div className="reporting-table-wrapper">
-                <table className="reporting-table">
+              <div className="users-table-wrapper">
+                <table className="users-table">
                   <thead>
                     <tr>
                       <SortableHeader label="Date" field="date" sortKey={t4SortKey} sortDir={t4SortDir} onSort={t4RequestSort} />
@@ -709,8 +726,17 @@ export default function ReportingPage() {
                         const meta = typeof s.commentaire === 'string' ? JSON.parse(s.commentaire) : null
                         commentDisplay = meta?.note || ''
                       } catch { commentDisplay = s.commentaire || '' }
+                      const isHighlighted = highlightId === s.id
                       return (
-                        <tr key={s.id}>
+                        <tr
+                          key={s.id}
+                          ref={isHighlighted ? highlightRef : undefined}
+                          style={isHighlighted ? {
+                            background: '#dbeafe',
+                            animation: 'highlight-fade 4s ease-out forwards',
+                            boxShadow: 'inset 3px 0 0 var(--primary, #3b82f6)',
+                          } : undefined}
+                        >
                           <td style={{ whiteSpace: 'nowrap' }}>{fmtDate(s.date)}</td>
                           <td>{collab?.full_name || '—'}</td>
                           <td>{info.projetName}</td>
@@ -821,19 +847,19 @@ export default function ReportingPage() {
           outline: none;
           border-color: var(--primary);
         }
-        .reporting-table-wrapper {
+        .users-table-wrapper {
           overflow-x: auto;
           border-radius: 8px;
           border: 1px solid var(--border);
           background: #fff;
           box-shadow: var(--shadow);
         }
-        .reporting-table {
+        .users-table {
           width: 100%;
           border-collapse: collapse;
           font-size: .875rem;
         }
-        .reporting-table th {
+        .users-table th {
           background: #f8fafc;
           padding: .75rem 1rem;
           text-align: left;
@@ -845,14 +871,14 @@ export default function ReportingPage() {
           border-bottom: 1px solid var(--border);
           white-space: nowrap;
         }
-        .reporting-table td {
+        .users-table td {
           padding: .7rem 1rem;
           border-bottom: 1px solid var(--border);
           color: var(--text);
           vertical-align: middle;
         }
-        .reporting-table tbody tr:last-child td { border-bottom: none; }
-        .reporting-table tbody tr:hover td { background: #f8fafc; }
+        .users-table tbody tr:last-child td { border-bottom: none; }
+        .users-table tbody tr:hover td { background: #f8fafc; }
         .reporting-total-row td {
           background: var(--primary-light) !important;
           border-top: 2px solid var(--border);

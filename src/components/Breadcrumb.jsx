@@ -23,7 +23,7 @@ const ROUTE_LABELS = {
 
   // Commerce
   'clients':       'Clients',
-  'transactions':  'Transactions',
+  'transactions':  'Opportunités',
   'achats':        'Achats',
   'stock':         'Stock',
   'produits':      'Produits',
@@ -67,9 +67,61 @@ const ROUTE_LABELS = {
   'workflows':    'Workflows',
   'analytics':    'Analytics',
 
+  // Marketing
+  'marketing':  'Marketing',
+  'campagnes':  'Campagnes',
+  'leads':      'Leads',
+
+  // Documents
+  'documents':  'Documents',
+  'archives':   'Archives',
+
+  // Taches
+  'taches':  'Taches',
+
   // Other
   'notifications': 'Notifications',
   'recherche':     'Recherche',
+}
+
+/**
+ * Certains chemins construits à partir de l'URL ne correspondent pas aux vraies routes.
+ * Cette table redirige vers les bonnes landing pages.
+ */
+const PATH_OVERRIDES = {
+  '/equipe/collaborateurs': '/equipe',
+  '/equipe/notes-de-frais': '/equipe',
+  '/equipe/trombinoscope':  '/equipe',
+  '/equipe/organigramme':   '/equipe',
+  '/equipe/competences':    '/equipe',
+  '/crm/contacts':          '/crm',
+  '/crm/entreprises':       '/crm',
+  '/commerce/clients':      '/crm',
+  '/commerce/transactions': '/crm',
+  '/commerce/devis':        '/crm',
+  '/commerce/produits':     '/crm',
+  '/commerce/abonnements':  '/crm',
+  '/commerce/stock':        '/gestion',
+  '/activite/projets':      '/activite',
+  '/activite/saisie':       '/activite',
+  '/activite/planification':'/activite',
+  '/activite/equipe':       '/equipe',
+  '/activite/absences':     '/equipe',
+  '/activite/validation':   '/equipe',
+  '/activite/reporting':    '/activite',
+  '/activite/rentabilite':  '/activite',
+  '/finance/facturation':   '/gestion',
+  '/finance/business-intelligence': '/finance',
+  '/finance/saisie-ecriture':      '/finance',
+  '/finance/previsionnel':  '/finance',
+  '/finance/immobilisations':'/finance',
+  '/finance/rapprochement': '/finance',
+  '/gestion/tableau-de-bord':'/gestion',
+  '/gestion/transactions':  '/gestion',
+  '/gestion/achats':        '/gestion',
+  '/marketing/campagnes':   '/marketing',
+  '/marketing/leads':       '/marketing',
+  '/documents/archives':    '/documents',
 }
 
 /**
@@ -111,7 +163,9 @@ export default function Breadcrumb() {
 
     const label = ROUTE_LABELS[seg]
     if (label) {
-      crumbs.push({ label, path: currentPath })
+      // Use override path if the constructed path doesn't have a direct route
+      const navPath = PATH_OVERRIDES[currentPath] || currentPath
+      crumbs.push({ label, path: navPath })
     }
   }
 
@@ -135,7 +189,7 @@ export default function Breadcrumb() {
             {isLast || !crumb.path ? (
               <span className="breadcrumb-current">{crumb.label}</span>
             ) : (
-              <button className="breadcrumb-link" onClick={() => navigate(crumb.path)}>
+              <button className="breadcrumb-link" onClick={(e) => { e.stopPropagation(); console.log('Breadcrumb navigate:', crumb.path); navigate(crumb.path) }}>
                 {crumb.label}
               </button>
             )}

@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { supabase } from '../../lib/supabase'
+import { useBreadcrumb } from '../../contexts/BreadcrumbContext'
 
 const STATUT_COLORS = {
   actif:    { color: '#16a34a', bg: '#f0fdf4' },
@@ -11,6 +12,7 @@ const STATUT_COLORS = {
 export default function ClientDetailPage() {
   const { id } = useParams()
   const navigate = useNavigate()
+  const { setSegments, clearSegments } = useBreadcrumb() || {}
   const [client, setClient] = useState(null)
   const [projets, setProjets] = useState([])
   const [loading, setLoading] = useState(true)
@@ -18,6 +20,7 @@ export default function ClientDetailPage() {
   const [nameValue, setNameValue] = useState('')
 
   useEffect(() => { fetchClient() }, [id])
+  useEffect(() => () => clearSegments?.(), [])
 
   async function fetchClient() {
     setLoading(true)
@@ -29,6 +32,9 @@ export default function ClientDetailPage() {
     setNameValue(c?.name || '')
     setProjets(p || [])
     setLoading(false)
+    if (c?.name && setSegments) {
+      setSegments([{ id, label: c.name }])
+    }
   }
 
   async function handleRename(e) {

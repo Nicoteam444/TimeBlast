@@ -8,9 +8,8 @@ const CATEGORY_DATA = {
     items: [
       { to: '/crm/contacts', icon: '👤', label: 'Contacts', desc: 'Centralisez tous vos contacts professionnels. Historique des échanges, coordonnées et notes en un seul endroit.' },
       { to: '/crm/entreprises', icon: '🏢', label: 'Entreprises', desc: 'Gérez votre base d\'entreprises avec vérification SIRENE automatique et suivi des informations légales.' },
-      { to: '/crm/leads', icon: '🚀', label: 'Leads', desc: 'Suivez vos opportunités commerciales du premier contact à la signature. Pipeline visuel et scoring.' },
       { to: '/commerce/clients', icon: '👥', label: 'Clients', desc: 'Pilotez la relation client active : contrats, facturation, historique des transactions.' },
-      { to: '/commerce/transactions', icon: '💼', label: 'Transactions', desc: 'Visualisez votre pipeline commercial en Kanban. Suivez chaque deal par phase et par montant.' },
+      { to: '/commerce/transactions', icon: '💼', label: 'Opportunités', desc: 'Visualisez votre pipeline commercial en Kanban. Suivez chaque deal par phase et par montant.' },
       { to: '/commerce/devis', icon: '📝', label: 'Devis', desc: 'Créez et envoyez des devis professionnels en quelques clics. Conversion automatique en facture.' },
       { to: '/commerce/produits', icon: '🏷️', label: 'Produits', desc: 'Gérez votre catalogue de produits et services avec prix, descriptions et catégories.' },
       { to: '/commerce/abonnements', icon: '🔄', label: 'Abonnements', desc: 'Suivez vos revenus récurrents. Gestion des renouvellements et alertes d\'échéance.' },
@@ -64,6 +63,23 @@ const CATEGORY_DATA = {
       { to: '/finance/previsionnel', icon: '📈', label: 'Prévisionnel', desc: 'Construisez vos budgets prévisionnels. Comparez le réalisé au prévisionnel par poste.' },
       { to: '/finance/immobilisations', icon: '🏢', label: 'Immobilisations', desc: 'Gérez votre parc d\'immobilisations. Amortissements, cessions et inventaire.' },
       { to: '/finance/rapprochement', icon: '🔗', label: 'Rapprochement', desc: 'Rapprochez automatiquement vos relevés bancaires avec vos écritures comptables.' },
+    ],
+  },
+  marketing: {
+    title: 'Marketing',
+    subtitle: 'Gérez vos campagnes marketing et convertissez vos leads en clients.',
+    icon: '📣',
+    items: [
+      { to: '/marketing/campagnes', icon: '🎯', label: 'Campagnes', desc: 'Créez et pilotez vos campagnes marketing : emailing, réseaux sociaux, SEO, publicité et événements.' },
+      { to: '/marketing/leads', icon: '🚀', label: 'Leads', desc: 'Suivez vos prospects du premier contact à la conversion. Scoring, qualification et nurturing automatisé.' },
+    ],
+  },
+  documents: {
+    title: 'Documents',
+    subtitle: 'Archivez, indexez et retrouvez tous vos documents d\'entreprise.',
+    icon: '📁',
+    items: [
+      { to: '/documents/archives', icon: '🗄️', label: 'Archives', desc: 'Recherche avancée avec OCR, aperçu des documents, filtres multicritères et indexation automatique.' },
     ],
   },
 }

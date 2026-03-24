@@ -3,6 +3,8 @@ import { useNavigate } from 'react-router-dom'
 import { supabase } from '../../lib/supabase'
 import ClientAutocomplete from '../../components/ClientAutocomplete'
 import { useSociete } from '../../contexts/SocieteContext'
+import useSortableTable from '../../hooks/useSortableTable'
+import SortableHeader from '../../components/SortableHeader'
 
 const PHASES = [
   { id: 'qualification',  label: 'Qualification',   color: '#6366f1', bg: '#eef2ff' },
@@ -160,20 +162,21 @@ export default function TransactionsPage() {
     return list
   }, [transactions, filter, filterSociete])
 
-  const totalPages = Math.ceil(filtered.length / pageSize)
-  const paginated = filtered.slice((page - 1) * pageSize, page * pageSize)
+  const { sortedData: sortedFiltered, sortKey, sortDir, requestSort } = useSortableTable(filtered, 'created_at', 'desc')
+  const totalPages = Math.ceil(sortedFiltered.length / pageSize)
+  const paginated = sortedFiltered.slice((page - 1) * pageSize, page * pageSize)
 
   // KPI totaux sur les transactions filtrées
   const pipeline = filtered.filter(t => t.phase !== 'perdu').reduce((s, t) => s + (t.montant || 0), 0)
   const gained = filtered.filter(t => t.phase === 'ferme').reduce((s, t) => s + (t.montant || 0), 0)
 
   return (
-    <div className="admin-page">
+    <div className="admin-page admin-page--full">
       <div className="admin-page-header">
         <div>
-          <h1>Transactions</h1>
+          <h1>Opportunités</h1>
           <p style={{ color: 'var(--text-muted)', fontSize: '.9rem' }}>
-            {filtered.length} transaction{filtered.length > 1 ? 's' : ''}
+            {filtered.length} opportunité{filtered.length > 1 ? 's' : ''}
             {filterSociete && societes?.length > 0 && (
               <span style={{ marginLeft: '.5rem' }}>
                 — {societes.find(s => s.id === filterSociete)?.name || ''}
@@ -309,24 +312,39 @@ export default function TransactionsPage() {
                 <span>lignes</span>
               </div>
             </div>
-            <div className="transactions-list">
-              <div className="transactions-header-row">
-                <span>Transaction</span><span>Client</span><span>Phase</span>
-                <span>Montant</span><span>Fermeture</span>
-              </div>
-              {paginated.map(t => {
-                const p = phaseInfo(t.phase)
-                return (
-                  <div key={t.id} className="transaction-row" onClick={() => navigate(`/commerce/transactions/${t.id}`)}>
-                    <span className="transaction-name">{t.name}</span>
-                    <span className="transaction-client">{t.clients?.name || '—'}</span>
-                    <span><span className="status-badge" style={{ color: p.color, background: p.bg }}>{p.label}</span></span>
-                    <span className="transaction-montant">{formatMontant(t.montant)}</span>
-                    <span className="transaction-date">{formatDate(t.date_fermeture_prevue)}</span>
-                  </div>
-                )
-              })}
-              {paginated.length === 0 && <p className="empty-state">Aucune transaction trouvée.</p>}
+            <div className="users-table-wrapper">
+              <table className="users-table">
+                <thead>
+                  <tr>
+                    <SortableHeader label="Transaction" field="name" sortKey={sortKey} sortDir={sortDir} onSort={requestSort} />
+                    <SortableHeader label="Client" field="clients.name" sortKey={sortKey} sortDir={sortDir} onSort={requestSort} />
+                    <SortableHeader label="Phase" field="phase" sortKey={sortKey} sortDir={sortDir} onSort={requestSort} />
+                    <SortableHeader label="Montant" field="montant" sortKey={sortKey} sortDir={sortDir} onSort={requestSort} />
+                    <SortableHeader label="Fermeture" field="date_fermeture_prevue" sortKey={sortKey} sortDir={sortDir} onSort={requestSort} />
+                  </tr>
+                </thead>
+                <tbody>
+                  {paginated.map(t => {
+                    const p = phaseInfo(t.phase)
+                    return (
+                      <tr key={t.id} onClick={() => navigate(`/commerce/transactions/${t.id}`)} style={{ cursor: 'pointer' }}>
+                        <td>
+                          <div className="user-cell">
+                            <span className="user-name">{t.name}</span>
+                          </div>
+                        </td>
+                        <td>{t.clients?.name || '—'}</td>
+                        <td><span className="status-badge" style={{ color: p.color, background: p.bg }}>{p.label}</span></td>
+                        <td>{formatMontant(t.montant)}</td>
+                        <td className="date-cell">{formatDate(t.date_fermeture_prevue)}</td>
+                      </tr>
+                    )
+                  })}
+                  {paginated.length === 0 && (
+                    <tr><td colSpan={5} style={{ textAlign: 'center', padding: '2rem' }}>Aucune transaction trouvée.</td></tr>
+                  )}
+                </tbody>
+              </table>
             </div>
             {totalPages > 1 && (
               <div className="table-pagination">

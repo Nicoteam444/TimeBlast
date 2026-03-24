@@ -150,22 +150,20 @@ export default function TransactionsBancairesPage() {
       </div>
 
       {/* Filtres */}
-      <div style={{ display: 'flex', gap: '1rem', marginBottom: '1rem', flexWrap: 'wrap' }}>
+      <div className="table-toolbar">
         <input
+          className="table-search"
           type="text"
           placeholder="Rechercher un tiers, catégorie, référence..."
           value={search}
           onChange={e => setSearch(e.target.value)}
-          style={{ flex: 1, minWidth: 200, padding: '.6rem 1rem', border: '1px solid var(--border)', borderRadius: 8, fontSize: '.9rem' }}
         />
-        <select value={filterType} onChange={e => setFilterType(e.target.value)}
-          style={{ padding: '.6rem 1rem', border: '1px solid var(--border)', borderRadius: 8, fontSize: '.9rem' }}>
+        <select className="table-filter-select" value={filterType} onChange={e => setFilterType(e.target.value)}>
           <option value="">Tous les types</option>
           <option value="encaissement">📈 Encaissements</option>
           <option value="decaissement">📉 Décaissements</option>
         </select>
-        <select value={filterRapproche} onChange={e => setFilterRapproche(e.target.value)}
-          style={{ padding: '.6rem 1rem', border: '1px solid var(--border)', borderRadius: 8, fontSize: '.9rem' }}>
+        <select className="table-filter-select" value={filterRapproche} onChange={e => setFilterRapproche(e.target.value)}>
           <option value="">Rapprochement</option>
           <option value="oui">✅ Rapprochés</option>
           <option value="non">⏳ Non rapprochés</option>
@@ -173,45 +171,45 @@ export default function TransactionsBancairesPage() {
       </div>
 
       {/* Table */}
-      <div style={{ background: 'var(--surface)', borderRadius: 12, border: '1px solid var(--border)', overflow: 'hidden' }}>
-        <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+      <div className="users-table-wrapper">
+        <table className="users-table">
           <thead>
-            <tr style={{ background: 'var(--bg)' }}>
-              <SortableHeader label="Date" field="date" sortKey={sortKey} sortDir={sortDir} onSort={requestSort} style={{ padding: '.75rem 1rem', fontSize: '.82rem', color: 'var(--text-muted)', fontWeight: 600 }} />
-              <SortableHeader label="Type" field="type" sortKey={sortKey} sortDir={sortDir} onSort={requestSort} style={{ padding: '.75rem 1rem', fontSize: '.82rem', color: 'var(--text-muted)', fontWeight: 600 }} />
-              <SortableHeader label="Tiers" field="tiers" sortKey={sortKey} sortDir={sortDir} onSort={requestSort} style={{ padding: '.75rem 1rem', fontSize: '.82rem', color: 'var(--text-muted)', fontWeight: 600 }} />
-              <SortableHeader label="Catégorie" field="categorie" sortKey={sortKey} sortDir={sortDir} onSort={requestSort} style={{ padding: '.75rem 1rem', fontSize: '.82rem', color: 'var(--text-muted)', fontWeight: 600 }} />
-              <SortableHeader label="Banque" field="banque" sortKey={sortKey} sortDir={sortDir} onSort={requestSort} style={{ padding: '.75rem 1rem', fontSize: '.82rem', color: 'var(--text-muted)', fontWeight: 600 }} />
-              <SortableHeader label="Montant" field="montant" sortKey={sortKey} sortDir={sortDir} onSort={requestSort} style={{ padding: '.75rem 1rem', textAlign: 'right', fontSize: '.82rem', color: 'var(--text-muted)', fontWeight: 600 }} />
-              <th style={{ padding: '.75rem 1rem', textAlign: 'center', fontSize: '.82rem', color: 'var(--text-muted)', fontWeight: 600 }}>Rapp.</th>
+            <tr>
+              <SortableHeader label="Date" field="date" sortKey={sortKey} sortDir={sortDir} onSort={requestSort} />
+              <SortableHeader label="Type" field="type" sortKey={sortKey} sortDir={sortDir} onSort={requestSort} />
+              <SortableHeader label="Tiers" field="tiers" sortKey={sortKey} sortDir={sortDir} onSort={requestSort} />
+              <SortableHeader label="Catégorie" field="categorie" sortKey={sortKey} sortDir={sortDir} onSort={requestSort} />
+              <SortableHeader label="Banque" field="banque" sortKey={sortKey} sortDir={sortDir} onSort={requestSort} />
+              <SortableHeader label="Montant" field="montant" sortKey={sortKey} sortDir={sortDir} onSort={requestSort} style={{ textAlign: 'right' }} />
+              <th>Rapp.</th>
             </tr>
           </thead>
           <tbody>
             {sortedData.slice(0, 50).map(tx => (
-              <tr key={tx.id} style={{ borderTop: '1px solid var(--border)', cursor: 'pointer' }}
-                onMouseEnter={e => e.currentTarget.style.background = 'var(--bg)'}
-                onMouseLeave={e => e.currentTarget.style.background = ''}
-              >
-                <td style={{ padding: '.65rem 1rem', fontSize: '.88rem' }}>{fmtDate(tx.date)}</td>
-                <td style={{ padding: '.65rem 1rem' }}>
-                  <span style={{
+              <tr key={tx.id} style={{ cursor: 'pointer' }}>
+                <td className="date-cell">{fmtDate(tx.date)}</td>
+                <td>
+                  <span className="status-badge" style={{
                     background: tx.type === 'encaissement' ? '#f0fdf4' : '#fef2f2',
                     color: tx.type === 'encaissement' ? '#16a34a' : '#ef4444',
-                    padding: '2px 10px', borderRadius: 6, fontSize: '.78rem', fontWeight: 600
                   }}>
                     {tx.type === 'encaissement' ? '📈 Encaissement' : '📉 Décaissement'}
                   </span>
                 </td>
-                <td style={{ padding: '.65rem 1rem', fontWeight: 600, fontSize: '.88rem' }}>{tx.tiers}</td>
-                <td style={{ padding: '.65rem 1rem', fontSize: '.85rem', color: 'var(--text-muted)' }}>{tx.categorie}</td>
-                <td style={{ padding: '.65rem 1rem', fontSize: '.85rem', color: 'var(--text-muted)' }}>{tx.banque}</td>
+                <td>
+                  <div className="user-cell">
+                    <span className="user-name">{tx.tiers}</span>
+                  </div>
+                </td>
+                <td>{tx.categorie}</td>
+                <td>{tx.banque}</td>
                 <td style={{
-                  padding: '.65rem 1rem', textAlign: 'right', fontWeight: 700, fontSize: '.9rem',
+                  textAlign: 'right', fontWeight: 700,
                   color: tx.type === 'encaissement' ? '#16a34a' : '#ef4444'
                 }}>
                   {tx.type === 'encaissement' ? '+' : '-'} {fmtE(tx.montant)}
                 </td>
-                <td style={{ padding: '.65rem 1rem', textAlign: 'center', fontSize: '1rem' }}>
+                <td style={{ textAlign: 'center' }}>
                   {tx.rapproche ? '✅' : '⏳'}
                 </td>
               </tr>

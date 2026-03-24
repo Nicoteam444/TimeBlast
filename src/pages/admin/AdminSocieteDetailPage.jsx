@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { supabase } from '../../lib/supabase'
+import { useBreadcrumb } from '../../contexts/BreadcrumbContext'
 
 // ── HoldingOrgChart ──────────────────────────────────────────────────────────
 
@@ -114,6 +115,7 @@ function HoldingOrgChart({ holding, groupes, societes }) {
 export default function AdminSocieteDetailPage() {
   const { id } = useParams()
   const navigate = useNavigate()
+  const { setSegments, clearSegments } = useBreadcrumb() || {}
 
   const [societe, setSociete] = useState(null)
   const [stats, setStats] = useState({ users: 0, clients: 0, transactions: 0, projets: 0 })
@@ -130,6 +132,7 @@ export default function AdminSocieteDetailPage() {
   const [formError, setFormError] = useState(null)
 
   useEffect(() => { load() }, [id])
+  useEffect(() => () => clearSegments?.(), [])
 
   async function load() {
     setLoading(true)
@@ -149,6 +152,9 @@ export default function AdminSocieteDetailPage() {
     }
 
     setSociete(s)
+    if (s?.name && setSegments) {
+      setSegments([{ id, label: s.name }])
+    }
 
     // Fetch stats in parallel
     const [
