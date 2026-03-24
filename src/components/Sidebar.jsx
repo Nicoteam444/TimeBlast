@@ -69,16 +69,24 @@ const SECTIONS = [
     ],
   },
   {
+    id: 'facturation',
+    icon: '🧾',
+    label: 'Facturation',
+    roles: ['admin', 'comptable'],
+    items: [
+      { to: '/finance/facturation',            icon: '📤', label: 'Ventes' },
+      { to: '/finance/factures-fournisseurs',  icon: '📥', label: 'Achats' },
+    ],
+  },
+  {
     id: 'finance',
     icon: '💰',
-    label: 'Gestion',
+    label: 'Finance',
     roles: ['admin', 'comptable'],
     items: [
       { to: '/finance/comptabilite',    icon: '📊', label: 'Tableau de bord' },
       { to: '/finance/saisie-ecriture', icon: '✍️', label: 'Comptabilité' },
       { to: '/finance/ecritures',       icon: '📒', label: 'Écritures FEC' },
-      { to: '/finance/facturation',       icon: '📤', label: 'Ventes' },
-      { to: '/finance/factures-fournisseurs', icon: '📥', label: 'Achats' },
       { to: '/finance/previsionnel',    icon: '📈', label: 'Prévisionnel' },
       { to: '/finance/immobilisations', icon: '🏢', label: 'Immobilisations' },
       { to: '/finance/rapprochement',   icon: '🔗', label: 'Rapprochement' },
