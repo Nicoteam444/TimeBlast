@@ -1252,12 +1252,13 @@ button:disabled { opacity: .6; cursor: not-allowed; }
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius);
-  overflow: hidden;
+  overflow-x: auto;
   box-shadow: var(--shadow);
 }
 
 .users-table {
   width: 100%;
+  min-width: 750px;
   border-collapse: collapse;
 }
 
@@ -1285,7 +1286,8 @@ button:disabled { opacity: .6; cursor: not-allowed; }
 }
 
 .users-table tr:last-child td { border-bottom: none; }
-.users-table tr:hover td { background: #f8fafc; }
+.users-table tbody tr { cursor: pointer; transition: background .15s; }
+.users-table tbody tr:hover td { background: #eef2ff; }
 
 .user-cell {
   display: flex;
@@ -1303,6 +1305,13 @@ button:disabled { opacity: .6; cursor: not-allowed; }
   justify-content: center;
   font-size: .75rem;
   font-weight: 700;
+  flex-shrink: 0;
+}
+.user-avatar--lg {
+  width: 44px;
+  height: 44px;
+  font-size: 1rem;
+  border-radius: 50%;
   flex-shrink: 0;
 }
 
@@ -1372,6 +1381,17 @@ button:disabled { opacity: .6; cursor: not-allowed; }
 }
 
 .modal--sm { max-width: 360px; padding: 1.5rem; }
+.modal--lg { max-width: 760px; width: 95vw; }
+
+/* Form 2-column grid */
+.form-grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0 1rem;
+}
+@media (max-width: 600px) {
+  .form-grid-2 { grid-template-columns: 1fr; }
+}
 
 .modal-header {
   display: flex;
@@ -5864,4 +5884,96 @@ button:disabled { opacity: .6; cursor: not-allowed; }
   .rent-charts-grid { grid-template-columns: 1fr; }
   .rent-detail { grid-template-columns: 1fr; }
   .rent-content { padding: 1rem; }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   ADMIN UTILISATEURS — améliorations
+   ═══════════════════════════════════════════════════════════════ */
+
+/* Barre filtres */
+.users-filter-bar {
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  flex-wrap: wrap;
+  margin-bottom: 1rem;
+  padding: .5rem .75rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+}
+
+/* Infos lecture seule dans modale édition */
+.edit-user-meta {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: .5rem 1rem;
+  padding: .75rem 1rem;
+  background: #f8fafc;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  margin-bottom: 1.25rem;
+}
+.edit-user-meta-item {
+  display: flex;
+  flex-direction: column;
+  gap: .2rem;
+}
+.edit-user-meta-label {
+  font-size: .72rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: .04em;
+}
+.edit-user-meta-item > span:last-child {
+  font-size: .85rem;
+  color: var(--text);
+}
+
+/* Proposition champs supplémentaires */
+.users-proposal-box {
+  background: #fffbeb;
+  border: 1.5px solid #fde68a;
+  border-radius: 10px;
+  padding: 1rem 1.25rem;
+  margin-bottom: 1.25rem;
+}
+.users-proposal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-weight: 600;
+  font-size: .95rem;
+  color: #92400e;
+  margin-bottom: .5rem;
+}
+.proposal-fields-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: .5rem;
+  margin-bottom: .75rem;
+}
+.proposal-field {
+  display: flex;
+  align-items: flex-start;
+  gap: .5rem;
+  background: white;
+  border: 1px solid #fde68a;
+  border-radius: 7px;
+  padding: .5rem .75rem;
+  font-size: .83rem;
+}
+.proposal-field strong { color: var(--text); display: block; }
+.proposal-field span:last-child { color: var(--text-muted); display: block; font-size: .78rem; }
+.proposal-icon { font-size: 1.1rem; flex-shrink: 0; }
+.proposal-sql {
+  background: #1e293b;
+  color: #e2e8f0;
+  border-radius: 7px;
+  padding: .75rem 1rem;
+  font-size: .8rem;
+  overflow-x: auto;
+  white-space: pre;
+  margin: .5rem 0 .25rem;
 }

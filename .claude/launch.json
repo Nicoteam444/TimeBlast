@@ -3,7 +3,7 @@
   "configurations": [
     {
       "name": "timeblast-dev",
-      "runtimeExecutable": "/opt/homebrew/bin/node",
+      "runtimeExecutable": "/usr/local/bin/node",
       "runtimeArgs": ["node_modules/vite/bin/vite.js", "--host"],
       "port": 5173
     }
