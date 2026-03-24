@@ -107,8 +107,7 @@ export default function FactureElectroniquePage() {
       <nav className="landing-nav">
         <div className="landing-nav-inner">
           <div className="landing-logo" onClick={() => navigate('/login')} style={{ cursor: 'pointer' }}>
-            <span className="landing-logo-icon">⚡</span>
-            <span className="landing-logo-text">TimeBlast.ai</span>
+            <img src="/logo-timeblast.png" alt="TimeBlast.ai" style={{ height: 28 }} />
           </div>
           <div className="landing-nav-links">
             <a href="#obligations">La réforme</a>
@@ -357,7 +356,7 @@ export default function FactureElectroniquePage() {
       {/* ── Footer ── */}
       <footer className="landing-footer">
         <div className="landing-footer-inner">
-          <span className="landing-logo-text" style={{ color: '#67e8f9' }}>⚡ TimeBlast.ai</span>
+          <img src="/logo-timeblast.png" alt="TimeBlast.ai" style={{ height: 24 }} />
           <span style={{ color: 'rgba(255,255,255,0.4)', fontSize: '.82rem' }}>
             © {new Date().getFullYear()} — La multiprise intelligente pour votre entreprise
           </span>

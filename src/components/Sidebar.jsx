@@ -176,10 +176,8 @@ export default function Sidebar() {
               : <img src={settings.logoUrl} alt="logo" style={{ width: 28, height: 28, objectFit: 'contain', borderRadius: 6 }} />
           ) : (
             sidebarOpen
-              ? <img src="/logo.png" alt="logo" className="sidebar-logo-full"
-                  onError={e => { e.target.src = '/logo.svg' }} />
-              : <img src="/logo2.png" alt="logo" className="sidebar-logo-icon"
-                  onError={e => { e.target.src = '/logo2.svg' }} />
+              ? <img src="/logo-timeblast.png" alt="TimeBlast.ai" className="sidebar-logo-full" />
+              : <img src="/logo-timeblast.png" alt="TimeBlast.ai" className="sidebar-logo-icon" />
           )}
         </div>
 
