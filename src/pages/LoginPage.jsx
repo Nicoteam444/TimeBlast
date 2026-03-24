@@ -179,7 +179,7 @@ export default function LoginPage() {
         <div className="landing-nav-inner">
           <div className="landing-logo">
             <span className="landing-logo-icon">⚡</span>
-            <span className="landing-logo-text">TimeBlast</span>
+            <span className="landing-logo-text">TimeBlast.ai</span>
           </div>
           <div className="landing-nav-links">
             <a href="#connecteurs">Connecteurs</a>
@@ -200,11 +200,13 @@ export default function LoginPage() {
           <div className="landing-hero-text">
             <div className="landing-hero-badge">⚡ La multiprise intelligente de votre entreprise</div>
             <h1 className="landing-hero-title">
-              TimeBlast — connectez tout.<br />
-              <span className="landing-hero-accent">Gagnez du temps grâce à l'IA.</span>
+              TimeBlast.ai
             </h1>
+            <h2 className="landing-hero-subtitle" style={{ fontSize: '1.4rem', fontWeight: 600, color: '#475569', marginBottom: '1.5rem', marginTop: '0.5rem' }}>
+              Connectez tous vos outils. Gagnez du temps.
+            </h2>
             <p className="landing-hero-subtitle">
-              TimeBlast connecte vos outils en une <strong>multiprise intelligente</strong>.
+              TimeBlast.ai connecte vos outils en une <strong>multiprise intelligente</strong>.
               Temps, finance, CRM, RH — tout circule automatiquement entre vos logiciels.
               Zéro saisie manuelle, zéro friction.
             </p>
@@ -319,7 +321,7 @@ export default function LoginPage() {
         <div className="landing-cta-inner">
           <span className="landing-cta-icon">⚡</span>
           <h2>Prêt à tout connecter ?</h2>
-          <p>Rejoignez les équipes qui pilotent leur activité avec TimeBlast.</p>
+          <p>Rejoignez les équipes qui pilotent leur activité avec TimeBlast.ai.</p>
           <button className="landing-btn-primary landing-btn-lg" onClick={() => setShowLogin(true)}>
             Se connecter maintenant →
           </button>
@@ -329,7 +331,7 @@ export default function LoginPage() {
       {/* ── Footer ── */}
       <footer className="landing-footer">
         <div className="landing-footer-inner">
-          <span className="landing-logo-text" style={{ color: '#67e8f9' }}>⚡ TimeBlast</span>
+          <span className="landing-logo-text" style={{ color: '#67e8f9' }}>⚡ TimeBlast.ai</span>
           <span style={{ color: 'rgba(255,255,255,0.4)', fontSize: '.82rem' }}>
             © {new Date().getFullYear()} — La multiprise intelligente pour votre entreprise
           </span>
@@ -345,7 +347,7 @@ export default function LoginPage() {
               <span style={{ fontSize: '2rem' }}>⚡</span>
               <h2 style={{ margin: '.25rem 0 0' }}>Connexion</h2>
               <p style={{ color: '#64748b', fontSize: '.88rem', margin: '.25rem 0 0' }}>
-                Accédez à votre espace TimeBlast
+                Accédez à votre espace TimeBlast.ai
               </p>
             </div>
             <form onSubmit={handleSubmit}>

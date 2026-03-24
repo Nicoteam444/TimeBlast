@@ -171,7 +171,7 @@ export default function Sidebar() {
             sidebarOpen
               ? <span style={{ display: 'flex', alignItems: 'center', gap: '.5rem' }}>
                   <img src={settings.logoUrl} alt="logo" style={{ width: 28, height: 28, objectFit: 'contain', borderRadius: 6 }} />
-                  <span className="sidebar-brand-name">{settings.platformName || 'TimeBlast'}</span>
+                  <span className="sidebar-brand-name">{settings.platformName || 'TimeBlast.ai'}</span>
                 </span>
               : <img src={settings.logoUrl} alt="logo" style={{ width: 28, height: 28, objectFit: 'contain', borderRadius: 6 }} />
           ) : (

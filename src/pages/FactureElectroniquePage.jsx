@@ -17,7 +17,7 @@ const BENEFITS = [
   {
     icon: '⚡',
     title: 'Zéro perte de temps',
-    desc: 'Générez vos factures électroniques automatiquement. TimeBlast le fait pour vous.'
+    desc: 'Générez vos factures électroniques automatiquement. TimeBlast.ai le fait pour vous.'
   },
   {
     icon: '📊',
@@ -50,11 +50,11 @@ const HOW_WORKS = [
   {
     num: '1',
     title: 'Votre logiciel génère',
-    desc: 'TimeBlast capture vos factures depuis votre système comptable (Sage, Cegid, QuickBooks, etc.)'
+    desc: 'TimeBlast.ai capture vos factures depuis votre système comptable (Sage, Cegid, QuickBooks, etc.)'
   },
   {
     num: '2',
-    title: 'TimeBlast enrichit',
+    title: 'TimeBlast.ai enrichit',
     desc: 'Validation automatique des données, enrichissement SIRENE, détection des anomalies.'
   },
   {
@@ -83,16 +83,16 @@ const FAQ = [
     a: 'C\'est la plateforme de l\'État pour la transmission des factures électroniques. Obligatoire pour les marchés publics et la plupart des appels d\'offres.'
   },
   {
-    q: 'TimeBlast s\'intègre à mon logiciel comptable ?',
-    a: 'Oui, TimeBlast se connecte à Sage, Cegid, QuickBooks, Pennylane et 30+ autres. Zéro reconfiguration.'
+    q: 'TimeBlast.ai s\'intègre à mon logiciel comptable ?',
+    a: 'Oui, TimeBlast.ai se connecte à Sage, Cegid, QuickBooks, Pennylane et 30+ autres. Zéro reconfiguration.'
   },
   {
     q: 'Quel est le coût de la réforme ?',
-    a: 'Sans TimeBlast : restructuration complète de votre chaîne facturation + formation équipe. Avec TimeBlast : intégration en quelques jours.'
+    a: 'Sans TimeBlast.ai : restructuration complète de votre chaîne facturation + formation équipe. Avec TimeBlast.ai : intégration en quelques jours.'
   },
   {
     q: 'Comment gérer la transition ?',
-    a: 'TimeBlast gère les deux formats en parallèle : PDF pour clients non-connectés, XML pour Chorus Pro. Zéro rupture.'
+    a: 'TimeBlast.ai gère les deux formats en parallèle : PDF pour clients non-connectés, XML pour Chorus Pro. Zéro rupture.'
   },
 ]
 
@@ -108,7 +108,7 @@ export default function FactureElectroniquePage() {
         <div className="landing-nav-inner">
           <div className="landing-logo" onClick={() => navigate('/login')} style={{ cursor: 'pointer' }}>
             <span className="landing-logo-icon">⚡</span>
-            <span className="landing-logo-text">TimeBlast</span>
+            <span className="landing-logo-text">TimeBlast.ai</span>
           </div>
           <div className="landing-nav-links">
             <a href="#obligations">La réforme</a>
@@ -134,7 +134,7 @@ export default function FactureElectroniquePage() {
               <span className="landing-hero-accent">avant la date limite.</span>
             </h1>
             <p className="landing-hero-subtitle">
-              L'e-facture devient <strong>obligatoire en janvier 2026</strong>. TimeBlast vous rend
+              L'e-facture devient <strong>obligatoire en janvier 2026</strong>. TimeBlast.ai vous rend
               conforme en quelques jours — pas de refonte complète, pas de perte de données, pas de complications.
             </p>
             <div className="landing-hero-actions">
@@ -235,9 +235,9 @@ export default function FactureElectroniquePage() {
         </div>
       </section>
 
-      {/* ── Comment TimeBlast aide ── */}
+      {/* ── Comment TimeBlast.ai aide ── */}
       <section className="landing-how" id="comment">
-        <h2 className="landing-section-title">Comment TimeBlast vous rend conforme</h2>
+        <h2 className="landing-section-title">Comment TimeBlast.ai vous rend conforme</h2>
         <p className="landing-section-subtitle">
           4 étapes pour transformer vos factures en e-factures légales.
         </p>
@@ -272,12 +272,12 @@ export default function FactureElectroniquePage() {
 
       {/* ── Comparaison Avant/Après ── */}
       <section className="landing-comparison">
-        <h2 className="landing-section-title">Avant vs. Après TimeBlast</h2>
+        <h2 className="landing-section-title">Avant vs. Après TimeBlast.ai</h2>
         <div className="comparison-table">
           <div className="comparison-row header">
             <div className="comparison-col">Processus</div>
             <div className="comparison-col">❌ Avant</div>
-            <div className="comparison-col">✅ Après TimeBlast</div>
+            <div className="comparison-col">✅ Après TimeBlast.ai</div>
           </div>
 
           <div className="comparison-row">
@@ -344,7 +344,7 @@ export default function FactureElectroniquePage() {
         <div className="landing-cta-inner">
           <span className="landing-cta-icon">📋</span>
           <h2>Déjà en retard ?</h2>
-          <p>La réforme est en cours. Lancez votre conformité e-facture dès maintenant avec TimeBlast.</p>
+          <p>La réforme est en cours. Lancez votre conformité e-facture dès maintenant avec TimeBlast.ai.</p>
           <button className="landing-btn-primary landing-btn-lg" onClick={() => setShowLogin(true)}>
             Commencer la transformation →
           </button>
@@ -357,7 +357,7 @@ export default function FactureElectroniquePage() {
       {/* ── Footer ── */}
       <footer className="landing-footer">
         <div className="landing-footer-inner">
-          <span className="landing-logo-text" style={{ color: '#67e8f9' }}>⚡ TimeBlast</span>
+          <span className="landing-logo-text" style={{ color: '#67e8f9' }}>⚡ TimeBlast.ai</span>
           <span style={{ color: 'rgba(255,255,255,0.4)', fontSize: '.82rem' }}>
             © {new Date().getFullYear()} — La multiprise intelligente pour votre entreprise
           </span>
@@ -373,7 +373,7 @@ export default function FactureElectroniquePage() {
               <span style={{ fontSize: '2rem' }}>⚡</span>
               <h2 style={{ margin: '.25rem 0 0' }}>Connexion</h2>
               <p style={{ color: '#64748b', fontSize: '.88rem', margin: '.25rem 0 0' }}>
-                Accédez à votre espace TimeBlast
+                Accédez à votre espace TimeBlast.ai
               </p>
             </div>
             <form>

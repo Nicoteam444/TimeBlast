@@ -314,7 +314,7 @@ export default function ClientInvoicePortal() {
           color: '#94a3b8',
           fontSize: '.85rem',
         }}>
-          <p>Facture générée par TimeBlast · Portail Client Sécurisé</p>
+          <p>Facture générée par TimeBlast.ai · Portail Client Sécurisé</p>
         </div>
       </div>
     </div>

@@ -15,7 +15,7 @@ const DEFAULTS = {
   bgColor: '#F0F0F0',         // Fond derrière les vignettes
   // ──
   logoUrl: null,
-  platformName: 'TimeBlast',
+  platformName: 'TimeBlast.ai',
 }
 
 // Labels pour affichage UI
