@@ -22,6 +22,7 @@ import WorkflowsPage from './pages/admin/WorkflowsPage'
 import AnalyticsPage from './pages/admin/AnalyticsPage'
 import ParametresPage from './pages/parametres/ParametresPage'
 import ClientDetailPage from './pages/clients/ClientDetailPage'
+import ClientInvoicePortal from './pages/clients/ClientInvoicePortal'
 import ClientsPage from './pages/temps/ClientsPage'
 import TransactionsPage from './pages/commerce/TransactionsPage'
 import TransactionDetailPage from './pages/commerce/TransactionDetailPage'
@@ -78,6 +79,7 @@ function AppRoutes() {
     <Routes>
       <Route path="/login" element={<><InviteHandler /><LoginPage /></>} />
       <Route path="/facture-electronique" element={<FactureElectroniquePage />} />
+      <Route path="/client/invoice/:id" element={<ClientInvoicePortal />} />
       <Route path="/set-password" element={<SetPasswordPage />} />
       <Route path="/unauthorized" element={<UnauthorizedPage />} />
 

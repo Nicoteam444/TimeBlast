@@ -2,6 +2,8 @@ import { useState, useMemo, useEffect, useCallback, useRef } from 'react'
 import { supabase } from '../../lib/supabase'
 import { useSociete } from '../../contexts/SocieteContext'
 import { generateInvoicePDF } from '../../lib/pdfGenerator'
+import InvoiceDistributionModal from '../../components/InvoiceDistributionModal'
+import { getDistributionHistory } from '../../lib/invoiceDistribution'
 
 // ── Helpers ───────────────────────────────────────────────────
 function fmtE(n) {
@@ -297,6 +299,8 @@ export default function FacturationPage() {
   const [sortCol, setSortCol]         = useState('date_emission')
   const [sortDir, setSortDir]         = useState('desc')
   const [page, setPage]               = useState(1)
+  const [showDistributionModal, setShowDistributionModal] = useState(false)
+  const [companyData, setCompanyData] = useState(null)
   const PAGE_SIZE = 50
 
   function loadFactures(keepSelection = false) {
@@ -314,6 +318,18 @@ export default function FacturationPage() {
       })
   }
   useEffect(() => { loadFactures() }, [selectedSociete?.id])
+
+  // Load company data when selected societe changes
+  useEffect(() => {
+    if (!selectedSociete?.id) return
+    supabase
+      .from('societes')
+      .select('*')
+      .eq('id', selectedSociete.id)
+      .single()
+      .then(({ data }) => setCompanyData(data))
+      .catch(err => console.error('Error loading company data:', err))
+  }, [selectedSociete?.id])
 
   function toggleSort(col) {
     if (sortCol === col) setSortDir(d => d==='asc'?'desc':'asc')
@@ -460,14 +476,7 @@ export default function FacturationPage() {
           <div style={{display:'flex',gap:'.4rem'}}>
             {selected && <button className="btn-secondary" style={{fontSize:'.78rem'}} onClick={()=>setModal(selected)}>✏️ Modifier</button>}
             {selected && <button className="btn-primary" style={{fontSize:'.78rem'}} onClick={()=>{ const doc = generateInvoicePDF(selected); doc.save(`${selected.num_facture || 'facture'}.pdf`) }}>📄 PDF</button>}
-            {selected && <button className="btn-secondary" style={{fontSize:'.78rem'}} onClick={()=>{
-              const email = prompt('Email du destinataire :')
-              if (email) {
-                import('../../lib/emailService').then(m => m.sendInvoiceEmail(selected, email))
-                  .then(() => alert('Email envoyé !'))
-                  .catch(e => alert('Erreur : ' + e.message))
-              }
-            }}>📧 Envoyer</button>}
+            {selected && <button className="btn-secondary" style={{fontSize:'.78rem'}} onClick={()=>setShowDistributionModal(true)}>📧 Envoyer</button>}
           </div>
         </div>
         <div className="fac-right-scroll">
@@ -477,13 +486,23 @@ export default function FacturationPage() {
 
     </div>
 
-      {/* Modal */}
+      {/* Modal Édition Facture */}
       {modal && (
         <FactureModal
           facture={modal === 'new' ? null : modal}
           societe={selectedSociete}
           onSave={handleSave}
           onClose={() => setModal(null)}
+        />
+      )}
+
+      {/* Modal Distribution */}
+      {showDistributionModal && selected && companyData && (
+        <InvoiceDistributionModal
+          invoice={selected}
+          company={companyData}
+          client={selected}
+          onClose={() => setShowDistributionModal(false)}
         />
       )}
     </div>
