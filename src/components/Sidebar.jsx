@@ -131,9 +131,24 @@ export default function Sidebar() {
     toggleFavorite(to)
   }
 
-  // Build favorites items from all sections
+  // Build favorites items from all sections + dynamic pages
   const allItems = [...SECTIONS.flatMap(s => s.items), ...ADMIN_SECTION.items]
-  const favItems = favorites.map(to => allItems.find(i => i.to === to)).filter(Boolean)
+  const ROUTE_LABELS = {
+    crm: 'CRM', commerce: 'Commerce', activite: 'Activité', finance: 'Finance',
+    gestion: 'Gestion', equipe: 'Équipe', admin: 'Admin',
+    contacts: 'Contacts', entreprises: 'Entreprises', leads: 'Leads',
+    clients: 'Clients', collaborateurs: 'Collaborateur', projets: 'Projet',
+    facturation: 'Facturation', transactions: 'Transactions',
+  }
+  const favItems = favorites.map(to => {
+    const known = allItems.find(i => i.to === to)
+    if (known) return known
+    // Dynamic page fallback — derive label from path segments
+    const segments = to.split('/').filter(Boolean)
+    const lastNamed = [...segments].reverse().find(s => !/^[0-9a-f]{8}-/.test(s))
+    const label = ROUTE_LABELS[lastNamed] || (lastNamed ? lastNamed.charAt(0).toUpperCase() + lastNamed.slice(1).replace(/-/g, ' ') : to)
+    return { to, icon: '📌', label }
+  })
 
   function filterItems(items) {
     return items.filter(i => !i.roles || i.roles.includes(userRole))
