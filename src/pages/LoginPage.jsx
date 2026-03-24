@@ -185,6 +185,7 @@ export default function LoginPage() {
             <a href="#connecteurs">Connecteurs</a>
             <a href="#comment-ca-marche">Comment ça marche</a>
             <a href="#features">Fonctionnalités</a>
+            <a href="/facture-electronique" style={{ color: '#f59e0b', fontWeight: '600' }}>E-Facture 📋</a>
           </div>
           <button className="landing-nav-btn" onClick={() => setShowLogin(true)}>
             Se connecter

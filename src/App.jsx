@@ -8,6 +8,7 @@ import { SocieteProvider } from './contexts/SocieteContext'
 import ProtectedRoute from './components/ProtectedRoute'
 import Layout from './components/Layout'
 import LoginPage from './pages/LoginPage'
+import FactureElectroniquePage from './pages/FactureElectroniquePage'
 import DashboardPage from './pages/DashboardPage'
 import AdminPage from './pages/admin/AdminPage'
 import AdminUtilisateursPage from './pages/admin/AdminUtilisateursPage'
@@ -75,6 +76,7 @@ function AppRoutes() {
   return (
     <Routes>
       <Route path="/login" element={<><InviteHandler /><LoginPage /></>} />
+      <Route path="/facture-electronique" element={<FactureElectroniquePage />} />
       <Route path="/set-password" element={<SetPasswordPage />} />
       <Route path="/unauthorized" element={<UnauthorizedPage />} />
 
