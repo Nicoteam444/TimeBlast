@@ -1,11 +1,11 @@
-import { useState, useEffect, useMemo } from 'react'
+import { useState, useEffect, useMemo, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
 import { useSociete } from '../contexts/SocieteContext'
 import { supabase } from '../lib/supabase'
 import {
   BarChart, Bar, LineChart, Line, AreaChart, Area, PieChart, Pie, Cell,
-  XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer
+  XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ReferenceLine
 } from 'recharts'
 
 // ── Formatters ──
@@ -54,6 +54,20 @@ function getSunday(d) {
   return sun
 }
 
+// ── CSS Animations (injected once) ──
+const DASH_STYLE_ID = 'dashboard-animations'
+if (typeof document !== 'undefined' && !document.getElementById(DASH_STYLE_ID)) {
+  const style = document.createElement('style')
+  style.id = DASH_STYLE_ID
+  style.textContent = `
+    @keyframes dashFadeIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes dashPulse { 0%, 100% { opacity: 1; } 50% { opacity: .55; } }
+    .dash-card { animation: dashFadeIn .45s ease both; transition: transform .2s, box-shadow .2s; }
+    .dash-card:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(0,0,0,.08) !important; }
+  `
+  document.head.appendChild(style)
+}
+
 // ── Card wrapper ──
 const cardStyle = {
   background: 'var(--card-bg, #fff)',
@@ -62,11 +76,31 @@ const cardStyle = {
   padding: '1.25rem',
 }
 
+// ── SVG Donut helper ──
+function DonutChart({ size = 56, stroke = 5, pct = 0, color = '#16a34a', trackColor = '#e5e7eb', label }) {
+  const r = (size - stroke) / 2
+  const circ = 2 * Math.PI * r
+  const dash = (Math.min(100, Math.max(0, pct)) / 100) * circ
+  return (
+    <svg width={size} height={size} style={{ display: 'block' }}>
+      <circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke={trackColor} strokeWidth={stroke} />
+      <circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke={color} strokeWidth={stroke}
+        strokeDasharray={`${dash} ${circ - dash}`} strokeDashoffset={circ / 4}
+        strokeLinecap="round" style={{ transition: 'stroke-dasharray .6s ease' }} />
+      <text x="50%" y="50%" textAnchor="middle" dominantBaseline="central"
+        style={{ fontSize: size * 0.24, fontWeight: 700, fill: color }}>
+        {label ?? `${Math.round(pct)}%`}
+      </text>
+    </svg>
+  )
+}
+
 function SectionHeader({ icon, title, linkLabel, onLink }) {
   return (
     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
       <h2 style={{ margin: 0, fontSize: '1rem', fontWeight: 700, color: 'var(--text)', display: 'flex', alignItems: 'center', gap: '.5rem' }}>
         {icon} {title}
+        <span style={{ display: 'block', width: 28, height: 3, borderRadius: 2, background: 'var(--primary, #1a5c82)', marginTop: 2 }} />
       </h2>
       {linkLabel && onLink && (
         <button onClick={onLink} style={{
@@ -85,6 +119,32 @@ export default function DashboardPage() {
   const navigate = useNavigate()
   const [loading, setLoading] = useState(true)
   const [raw, setRaw] = useState({})
+
+  // ── Drag & Drop Widgets ──
+  const STORAGE_KEY = 'timeblast_dashboard_order'
+  const DEFAULT_ORDER = ['tasks', 'time', 'alerts', 'projects', 'treasury', 'marketing', 'documents', 'activity']
+  const [widgetOrder, setWidgetOrder] = useState(() => {
+    try { const s = localStorage.getItem(STORAGE_KEY); return s ? JSON.parse(s) : DEFAULT_ORDER } catch { return DEFAULT_ORDER }
+  })
+  const dragWidgetRef = useRef(null)
+  const dragOverRef = useRef(null)
+
+  function onDragStart(id) { dragWidgetRef.current = id }
+  function onDragOverWidget(e, id) { e.preventDefault(); dragOverRef.current = id }
+  function onDropWidget() {
+    if (!dragWidgetRef.current || !dragOverRef.current || dragWidgetRef.current === dragOverRef.current) return
+    setWidgetOrder(prev => {
+      const arr = [...prev]
+      const from = arr.indexOf(dragWidgetRef.current)
+      const to = arr.indexOf(dragOverRef.current)
+      if (from === -1 || to === -1) return prev
+      arr.splice(from, 1); arr.splice(to, 0, dragWidgetRef.current)
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(arr))
+      return arr
+    })
+    dragWidgetRef.current = null; dragOverRef.current = null
+  }
+  function resetLayout() { localStorage.removeItem(STORAGE_KEY); setWidgetOrder(DEFAULT_ORDER) }
 
   // ── Fetch all data ──
   useEffect(() => {
@@ -359,7 +419,7 @@ export default function DashboardPage() {
   // ── Loading state ──
   if (loading) {
     return (
-      <div className="admin-page" style={{ padding: '2rem', textAlign: 'center', color: 'var(--text-muted)' }}>
+      <div className="admin-page admin-page--full" style={{ padding: '2rem', textAlign: 'center', color: 'var(--text-muted)' }}>
         <div style={{ fontSize: '1.25rem', marginBottom: '.5rem' }}>Chargement du tableau de bord...</div>
       </div>
     )
@@ -392,267 +452,401 @@ export default function DashboardPage() {
     return icons[type] || '📄'
   }
 
-  return (
-    <div className="admin-page" style={{ padding: 0 }}>
-      {/* ═══ ROW 1: HEADER ═══ */}
-      <div style={{ marginBottom: '1rem' }}>
-        <h1 style={{ margin: 0, fontSize: '1.6rem', fontWeight: 700 }}>
-          Bonjour, {prenom} 👋
-        </h1>
-        <p style={{ margin: '.25rem 0 0', color: 'var(--text-muted)', fontSize: '.9rem' }}>
-          {todayLabel}{selectedSociete ? ` · ${selectedSociete.name}` : ''}
-        </p>
-        <p style={{ margin: '.25rem 0 0', fontSize: '.85rem', color: 'var(--text-muted)' }}>
-          {headerSubtitle}
-        </p>
-      </div>
-
-      {/* ═══ ROW 2: MES TACHES | MON TEMPS | ALERTES ═══ */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1rem', marginBottom: '1rem' }}>
-
-        {/* ── MES TACHES ── */}
-        <div style={cardStyle}>
+  // ── Widget map ──
+  const widgetMap = {
+    tasks: (
+      <>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
           <SectionHeader icon="📋" title="Mes Taches" linkLabel="Voir tout →" onLink={() => navigate('/activite/projets')} />
-          {myTasks.length === 0 ? (
-            <div style={{ color: 'var(--text-muted)', fontSize: '.85rem', textAlign: 'center', padding: '1.5rem 0' }}>
-              Aucune tache assignee
-            </div>
-          ) : (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '.5rem' }}>
-              {myTasks.map(t => {
-                const overdue = t.due_date && t.due_date < todayStr && t.status !== 'done' && t.status !== 'termine'
-                return (
-                  <div key={t.id} style={{
-                    display: 'flex', alignItems: 'center', gap: '.5rem',
-                    padding: '.5rem .75rem', borderRadius: 8,
-                    background: overdue ? '#fef2f2' : 'var(--surface, #f8fafc)',
-                    border: overdue ? '1px solid #fecaca' : '1px solid transparent',
-                    fontSize: '.85rem',
-                  }}>
-                    <span>{priorityIcon(t.priority)}</span>
-                    <span style={{ flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', color: overdue ? '#dc2626' : 'var(--text)' }}>
-                      {t.title}
-                    </span>
-                    {t.due_date && (
-                      <span style={{ fontSize: '.75rem', color: overdue ? '#dc2626' : 'var(--text-muted)', whiteSpace: 'nowrap' }}>
-                        {fmtDate(t.due_date)}
-                      </span>
-                    )}
-                  </div>
-                )
-              })}
-            </div>
-          )}
+          {(() => {
+            const doneCount = myTasks.filter(t => t.status === 'done' || t.status === 'termine').length
+            const totalCount = myTasks.length
+            const donePct = totalCount > 0 ? (doneCount / totalCount) * 100 : 0
+            return totalCount > 0 ? (
+              <DonutChart size={44} stroke={4} pct={donePct} color="#16a34a" />
+            ) : null
+          })()}
         </div>
-
-        {/* ── MON TEMPS ── */}
-        <div style={cardStyle}>
-          <SectionHeader icon="⏱" title="Mon Temps" linkLabel="Saisir du temps →" onLink={() => navigate('/activite/saisie')} />
-          <ResponsiveContainer width="100%" height={120}>
-            <BarChart data={tempsChart} barSize={24}>
-              <XAxis dataKey="jour" fontSize={11} tickLine={false} axisLine={false} />
-              <YAxis fontSize={10} domain={[0, 10]} hide />
-              <Tooltip formatter={v => `${v}h`} />
-              <Bar dataKey="heures" fill="var(--primary)" radius={[4, 4, 0, 0]} />
-            </BarChart>
-          </ResponsiveContainer>
-          <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '.5rem', margin: '.75rem 0 .5rem', fontSize: '.85rem' }}>
-            <span style={{ fontWeight: 700, fontSize: '1.1rem', color: 'var(--primary)' }}>{totalHeures.toFixed(1)}h</span>
-            <span style={{ color: 'var(--text-muted)' }}>/ 40h</span>
-            <span style={{ color: 'var(--text-muted)' }}>({tauxOccupation}%)</span>
+        {myTasks.length === 0 ? (
+          <div style={{ color: 'var(--text-muted)', fontSize: '.85rem', textAlign: 'center', padding: '1.5rem 0' }}>
+            Aucune tache assignee
           </div>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '.5rem' }}>
-            <div className="achat-kpi-chip" style={{ textAlign: 'center', padding: '.5rem', borderRadius: 8, background: 'var(--surface, #f8fafc)' }}>
-              <div style={{ fontSize: '.7rem', color: 'var(--text-muted)' }}>Heures</div>
-              <div style={{ fontWeight: 700, color: 'var(--primary)' }}>{totalHeures.toFixed(1)}h</div>
-            </div>
-            <div className="achat-kpi-chip" style={{ textAlign: 'center', padding: '.5rem', borderRadius: 8, background: 'var(--surface, #f8fafc)' }}>
-              <div style={{ fontSize: '.7rem', color: 'var(--text-muted)' }}>Projets</div>
-              <div style={{ fontWeight: 700, color: 'var(--primary)' }}>{raw.projetsActifsCount || 0}</div>
-            </div>
-            <div className="achat-kpi-chip" style={{ textAlign: 'center', padding: '.5rem', borderRadius: 8, background: 'var(--surface, #f8fafc)' }}>
-              <div style={{ fontSize: '.7rem', color: 'var(--text-muted)' }}>Occupation</div>
-              <div style={{ fontWeight: 700, color: tauxOccupation >= 80 ? '#16a34a' : tauxOccupation >= 50 ? '#f59e0b' : '#ef4444' }}>{tauxOccupation}%</div>
-            </div>
-          </div>
-        </div>
-
-        {/* ── ALERTES ── */}
-        <div style={cardStyle}>
-          <SectionHeader icon="🔔" title="Alertes" />
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '.6rem' }}>
-            {[
-              { icon: '🧾', count: raw.facturesOverdueCount || 0, label: 'Factures impayees', color: '#ef4444', link: '/finance/facturation' },
-              { icon: '⏰', count: raw.tasksOverdueCount || 0, label: 'Taches en retard', color: '#ef4444', link: '/activite/projets' },
-              { icon: '🏖', count: raw.absencesPendingCount || 0, label: 'Absences a valider', color: '#f59e0b', link: '/activite/equipe' },
-              { icon: '💳', count: raw.notesFraisPendingCount || 0, label: 'Notes de frais a valider', color: '#f59e0b', link: '/activite/equipe' },
-            ].map((alert, i) => (
-              <div key={i} onClick={() => alert.link && navigate(alert.link)} style={{
-                display: 'flex', alignItems: 'center', gap: '.75rem',
-                padding: '.6rem .75rem', borderRadius: 8,
-                background: alert.count > 0 ? alert.color + '10' : 'var(--surface, #f8fafc)',
-                border: alert.count > 0 ? `1px solid ${alert.color}30` : '1px solid transparent',
-                cursor: alert.link ? 'pointer' : 'default',
-                transition: 'all .15s',
-              }}>
-                <span style={{ fontSize: '1.1rem' }}>{alert.icon}</span>
-                <span style={{ flex: 1, fontSize: '.85rem', color: 'var(--text)' }}>{alert.label}</span>
-                <span style={{
-                  fontWeight: 700, fontSize: '.9rem',
-                  color: alert.count > 0 ? alert.color : 'var(--text-muted)',
-                  minWidth: 24, textAlign: 'right',
-                }}>{alert.count}</span>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-
-      {/* ═══ ROW 3: PROJETS ACTIFS | TRESORERIE ═══ */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1rem' }}>
-
-        {/* ── PROJETS ACTIFS ── */}
-        <div style={cardStyle}>
-          <SectionHeader icon="📁" title="Projets Actifs" linkLabel="Voir tout →" onLink={() => navigate('/activite/projets')} />
-          {(raw.projets || []).length === 0 ? (
-            <div style={{ color: 'var(--text-muted)', fontSize: '.85rem', textAlign: 'center', padding: '1rem 0' }}>
-              Aucun projet actif
-            </div>
-          ) : (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '.75rem' }}>
-              {(raw.projets || []).slice(0, 5).map(p => {
-                const tc = raw.projetTaskCounts?.[p.id] || { total: 0, done: 0 }
-                const pct = tc.total > 0 ? Math.round((tc.done / tc.total) * 100) : 0
-                return (
-                  <div key={p.id}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '.25rem' }}>
-                      <span style={{ fontSize: '.85rem', fontWeight: 600, color: 'var(--text)' }}>{p.nom || p.name}</span>
-                      <span style={{ fontSize: '.75rem', color: 'var(--text-muted)' }}>{tc.done}/{tc.total} taches</span>
-                    </div>
-                    <div style={{ height: 6, borderRadius: 3, background: 'var(--border, #e2e8f0)', overflow: 'hidden' }}>
-                      <div style={{ height: '100%', width: `${pct}%`, background: 'var(--primary)', borderRadius: 3, transition: 'width .3s' }} />
-                    </div>
-                  </div>
-                )
-              })}
-            </div>
-          )}
-        </div>
-
-        {/* ── TRESORERIE ── */}
-        <div style={cardStyle}>
-          <SectionHeader icon="💰" title="Tresorerie" linkLabel="Voir detail →" onLink={() => navigate('/finance/business-intelligence')} />
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '.5rem', marginBottom: '1rem' }}>
-            <div style={{ textAlign: 'center', padding: '.5rem', borderRadius: 8, background: '#f0fdf4' }}>
-              <div style={{ fontSize: '.7rem', color: '#16a34a' }}>Encaissements 30j</div>
-              <div style={{ fontWeight: 700, fontSize: '.9rem', color: '#16a34a' }}>{fmtE(encaissements30)}</div>
-            </div>
-            <div style={{ textAlign: 'center', padding: '.5rem', borderRadius: 8, background: '#fef2f2' }}>
-              <div style={{ fontSize: '.7rem', color: '#ef4444' }}>Decaissements 30j</div>
-              <div style={{ fontWeight: 700, fontSize: '.9rem', color: '#ef4444' }}>{fmtE(decaissements30)}</div>
-            </div>
-            <div style={{ textAlign: 'center', padding: '.5rem', borderRadius: 8, background: '#eff6ff' }}>
-              <div style={{ fontSize: '.7rem', color: 'var(--primary)' }}>Solde estime</div>
-              <div style={{ fontWeight: 700, fontSize: '.9rem', color: soldeEstime >= 0 ? '#16a34a' : '#ef4444' }}>{fmtE(soldeEstime)}</div>
-            </div>
-          </div>
-          {trendChart.length > 0 ? (
-            <ResponsiveContainer width="100%" height={140}>
-              <AreaChart data={trendChart}>
-                <XAxis dataKey="mois" fontSize={10} tickLine={false} axisLine={false} />
-                <YAxis fontSize={10} tickFormatter={v => `${(v / 1000).toFixed(0)}k`} hide />
-                <Tooltip formatter={v => fmtE(v)} />
-                <Area type="monotone" dataKey="encaissements" fill="var(--primary)" fillOpacity={0.15} stroke="var(--primary)" strokeWidth={2} name="Encaissements" />
-                <Area type="monotone" dataKey="total" fill="#f59e0b" fillOpacity={0.08} stroke="#f59e0b" strokeWidth={1.5} name="Total facture" />
-              </AreaChart>
-            </ResponsiveContainer>
-          ) : (
-            <div style={{ color: 'var(--text-muted)', fontSize: '.85rem', textAlign: 'center', padding: '1rem 0' }}>
-              Pas de donnees sur les 6 derniers mois
-            </div>
-          )}
-        </div>
-      </div>
-
-      {/* ═══ ROW 4: MARKETING | DERNIERS DOCUMENTS ═══ */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1rem' }}>
-
-        {/* ── MARKETING ── */}
-        <div style={cardStyle}>
-          <SectionHeader icon="📣" title="Marketing" linkLabel="Voir campagnes →" onLink={() => navigate('/marketing/campagnes')} />
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '.5rem' }}>
-            <div className="achat-kpi-chip" style={{ textAlign: 'center', padding: '.75rem', borderRadius: 8, background: 'var(--surface, #f8fafc)' }}>
-              <div style={{ fontSize: '.7rem', color: 'var(--text-muted)' }}>Campagnes actives</div>
-              <div style={{ fontWeight: 700, fontSize: '1.1rem', color: 'var(--primary)' }}>{campagnesActives}</div>
-            </div>
-            <div className="achat-kpi-chip" style={{ textAlign: 'center', padding: '.75rem', borderRadius: 8, background: 'var(--surface, #f8fafc)' }}>
-              <div style={{ fontSize: '.7rem', color: 'var(--text-muted)' }}>Leads ce mois</div>
-              <div style={{ fontWeight: 700, fontSize: '1.1rem', color: 'var(--primary)' }}>{raw.leadsCount || 0}</div>
-            </div>
-            <div className="achat-kpi-chip" style={{ textAlign: 'center', padding: '.75rem', borderRadius: 8, background: 'var(--surface, #f8fafc)' }}>
-              <div style={{ fontSize: '.7rem', color: 'var(--text-muted)' }}>Pipeline total</div>
-              <div style={{ fontWeight: 700, fontSize: '1.1rem', color: 'var(--primary)' }}>{fmtE(pipelineTotal)}</div>
-            </div>
-            <div className="achat-kpi-chip" style={{ textAlign: 'center', padding: '.75rem', borderRadius: 8, background: 'var(--surface, #f8fafc)' }}>
-              <div style={{ fontSize: '.7rem', color: 'var(--text-muted)' }}>Taux conversion</div>
-              <div style={{ fontWeight: 700, fontSize: '1.1rem', color: tauxConversion >= 20 ? '#16a34a' : '#f59e0b' }}>{tauxConversion}%</div>
-            </div>
-          </div>
-        </div>
-
-        {/* ── DERNIERS DOCUMENTS ── */}
-        <div style={cardStyle}>
-          <SectionHeader icon="📄" title="Derniers Documents" linkLabel="Voir archives →" onLink={() => navigate('/documents/archives')} />
-          {(raw.documents || []).length === 0 ? (
-            <div style={{ color: 'var(--text-muted)', fontSize: '.85rem', textAlign: 'center', padding: '1rem 0' }}>
-              Aucun document recent
-            </div>
-          ) : (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '.5rem' }}>
-              {(raw.documents || []).map(d => (
-                <div key={d.id} style={{
+        ) : (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '.5rem' }}>
+            {myTasks.map(t => {
+              const overdue = t.due_date && t.due_date < todayStr && t.status !== 'done' && t.status !== 'termine'
+              return (
+                <div key={t.id} style={{
                   display: 'flex', alignItems: 'center', gap: '.5rem',
+                  padding: '.5rem .75rem', borderRadius: 8,
+                  background: overdue ? '#fef2f2' : 'var(--surface, #f8fafc)',
+                  border: overdue ? '1px solid #fecaca' : '1px solid transparent',
+                  fontSize: '.85rem',
+                }}>
+                  <span>{priorityIcon(t.priority)}</span>
+                  <span style={{ flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', color: overdue ? '#dc2626' : 'var(--text)' }}>
+                    {t.title}
+                  </span>
+                  {t.due_date && (
+                    <span style={{ fontSize: '.75rem', color: overdue ? '#dc2626' : 'var(--text-muted)', whiteSpace: 'nowrap' }}>
+                      {fmtDate(t.due_date)}
+                    </span>
+                  )}
+                </div>
+              )
+            })}
+          </div>
+        )}
+      </>
+    ),
+
+    time: (
+      <>
+        <SectionHeader icon="⏱" title="Mon Temps" linkLabel="Saisir du temps →" onLink={() => navigate('/activite/saisie')} />
+        <ResponsiveContainer width="100%" height={120}>
+          <BarChart data={tempsChart} barSize={24}>
+            <XAxis dataKey="jour" fontSize={11} tickLine={false} axisLine={false} />
+            <YAxis fontSize={10} domain={[0, 10]} hide />
+            <Tooltip formatter={v => `${v}h`} />
+            <Bar dataKey="heures" fill="var(--primary)" radius={[4, 4, 0, 0]} />
+          </BarChart>
+        </ResponsiveContainer>
+        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '.5rem', margin: '.75rem 0 .5rem', fontSize: '.85rem' }}>
+          <span style={{ fontWeight: 700, fontSize: '1.1rem', color: 'var(--primary)' }}>{totalHeures.toFixed(1)}h</span>
+          <span style={{ color: 'var(--text-muted)' }}>/ 40h</span>
+          <span style={{ color: 'var(--text-muted)' }}>({tauxOccupation}%)</span>
+        </div>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '.5rem' }}>
+          <div className="achat-kpi-chip" style={{ textAlign: 'center', padding: '.5rem', borderRadius: 8, background: 'var(--surface, #f8fafc)' }}>
+            <div style={{ fontSize: '.7rem', color: 'var(--text-muted)' }}>Heures</div>
+            <div style={{ fontWeight: 700, color: 'var(--primary)' }}>{totalHeures.toFixed(1)}h</div>
+          </div>
+          <div className="achat-kpi-chip" style={{ textAlign: 'center', padding: '.5rem', borderRadius: 8, background: 'var(--surface, #f8fafc)' }}>
+            <div style={{ fontSize: '.7rem', color: 'var(--text-muted)' }}>Projets</div>
+            <div style={{ fontWeight: 700, color: 'var(--primary)' }}>{raw.projetsActifsCount || 0}</div>
+          </div>
+          <div className="achat-kpi-chip" style={{ textAlign: 'center', padding: '.5rem', borderRadius: 8, background: 'var(--surface, #f8fafc)' }}>
+            <div style={{ fontSize: '.7rem', color: 'var(--text-muted)' }}>Occupation</div>
+            <div style={{ fontWeight: 700, color: tauxOccupation >= 80 ? '#16a34a' : tauxOccupation >= 50 ? '#f59e0b' : '#ef4444' }}>{tauxOccupation}%</div>
+          </div>
+        </div>
+      </>
+    ),
+
+    alerts: (
+      <>
+        <SectionHeader icon="🔔" title="Alertes" />
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '.6rem' }}>
+          {[
+            { icon: '🧾', count: raw.facturesOverdueCount || 0, label: 'Factures impayees', color: '#ef4444', severity: 'red', link: '/finance/facturation' },
+            { icon: '⏰', count: raw.tasksOverdueCount || 0, label: 'Taches en retard', color: '#ef4444', severity: 'red', link: '/activite/projets' },
+            { icon: '🏖', count: raw.absencesPendingCount || 0, label: 'Absences a valider', color: '#f59e0b', severity: 'orange', link: '/activite/equipe' },
+            { icon: '💳', count: raw.notesFraisPendingCount || 0, label: 'Notes de frais a valider', color: '#f59e0b', severity: 'orange', link: '/activite/equipe' },
+          ].map((alert, i) => (
+            <div key={i} onClick={() => alert.link && navigate(alert.link)} style={{
+              display: 'flex', alignItems: 'center', gap: '.75rem',
+              padding: '.6rem .75rem', borderRadius: 8,
+              background: alert.count > 0 ? alert.color + '08' : 'var(--surface, #f8fafc)',
+              borderLeft: `4px solid ${alert.count > 0 ? alert.color : 'transparent'}`,
+              cursor: alert.link ? 'pointer' : 'default',
+              transition: 'all .15s',
+              animation: alert.count > 0 && alert.severity === 'red' ? 'dashPulse 2s ease-in-out infinite' : 'none',
+            }}>
+              <span style={{ fontSize: '1.1rem' }}>{alert.icon}</span>
+              <span style={{ flex: 1, fontSize: '.85rem', color: 'var(--text)' }}>{alert.label}</span>
+              <span style={{
+                fontWeight: 700, fontSize: '.9rem',
+                color: alert.count > 0 ? '#fff' : 'var(--text-muted)',
+                background: alert.count > 0 ? alert.color : 'transparent',
+                borderRadius: 10, padding: alert.count > 0 ? '1px 8px' : 0,
+                minWidth: 24, textAlign: 'center',
+              }}>{alert.count}</span>
+            </div>
+          ))}
+        </div>
+      </>
+    ),
+
+    projects: (
+      <>
+        <SectionHeader icon="📁" title="Projets Actifs" linkLabel="Voir tout →" onLink={() => navigate('/activite/projets')} />
+        {(raw.projets || []).length === 0 ? (
+          <div style={{ color: 'var(--text-muted)', fontSize: '.85rem', textAlign: 'center', padding: '1rem 0' }}>
+            Aucun projet actif
+          </div>
+        ) : (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '.75rem' }}>
+            {(raw.projets || []).slice(0, 5).map(p => {
+              const tc = raw.projetTaskCounts?.[p.id] || { total: 0, done: 0 }
+              const pct = tc.total > 0 ? Math.round((tc.done / tc.total) * 100) : 0
+              const barColor = pct > 90 ? '#ef4444' : pct > 60 ? '#f59e0b' : '#16a34a'
+              return (
+                <div key={p.id}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '.3rem' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '.4rem' }}>
+                      <span style={{ fontSize: '.85rem', fontWeight: 600, color: 'var(--text)' }}>{p.nom || p.name}</span>
+                      {p.societe_name && (
+                        <span style={{
+                          fontSize: '.65rem', padding: '1px 6px', borderRadius: 4,
+                          background: 'var(--primary, #1a5c82)' + '15', color: 'var(--primary, #1a5c82)',
+                          fontWeight: 600, whiteSpace: 'nowrap',
+                        }}>{p.societe_name}</span>
+                      )}
+                    </div>
+                    <span style={{ fontSize: '.75rem', color: 'var(--text-muted)' }}>{tc.done}/{tc.total} taches ({pct}%)</span>
+                  </div>
+                  <div style={{ height: 8, borderRadius: 4, background: 'var(--border, #e2e8f0)', overflow: 'hidden' }}>
+                    <div style={{ height: '100%', width: `${pct}%`, background: barColor, borderRadius: 4, transition: 'width .5s ease' }} />
+                  </div>
+                </div>
+              )
+            })}
+          </div>
+        )}
+      </>
+    ),
+
+    treasury: (
+      <>
+        <SectionHeader icon="💰" title="Tresorerie" linkLabel="Voir detail →" onLink={() => navigate('/finance/business-intelligence')} />
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '.5rem', marginBottom: '1rem' }}>
+          <div style={{ textAlign: 'center', padding: '.5rem', borderRadius: 8, background: '#f0fdf4' }}>
+            <div style={{ fontSize: '.7rem', color: '#16a34a' }}>Encaissements 30j</div>
+            <div style={{ fontWeight: 700, fontSize: '1.1rem', color: '#16a34a' }}>{fmtE(encaissements30)}</div>
+          </div>
+          <div style={{ textAlign: 'center', padding: '.5rem', borderRadius: 8, background: '#fef2f2' }}>
+            <div style={{ fontSize: '.7rem', color: '#ef4444' }}>Decaissements 30j</div>
+            <div style={{ fontWeight: 700, fontSize: '1.1rem', color: '#ef4444' }}>{fmtE(decaissements30)}</div>
+          </div>
+          <div style={{ textAlign: 'center', padding: '.5rem', borderRadius: 8, background: '#eff6ff' }}>
+            <div style={{ fontSize: '.7rem', color: 'var(--primary)' }}>Solde estime</div>
+            <div style={{ fontWeight: 700, fontSize: '1.1rem', color: soldeEstime >= 0 ? '#16a34a' : '#ef4444' }}>{fmtE(soldeEstime)}</div>
+          </div>
+        </div>
+        {trendChart.length > 0 ? (
+          <ResponsiveContainer width="100%" height={150}>
+            <AreaChart data={trendChart}>
+              <defs>
+                <linearGradient id="dashTresoGrad" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor="#2d8bc9" stopOpacity={0.35} />
+                  <stop offset="100%" stopColor="#2d8bc9" stopOpacity={0.02} />
+                </linearGradient>
+              </defs>
+              <XAxis dataKey="mois" fontSize={10} tickLine={false} axisLine={false} />
+              <YAxis fontSize={10} tickFormatter={v => `${(v / 1000).toFixed(0)}k€`} width={38} axisLine={false} tickLine={false} />
+              <Tooltip formatter={v => fmtE(v)} />
+              <ReferenceLine y={0} stroke="#94a3b8" strokeDasharray="3 3" />
+              <Area type="monotone" dataKey="encaissements" fill="url(#dashTresoGrad)" stroke="#2d8bc9" strokeWidth={2.5} name="Encaissements" dot={false} activeDot={{ r: 5, fill: '#2d8bc9' }} />
+              <Area type="monotone" dataKey="total" fill="#f59e0b" fillOpacity={0.06} stroke="#f59e0b" strokeWidth={1.5} strokeDasharray="4 3" name="Total facture" dot={false} />
+            </AreaChart>
+          </ResponsiveContainer>
+        ) : (
+          <div style={{ color: 'var(--text-muted)', fontSize: '.85rem', textAlign: 'center', padding: '1rem 0' }}>
+            Pas de donnees sur les 6 derniers mois
+          </div>
+        )}
+      </>
+    ),
+
+    marketing: (
+      <>
+        <SectionHeader icon="📣" title="Marketing" linkLabel="Voir campagnes →" onLink={() => navigate('/marketing/campagnes')} />
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '.5rem', marginBottom: '1rem' }}>
+          <div className="achat-kpi-chip" style={{ textAlign: 'center', padding: '.75rem', borderRadius: 8, background: 'var(--surface, #f8fafc)' }}>
+            <div style={{ fontSize: '.7rem', color: 'var(--text-muted)' }}>Campagnes actives</div>
+            <div style={{ fontWeight: 700, fontSize: '1.5rem', color: 'var(--primary)' }}>{campagnesActives}</div>
+          </div>
+          <div className="achat-kpi-chip" style={{ textAlign: 'center', padding: '.75rem', borderRadius: 8, background: 'var(--surface, #f8fafc)' }}>
+            <div style={{ fontSize: '.7rem', color: 'var(--text-muted)' }}>Leads ce mois</div>
+            <div style={{ fontWeight: 700, fontSize: '1.5rem', color: 'var(--primary)' }}>{raw.leadsCount || 0}</div>
+          </div>
+          <div className="achat-kpi-chip" style={{ textAlign: 'center', padding: '.75rem', borderRadius: 8, background: 'var(--surface, #f8fafc)' }}>
+            <div style={{ fontSize: '.7rem', color: 'var(--text-muted)' }}>Pipeline total</div>
+            <div style={{ fontWeight: 700, fontSize: '1.1rem', color: 'var(--primary)' }}>{fmtE(pipelineTotal)}</div>
+          </div>
+          <div className="achat-kpi-chip" style={{ textAlign: 'center', padding: '.75rem', borderRadius: 8, background: 'var(--surface, #f8fafc)' }}>
+            <div style={{ fontSize: '.7rem', color: 'var(--text-muted)' }}>Taux conversion</div>
+            <div style={{ fontWeight: 700, fontSize: '1.5rem', color: tauxConversion >= 20 ? '#16a34a' : '#f59e0b' }}>{tauxConversion}%</div>
+          </div>
+        </div>
+        {(() => {
+          const allLeads = raw.leadsPipeline || []
+          const stages = [
+            { label: 'Leads', count: allLeads.length, color: '#2d8bc9' },
+            { label: 'Qualifies', count: allLeads.filter(l => l.statut === 'qualifie' || l.statut === 'proposition' || l.statut === 'gagne' || l.statut === 'converti').length, color: '#0ea5e9' },
+            { label: 'Proposition', count: allLeads.filter(l => l.statut === 'proposition' || l.statut === 'gagne' || l.statut === 'converti').length, color: '#10b981' },
+            { label: 'Gagne', count: allLeads.filter(l => l.statut === 'gagne' || l.statut === 'converti').length, color: '#16a34a' },
+          ]
+          const maxCount = Math.max(1, stages[0].count)
+          return (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+              {stages.map((s, i) => {
+                const widthPct = Math.max(18, (s.count / maxCount) * 100)
+                return (
+                  <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                    <span style={{ fontSize: '.7rem', color: 'var(--text-muted)', width: 62, textAlign: 'right' }}>{s.label}</span>
+                    <div style={{
+                      height: 22, width: `${widthPct}%`, borderRadius: 4,
+                      background: `linear-gradient(90deg, ${s.color}, ${s.color}cc)`,
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      color: '#fff', fontSize: '.7rem', fontWeight: 700,
+                      transition: 'width .5s ease',
+                    }}>{s.count}</div>
+                  </div>
+                )
+              })}
+            </div>
+          )
+        })()}
+      </>
+    ),
+
+    documents: (
+      <>
+        <SectionHeader icon="📄" title="Derniers Documents" linkLabel="Voir archives →" onLink={() => navigate('/documents/archives')} />
+        {(raw.documents || []).length === 0 ? (
+          <div style={{ color: 'var(--text-muted)', fontSize: '.85rem', textAlign: 'center', padding: '1rem 0' }}>
+            Aucun document recent
+          </div>
+        ) : (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '.5rem' }}>
+            {(raw.documents || []).map(d => {
+              const typeColors = { facture: '#ef4444', devis: '#f59e0b', contrat: '#8b5cf6', autre: '#64748b' }
+              const tColor = typeColors[d.type] || '#64748b'
+              return (
+                <div key={d.id} style={{
+                  display: 'flex', alignItems: 'center', gap: '.6rem',
                   padding: '.5rem .75rem', borderRadius: 8,
                   background: 'var(--surface, #f8fafc)',
                   fontSize: '.85rem',
-                }}>
-                  <span>{docIcon(d.type)}</span>
+                  transition: 'background .15s, transform .15s',
+                  cursor: 'default',
+                }}
+                onMouseEnter={e => { e.currentTarget.style.background = tColor + '10'; e.currentTarget.style.transform = 'translateX(3px)' }}
+                onMouseLeave={e => { e.currentTarget.style.background = 'var(--surface, #f8fafc)'; e.currentTarget.style.transform = 'translateX(0)' }}
+                >
+                  <div style={{ width: 28, height: 28, borderRadius: 6, background: tColor + '18', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '.8rem', flexShrink: 0 }}>
+                    {docIcon(d.type)}
+                  </div>
                   <span style={{ flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', color: 'var(--text)' }}>
                     {d.nom || 'Sans nom'}
                   </span>
                   {d.fournisseur && <span style={{ fontSize: '.75rem', color: 'var(--text-muted)' }}>{d.fournisseur}</span>}
                   {d.montant_ttc != null && <span style={{ fontSize: '.75rem', fontWeight: 600, color: 'var(--text)' }}>{fmtE(d.montant_ttc)}</span>}
+                  <span style={{ fontSize: '.7rem', color: 'var(--text-muted)', whiteSpace: 'nowrap' }}>{relativeTime(d.created_at)}</span>
                   {ocrBadge(d.ocr_status)}
                 </div>
-              ))}
-            </div>
-          )}
-        </div>
-      </div>
+              )
+            })}
+          </div>
+        )}
+      </>
+    ),
 
-      {/* ═══ ROW 5: ACTIVITE RECENTE ═══ */}
-      <div style={{ ...cardStyle, gridColumn: '1 / -1' }}>
+    activity: (
+      <>
         <SectionHeader icon="🕐" title="Activite Recente" />
         {activityTimeline.length === 0 ? (
           <div style={{ color: 'var(--text-muted)', fontSize: '.85rem', textAlign: 'center', padding: '1rem 0' }}>
             Aucune activite recente
           </div>
         ) : (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '.5rem' }}>
-            {activityTimeline.map((item, i) => (
-              <div key={i} style={{
-                display: 'flex', alignItems: 'center', gap: '.75rem',
-                padding: '.5rem .75rem', borderRadius: 8,
-                background: 'var(--surface, #f8fafc)',
-                fontSize: '.85rem',
-              }}>
-                <span style={{ fontSize: '.75rem', color: 'var(--text-muted)', minWidth: 70 }}>{relativeTime(item.date)}</span>
-                <span>{item.icon}</span>
-                <span style={{ color: 'var(--text)' }}>{item.label}</span>
-              </div>
-            ))}
+          <div style={{ position: 'relative', paddingLeft: 28 }}>
+            <div style={{
+              position: 'absolute', left: 9, top: 10, bottom: 10, width: 2,
+              background: 'var(--border, #e2e8f0)', borderRadius: 1,
+            }} />
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '.5rem' }}>
+              {activityTimeline.map((item, i) => {
+                const dotColors = { task: '#16a34a', doc: '#2d8bc9', contact: '#8b5cf6' }
+                const dotColor = dotColors[item.type] || '#94a3b8'
+                return (
+                  <div key={i} style={{
+                    display: 'flex', alignItems: 'center', gap: '.75rem',
+                    padding: '.5rem .75rem', borderRadius: 8,
+                    background: 'var(--surface, #f8fafc)',
+                    fontSize: '.85rem', position: 'relative',
+                  }}>
+                    <div style={{
+                      position: 'absolute', left: -23, top: '50%', transform: 'translateY(-50%)',
+                      width: 10, height: 10, borderRadius: '50%', background: dotColor,
+                      border: '2px solid var(--card-bg, #fff)',
+                    }} />
+                    <span style={{ fontSize: '.75rem', color: 'var(--text-muted)', minWidth: 70 }}>{relativeTime(item.date)}</span>
+                    <span>{item.icon}</span>
+                    <span style={{ color: 'var(--text)' }}>{item.label}</span>
+                  </div>
+                )
+              })}
+            </div>
           </div>
         )}
+      </>
+    ),
+  }
+
+  return (
+    <div className="admin-page admin-page--full" style={{ padding: 0 }}>
+      {/* ═══ HEADER ═══ */}
+      <div style={{
+        background: 'linear-gradient(135deg, var(--primary, #1a5c82) 0%, #2d8bc9 60%, #56b4e8 100%)',
+        borderRadius: 16, padding: '1.5rem 2rem', color: '#fff', marginBottom: '1.25rem',
+        display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+      }}>
+        <div>
+          <h1 style={{ margin: 0, fontSize: '1.6rem', fontWeight: 700, color: '#fff' }}>
+            Bonjour, {prenom} 👋
+          </h1>
+          <p style={{ margin: '.25rem 0 0', color: 'rgba(255,255,255,.8)', fontSize: '.9rem' }}>
+            {todayLabel}{selectedSociete ? ` · ${selectedSociete.name}` : ''}
+          </p>
+          <p style={{ margin: '.35rem 0 0', fontSize: '.85rem', color: 'rgba(255,255,255,.7)' }}>
+            {headerSubtitle}
+          </p>
+        </div>
+        <div style={{ textAlign: 'center' }}>
+          <DonutChart size={72} stroke={6} pct={tauxOccupation} color="#fff" trackColor="rgba(255,255,255,.25)"
+            label={`${totalHeures.toFixed(0)}h`} />
+          <div style={{ fontSize: '.7rem', marginTop: 4, color: 'rgba(255,255,255,.7)' }}>Semaine</div>
+        </div>
+      </div>
+
+      {/* ═══ Reset button ═══ */}
+      <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '.5rem' }}>
+        <button onClick={resetLayout} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '.75rem', color: 'var(--text-muted)' }}>
+          🔄 Reinitialiser
+        </button>
+      </div>
+
+      {/* ═══ DRAGGABLE WIDGETS GRID ═══ */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1rem' }}>
+        {widgetOrder.map(id => {
+          const content = widgetMap[id]
+          if (!content) return null
+          return (
+            <div key={id} draggable
+              onDragStart={() => onDragStart(id)}
+              onDragOver={e => { e.preventDefault(); onDragOverWidget(e, id) }}
+              onDrop={e => { e.preventDefault(); onDropWidget() }}
+              className="dash-card" style={{
+                ...cardStyle, position: 'relative', cursor: 'default',
+                gridColumn: id === 'activity' ? '1 / -1' : undefined,
+              }}>
+              {/* Grip visuel — coin haut gauche */}
+              <div style={{
+                position: 'absolute', top: 6, left: 8, zIndex: 2,
+                display: 'grid', gridTemplateColumns: '5px 5px', gap: 3,
+                cursor: 'grab', padding: 2, borderRadius: 4,
+              }}>
+                <span style={{ width: 5, height: 5, borderRadius: '50%', background: '#cbd5e1' }} />
+                <span style={{ width: 5, height: 5, borderRadius: '50%', background: '#cbd5e1' }} />
+                <span style={{ width: 5, height: 5, borderRadius: '50%', background: '#cbd5e1' }} />
+                <span style={{ width: 5, height: 5, borderRadius: '50%', background: '#cbd5e1' }} />
+              </div>
+              {content}
+            </div>
+          )
+        })}
       </div>
     </div>
   )
