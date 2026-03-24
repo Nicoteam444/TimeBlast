@@ -41,6 +41,8 @@ import AbsencesPage from './pages/activite/AbsencesPage'
 import PlanificationPage from './pages/temps/PlanificationPage'
 import FacturationPage from './pages/facturation/FacturationPage'
 import FacturesFournisseursPage from './pages/facturation/FacturesFournisseursPage'
+import TransactionsBancairesPage from './pages/gestion/TransactionsBancairesPage'
+import TableauDeBordGestionPage from './pages/gestion/TableauDeBordGestionPage'
 import ComptaPage from './pages/compta/ComptaPage'
 import ComptaImportPage from './pages/compta/ComptaImportPage'
 import ComptaEcrituresPage from './pages/compta/ComptaEcrituresPage'
@@ -169,6 +171,12 @@ function AppRoutes() {
         <ProtectedRoute roles={['admin','comptable']}><Layout><SaisieEcriturePage /></Layout></ProtectedRoute>
       } />
       <Route path="/finance/comptabilite/analyse" element={<Navigate to="/finance/comptabilite" replace />} />
+      <Route path="/gestion/tableau-de-bord" element={
+        <ProtectedRoute roles={['admin','comptable','manager']}><Layout><TableauDeBordGestionPage /></Layout></ProtectedRoute>
+      } />
+      <Route path="/gestion/transactions" element={
+        <ProtectedRoute roles={['admin','comptable','manager']}><Layout><TransactionsBancairesPage /></Layout></ProtectedRoute>
+      } />
       <Route path="/finance/facturation" element={
         <ProtectedRoute roles={['admin','comptable']}><Layout><FacturationPage /></Layout></ProtectedRoute>
       } />
