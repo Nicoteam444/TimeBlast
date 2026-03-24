@@ -17,6 +17,9 @@ const FavoritesContext = createContext()
 export function FavoritesProvider({ children }) {
   const { profile } = useAuth()
   const [favorites, setFavorites] = useState([])
+  const [favLabels, setFavLabels] = useState(() => {
+    try { return JSON.parse(localStorage.getItem('tb_fav_labels') || '{}') } catch { return {} }
+  })
   const [loading, setLoading] = useState(false)
   const [syncing, setSyncing] = useState(false)
 
@@ -79,13 +82,30 @@ export function FavoritesProvider({ children }) {
 
   // Toggle favorite
   const toggleFavorite = useCallback(
-    async (routePath) => {
+    async (routePath, label) => {
       if (!routePath) return
 
       const isFav = favorites.includes(routePath)
       const newFavs = isFav
         ? favorites.filter(r => r !== routePath)
         : [...favorites, routePath]
+
+      // Store label for dynamic pages
+      if (!isFav && label) {
+        setFavLabels(prev => {
+          const updated = { ...prev, [routePath]: label }
+          localStorage.setItem('tb_fav_labels', JSON.stringify(updated))
+          return updated
+        })
+      }
+      if (isFav) {
+        setFavLabels(prev => {
+          const updated = { ...prev }
+          delete updated[routePath]
+          localStorage.setItem('tb_fav_labels', JSON.stringify(updated))
+          return updated
+        })
+      }
 
       // Update UI immediately (optimistic)
       setFavorites(newFavs)
@@ -122,6 +142,7 @@ export function FavoritesProvider({ children }) {
 
   const value = {
     favorites,
+    favLabels,
     loading,
     syncing,
     toggleFavorite,

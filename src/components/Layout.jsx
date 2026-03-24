@@ -17,9 +17,16 @@ function FavoriteButton() {
 
   const isFav = favorites.includes(path)
 
+  function handleToggle() {
+    // Capture page title from first h1 on the page
+    const h1 = document.querySelector('.app-content h1')
+    const label = h1 ? h1.textContent.replace(/^[^\w\s]*\s*/, '').trim() : null
+    toggleFavorite(path, label)
+  }
+
   return (
     <button
-      onClick={() => toggleFavorite(path)}
+      onClick={handleToggle}
       disabled={syncing}
       title={isFav ? 'Retirer des favoris' : 'Ajouter aux favoris'}
       style={{

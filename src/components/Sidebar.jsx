@@ -105,7 +105,7 @@ export default function Sidebar() {
   const { profile } = useAuth()
   const { sidebarOpen, toggleSidebar } = useLayout()
   const { settings } = useAppearance()
-  const { favorites, toggleFavorite, syncing } = useFavorites()
+  const { favorites, favLabels, toggleFavorite, syncing } = useFavorites()
   const navigate = useNavigate()
   const location = useLocation()
   const [hoveredId, setHoveredId] = useState(null)
@@ -143,7 +143,10 @@ export default function Sidebar() {
   const favItems = favorites.map(to => {
     const known = allItems.find(i => i.to === to)
     if (known) return known
-    // Dynamic page fallback — derive label from path segments
+    // Dynamic page — use stored label if available, otherwise derive from path
+    if (favLabels?.[to]) {
+      return { to, icon: '📌', label: favLabels[to] }
+    }
     const segments = to.split('/').filter(Boolean)
     const lastNamed = [...segments].reverse().find(s => !/^[0-9a-f]{8}-/.test(s))
     const label = ROUTE_LABELS[lastNamed] || (lastNamed ? lastNamed.charAt(0).toUpperCase() + lastNamed.slice(1).replace(/-/g, ' ') : to)
