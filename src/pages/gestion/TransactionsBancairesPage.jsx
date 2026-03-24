@@ -1,5 +1,7 @@
 import { useState, useEffect, useMemo } from 'react'
 import { useSociete } from '../../contexts/SocieteContext'
+import useSortableTable from '../../hooks/useSortableTable'
+import SortableHeader from '../../components/SortableHeader'
 
 function fmtE(n) {
   return new Intl.NumberFormat('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(n || 0) + ' €'
@@ -89,6 +91,8 @@ export default function TransactionsBancairesPage() {
     return rows
   }, [transactions, search, filterType, filterRapproche])
 
+  const { sortedData, sortKey, sortDir, requestSort } = useSortableTable(filtered, 'date', 'desc')
+
   const totaux = useMemo(() => {
     const enc = transactions.filter(t => t.type === 'encaissement').reduce((s, t) => s + t.montant, 0)
     const dec = transactions.filter(t => t.type === 'decaissement').reduce((s, t) => s + t.montant, 0)
@@ -173,17 +177,17 @@ export default function TransactionsBancairesPage() {
         <table style={{ width: '100%', borderCollapse: 'collapse' }}>
           <thead>
             <tr style={{ background: 'var(--bg)' }}>
-              <th style={{ padding: '.75rem 1rem', textAlign: 'left', fontSize: '.82rem', color: 'var(--text-muted)', fontWeight: 600 }}>Date</th>
-              <th style={{ padding: '.75rem 1rem', textAlign: 'left', fontSize: '.82rem', color: 'var(--text-muted)', fontWeight: 600 }}>Type</th>
-              <th style={{ padding: '.75rem 1rem', textAlign: 'left', fontSize: '.82rem', color: 'var(--text-muted)', fontWeight: 600 }}>Tiers</th>
-              <th style={{ padding: '.75rem 1rem', textAlign: 'left', fontSize: '.82rem', color: 'var(--text-muted)', fontWeight: 600 }}>Catégorie</th>
-              <th style={{ padding: '.75rem 1rem', textAlign: 'left', fontSize: '.82rem', color: 'var(--text-muted)', fontWeight: 600 }}>Banque</th>
-              <th style={{ padding: '.75rem 1rem', textAlign: 'right', fontSize: '.82rem', color: 'var(--text-muted)', fontWeight: 600 }}>Montant</th>
+              <SortableHeader label="Date" field="date" sortKey={sortKey} sortDir={sortDir} onSort={requestSort} style={{ padding: '.75rem 1rem', fontSize: '.82rem', color: 'var(--text-muted)', fontWeight: 600 }} />
+              <SortableHeader label="Type" field="type" sortKey={sortKey} sortDir={sortDir} onSort={requestSort} style={{ padding: '.75rem 1rem', fontSize: '.82rem', color: 'var(--text-muted)', fontWeight: 600 }} />
+              <SortableHeader label="Tiers" field="tiers" sortKey={sortKey} sortDir={sortDir} onSort={requestSort} style={{ padding: '.75rem 1rem', fontSize: '.82rem', color: 'var(--text-muted)', fontWeight: 600 }} />
+              <SortableHeader label="Catégorie" field="categorie" sortKey={sortKey} sortDir={sortDir} onSort={requestSort} style={{ padding: '.75rem 1rem', fontSize: '.82rem', color: 'var(--text-muted)', fontWeight: 600 }} />
+              <SortableHeader label="Banque" field="banque" sortKey={sortKey} sortDir={sortDir} onSort={requestSort} style={{ padding: '.75rem 1rem', fontSize: '.82rem', color: 'var(--text-muted)', fontWeight: 600 }} />
+              <SortableHeader label="Montant" field="montant" sortKey={sortKey} sortDir={sortDir} onSort={requestSort} style={{ padding: '.75rem 1rem', textAlign: 'right', fontSize: '.82rem', color: 'var(--text-muted)', fontWeight: 600 }} />
               <th style={{ padding: '.75rem 1rem', textAlign: 'center', fontSize: '.82rem', color: 'var(--text-muted)', fontWeight: 600 }}>Rapp.</th>
             </tr>
           </thead>
           <tbody>
-            {filtered.slice(0, 50).map(tx => (
+            {sortedData.slice(0, 50).map(tx => (
               <tr key={tx.id} style={{ borderTop: '1px solid var(--border)', cursor: 'pointer' }}
                 onMouseEnter={e => e.currentTarget.style.background = 'var(--bg)'}
                 onMouseLeave={e => e.currentTarget.style.background = ''}

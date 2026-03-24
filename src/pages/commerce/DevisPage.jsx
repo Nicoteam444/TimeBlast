@@ -33,6 +33,8 @@ CREATE POLICY "Users can manage devis for their societe"
 import { useState, useMemo, useEffect, useCallback } from 'react'
 import { supabase } from '../../lib/supabase'
 import { useSociete } from '../../contexts/SocieteContext'
+import useSortableTable from '../../hooks/useSortableTable'
+import SortableHeader from '../../components/SortableHeader'
 
 // ── Helpers ───────────────────────────────────────────────────
 function fmtE(n) {
@@ -260,8 +262,6 @@ export default function DevisPage() {
   const [modal, setModal] = useState(null)   // null | 'new' | devis object
   const [search, setSearch] = useState('')
   const [filterStatut, setFilterStatut] = useState('')
-  const [sortCol, setSortCol] = useState('date_emission')
-  const [sortDir, setSortDir] = useState('desc')
   const [page, setPage] = useState(1)
   const PAGE_SIZE = 50
 
@@ -307,13 +307,7 @@ export default function DevisPage() {
     loadTransactions()
   }, [loadDevis, loadClients, loadTransactions])
 
-  // Sort toggle
-  function toggleSort(col) {
-    if (sortCol === col) setSortDir(d => d === 'asc' ? 'desc' : 'asc')
-    else { setSortCol(col); setSortDir('asc') }
-  }
-
-  // Filter & sort
+  // Filter
   const filtered = useMemo(() => {
     let rows = devisList
     if (filterStatut) rows = rows.filter(d => d.statut === filterStatut)
@@ -324,16 +318,13 @@ export default function DevisPage() {
         d.client_nom?.toLowerCase().includes(q)
       )
     }
-    rows = [...rows].sort((a, b) => {
-      let va = a[sortCol] || '', vb = b[sortCol] || ''
-      if (sortCol === 'total_ht' || sortCol === 'total_ttc') { va = +va; vb = +vb }
-      return sortDir === 'asc' ? (va > vb ? 1 : -1) : (va < vb ? 1 : -1)
-    })
     return rows
-  }, [devisList, search, filterStatut, sortCol, sortDir])
+  }, [devisList, search, filterStatut])
 
-  const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE))
-  const paged = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE)
+  const { sortedData, sortKey, sortDir, requestSort } = useSortableTable(filtered, 'date_emission', 'desc')
+
+  const totalPages = Math.max(1, Math.ceil(sortedData.length / PAGE_SIZE))
+  const paged = sortedData.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE)
 
   // KPI calculations
   const kpis = useMemo(() => {
@@ -415,11 +406,6 @@ export default function DevisPage() {
     }).eq('id', devis.id)
     loadDevis()
     alert('Facture créée avec succès : ' + facturePayload.num_facture)
-  }
-
-  function SortIcon({ col }) {
-    if (sortCol !== col) return <span className="sort-icon">↕</span>
-    return <span className="sort-icon">{sortDir === 'asc' ? '↑' : '↓'}</span>
   }
 
   // Migration check
@@ -526,12 +512,12 @@ CREATE POLICY "Users can manage devis"
         <table className="users-table" style={{ width: '100%' }}>
           <thead>
             <tr>
-              <th className="sortable" onClick={() => toggleSort('numero')}>Numéro <SortIcon col="numero" /></th>
-              <th className="sortable" onClick={() => toggleSort('client_nom')}>Client <SortIcon col="client_nom" /></th>
-              <th className="sortable" onClick={() => toggleSort('date_emission')}>Date <SortIcon col="date_emission" /></th>
-              <th className="sortable" style={{ textAlign: 'right' }} onClick={() => toggleSort('total_ht')}>Montant HT <SortIcon col="total_ht" /></th>
-              <th className="sortable" style={{ textAlign: 'right' }} onClick={() => toggleSort('total_ttc')}>Montant TTC <SortIcon col="total_ttc" /></th>
-              <th>Statut</th>
+              <SortableHeader label="Numéro" field="numero" sortKey={sortKey} sortDir={sortDir} onSort={requestSort} />
+              <SortableHeader label="Client" field="client_nom" sortKey={sortKey} sortDir={sortDir} onSort={requestSort} />
+              <SortableHeader label="Date" field="date_emission" sortKey={sortKey} sortDir={sortDir} onSort={requestSort} />
+              <SortableHeader label="Montant HT" field="total_ht" sortKey={sortKey} sortDir={sortDir} onSort={requestSort} style={{ textAlign: 'right' }} />
+              <SortableHeader label="Montant TTC" field="total_ttc" sortKey={sortKey} sortDir={sortDir} onSort={requestSort} style={{ textAlign: 'right' }} />
+              <SortableHeader label="Statut" field="statut" sortKey={sortKey} sortDir={sortDir} onSort={requestSort} />
               <th>Actions</th>
             </tr>
           </thead>

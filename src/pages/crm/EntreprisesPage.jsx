@@ -2,6 +2,8 @@ import { useState, useEffect, useMemo, useRef } from 'react'
 import { supabase } from '../../lib/supabase'
 import { useSociete } from '../../contexts/SocieteContext'
 import { useNavigate } from 'react-router-dom'
+import useSortableTable from '../../hooks/useSortableTable'
+import SortableHeader from '../../components/SortableHeader'
 
 function fmtK(n) {
   if (!n) return '0 €'
@@ -59,8 +61,10 @@ export default function EntreprisesPage() {
     return enriched.filter(e => e.name?.toLowerCase().includes(q) || e.ville?.toLowerCase().includes(q) || e.siret?.includes(q))
   }, [enriched, search])
 
-  const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE))
-  const paged = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE)
+  const { sortedData, sortKey, sortDir, requestSort } = useSortableTable(filtered, 'name', 'asc')
+
+  const totalPages = Math.max(1, Math.ceil(sortedData.length / PAGE_SIZE))
+  const paged = sortedData.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE)
 
   const kpis = useMemo(() => ({
     total: entreprises.length,
@@ -209,12 +213,12 @@ export default function EntreprisesPage() {
         <table className="users-table" style={{ width: '100%' }}>
           <thead>
             <tr>
-              <th>Entreprise</th>
-              <th>Ville</th>
-              <th>SIRET</th>
-              <th style={{ textAlign: 'center' }}>Contacts</th>
-              <th style={{ textAlign: 'center' }}>Leads</th>
-              <th style={{ textAlign: 'right' }}>CA Potentiel</th>
+              <SortableHeader label="Entreprise" field="name" sortKey={sortKey} sortDir={sortDir} onSort={requestSort} />
+              <SortableHeader label="Ville" field="ville" sortKey={sortKey} sortDir={sortDir} onSort={requestSort} />
+              <SortableHeader label="SIRET" field="siret" sortKey={sortKey} sortDir={sortDir} onSort={requestSort} />
+              <SortableHeader label="Contacts" field="nbContacts" sortKey={sortKey} sortDir={sortDir} onSort={requestSort} style={{ textAlign: 'center' }} />
+              <SortableHeader label="Leads" field="nbLeads" sortKey={sortKey} sortDir={sortDir} onSort={requestSort} style={{ textAlign: 'center' }} />
+              <SortableHeader label="CA Potentiel" field="caPotentiel" sortKey={sortKey} sortDir={sortDir} onSort={requestSort} style={{ textAlign: 'right' }} />
               <th></th>
             </tr>
           </thead>

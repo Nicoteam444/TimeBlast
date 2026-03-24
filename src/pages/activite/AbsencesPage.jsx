@@ -3,6 +3,8 @@ import { useAuth } from '../../contexts/AuthContext'
 import { useDemo } from '../../contexts/DemoContext'
 import { DEMO_USERS } from '../../data/demoData'
 import { supabase } from '../../lib/supabase'
+import useSortableTable from '../../hooks/useSortableTable'
+import SortableHeader from '../../components/SortableHeader'
 
 const STORAGE_KEY = 'absences_data'
 
@@ -255,6 +257,8 @@ export default function AbsencesPage() {
     return matchType && matchStatut
   })
 
+  const { sortedData: sortedFiltered, sortKey, sortDir, requestSort } = useSortableTable(filtered)
+
   const countByStatut = {
     en_attente: absences.filter(a => a.statut === 'en_attente').length,
     approuve: absences.filter(a => a.statut === 'approuve').length,
@@ -390,18 +394,18 @@ export default function AbsencesPage() {
           <table className="data-table">
             <thead>
               <tr className="data-table-header">
-                <th>Collaborateur</th>
-                <th>Type</th>
-                <th>Debut</th>
-                <th>Fin</th>
+                <SortableHeader label="Collaborateur" field="user_id" sortKey={sortKey} sortDir={sortDir} onSort={requestSort} />
+                <SortableHeader label="Type" field="type" sortKey={sortKey} sortDir={sortDir} onSort={requestSort} />
+                <SortableHeader label="Debut" field="date_debut" sortKey={sortKey} sortDir={sortDir} onSort={requestSort} />
+                <SortableHeader label="Fin" field="date_fin" sortKey={sortKey} sortDir={sortDir} onSort={requestSort} />
                 <th>Duree</th>
-                <th>Statut</th>
+                <SortableHeader label="Statut" field="statut" sortKey={sortKey} sortDir={sortDir} onSort={requestSort} />
                 <th>Note</th>
                 <th style={{ textAlign: 'right' }}>Actions</th>
               </tr>
             </thead>
             <tbody>
-              {filtered.map(absence => (
+              {sortedFiltered.map(absence => (
                 <tr key={absence.id} className="data-table-row">
                   <td style={{ fontWeight: 600 }}>{getUserName(absence.user_id)}</td>
                   <td><TypeBadge type={absence.type} /></td>

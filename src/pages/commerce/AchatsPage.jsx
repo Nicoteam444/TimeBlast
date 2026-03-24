@@ -1,6 +1,8 @@
 import { useState, useEffect, useMemo } from 'react'
 import { supabase } from '../../lib/supabase'
 import { useSociete } from '../../contexts/SocieteContext'
+import useSortableTable from '../../hooks/useSortableTable'
+import SortableHeader from '../../components/SortableHeader'
 
 const CATEGORIE_META = {
   materiel:   { label: 'Matériel',    icon: '🔧', color: '#0ea5e9', bg: '#f0f9ff' },
@@ -182,6 +184,8 @@ export default function AchatsPage() {
       return matchSearch && matchCat && matchStat
     })
   }, [achats, search, filterCategorie, filterStatut])
+
+  const { sortedData, sortKey, sortDir, requestSort } = useSortableTable(filtered)
 
   const totalMontant = filtered.reduce((s, a) => s + (parseFloat(a.montant) || 0), 0)
   const nbEnCours = achats.filter(a => a.statut === 'en_cours').length
@@ -394,19 +398,19 @@ export default function AchatsPage() {
           <table className="users-table">
             <thead>
               <tr>
-                <th>Fournisseur</th>
-                <th>Référence</th>
-                <th>Catégorie</th>
-                <th>Montant</th>
-                <th>Qté</th>
-                <th>Date achat</th>
-                <th>Livraison</th>
-                <th>Statut</th>
+                <SortableHeader label="Fournisseur" field="fournisseur" sortKey={sortKey} sortDir={sortDir} onSort={requestSort} />
+                <SortableHeader label="Référence" field="reference" sortKey={sortKey} sortDir={sortDir} onSort={requestSort} />
+                <SortableHeader label="Catégorie" field="categorie" sortKey={sortKey} sortDir={sortDir} onSort={requestSort} />
+                <SortableHeader label="Montant" field="montant" sortKey={sortKey} sortDir={sortDir} onSort={requestSort} />
+                <SortableHeader label="Qté" field="quantite" sortKey={sortKey} sortDir={sortDir} onSort={requestSort} />
+                <SortableHeader label="Date achat" field="date_achat" sortKey={sortKey} sortDir={sortDir} onSort={requestSort} />
+                <SortableHeader label="Livraison" field="date_livraison_prevue" sortKey={sortKey} sortDir={sortDir} onSort={requestSort} />
+                <SortableHeader label="Statut" field="statut" sortKey={sortKey} sortDir={sortDir} onSort={requestSort} />
                 <th>Actions</th>
               </tr>
             </thead>
             <tbody>
-              {filtered.map(a => {
+              {sortedData.map(a => {
                 const cat = CATEGORIE_META[a.categorie] || CATEGORIE_META.autre
                 const stat = STATUT_META[a.statut] || STATUT_META.en_attente
                 return (

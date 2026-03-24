@@ -2,6 +2,8 @@ import { useState, useEffect, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { supabase } from '../../lib/supabase'
 import { useSociete } from '../../contexts/SocieteContext'
+import useSortableTable from '../../hooks/useSortableTable'
+import SortableHeader from '../../components/SortableHeader'
 
 function calcAnciennete(dateEmbauche) {
   if (!dateEmbauche) return { label: '—', months: 0 }
@@ -22,11 +24,6 @@ function fmtDate(iso) {
   return new Date(iso + 'T12:00:00').toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric' })
 }
 
-function SortIcon({ active, dir }) {
-  if (!active) return <span className="sort-icon sort-icon--inactive">↕</span>
-  return <span className="sort-icon sort-icon--active">{dir === 'asc' ? '↑' : '↓'}</span>
-}
-
 export default function EquipePage() {
   const navigate = useNavigate()
   const { selectedSociete } = useSociete()
@@ -34,8 +31,6 @@ export default function EquipePage() {
   const [loading, setLoading]     = useState(true)
   const [search, setSearch]       = useState('')
   const [filterPoste, setFilterPoste] = useState('')
-  const [sortKey, setSortKey]     = useState('nom')
-  const [sortDir, setSortDir]     = useState('asc')
   const [page, setPage]           = useState(1)
   const [pageSize, setPageSize]   = useState(20)
 
@@ -53,11 +48,6 @@ export default function EquipePage() {
     setLoading(false)
   }
 
-  function handleSort(key) {
-    if (sortKey === key) setSortDir(d => d === 'asc' ? 'desc' : 'asc')
-    else { setSortKey(key); setSortDir('asc') }
-  }
-
   const postes = useMemo(() => [...new Set(equipe.map(e => e.poste))].sort(), [equipe])
 
   const filtered = useMemo(() => {
@@ -72,22 +62,7 @@ export default function EquipePage() {
     })
   }, [equipe, search, filterPoste])
 
-  const sorted = useMemo(() => {
-    return [...filtered].sort((a, b) => {
-      let va, vb
-      if (sortKey === 'anciennete') {
-        va = calcAnciennete(a.date_embauche).months
-        vb = calcAnciennete(b.date_embauche).months
-        // Plus ancienne = plus petite date = plus grand nb de mois
-        return sortDir === 'asc' ? vb - va : va - vb
-      }
-      va = (a[sortKey] || '').toLowerCase()
-      vb = (b[sortKey] || '').toLowerCase()
-      if (va < vb) return sortDir === 'asc' ? -1 : 1
-      if (va > vb) return sortDir === 'asc' ? 1 : -1
-      return 0
-    })
-  }, [filtered, sortKey, sortDir])
+  const { sortedData: sorted, sortKey, sortDir, requestSort } = useSortableTable(filtered, 'nom')
 
   const totalPages = Math.ceil(sorted.length / pageSize) || 1
   const paginated  = sorted.slice((page - 1) * pageSize, page * pageSize)
@@ -161,21 +136,11 @@ export default function EquipePage() {
             <table className="users-table">
               <thead>
                 <tr>
-                  <th className="sortable" onClick={() => handleSort('nom')}>
-                    Nom <SortIcon active={sortKey === 'nom'} dir={sortDir} />
-                  </th>
-                  <th className="sortable" onClick={() => handleSort('prenom')}>
-                    Prénom <SortIcon active={sortKey === 'prenom'} dir={sortDir} />
-                  </th>
-                  <th className="sortable" onClick={() => handleSort('poste')}>
-                    Poste <SortIcon active={sortKey === 'poste'} dir={sortDir} />
-                  </th>
-                  <th className="sortable" onClick={() => handleSort('anciennete')}>
-                    Ancienneté <SortIcon active={sortKey === 'anciennete'} dir={sortDir} />
-                  </th>
-                  <th className="sortable" onClick={() => handleSort('date_naissance')}>
-                    Date de naissance <SortIcon active={sortKey === 'date_naissance'} dir={sortDir} />
-                  </th>
+                  <SortableHeader label="Nom" field="nom" sortKey={sortKey} sortDir={sortDir} onSort={requestSort} />
+                  <SortableHeader label="Prénom" field="prenom" sortKey={sortKey} sortDir={sortDir} onSort={requestSort} />
+                  <SortableHeader label="Poste" field="poste" sortKey={sortKey} sortDir={sortDir} onSort={requestSort} />
+                  <SortableHeader label="Ancienneté" field="date_embauche" sortKey={sortKey} sortDir={sortDir} onSort={requestSort} />
+                  <SortableHeader label="Date de naissance" field="date_naissance" sortKey={sortKey} sortDir={sortDir} onSort={requestSort} />
                 </tr>
               </thead>
               <tbody>

@@ -65,6 +65,7 @@ import CrmContactsPage from './pages/crm/ContactsPage'
 import CrmEntreprisesPage from './pages/crm/EntreprisesPage'
 import CrmLeadsPage from './pages/crm/LeadsPage'
 import CrmContactDetailPage from './pages/crm/ContactDetailPage'
+import CategoryLandingPage from './pages/CategoryLandingPage'
 import './App.css'
 
 function InviteHandler() {
@@ -89,6 +90,23 @@ function AppRoutes() {
 
       <Route path="/" element={
         <ProtectedRoute><Layout><DashboardPage /></Layout></ProtectedRoute>
+      } />
+
+      {/* Category Landing Pages */}
+      <Route path="/crm" element={
+        <ProtectedRoute roles={['admin','manager','collaborateur']}><Layout><CategoryLandingPage categoryId="crm" /></Layout></ProtectedRoute>
+      } />
+      <Route path="/activite" element={
+        <ProtectedRoute roles={['admin','manager','collaborateur']}><Layout><CategoryLandingPage categoryId="activite" /></Layout></ProtectedRoute>
+      } />
+      <Route path="/equipe" element={
+        <ProtectedRoute roles={['admin','manager','collaborateur']}><Layout><CategoryLandingPage categoryId="equipe" /></Layout></ProtectedRoute>
+      } />
+      <Route path="/gestion" element={
+        <ProtectedRoute roles={['admin','comptable','manager']}><Layout><CategoryLandingPage categoryId="gestion" /></Layout></ProtectedRoute>
+      } />
+      <Route path="/finance" element={
+        <ProtectedRoute roles={['admin','comptable']}><Layout><CategoryLandingPage categoryId="finance" /></Layout></ProtectedRoute>
       } />
 
       {/* CRM */}
@@ -139,6 +157,9 @@ function AppRoutes() {
         <ProtectedRoute roles={['admin','manager']}><Layout><PlanificationPage /></Layout></ProtectedRoute>
       } />
       <Route path="/activite/projets" element={
+        <ProtectedRoute roles={['admin','manager','collaborateur']}><Layout><ProjetsWrapper /></Layout></ProtectedRoute>
+      } />
+      <Route path="/activite/projets/:projetId" element={
         <ProtectedRoute roles={['admin','manager','collaborateur']}><Layout><ProjetsWrapper /></Layout></ProtectedRoute>
       } />
       <Route path="/activite/validation" element={

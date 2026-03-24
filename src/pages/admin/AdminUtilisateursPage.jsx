@@ -1,5 +1,7 @@
 import { useState, useEffect, useMemo } from 'react'
 import { supabase } from '../../lib/supabase'
+import useSortableTable from '../../hooks/useSortableTable'
+import SortableHeader from '../../components/SortableHeader'
 
 const ROLES = ['collaborateur', 'manager', 'comptable', 'admin']
 const ROLE_LABELS = {
@@ -152,6 +154,8 @@ export default function AdminUtilisateursPage() {
     if (filterSociete) list = list.filter(u => u.societe_id === filterSociete)
     return list
   }, [users, search, filterRole, filterSociete])
+
+  const { sortedData, sortKey, sortDir, requestSort } = useSortableTable(filtered, 'full_name', 'asc')
 
   const stats = {
     actifs: users.filter(u => getStatus(u).label === 'Actif').length,
@@ -483,7 +487,7 @@ export default function AdminUtilisateursPage() {
           </button>
         )}
         <span style={{ color: 'var(--text-muted)', fontSize: '.82rem', whiteSpace: 'nowrap' }}>
-          {filtered.length} / {users.length}
+          {sortedData.length} / {users.length}
         </span>
       </div>
 
@@ -495,15 +499,15 @@ export default function AdminUtilisateursPage() {
           <table className="users-table">
             <thead>
               <tr>
-                <th>Utilisateur</th>
-                <th>Société / Groupe</th>
-                <th>Rôle / Statut</th>
-                <th>Dernière connexion</th>
-                <th>Membre depuis</th>
+                <SortableHeader label="Utilisateur" field="full_name" sortKey={sortKey} sortDir={sortDir} onSort={requestSort} />
+                <SortableHeader label="Société / Groupe" field="societe_id" sortKey={sortKey} sortDir={sortDir} onSort={requestSort} />
+                <SortableHeader label="Rôle / Statut" field="role" sortKey={sortKey} sortDir={sortDir} onSort={requestSort} />
+                <SortableHeader label="Dernière connexion" field="last_sign_in_at" sortKey={sortKey} sortDir={sortDir} onSort={requestSort} />
+                <SortableHeader label="Membre depuis" field="created_at" sortKey={sortKey} sortDir={sortDir} onSort={requestSort} />
               </tr>
             </thead>
             <tbody>
-              {filtered.map(user => {
+              {sortedData.map(user => {
                 const status = getStatus(user)
                 const societe = societes.find(s => s.id === user.societe_id)
                 const groupe = societe?.groupes
@@ -563,7 +567,7 @@ export default function AdminUtilisateursPage() {
                   </tr>
                 )
               })}
-              {filtered.length === 0 && (
+              {sortedData.length === 0 && (
                 <tr>
                   <td colSpan={5} style={{ textAlign: 'center', padding: '2rem', color: 'var(--text-muted)' }}>
                     Aucun utilisateur trouvé

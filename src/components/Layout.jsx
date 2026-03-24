@@ -1,26 +1,9 @@
 import { LayoutProvider } from '../contexts/LayoutContext'
-import { useLocation, useNavigate } from 'react-router-dom'
+import { BreadcrumbProvider } from '../contexts/BreadcrumbContext'
 import Sidebar from './Sidebar'
 import TopBar from './TopBar'
 import ChatWidget from './ChatWidget'
-
-function BackButton() {
-  const location = useLocation()
-  const navigate = useNavigate()
-
-  // Ne pas afficher sur la page d'accueil
-  if (location.pathname === '/') return null
-
-  return (
-    <button
-      onClick={() => navigate('/')}
-      className="back-to-home-btn"
-      title="Retour à l'accueil"
-    >
-      ← Accueil
-    </button>
-  )
-}
+import Breadcrumb from './Breadcrumb'
 
 function LayoutInner({ children }) {
   return (
@@ -29,7 +12,7 @@ function LayoutInner({ children }) {
       <div className="app-main">
         <TopBar />
         <main className="app-content">
-          <BackButton />
+          <Breadcrumb />
           {children}
         </main>
       </div>
@@ -41,7 +24,9 @@ function LayoutInner({ children }) {
 export default function Layout({ children }) {
   return (
     <LayoutProvider>
-      <LayoutInner>{children}</LayoutInner>
+      <BreadcrumbProvider>
+        <LayoutInner>{children}</LayoutInner>
+      </BreadcrumbProvider>
     </LayoutProvider>
   )
 }

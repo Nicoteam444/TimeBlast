@@ -4,6 +4,8 @@ import { useDemo } from '../../contexts/DemoContext'
 import { useSociete } from '../../contexts/SocieteContext'
 import { DEMO_NOTES_DE_FRAIS } from '../../data/demoData'
 import { supabase } from '../../lib/supabase'
+import useSortableTable from '../../hooks/useSortableTable'
+import SortableHeader from '../../components/SortableHeader'
 
 const CATEGORIE_META = {
   transport:    { label: 'Transport',      icon: '🚗', color: '#3b82f6', bg: '#eff6ff' },
@@ -151,6 +153,8 @@ export default function NotesDeFraisPage() {
       return matchSearch && matchStatut && matchCat && matchUser
     })
   }, [notes, search, filterStatut, filterCat, filterUser])
+
+  const { sortedData: sortedFiltered, sortKey, sortDir, requestSort } = useSortableTable(filtered)
 
   const total = filtered.reduce((sum, n) => sum + (n.montant || 0), 0)
   const totalValide = notes.filter(n => n.statut === 'valide' || n.statut === 'rembourse').reduce((s, n) => s + (n.montant || 0), 0)
@@ -310,17 +314,17 @@ export default function NotesDeFraisPage() {
           <table className="users-table">
             <thead>
               <tr>
-                <th>Date</th>
-                {canManage && <th>Collaborateur</th>}
-                <th>Catégorie</th>
-                <th>Description</th>
-                <th>Montant</th>
-                <th>Statut</th>
+                <SortableHeader label="Date" field="date" sortKey={sortKey} sortDir={sortDir} onSort={requestSort} />
+                {canManage && <SortableHeader label="Collaborateur" field="user_name" sortKey={sortKey} sortDir={sortDir} onSort={requestSort} />}
+                <SortableHeader label="Catégorie" field="categorie" sortKey={sortKey} sortDir={sortDir} onSort={requestSort} />
+                <SortableHeader label="Description" field="description" sortKey={sortKey} sortDir={sortDir} onSort={requestSort} />
+                <SortableHeader label="Montant" field="montant" sortKey={sortKey} sortDir={sortDir} onSort={requestSort} />
+                <SortableHeader label="Statut" field="statut" sortKey={sortKey} sortDir={sortDir} onSort={requestSort} />
                 <th>Actions</th>
               </tr>
             </thead>
             <tbody>
-              {filtered.map(n => {
+              {sortedFiltered.map(n => {
                 const cat = CATEGORIE_META[n.categorie] || CATEGORIE_META.autre
                 const stat = STATUT_META[n.statut] || STATUT_META.brouillon
                 const initials = n.user_name ? n.user_name.split(' ').map(x => x[0]).join('').toUpperCase().slice(0, 2) : '?'

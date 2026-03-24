@@ -1,6 +1,8 @@
 import { useState, useEffect, useMemo } from 'react'
 import { supabase } from '../../lib/supabase'
 import { useSociete } from '../../contexts/SocieteContext'
+import useSortableTable from '../../hooks/useSortableTable'
+import SortableHeader from '../../components/SortableHeader'
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend,
   ResponsiveContainer, PieChart, Pie, Cell, ScatterChart, Scatter,
@@ -306,6 +308,8 @@ export default function RentabilitePage() {
     }).sort((a, b) => a.projet.name.localeCompare(b.projet.name))
   }, [projets, clientMap, budgetByProjet, hoursByProjet, plannedHours, costByProjet, filterClient, filterStatus, filterSearch])
 
+  const { sortedData: sortedRows, sortKey, sortDir, requestSort } = useSortableTable(rows)
+
   // ── KPIs ──────────────────────────────────────────────────
   const kpis = useMemo(() => {
     const margeMoyenne = rows.length > 0
@@ -537,22 +541,22 @@ export default function RentabilitePage() {
             <table className="reporting-table">
               <thead>
                 <tr>
-                  <th>Projet</th>
-                  <th>Client</th>
-                  <th style={{ textAlign: 'right' }}>Budget vendu</th>
-                  <th style={{ textAlign: 'right' }}>H. planifiées</th>
-                  <th style={{ textAlign: 'right' }}>H. réelles</th>
-                  <th style={{ textAlign: 'right' }}>Coût réel</th>
-                  <th style={{ textAlign: 'right' }}>Marge (€)</th>
-                  <th style={{ textAlign: 'right' }}>Marge (%)</th>
-                  <th>Statut</th>
+                  <SortableHeader label="Projet" field="projet.name" sortKey={sortKey} sortDir={sortDir} onSort={requestSort} />
+                  <SortableHeader label="Client" field="clientName" sortKey={sortKey} sortDir={sortDir} onSort={requestSort} />
+                  <SortableHeader label="Budget vendu" field="budget" sortKey={sortKey} sortDir={sortDir} onSort={requestSort} style={{ textAlign: 'right' }} />
+                  <SortableHeader label="H. planifiées" field="heuresPlanifiees" sortKey={sortKey} sortDir={sortDir} onSort={requestSort} style={{ textAlign: 'right' }} />
+                  <SortableHeader label="H. réelles" field="heuresReelles" sortKey={sortKey} sortDir={sortDir} onSort={requestSort} style={{ textAlign: 'right' }} />
+                  <SortableHeader label="Coût réel" field="coutReel" sortKey={sortKey} sortDir={sortDir} onSort={requestSort} style={{ textAlign: 'right' }} />
+                  <SortableHeader label="Marge (€)" field="marge" sortKey={sortKey} sortDir={sortDir} onSort={requestSort} style={{ textAlign: 'right' }} />
+                  <SortableHeader label="Marge (%)" field="margePct" sortKey={sortKey} sortDir={sortDir} onSort={requestSort} style={{ textAlign: 'right' }} />
+                  <SortableHeader label="Statut" field="status" sortKey={sortKey} sortDir={sortDir} onSort={requestSort} />
                 </tr>
               </thead>
               <tbody>
-                {rows.length === 0 && (
+                {sortedRows.length === 0 && (
                   <tr><td colSpan={9} style={{ textAlign: 'center', padding: '2rem', color: 'var(--text-muted)' }}>Aucun projet trouvé</td></tr>
                 )}
-                {rows.map(r => {
+                {sortedRows.map(r => {
                   const isAlert = r.margePct < marginThreshold
                   const isExpanded = expandedId === r.id
                   return (

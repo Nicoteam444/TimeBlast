@@ -186,6 +186,58 @@ body {
 .landing-feature-card h3 { font-size: 1rem; font-weight: 700; margin-bottom: .4rem; color: #195C82; }
 .landing-feature-card p { font-size: .85rem; color: #64748b; line-height: 1.55; }
 
+/* Advantages — 4 cards */
+.landing-advantages { padding: 5rem 2rem; background: #f8fafc; }
+.landing-advantages-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.5rem; max-width: 1100px; margin: 2.5rem auto 0; }
+.landing-advantage-card { background: #fff; border-radius: 12px; padding: 2rem 1.5rem; text-align: center; border: 1px solid #e2e8f0; transition: transform .2s, box-shadow .2s; }
+.landing-advantage-card:hover { transform: translateY(-4px); box-shadow: 0 8px 24px rgba(0,0,0,.08); }
+.landing-advantage-icon { font-size: 2rem; display: block; margin-bottom: .75rem; }
+.landing-advantage-card h3 { font-size: 1.05rem; font-weight: 700; color: #195C82; margin-bottom: .4rem; }
+.landing-advantage-card p { font-size: .85rem; color: #64748b; line-height: 1.55; }
+
+/* Roadmap — 3 phase cards */
+.landing-roadmap { padding: 5rem 2rem; background: #fff; }
+.landing-roadmap-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; max-width: 1100px; margin: 2.5rem auto 0; }
+.landing-roadmap-card { background: #f8fafc; border-radius: 12px; padding: 2rem; border: 2px solid #e2e8f0; transition: border-color .2s, box-shadow .2s; position: relative; overflow: hidden; }
+.landing-roadmap-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px; background: var(--phase-color); }
+.landing-roadmap-card:hover { border-color: var(--phase-color); box-shadow: 0 8px 24px rgba(0,0,0,.08); }
+.landing-roadmap-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem; }
+.landing-roadmap-badge { color: #fff; padding: .25rem .75rem; border-radius: 20px; font-size: .75rem; font-weight: 700; text-transform: uppercase; letter-spacing: .5px; }
+.landing-roadmap-timing { font-size: .8rem; color: #94a3b8; font-weight: 600; }
+.landing-roadmap-title { font-size: 1.1rem; font-weight: 700; color: #1a2332; margin-bottom: 1rem; }
+.landing-roadmap-list { list-style: none; padding: 0; display: flex; flex-direction: column; gap: .5rem; }
+.landing-roadmap-list li { font-size: .85rem; color: #475569; padding-left: 1.25rem; position: relative; line-height: 1.5; }
+.landing-roadmap-list li::before { content: '✓'; position: absolute; left: 0; color: var(--phase-color); font-weight: 700; }
+
+/* Channels — distribution */
+.landing-channels { padding: 5rem 2rem; background: #f8fafc; }
+.landing-channels-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; max-width: 1000px; margin: 2.5rem auto 0; }
+.landing-channel-card { background: #fff; border-radius: 12px; padding: 2rem 1.5rem; text-align: center; border: 1px solid #e2e8f0; transition: transform .2s, box-shadow .2s; }
+.landing-channel-card:hover { transform: translateY(-4px); box-shadow: 0 8px 24px rgba(0,0,0,.08); }
+.landing-channel-icon { font-size: 2rem; display: block; margin-bottom: .75rem; }
+.landing-channel-card h3 { font-size: 1rem; font-weight: 700; color: #195C82; margin-bottom: .4rem; }
+.landing-channel-card p { font-size: .85rem; color: #64748b; line-height: 1.55; }
+
+/* Contact form */
+.landing-contact { padding: 5rem 2rem; background: #fff; }
+.landing-contact-wrapper { display: grid; grid-template-columns: 1fr 1.5fr; gap: 3rem; max-width: 1000px; margin: 2.5rem auto 0; align-items: start; }
+.landing-contact-info { display: flex; flex-direction: column; gap: 1.5rem; }
+.landing-contact-info-item { display: flex; gap: 1rem; align-items: flex-start; }
+.landing-contact-info-item > span { font-size: 1.5rem; flex-shrink: 0; margin-top: .1rem; }
+.landing-contact-info-item strong { display: block; font-size: .95rem; color: #1a2332; }
+.landing-contact-info-item p { font-size: .82rem; color: #64748b; margin: .15rem 0 0; }
+.landing-contact-form { background: #f8fafc; border-radius: 12px; padding: 2rem; border: 1px solid #e2e8f0; }
+.landing-contact-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem; }
+.landing-contact-field { display: flex; flex-direction: column; gap: .35rem; margin-bottom: .5rem; }
+.landing-contact-field label { font-size: .82rem; font-weight: 600; color: #475569; }
+.landing-contact-field input,
+.landing-contact-field textarea { padding: .6rem .85rem; border: 1px solid #e2e8f0; border-radius: 8px; font-size: .9rem; font-family: inherit; outline: none; transition: border-color .15s; background: #fff; resize: vertical; }
+.landing-contact-field input:focus,
+.landing-contact-field textarea:focus { border-color: #1D9BF0; box-shadow: 0 0 0 3px rgba(29,155,240,.1); }
+.landing-contact-success { text-align: center; padding: 3rem 1rem; }
+.landing-contact-success h3 { font-size: 1.2rem; font-weight: 700; color: #16a34a; margin: .75rem 0 .25rem; }
+.landing-contact-success p { color: #64748b; font-size: .9rem; }
+
 /* CTA — bleu SRA profond */
 .landing-cta { text-align: center; padding: 5rem 2rem; background: #195C82; color: #fff; position: relative; overflow: hidden; }
 .landing-cta::before { content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: radial-gradient(ellipse at center, rgba(76,176,248,0.08) 0%, transparent 50%); }
@@ -215,6 +267,10 @@ body {
   .landing-hero-actions { justify-content: center; }
   .multiprise-container { max-width: 340px; }
   .landing-steps-grid { grid-template-columns: 1fr; max-width: 400px; margin: 0 auto; }
+  .landing-advantages-grid { grid-template-columns: 1fr 1fr; }
+  .landing-roadmap-grid { grid-template-columns: 1fr; max-width: 500px; margin: 2rem auto 0; }
+  .landing-channels-grid { grid-template-columns: 1fr; max-width: 400px; margin: 2rem auto 0; }
+  .landing-contact-wrapper { grid-template-columns: 1fr; }
 }
 @media (max-width: 768px) {
   .landing-hero { padding: 6rem 1.25rem 3rem; }
@@ -226,6 +282,8 @@ body {
   .landing-stat-value { font-size: 1.8rem; }
   .landing-cat-tabs { gap: .3rem; }
   .landing-cat-tab { font-size: .75rem; padding: .35rem .7rem; }
+  .landing-advantages-grid { grid-template-columns: 1fr; }
+  .landing-contact-row { grid-template-columns: 1fr; }
 }
 
 .field {
@@ -445,25 +503,28 @@ button:disabled { opacity: .6; cursor: not-allowed; }
   padding: 2rem 2.5rem;
 }
 
-.back-to-home-btn {
-  display: inline-flex;
+/* ── Breadcrumb ── */
+.breadcrumb {
+  display: flex;
   align-items: center;
-  gap: .35rem;
+  flex-wrap: wrap;
+  gap: 0;
+  margin: 0 0 1rem 0;
+  padding: .25rem 0;
   background: none;
   border: none;
-  color: var(--text-muted);
+  border-radius: 0;
   font-size: .82rem;
-  font-weight: 500;
-  cursor: pointer;
-  padding: .25rem .5rem;
-  margin: 0 0 1rem -.5rem;
-  border-radius: 6px;
-  transition: all .15s;
 }
-.back-to-home-btn:hover {
-  color: var(--primary);
-  background: var(--primary-light);
+.breadcrumb-item { display: inline-flex; align-items: center; }
+.breadcrumb-sep { color: #cbd5e1; margin: 0 .5rem; font-size: .75rem; }
+.breadcrumb-link {
+  background: none; border: none; cursor: pointer;
+  color: var(--accent); font-size: .82rem; font-weight: 500;
+  padding: .15rem .35rem; border-radius: 4px; transition: all .15s;
 }
+.breadcrumb-link:hover { background: var(--accent-light); color: var(--primary); text-decoration: underline; }
+.breadcrumb-current { color: var(--text); font-weight: 600; padding: .15rem .35rem; }
 
 /* ============================================================
    SIDEBAR — Rail + Flyout
@@ -583,6 +644,16 @@ button:disabled { opacity: .6; cursor: not-allowed; }
   box-shadow: 4px 4px 24px rgba(0,0,0,0.35);
   padding: .4rem 0 .6rem;
   animation: flyout-in .12s ease;
+}
+
+/* Invisible bridge between rail and flyout to prevent hover gap */
+.rail-flyout::before {
+  content: '';
+  position: absolute;
+  left: -40px;
+  top: -20px;
+  width: 40px;
+  height: calc(100% + 40px);
 }
 
 @keyframes flyout-in {
@@ -1767,6 +1838,31 @@ button:disabled { opacity: .6; cursor: not-allowed; }
 .assign-jours { font-size: .8rem; color: var(--text-muted); }
 
 .assign-form { border-top: 1px solid var(--border); padding-top: 1rem; margin-top: .5rem; }
+
+/* ── Kanban Board ── */
+.kanban-board { display: flex; gap: 1rem; overflow-x: auto; padding: .5rem 0 1rem; min-height: 400px; align-items: flex-start; }
+.kanban-col { background: #f1f5f9; border-radius: 10px; min-width: 280px; max-width: 320px; flex-shrink: 0; display: flex; flex-direction: column; }
+.kanban-col--dragover { outline: 2px dashed var(--accent); outline-offset: -2px; background: #e8f4fd; }
+.kanban-col-header { display: flex; align-items: center; justify-content: space-between; padding: .75rem 1rem; border-bottom: 1px solid #e2e8f0; }
+.kanban-col-title { font-size: .88rem; font-weight: 700; color: #334155; display: flex; align-items: center; gap: .5rem; cursor: default; }
+.kanban-col-count { background: #cbd5e1; color: #475569; font-size: .7rem; font-weight: 600; border-radius: 10px; padding: .1rem .45rem; min-width: 20px; text-align: center; }
+.kanban-col-actions { display: flex; gap: .25rem; }
+.kanban-col-btn { background: none; border: none; cursor: pointer; font-size: 1rem; color: #94a3b8; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; border-radius: 6px; transition: all .15s; }
+.kanban-col-btn:hover { background: #e2e8f0; color: #334155; }
+.kanban-col-btn--danger:hover { background: #fef2f2; color: #dc2626; }
+.kanban-col-edit { font-size: .88rem; font-weight: 700; border: 1px solid var(--accent); border-radius: 4px; padding: .2rem .5rem; outline: none; width: 100%; }
+.kanban-tasks { padding: .5rem .75rem; display: flex; flex-direction: column; gap: .5rem; flex: 1; min-height: 60px; }
+.kanban-card { background: #fff; border: 1px solid #e2e8f0; border-radius: 8px; padding: .75rem; cursor: grab; position: relative; transition: box-shadow .15s, transform .1s; }
+.kanban-card:hover { box-shadow: 0 2px 8px rgba(0,0,0,.08); }
+.kanban-card:active { cursor: grabbing; transform: rotate(1deg); box-shadow: 0 4px 16px rgba(0,0,0,.12); }
+.kanban-card-title { font-size: .85rem; font-weight: 600; color: #1a2332; line-height: 1.4; padding-right: 1.5rem; }
+.kanban-card-assignee { font-size: .75rem; color: #64748b; margin-top: .35rem; }
+.kanban-card-delete { position: absolute; top: .5rem; right: .5rem; background: none; border: none; cursor: pointer; font-size: .7rem; color: #cbd5e1; transition: color .15s; padding: 0; }
+.kanban-card-delete:hover { color: #dc2626; }
+.kanban-empty { text-align: center; color: #94a3b8; font-size: .8rem; padding: 1rem 0; }
+.kanban-task-form { padding: .5rem .75rem; display: flex; flex-direction: column; gap: .5rem; background: #fff; border-radius: 8px; border: 1px dashed #cbd5e1; margin: 0 .75rem .5rem; }
+.kanban-task-form input, .kanban-task-form select { font-size: .85rem; padding: .4rem .6rem; border: 1px solid #e2e8f0; border-radius: 6px; outline: none; }
+.kanban-task-form input:focus, .kanban-task-form select:focus { border-color: var(--accent); }
 
 /* Form row */
 .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
@@ -6437,6 +6533,62 @@ button:disabled { opacity: .6; cursor: not-allowed; }
 
   .obligations-grid,
   .landing-benefits-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ── Category Landing Pages ── */
+.category-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 1rem;
+}
+
+.category-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 1.25rem;
+  cursor: pointer;
+  transition: all .15s;
+}
+
+.category-card:hover {
+  border-color: var(--primary);
+  box-shadow: 0 4px 12px rgba(0,0,0,.06);
+  transform: translateY(-2px);
+}
+
+.category-card-icon {
+  font-size: 1.8rem;
+  flex-shrink: 0;
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg);
+  border-radius: 10px;
+}
+
+.category-card-title {
+  font-size: .95rem;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: .25rem;
+}
+
+.category-card-desc {
+  font-size: .82rem;
+  color: var(--text-muted);
+  line-height: 1.4;
+}
+
+@media (max-width: 768px) {
+  .category-grid {
     grid-template-columns: 1fr;
   }
 }

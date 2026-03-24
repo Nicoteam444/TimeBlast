@@ -1,6 +1,8 @@
 import { useState, useEffect, useMemo } from 'react'
 import { supabase } from '../../lib/supabase'
 import { useSociete } from '../../contexts/SocieteContext'
+import useSortableTable from '../../hooks/useSortableTable'
+import SortableHeader from '../../components/SortableHeader'
 import {
   AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip,
   Legend, ResponsiveContainer, ReferenceLine
@@ -223,6 +225,7 @@ export default function PrevisionnelPage() {
 
   // Current scenario rows
   const rows = scenarioData[scenario] || []
+  const { sortedData: sortedRows, sortKey, sortDir, requestSort } = useSortableTable(rows)
 
   // Chart data: all 3 scenarios overlaid
   const chartData = useMemo(() => {
@@ -477,7 +480,7 @@ export default function PrevisionnelPage() {
                   <th style={{ position: 'sticky', left: 0, background: 'var(--bg-card)', zIndex: 2, minWidth: 160 }}>
                     Catégorie
                   </th>
-                  {rows.map(r => (
+                  {sortedRows.map(r => (
                     <th
                       key={r.key}
                       style={{
@@ -503,7 +506,7 @@ export default function PrevisionnelPage() {
                   }}>
                     Encaissements
                   </td>
-                  {rows.map(r => (
+                  {sortedRows.map(r => (
                     <td key={r.key} style={{ textAlign: 'right', fontVariantNumeric: 'tabular-nums', color: COLORS.green }}>
                       {fmt(r.encaissements)}
                     </td>
@@ -519,7 +522,7 @@ export default function PrevisionnelPage() {
                   }}>
                     Décaissements
                   </td>
-                  {rows.map(r => (
+                  {sortedRows.map(r => (
                     <td key={r.key} style={{ textAlign: 'right', fontVariantNumeric: 'tabular-nums', color: COLORS.red }}>
                       -{fmt(r.decaissements)}
                     </td>
@@ -534,7 +537,7 @@ export default function PrevisionnelPage() {
                   }}>
                     Solde mensuel
                   </td>
-                  {rows.map(r => (
+                  {sortedRows.map(r => (
                     <td
                       key={r.key}
                       style={{
@@ -558,7 +561,7 @@ export default function PrevisionnelPage() {
                   }}>
                     Solde cumulé
                   </td>
-                  {rows.map(r => {
+                  {sortedRows.map(r => {
                     const belowThreshold = r.cumul < threshold
                     return (
                       <td

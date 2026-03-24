@@ -2,6 +2,8 @@ import { useState, useEffect, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { supabase } from '../../lib/supabase'
 import { useSociete } from '../../contexts/SocieteContext'
+import useSortableTable from '../../hooks/useSortableTable'
+import SortableHeader from '../../components/SortableHeader'
 
 const STATUT_MAP = {
   actif:   { label: 'Actif',   color: '#16a34a', bg: '#dcfce7' },
@@ -25,10 +27,6 @@ export default function ContactsPage() {
   const [search, setSearch] = useState('')
   const [filterEntreprise, setFilterEntreprise] = useState('')
   const [filterStatut, setFilterStatut] = useState('')
-
-  // Sort
-  const [sortCol, setSortCol] = useState('nom')
-  const [sortDir, setSortDir] = useState('asc')
 
   // Pagination
   const [page, setPage] = useState(1)
@@ -90,41 +88,13 @@ export default function ContactsPage() {
     }
     if (filterEntreprise) list = list.filter(c => c.entreprise_id === filterEntreprise)
     if (filterStatut) list = list.filter(c => c.statut === filterStatut)
-    // Sort
-    list.sort((a, b) => {
-      let va, vb
-      if (sortCol === 'entreprise') {
-        va = a.clients?.name || ''
-        vb = b.clients?.name || ''
-      } else {
-        va = a[sortCol] || ''
-        vb = b[sortCol] || ''
-      }
-      if (typeof va === 'string') va = va.toLowerCase()
-      if (typeof vb === 'string') vb = vb.toLowerCase()
-      if (va < vb) return sortDir === 'asc' ? -1 : 1
-      if (va > vb) return sortDir === 'asc' ? 1 : -1
-      return 0
-    })
     return list
-  }, [contacts, search, filterEntreprise, filterStatut, sortCol, sortDir])
+  }, [contacts, search, filterEntreprise, filterStatut])
 
-  const totalPages = Math.ceil(filtered.length / pageSize)
-  const paginated = filtered.slice((page - 1) * pageSize, page * pageSize)
+  const { sortedData, sortKey, sortDir, requestSort } = useSortableTable(filtered, 'nom', 'asc')
 
-  function handleSort(col) {
-    if (sortCol === col) {
-      setSortDir(d => d === 'asc' ? 'desc' : 'asc')
-    } else {
-      setSortCol(col)
-      setSortDir('asc')
-    }
-  }
-
-  function sortIndicator(col) {
-    if (sortCol !== col) return ''
-    return sortDir === 'asc' ? ' ▲' : ' ▼'
-  }
+  const totalPages = Math.ceil(sortedData.length / pageSize)
+  const paginated = sortedData.slice((page - 1) * pageSize, page * pageSize)
 
   // ── Modal ──────────────────────────────────────────────
   function openCreate() {
@@ -189,7 +159,7 @@ export default function ContactsPage() {
         <div>
           <h1>Contacts</h1>
           <p>
-            {filtered.length} contact{filtered.length > 1 ? 's' : ''}
+            {sortedData.length} contact{sortedData.length > 1 ? 's' : ''}
             {search || filterEntreprise || filterStatut ? ` sur ${contacts.length}` : ''}
             {selectedSociete && (
               <span style={{ marginLeft: '.5rem', padding: '.1rem .5rem', background: 'var(--primary-light, #eef2ff)', color: 'var(--primary)', borderRadius: 4, fontSize: '.8rem', fontWeight: 500 }}>
@@ -258,13 +228,13 @@ export default function ContactsPage() {
             <table className="users-table">
               <thead>
                 <tr>
-                  <th onClick={() => handleSort('nom')} style={{ cursor: 'pointer' }}>Nom{sortIndicator('nom')}</th>
-                  <th onClick={() => handleSort('prenom')} style={{ cursor: 'pointer' }}>Prenom{sortIndicator('prenom')}</th>
-                  <th onClick={() => handleSort('email')} style={{ cursor: 'pointer' }}>Email{sortIndicator('email')}</th>
-                  <th onClick={() => handleSort('telephone')} style={{ cursor: 'pointer' }}>Telephone{sortIndicator('telephone')}</th>
-                  <th onClick={() => handleSort('poste')} style={{ cursor: 'pointer' }}>Poste{sortIndicator('poste')}</th>
-                  <th onClick={() => handleSort('entreprise')} style={{ cursor: 'pointer' }}>Entreprise{sortIndicator('entreprise')}</th>
-                  <th>Statut</th>
+                  <SortableHeader label="Nom" field="nom" sortKey={sortKey} sortDir={sortDir} onSort={requestSort} />
+                  <SortableHeader label="Prenom" field="prenom" sortKey={sortKey} sortDir={sortDir} onSort={requestSort} />
+                  <SortableHeader label="Email" field="email" sortKey={sortKey} sortDir={sortDir} onSort={requestSort} />
+                  <SortableHeader label="Telephone" field="telephone" sortKey={sortKey} sortDir={sortDir} onSort={requestSort} />
+                  <SortableHeader label="Poste" field="poste" sortKey={sortKey} sortDir={sortDir} onSort={requestSort} />
+                  <SortableHeader label="Entreprise" field="clients.name" sortKey={sortKey} sortDir={sortDir} onSort={requestSort} />
+                  <SortableHeader label="Statut" field="statut" sortKey={sortKey} sortDir={sortDir} onSort={requestSort} />
                   <th>Actions</th>
                 </tr>
               </thead>

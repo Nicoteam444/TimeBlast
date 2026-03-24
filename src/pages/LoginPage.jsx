@@ -51,30 +51,76 @@ const CATEGORIES = [
 
 const STEPS = [
   { icon: '🔌', title: 'Branchez vos outils', desc: 'Connectez vos logiciels existants en un clic. Comptabilité, CRM, paie, banque — tout se branche.' },
-  { icon: '🤖', title: 'L\'IA enrichit vos données', desc: 'Les données circulent et sont enrichies par l\'IA. Détection des anomalies, rapprochement automatique, suggestions intelligentes.' },
-  { icon: '⚡', title: 'Vous gagnez du temps', desc: 'Plus de double saisie, plus d\'exports manuels. Concentrez-vous sur ce qui compte.' },
+  { icon: '🤖', title: "L'IA structure vos données", desc: "Vos données deviennent propres, connectées et exploitables. Détection d'anomalies, rapprochement automatique, suggestions intelligentes." },
+  { icon: '⚡', title: 'Les agents IA agissent', desc: "L'IA ne se contente plus d'analyser — elle exécute. Relances clients, alertes trésorerie, validation automatique." },
 ]
 
 const STATS = [
-  { value: '3h', label: 'gagnées par jour', suffix: '' },
-  { value: '30+', label: 'connecteurs', suffix: '' },
-  { value: '0', label: 'saisie manuelle', suffix: '' },
-  { value: 'IA', label: 'toujours active', suffix: '24/7' },
+  { value: '68%', label: "des PME immatures en données", suffix: '' },
+  { value: '30+', label: 'connecteurs natifs', suffix: '' },
+  { value: '1', label: 'seul outil pour tout', suffix: '' },
+  { value: 'IA', label: 'agentique intégrée', suffix: '24/7' },
 ]
 
 const FEATURES = [
   { icon: '⏱', title: 'Saisie des temps', desc: 'Calendrier, drag & drop, validation manager, multi-projets.' },
   { icon: '💼', title: 'Pipeline commercial', desc: 'Kanban, transactions, suivi phases, vue multi-sociétés.' },
-  { icon: '🧾', title: 'Facturation & Devis', desc: 'Création, envoi, relances auto, export PDF professionnel.' },
-  { icon: '📊', title: 'Comptabilité', desc: 'Import FEC, écritures, rapprochement bancaire, prévisionnel.' },
-  { icon: '👥', title: 'Gestion d\'équipe', desc: 'Absences, notes de frais, compétences, organigramme.' },
+  { icon: '🧾', title: 'Facturation & Devis', desc: 'Création, envoi e-facture, export XML UBL, portail client.' },
+  { icon: '📊', title: 'Comptabilité & BI', desc: 'Import FEC, écritures, rapprochement bancaire, prévisionnel.' },
+  { icon: '👥', title: "Gestion d'équipe", desc: 'Absences, notes de frais, compétences, organigramme.' },
   { icon: '🏢', title: 'Multi-sociétés', desc: 'Holding, groupes, switch instantané, données cloisonnées.' },
+]
+
+const ROADMAP = [
+  {
+    phase: 'Phase 1',
+    timing: 'Maintenant',
+    color: '#16a34a',
+    title: 'Données propres & connectées',
+    items: [
+      'Qualité des données & normalisation',
+      'API ouvertes & exports structurés',
+      'Connecteurs natifs (Sage, Pennylane, Stripe...)',
+      'Conformité e-facture 2026',
+    ]
+  },
+  {
+    phase: 'Phase 2',
+    timing: '3-6 mois',
+    color: '#1D9BF0',
+    title: 'Assistant IA contextuel',
+    items: [
+      'ChatWidget IA qui agit sur vos données',
+      'Créer une facture en langage naturel',
+      'Planifier un projet par la voix',
+      'Analyser la rentabilité en 1 question',
+    ]
+  },
+  {
+    phase: 'Phase 3',
+    timing: '6-12 mois',
+    color: '#7c3aed',
+    title: 'Agents IA autonomes',
+    items: [
+      'Relance client automatique',
+      'Validation de notes de frais par IA',
+      'Alertes trésorerie intelligentes',
+      'Workflows IA sur mesure',
+    ]
+  },
+]
+
+const ADVANTAGES = [
+  { icon: '🎯', title: 'Simplicité', desc: "Une seule app pour tout. Pas 10 outils à jongler." },
+  { icon: '💰', title: 'Prix PME', desc: "Pas de licence à 150€/user/mois. Accessible à toutes les PME." },
+  { icon: '🔗', title: 'Données unifiées', desc: "Pas besoin d'intégrateur. CRM, compta, RH — tout est connecté nativement." },
+  { icon: '🤖', title: 'IA agentique', desc: "L'IA ne suggère pas, elle agit. Relances, alertes, validation — en autonomie." },
 ]
 
 // ── Composant SVG Multiprise ─────────────────────────────────────────────────
 function MultipriseVisual() {
   const [activeIdx, setActiveIdx] = useState(0)
-  const displayed = CONNECTORS.slice(0, 16) // 16 connecteurs autour du hub
+  const displayed = CONNECTORS.slice(0, 16)
 
   useEffect(() => {
     const timer = setInterval(() => setActiveIdx(i => (i + 1) % displayed.length), 800)
@@ -95,35 +141,24 @@ function MultipriseVisual() {
             <feMerge><feMergeNode in="blur" /><feMergeNode in="SourceGraphic" /></feMerge>
           </filter>
         </defs>
-
-        {/* Glow ambiant */}
         <circle cx={cx} cy={cy} r={120} fill="url(#hubGlow)" className="multiprise-ambient" />
-
-        {/* Lignes de connexion */}
         {displayed.map((c, i) => {
           const angle = (i / displayed.length) * Math.PI * 2 - Math.PI / 2
           const x = cx + Math.cos(angle) * r
           const y = cy + Math.sin(angle) * r
           const isActive = i === activeIdx
           return (
-            <line
-              key={c.id + '-line'}
-              x1={cx} y1={cy} x2={x} y2={y}
+            <line key={c.id + '-line'} x1={cx} y1={cy} x2={x} y2={y}
               stroke={isActive ? c.color : 'rgba(15,76,117,0.15)'}
               strokeWidth={isActive ? 2.5 : 1}
               className={isActive ? 'multiprise-line--active' : ''}
-              filter={isActive ? 'url(#glow)' : undefined}
-            />
+              filter={isActive ? 'url(#glow)' : undefined} />
           )
         })}
-
-        {/* Hub central */}
         <circle cx={cx} cy={cy} r={44} fill="#195C82" stroke="#1D9BF0" strokeWidth="2.5" className="multiprise-hub" />
         <text x={cx} y={cy - 6} textAnchor="middle" fill="#fff" fontSize="11" fontWeight="800" letterSpacing="1">TIME</text>
         <text x={cx} y={cy + 10} textAnchor="middle" fill="#1D9BF0" fontSize="11" fontWeight="800" letterSpacing="1">BLAST</text>
         <text x={cx} y={cy + 26} textAnchor="middle" fill="#98BA9C" fontSize="8" fontWeight="600" opacity="0.9">⚡ Connect All</text>
-
-        {/* Nœuds connecteurs */}
         {displayed.map((c, i) => {
           const angle = (i / displayed.length) * Math.PI * 2 - Math.PI / 2
           const x = cx + Math.cos(angle) * r
@@ -138,8 +173,6 @@ function MultipriseVisual() {
             </g>
           )
         })}
-
-        {/* Particules flottantes */}
         <circle cx={100} cy={80} r="2" fill="#1D9BF0" opacity="0.3" className="multiprise-particle p1" />
         <circle cx={400} cy={120} r="1.5" fill="#98BA9C" opacity="0.3" className="multiprise-particle p2" />
         <circle cx={80} cy={400} r="1.5" fill="#F8B35A" opacity="0.3" className="multiprise-particle p3" />
@@ -160,6 +193,10 @@ export default function LoginPage() {
   const [showLogin, setShowLogin] = useState(false)
   const [activeCat, setActiveCat] = useState('all')
 
+  // Contact form state
+  const [contactForm, setContactForm] = useState({ name: '', email: '', company: '', phone: '', message: '' })
+  const [contactSent, setContactSent] = useState(false)
+
   async function handleSubmit(e) {
     e.preventDefault()
     setError(null)
@@ -168,6 +205,12 @@ export default function LoginPage() {
     setLoading(false)
     if (error) setError(error.message)
     else navigate('/')
+  }
+
+  function handleContactSubmit(e) {
+    e.preventDefault()
+    setContactSent(true)
+    setTimeout(() => setContactSent(false), 5000)
   }
 
   const filteredConnectors = activeCat === 'all' ? CONNECTORS : CONNECTORS.filter(c => c.cat === activeCat)
@@ -183,8 +226,10 @@ export default function LoginPage() {
           <div className="landing-nav-links">
             <a href="#connecteurs">Connecteurs</a>
             <a href="#comment-ca-marche">Comment ça marche</a>
+            <a href="#roadmap">Roadmap IA</a>
             <a href="#features">Fonctionnalités</a>
-            <a href="/facture-electronique" style={{ color: '#f59e0b', fontWeight: '600' }}>E-Facture 📋</a>
+            <a href="#contact">Contact</a>
+            <a href="/facture-electronique" style={{ color: '#f59e0b', fontWeight: '600' }}>E-Facture 2026</a>
           </div>
           <button className="landing-nav-btn" onClick={() => setShowLogin(true)}>
             Se connecter
@@ -192,29 +237,27 @@ export default function LoginPage() {
         </div>
       </nav>
 
-      {/* ── Hero — Multiprise IA ── */}
+      {/* ── Hero — IA Agentique ── */}
       <section className="landing-hero">
         <div className="landing-hero-bg" />
         <div className="landing-hero-grid">
           <div className="landing-hero-text">
-            <div className="landing-hero-badge">⚡ La multiprise intelligente de votre entreprise</div>
-            <h1 className="landing-hero-title">
-              TimeBlast.ai
-            </h1>
+            <div className="landing-hero-badge">🤖 La donnée propre, le socle de l'IA agentique</div>
+            <h1 className="landing-hero-title">TimeBlast</h1>
             <h2 className="landing-hero-subtitle" style={{ fontSize: '1.4rem', fontWeight: 600, color: '#475569', marginBottom: '1.5rem', marginTop: '0.5rem' }}>
-              Connectez tous vos outils. Gagnez du temps.
+              La plateforme IA qui active vos données.
             </h2>
             <p className="landing-hero-subtitle">
-              TimeBlast.ai connecte vos outils en une <strong>multiprise intelligente</strong>.
-              Temps, finance, CRM, RH — tout circule automatiquement entre vos logiciels.
-              Zéro saisie manuelle, zéro friction.
+              <strong>68% des PME sont immatures en données.</strong> TimeBlast.ai est la plateforme convergente
+              pour PME/ETI : un seul outil = des données propres, connectées, exploitables par l'IA.
+              Temps, finance, CRM, RH — tout circule automatiquement.
             </p>
             <div className="landing-hero-actions">
               <button className="landing-btn-primary" onClick={() => setShowLogin(true)}>
                 Accéder à la plateforme →
               </button>
-              <a href="#connecteurs" className="landing-btn-secondary">
-                Voir les connecteurs
+              <a href="#contact" className="landing-btn-secondary">
+                Demander une démo
               </a>
             </div>
           </div>
@@ -237,11 +280,28 @@ export default function LoginPage() {
         ))}
       </section>
 
+      {/* ── Pourquoi TimeBlast — 4 avantages ── */}
+      <section className="landing-advantages" id="pourquoi">
+        <h2 className="landing-section-title">Pourquoi TimeBlast.ai ?</h2>
+        <p className="landing-section-subtitle">
+          La plateforme convergente pour PME/ETI qui veulent entrer dans l'ère de l'IA.
+        </p>
+        <div className="landing-advantages-grid">
+          {ADVANTAGES.map((a, i) => (
+            <div key={i} className="landing-advantage-card">
+              <span className="landing-advantage-icon">{a.icon}</span>
+              <h3>{a.title}</h3>
+              <p>{a.desc}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
       {/* ── Comment ça marche — 3 étapes ── */}
       <section className="landing-steps" id="comment-ca-marche">
         <h2 className="landing-section-title">Comment ça marche ?</h2>
         <p className="landing-section-subtitle">
-          3 étapes pour connecter toute votre entreprise.
+          3 étapes pour rendre vos données exploitables par l'IA.
         </p>
         <div className="landing-steps-grid">
           {STEPS.map((step, i) => (
@@ -250,6 +310,30 @@ export default function LoginPage() {
               <span className="landing-step-icon">{step.icon}</span>
               <h3>{step.title}</h3>
               <p>{step.desc}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* ── Roadmap IA Agentique ── */}
+      <section className="landing-roadmap" id="roadmap">
+        <h2 className="landing-section-title">Roadmap vers l'IA agentique</h2>
+        <p className="landing-section-subtitle">
+          De la qualité des données aux agents IA autonomes — notre vision en 3 phases.
+        </p>
+        <div className="landing-roadmap-grid">
+          {ROADMAP.map((phase, i) => (
+            <div key={i} className="landing-roadmap-card" style={{ '--phase-color': phase.color }}>
+              <div className="landing-roadmap-header">
+                <span className="landing-roadmap-badge" style={{ background: phase.color }}>{phase.phase}</span>
+                <span className="landing-roadmap-timing">{phase.timing}</span>
+              </div>
+              <h3 className="landing-roadmap-title">{phase.title}</h3>
+              <ul className="landing-roadmap-list">
+                {phase.items.map((item, j) => (
+                  <li key={j}>{item}</li>
+                ))}
+              </ul>
             </div>
           ))}
         </div>
@@ -315,15 +399,115 @@ export default function LoginPage() {
         </div>
       </section>
 
+      {/* ── Distribution / Canaux ── */}
+      <section className="landing-channels" id="canaux">
+        <h2 className="landing-section-title">Comment nous arrivons chez vous</h2>
+        <p className="landing-section-subtitle">
+          TimeBlast.ai s'adresse aux PME/ETI qui veulent préparer leur entreprise à l'IA agentique.
+        </p>
+        <div className="landing-channels-grid">
+          <div className="landing-channel-card">
+            <span className="landing-channel-icon">🚀</span>
+            <h3>Product-Led Growth</h3>
+            <p>Essayez gratuitement. Pas de commercial, pas de démo obligatoire. Vous testez, vous adoptez.</p>
+          </div>
+          <div className="landing-channel-card">
+            <span className="landing-channel-icon">📝</span>
+            <h3>Content marketing</h3>
+            <p>Guides, articles, webinaires sur le thème : préparer sa PME à l'IA agentique.</p>
+          </div>
+          <div className="landing-channel-card">
+            <span className="landing-channel-icon">🤝</span>
+            <h3>Partenaires comptables</h3>
+            <p>Experts-comptables et intégrateurs cherchent des alternatives aux outils fragmentés. Nous sommes cette alternative.</p>
+          </div>
+        </div>
+      </section>
+
+      {/* ── Contact Form ── */}
+      <section className="landing-contact" id="contact">
+        <h2 className="landing-section-title">Contactez-nous</h2>
+        <p className="landing-section-subtitle">
+          Une question ? Une démo ? Écrivez-nous et nous revenons vers vous sous 24h.
+        </p>
+        <div className="landing-contact-wrapper">
+          <div className="landing-contact-info">
+            <div className="landing-contact-info-item">
+              <span>💬</span>
+              <div>
+                <strong>Réponse sous 24h</strong>
+                <p>Notre équipe revient vers vous rapidement</p>
+              </div>
+            </div>
+            <div className="landing-contact-info-item">
+              <span>🕐</span>
+              <div>
+                <strong>Du lundi au vendredi</strong>
+                <p>9h - 18h</p>
+              </div>
+            </div>
+          </div>
+          <form className="landing-contact-form" onSubmit={handleContactSubmit}>
+            {contactSent ? (
+              <div className="landing-contact-success">
+                <span style={{ fontSize: '2.5rem' }}>✅</span>
+                <h3>Message envoyé !</h3>
+                <p>Nous revenons vers vous très rapidement.</p>
+              </div>
+            ) : (
+              <>
+                <div className="landing-contact-row">
+                  <div className="landing-contact-field">
+                    <label>Nom complet *</label>
+                    <input type="text" required placeholder="Jean Dupont"
+                      value={contactForm.name} onChange={e => setContactForm(f => ({ ...f, name: e.target.value }))} />
+                  </div>
+                  <div className="landing-contact-field">
+                    <label>Email professionnel *</label>
+                    <input type="email" required placeholder="jean@entreprise.com"
+                      value={contactForm.email} onChange={e => setContactForm(f => ({ ...f, email: e.target.value }))} />
+                  </div>
+                </div>
+                <div className="landing-contact-row">
+                  <div className="landing-contact-field">
+                    <label>Entreprise</label>
+                    <input type="text" placeholder="Mon Entreprise SAS"
+                      value={contactForm.company} onChange={e => setContactForm(f => ({ ...f, company: e.target.value }))} />
+                  </div>
+                  <div className="landing-contact-field">
+                    <label>Téléphone</label>
+                    <input type="tel" placeholder="06 XX XX XX XX"
+                      value={contactForm.phone} onChange={e => setContactForm(f => ({ ...f, phone: e.target.value }))} />
+                  </div>
+                </div>
+                <div className="landing-contact-field">
+                  <label>Votre message *</label>
+                  <textarea required rows={4} placeholder="Dites-nous comment nous pouvons vous aider..."
+                    value={contactForm.message} onChange={e => setContactForm(f => ({ ...f, message: e.target.value }))} />
+                </div>
+                <button type="submit" className="landing-btn-primary" style={{ width: '100%', marginTop: '.5rem' }}>
+                  Envoyer le message →
+                </button>
+              </>
+            )}
+          </form>
+        </div>
+      </section>
+
       {/* ── CTA ── */}
       <section className="landing-cta" id="cta">
         <div className="landing-cta-inner">
-          <span className="landing-cta-icon">⚡</span>
-          <h2>Prêt à tout connecter ?</h2>
-          <p>Rejoignez les équipes qui pilotent leur activité avec TimeBlast.ai.</p>
-          <button className="landing-btn-primary landing-btn-lg" onClick={() => setShowLogin(true)}>
-            Se connecter maintenant →
-          </button>
+          <span className="landing-cta-icon">🤖</span>
+          <h2>Préparez votre entreprise à l'ère de l'IA agentique</h2>
+          <p>Rejoignez les PME qui transforment leurs données en avantage compétitif avec TimeBlast.ai.</p>
+          <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', flexWrap: 'wrap' }}>
+            <button className="landing-btn-primary landing-btn-lg" onClick={() => setShowLogin(true)}>
+              Se connecter maintenant →
+            </button>
+            <a href="#contact" className="landing-btn-secondary landing-btn-lg">
+              Demander une démo
+            </a>
+          </div>
         </div>
       </section>
 
@@ -332,7 +516,7 @@ export default function LoginPage() {
         <div className="landing-footer-inner">
           <img src="/logo4.png" alt="TimeBlast.ai" style={{ height: 24 }} />
           <span style={{ color: 'rgba(255,255,255,0.4)', fontSize: '.82rem' }}>
-            © {new Date().getFullYear()} — La multiprise intelligente pour votre entreprise
+            © {new Date().getFullYear()} TimeBlast.ai — La plateforme IA qui centralise et sécurise vos données
           </span>
         </div>
       </footer>

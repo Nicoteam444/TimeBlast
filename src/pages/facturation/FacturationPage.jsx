@@ -4,6 +4,8 @@ import { useSociete } from '../../contexts/SocieteContext'
 import { generateInvoicePDF } from '../../lib/pdfGenerator'
 import InvoiceDistributionModal from '../../components/InvoiceDistributionModal'
 import { getDistributionHistory } from '../../lib/invoiceDistribution'
+import useSortableTable from '../../hooks/useSortableTable'
+import SortableHeader from '../../components/SortableHeader'
 
 // ── Helpers ───────────────────────────────────────────────────
 function fmtE(n) {
@@ -296,8 +298,6 @@ export default function FacturationPage() {
   const [modal, setModal]             = useState(null)  // null | 'new' | facture
   const [search, setSearch]           = useState('')
   const [filterStatut, setFilterStatut] = useState('')
-  const [sortCol, setSortCol]         = useState('date_emission')
-  const [sortDir, setSortDir]         = useState('desc')
   const [page, setPage]               = useState(1)
   const [showDistributionModal, setShowDistributionModal] = useState(false)
   const [companyData, setCompanyData] = useState(null)
@@ -331,11 +331,6 @@ export default function FacturationPage() {
       .catch(err => console.error('Error loading company data:', err))
   }, [selectedSociete?.id])
 
-  function toggleSort(col) {
-    if (sortCol === col) setSortDir(d => d==='asc'?'desc':'asc')
-    else { setSortCol(col); setSortDir('asc') }
-  }
-
   const filtered = useMemo(() => {
     let rows = factures
     if (filterStatut) rows = rows.filter(f => f.statut === filterStatut)
@@ -343,16 +338,13 @@ export default function FacturationPage() {
       const q = search.toLowerCase()
       rows = rows.filter(f => f.num_facture?.toLowerCase().includes(q) || f.client_nom?.toLowerCase().includes(q) || f.objet?.toLowerCase().includes(q))
     }
-    rows = [...rows].sort((a,b) => {
-      let va = a[sortCol]||'', vb = b[sortCol]||''
-      if (sortCol==='total_ttc') { va=+va; vb=+vb }
-      return sortDir==='asc' ? (va>vb?1:-1) : (va<vb?1:-1)
-    })
     return rows
-  }, [factures, search, filterStatut, sortCol, sortDir])
+  }, [factures, search, filterStatut])
 
-  const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE))
-  const paged = filtered.slice((page-1)*PAGE_SIZE, page*PAGE_SIZE)
+  const { sortedData, sortKey, sortDir, requestSort } = useSortableTable(filtered, 'date_emission', 'desc')
+
+  const totalPages = Math.max(1, Math.ceil(sortedData.length / PAGE_SIZE))
+  const paged = sortedData.slice((page-1)*PAGE_SIZE, page*PAGE_SIZE)
 
   const totauxStatuts = useMemo(() => {
     const r = {}
@@ -371,11 +363,6 @@ export default function FacturationPage() {
     await supabase.from('factures').delete().eq('id', id)
     if (selected?.id === id) setSelected(null)
     loadFactures()
-  }
-
-  function SortIcon({ col }) {
-    if (sortCol !== col) return <span className="sort-icon">↕</span>
-    return <span className="sort-icon">{sortDir==='asc'?'↑':'↓'}</span>
   }
 
   return (
@@ -419,13 +406,13 @@ export default function FacturationPage() {
           <table className="users-table" style={{width:'100%'}}>
             <thead>
               <tr>
-                <th className="sortable" onClick={()=>toggleSort('num_facture')}>N° <SortIcon col="num_facture"/></th>
-                <th className="sortable" onClick={()=>toggleSort('client_nom')}>Client <SortIcon col="client_nom"/></th>
-                <th className="sortable" onClick={()=>toggleSort('objet')}>Objet <SortIcon col="objet"/></th>
-                <th className="sortable" onClick={()=>toggleSort('date_emission')}>Date <SortIcon col="date_emission"/></th>
-                <th className="sortable" onClick={()=>toggleSort('date_echeance')}>Échéance <SortIcon col="date_echeance"/></th>
+                <SortableHeader label="N°" field="num_facture" sortKey={sortKey} sortDir={sortDir} onSort={requestSort} />
+                <SortableHeader label="Client" field="client_nom" sortKey={sortKey} sortDir={sortDir} onSort={requestSort} />
+                <SortableHeader label="Objet" field="objet" sortKey={sortKey} sortDir={sortDir} onSort={requestSort} />
+                <SortableHeader label="Date" field="date_emission" sortKey={sortKey} sortDir={sortDir} onSort={requestSort} />
+                <SortableHeader label="Échéance" field="date_echeance" sortKey={sortKey} sortDir={sortDir} onSort={requestSort} />
                 <th>Statut</th>
-                <th className="sortable" style={{textAlign:'right'}} onClick={()=>toggleSort('total_ttc')}>Total TTC <SortIcon col="total_ttc"/></th>
+                <SortableHeader label="Total TTC" field="total_ttc" sortKey={sortKey} sortDir={sortDir} onSort={requestSort} style={{textAlign:'right'}} />
                 <th></th>
               </tr>
             </thead>

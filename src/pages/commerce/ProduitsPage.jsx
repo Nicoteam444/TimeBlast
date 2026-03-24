@@ -1,6 +1,8 @@
 import { useState, useEffect, useMemo } from 'react'
 import { supabase } from '../../lib/supabase'
 import { useSociete } from '../../contexts/SocieteContext'
+import useSortableTable from '../../hooks/useSortableTable'
+import SortableHeader from '../../components/SortableHeader'
 
 const SQL_MIGRATION = `CREATE TABLE IF NOT EXISTS produits (
   id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
@@ -176,6 +178,8 @@ export default function ProduitsPage() {
     })
   }, [produits, search, filterCat, filterActif])
 
+  const { sortedData, sortKey, sortDir, requestSort } = useSortableTable(filtered)
+
   const kpiTotal   = produits.length
   const kpiActifs  = produits.filter(p => p.actif).length
   const kpiCats    = new Set(produits.map(p => p.categorie).filter(Boolean)).size
@@ -294,18 +298,18 @@ export default function ProduitsPage() {
               <table className="produit-table">
                 <thead>
                   <tr>
-                    <th>Référence</th>
-                    <th>Nom</th>
-                    <th>Catégorie</th>
-                    <th>Prix HT (€)</th>
-                    <th>TVA (%)</th>
-                    <th>Unité</th>
-                    <th>Statut</th>
+                    <SortableHeader label="Référence" field="reference" sortKey={sortKey} sortDir={sortDir} onSort={requestSort} />
+                    <SortableHeader label="Nom" field="nom" sortKey={sortKey} sortDir={sortDir} onSort={requestSort} />
+                    <SortableHeader label="Catégorie" field="categorie" sortKey={sortKey} sortDir={sortDir} onSort={requestSort} />
+                    <SortableHeader label="Prix HT (€)" field="prix_ht" sortKey={sortKey} sortDir={sortDir} onSort={requestSort} style={{ textAlign: 'right' }} />
+                    <SortableHeader label="TVA (%)" field="taux_tva" sortKey={sortKey} sortDir={sortDir} onSort={requestSort} style={{ textAlign: 'right' }} />
+                    <SortableHeader label="Unité" field="unite" sortKey={sortKey} sortDir={sortDir} onSort={requestSort} />
+                    <SortableHeader label="Statut" field="actif" sortKey={sortKey} sortDir={sortDir} onSort={requestSort} />
                     <th>Actions</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {filtered.map(p => {
+                  {sortedData.map(p => {
                     const catLabel = CATEGORIES.find(c => c.value === p.categorie)?.label || p.categorie
                     return (
                       <tr key={p.id}>

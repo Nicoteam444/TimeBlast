@@ -7,20 +7,13 @@ import { useFavorites } from '../contexts/FavoritesContext'
 
 const SECTIONS = [
   {
-    id: 'calendrier',
-    icon: '📆',
-    label: 'Calendrier',
-    roles: ['admin', 'manager', 'collaborateur'],
-    items: [
-      { to: '/activite/saisie', icon: '✏️', label: 'Saisie des temps' },
-    ],
-  },
-  {
     id: 'activite',
     icon: '⏱',
     label: 'Activité',
+    landingTo: '/activite',
     roles: ['admin', 'manager', 'collaborateur'],
     items: [
+      { to: '/activite/saisie',       icon: '✏️', label: 'Saisie des temps' },
       { to: '/activite/planification', icon: '📅', label: 'Planification',      roles: ['admin', 'manager'] },
       { to: '/activite/projets',       icon: '📁', label: 'Gestion de projet' },
       { to: '/activite/reporting',     icon: '📊', label: 'Reporting temps',    roles: ['admin', 'manager'] },
@@ -31,6 +24,7 @@ const SECTIONS = [
     id: 'equipe',
     icon: '👥',
     label: 'Équipe',
+    landingTo: '/equipe',
     roles: ['admin', 'manager', 'collaborateur'],
     items: [
       { to: '/activite/equipe',        icon: '📋', label: 'Collaborateurs',  roles: ['admin', 'manager'] },
@@ -43,9 +37,24 @@ const SECTIONS = [
     ],
   },
   {
+    id: 'gestion',
+    icon: '🧾',
+    label: 'Gestion',
+    landingTo: '/gestion',
+    roles: ['admin', 'comptable', 'manager'],
+    items: [
+      { to: '/gestion/tableau-de-bord',        icon: '📊', label: 'Tableau de bord' },
+      { to: '/gestion/transactions',           icon: '🏦', label: 'Transactions' },
+      { to: '/finance/facturation',            icon: '📤', label: 'Ventes' },
+      { to: '/gestion/achats',  icon: '📥', label: 'Achats' },
+      { to: '/commerce/stock',                 icon: '📦', label: 'Stock' },
+    ],
+  },
+  {
     id: 'crm',
     icon: '🎯',
     label: 'CRM',
+    landingTo: '/crm',
     roles: ['admin', 'manager', 'collaborateur'],
     items: [
       { to: '/crm/contacts',          icon: '👤', label: 'Contacts' },
@@ -59,22 +68,10 @@ const SECTIONS = [
     ],
   },
   {
-    id: 'gestion',
-    icon: '🧾',
-    label: 'Gestion',
-    roles: ['admin', 'comptable', 'manager'],
-    items: [
-      { to: '/gestion/tableau-de-bord',        icon: '📊', label: 'Tableau de bord' },
-      { to: '/gestion/transactions',           icon: '🏦', label: 'Transactions' },
-      { to: '/finance/facturation',            icon: '📤', label: 'Ventes' },
-      { to: '/gestion/achats',  icon: '📥', label: 'Achats' },
-      { to: '/commerce/stock',                 icon: '📦', label: 'Stock' },
-    ],
-  },
-  {
     id: 'finance',
     icon: '💰',
     label: 'Finance',
+    landingTo: '/finance',
     roles: ['admin', 'comptable'],
     items: [
       { to: '/finance/business-intelligence', icon: '📊', label: 'Business Intelligence' },
@@ -114,7 +111,19 @@ export default function Sidebar() {
   const [hoveredId, setHoveredId] = useState(null)
   const [flyoutPos, setFlyoutPos] = useState({ top: 0 })
   const hideTimer = useRef(null)
+  const lastMouseX = useRef(0)
+  const lastMouseY = useRef(0)
   const userRole = profile?.role
+
+  // Track mouse position globally for direction detection
+  useEffect(() => {
+    function trackMouse(e) {
+      lastMouseX.current = e.clientX
+      lastMouseY.current = e.clientY
+    }
+    window.addEventListener('mousemove', trackMouse)
+    return () => window.removeEventListener('mousemove', trackMouse)
+  }, [])
 
   function handleToggleFavorite(to, e) {
     e.preventDefault()
@@ -138,7 +147,6 @@ export default function Sidebar() {
     clearTimeout(hideTimer.current)
     const rect = e.currentTarget.getBoundingClientRect()
     setHoveredId(id)
-    // Si l'item est dans le tiers bas de l'écran, ancrer le flyout par le bas
     const spaceBelow = window.innerHeight - rect.top
     if (spaceBelow < 320) {
       setFlyoutPos({ bottom: window.innerHeight - rect.bottom })
@@ -147,8 +155,17 @@ export default function Sidebar() {
     }
   }
 
-  function scheduleHide() {
-    hideTimer.current = setTimeout(() => setHoveredId(null), 120)
+  function scheduleHide(e) {
+    clearTimeout(hideTimer.current)
+    const startX = e?.clientX ?? lastMouseX.current
+    hideTimer.current = setTimeout(() => {
+      const currentX = lastMouseX.current
+      if (currentX <= startX) {
+        setHoveredId(null)
+      } else {
+        hideTimer.current = setTimeout(() => setHoveredId(null), 300)
+      }
+    }, 150)
   }
 
   function keepOpen() {
@@ -209,13 +226,15 @@ export default function Sidebar() {
           )}
           {visibleSections.map(section => {
             const items = filterItems(section.items)
-            const isActive = items.some(i => location.pathname.startsWith(i.to))
+            const isActive = items.some(i => location.pathname.startsWith(i.to)) || (section.landingTo && location.pathname === section.landingTo)
             return (
               <div
                 key={section.id}
                 className={`rail-item ${isActive ? 'rail-item--active' : ''} ${hoveredId === section.id ? 'rail-item--hover' : ''}`}
                 onMouseEnter={e => showFlyout(section.id, e)}
                 onMouseLeave={scheduleHide}
+                onClick={() => section.landingTo && navigate(section.landingTo)}
+                style={{ cursor: section.landingTo ? 'pointer' : undefined }}
               >
                 <span className="rail-item-icon">{section.icon}</span>
                 {sidebarOpen && <span className="rail-item-label">{section.label}</span>}
@@ -251,7 +270,15 @@ export default function Sidebar() {
           className="rail-flyout"
           style={{ ...flyoutPos, left: railW }}
           onMouseEnter={keepOpen}
-          onMouseLeave={scheduleHide}
+          onMouseLeave={e => {
+            const rect = e.currentTarget.getBoundingClientRect()
+            clearTimeout(hideTimer.current)
+            if (e.clientX <= rect.left + 10) {
+              hideTimer.current = setTimeout(() => setHoveredId(null), 250)
+            } else {
+              hideTimer.current = setTimeout(() => setHoveredId(null), 100)
+            }
+          }}
         >
           <div className="rail-flyout-header">
             <span>{flyoutSection.icon}</span>

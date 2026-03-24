@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react'
 import { useDemo } from '../../contexts/DemoContext'
 import { supabase } from '../../lib/supabase'
+import useSortableTable from '../../hooks/useSortableTable'
+import SortableHeader from '../../components/SortableHeader'
 
 const ACTION_TYPES = {
   user_created:    { label: 'Utilisateur créé',   color: '#16a34a', bg: '#f0fdf4' },
@@ -93,6 +95,8 @@ export default function AdminAuditPage() {
 
   const filtered = filterAction ? entries.filter(e => e.action === filterAction) : entries
 
+  const { sortedData, sortKey, sortDir, requestSort } = useSortableTable(filtered, 'date', 'desc')
+
   const actionCounts = entries.reduce((acc, e) => {
     acc[e.action] = (acc[e.action] || 0) + 1
     return acc
@@ -154,14 +158,14 @@ export default function AdminAuditPage() {
           <table className="data-table">
             <thead>
               <tr className="data-table-header">
-                <th>Date</th>
-                <th>Type</th>
-                <th>Description</th>
-                <th>IP</th>
+                <SortableHeader label="Date" field="date" sortKey={sortKey} sortDir={sortDir} onSort={requestSort} />
+                <SortableHeader label="Type" field="action" sortKey={sortKey} sortDir={sortDir} onSort={requestSort} />
+                <SortableHeader label="Description" field="description" sortKey={sortKey} sortDir={sortDir} onSort={requestSort} />
+                <SortableHeader label="IP" field="ip" sortKey={sortKey} sortDir={sortDir} onSort={requestSort} />
               </tr>
             </thead>
             <tbody>
-              {filtered.map(entry => (
+              {sortedData.map(entry => (
                 <tr key={entry.id} className="data-table-row">
                   <td style={{ whiteSpace: 'nowrap', fontSize: '.82rem', color: 'var(--text-muted)' }}>
                     {fmtDate(entry.date)}
@@ -173,7 +177,7 @@ export default function AdminAuditPage() {
                   </td>
                 </tr>
               ))}
-              {filtered.length === 0 && (
+              {sortedData.length === 0 && (
                 <tr>
                   <td colSpan={4} style={{ textAlign: 'center', padding: '2rem', color: 'var(--text-muted)' }}>
                     Aucune entrée dans le journal

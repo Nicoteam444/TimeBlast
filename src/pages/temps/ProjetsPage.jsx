@@ -35,7 +35,7 @@ export default function ProjetsPage({ onSelect }) {
     const { data } = await query
     // Filter client-side since PostgREST join filters can return rows with null client when using eq on joined table
     const filtered_data = selectedSociete?.id
-      ? (data || []).filter(p => p.clients?.societe_id === selectedSociete.id)
+      ? (data || []).filter(p => !p.clients || p.clients.societe_id === selectedSociete.id)
       : (data || [])
     setProjets(filtered_data)
 

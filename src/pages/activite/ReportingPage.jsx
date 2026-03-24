@@ -2,6 +2,8 @@ import { useState, useEffect, useMemo } from 'react'
 import { supabase } from '../../lib/supabase'
 import { useSociete } from '../../contexts/SocieteContext'
 import { useAuth } from '../../contexts/AuthContext'
+import useSortableTable from '../../hooks/useSortableTable'
+import SortableHeader from '../../components/SortableHeader'
 
 // ── Helpers ISO week ──────────────────────────────────────────
 function getISOWeek(date) {
@@ -251,6 +253,8 @@ export default function ReportingPage() {
     totalJours: t1Rows.reduce((s, r) => s + r.totalJours, 0),
   }), [t1Rows])
 
+  const { sortedData: sortedT1, sortKey: t1SortKey, sortDir: t1SortDir, requestSort: t1RequestSort } = useSortableTable(t1Rows)
+
   function exportT1CSV() {
     const headers = ['Projet', 'Client', 'Heures saisies', 'Jours', 'Nb intervenants']
     const rows = t1Rows.map(r => [r.projetName, r.clientName, fmtNum(r.totalHeures, 2), fmtNum(r.totalJours, 2), r.nbIntervenants])
@@ -324,6 +328,8 @@ export default function ReportingPage() {
     }).sort((a, b) => a.projet.name.localeCompare(b.projet.name))
   }, [projets, lots, saisies, clientMap])
 
+  const { sortedData: sortedT3, sortKey: t3SortKey, sortDir: t3SortDir, requestSort: t3RequestSort } = useSortableTable(t3Rows)
+
   // ── Helper: extraire projetId depuis lot_id ou commentaire ──
   function getProjetInfo(s) {
     const lot = lotMap[s.lot_id]
@@ -360,8 +366,10 @@ export default function ReportingPage() {
     }).sort((a, b) => b.date.localeCompare(a.date))
   }, [saisies, lotMap, projetMap, collabMap, t4Collab, t4Projet, t4Search])
 
-  const t4Pages = Math.max(1, Math.ceil(t4Filtered.length / T4_PAGE_SIZE))
-  const t4Paginated = t4Filtered.slice((t4Page - 1) * T4_PAGE_SIZE, t4Page * T4_PAGE_SIZE)
+  const { sortedData: sortedT4, sortKey: t4SortKey, sortDir: t4SortDir, requestSort: t4RequestSort } = useSortableTable(t4Filtered)
+
+  const t4Pages = Math.max(1, Math.ceil(sortedT4.length / T4_PAGE_SIZE))
+  const t4Paginated = sortedT4.slice((t4Page - 1) * T4_PAGE_SIZE, t4Page * T4_PAGE_SIZE)
 
   function exportT4CSV() {
     const headers = ['Date', 'Collaborateur', 'Projet', 'Lot', 'Heures', 'Commentaire']
@@ -492,15 +500,15 @@ export default function ReportingPage() {
               <table className="reporting-table">
                 <thead>
                   <tr>
-                    <th>Projet</th>
-                    <th>Client</th>
-                    <th className="text-right">Heures saisies</th>
-                    <th className="text-right">Jours</th>
-                    <th className="text-right">Intervenants</th>
+                    <SortableHeader label="Projet" field="projetName" sortKey={t1SortKey} sortDir={t1SortDir} onSort={t1RequestSort} />
+                    <SortableHeader label="Client" field="clientName" sortKey={t1SortKey} sortDir={t1SortDir} onSort={t1RequestSort} />
+                    <SortableHeader label="Heures saisies" field="totalHeures" sortKey={t1SortKey} sortDir={t1SortDir} onSort={t1RequestSort} style={{ textAlign: 'right' }} />
+                    <SortableHeader label="Jours" field="totalJours" sortKey={t1SortKey} sortDir={t1SortDir} onSort={t1RequestSort} style={{ textAlign: 'right' }} />
+                    <SortableHeader label="Intervenants" field="nbIntervenants" sortKey={t1SortKey} sortDir={t1SortDir} onSort={t1RequestSort} style={{ textAlign: 'right' }} />
                   </tr>
                 </thead>
                 <tbody>
-                  {t1Rows.map(r => (
+                  {sortedT1.map(r => (
                     <tr key={r.projetId}>
                       <td>{r.projetName}</td>
                       <td>{r.clientName}</td>
@@ -597,18 +605,18 @@ export default function ReportingPage() {
               <table className="reporting-table">
                 <thead>
                   <tr>
-                    <th>Projet</th>
-                    <th>Client</th>
-                    <th className="text-right">Jours vendus</th>
-                    <th className="text-right">Heures saisies</th>
-                    <th className="text-right">Jours consommés</th>
-                    <th className="text-right">Jours restants</th>
-                    <th>Avancement</th>
+                    <SortableHeader label="Projet" field="projet.name" sortKey={t3SortKey} sortDir={t3SortDir} onSort={t3RequestSort} />
+                    <SortableHeader label="Client" field="client.name" sortKey={t3SortKey} sortDir={t3SortDir} onSort={t3RequestSort} />
+                    <SortableHeader label="Jours vendus" field="joursVendus" sortKey={t3SortKey} sortDir={t3SortDir} onSort={t3RequestSort} style={{ textAlign: 'right' }} />
+                    <SortableHeader label="Heures saisies" field="heuresSaisies" sortKey={t3SortKey} sortDir={t3SortDir} onSort={t3RequestSort} style={{ textAlign: 'right' }} />
+                    <SortableHeader label="Jours consommés" field="joursConsom" sortKey={t3SortKey} sortDir={t3SortDir} onSort={t3RequestSort} style={{ textAlign: 'right' }} />
+                    <SortableHeader label="Jours restants" field="joursRestants" sortKey={t3SortKey} sortDir={t3SortDir} onSort={t3RequestSort} style={{ textAlign: 'right' }} />
+                    <SortableHeader label="Avancement" field="avancement" sortKey={t3SortKey} sortDir={t3SortDir} onSort={t3RequestSort} />
                     <th>Statut</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {t3Rows.map(({ projet, client, heuresSaisies, joursVendus, joursConsom, joursRestants, avancement }) => (
+                  {sortedT3.map(({ projet, client, heuresSaisies, joursVendus, joursConsom, joursRestants, avancement }) => (
                     <tr key={projet.id}>
                       <td>{projet.name}</td>
                       <td>{client?.name || '—'}</td>
@@ -684,11 +692,11 @@ export default function ReportingPage() {
                 <table className="reporting-table">
                   <thead>
                     <tr>
-                      <th>Date</th>
-                      <th>Collaborateur</th>
+                      <SortableHeader label="Date" field="date" sortKey={t4SortKey} sortDir={t4SortDir} onSort={t4RequestSort} />
+                      <SortableHeader label="Collaborateur" field="user_id" sortKey={t4SortKey} sortDir={t4SortDir} onSort={t4RequestSort} />
                       <th>Projet</th>
                       <th>Lot</th>
-                      <th className="text-right">Heures</th>
+                      <SortableHeader label="Heures" field="heures" sortKey={t4SortKey} sortDir={t4SortDir} onSort={t4RequestSort} style={{ textAlign: 'right' }} />
                       <th>Commentaire</th>
                     </tr>
                   </thead>

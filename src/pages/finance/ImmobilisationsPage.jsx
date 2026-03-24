@@ -1,6 +1,8 @@
 import { useState, useEffect, useMemo } from 'react'
 import { supabase } from '../../lib/supabase'
 import { useSociete } from '../../contexts/SocieteContext'
+import useSortableTable from '../../hooks/useSortableTable'
+import SortableHeader from '../../components/SortableHeader'
 
 const CATEGORIES = [
   { value: 'materiel_info', label: 'Matériel informatique' },
@@ -166,6 +168,8 @@ export default function ImmobilisationsPage() {
     })
   }, [enriched, search, filterCat, filterStatut])
 
+  const { sortedData: sortedFiltered, sortKey, sortDir, requestSort } = useSortableTable(filtered)
+
   const kpiTotal = enriched.length
   const kpiBrut = enriched.reduce((s, i) => s + i.vb, 0)
   const kpiAmort = enriched.reduce((s, i) => s + i.cumulAmort, 0)
@@ -267,20 +271,20 @@ CREATE POLICY "immo_all" ON immobilisations FOR ALL
               <table className="users-table">
                 <thead>
                   <tr>
-                    <th>N° comptable</th>
-                    <th>Libellé</th>
-                    <th>Catégorie</th>
-                    <th>Date acquisition</th>
-                    <th style={{ textAlign: 'right' }}>Valeur brute (€)</th>
-                    <th style={{ textAlign: 'center' }}>Durée (ans)</th>
-                    <th style={{ textAlign: 'right' }}>Amort. cumulé (€)</th>
-                    <th style={{ textAlign: 'right' }}>VNC (€)</th>
-                    <th>Statut</th>
+                    <SortableHeader label="N° comptable" field="numero_comptable" sortKey={sortKey} sortDir={sortDir} onSort={requestSort} />
+                    <SortableHeader label="Libellé" field="libelle" sortKey={sortKey} sortDir={sortDir} onSort={requestSort} />
+                    <SortableHeader label="Catégorie" field="categorie" sortKey={sortKey} sortDir={sortDir} onSort={requestSort} />
+                    <SortableHeader label="Date acquisition" field="date_acquisition" sortKey={sortKey} sortDir={sortDir} onSort={requestSort} />
+                    <SortableHeader label="Valeur brute (€)" field="vb" sortKey={sortKey} sortDir={sortDir} onSort={requestSort} style={{ textAlign: 'right' }} />
+                    <SortableHeader label="Durée (ans)" field="duree_amort" sortKey={sortKey} sortDir={sortDir} onSort={requestSort} style={{ textAlign: 'center' }} />
+                    <SortableHeader label="Amort. cumulé (€)" field="cumulAmort" sortKey={sortKey} sortDir={sortDir} onSort={requestSort} style={{ textAlign: 'right' }} />
+                    <SortableHeader label="VNC (€)" field="vnc" sortKey={sortKey} sortDir={sortDir} onSort={requestSort} style={{ textAlign: 'right' }} />
+                    <SortableHeader label="Statut" field="statut" sortKey={sortKey} sortDir={sortDir} onSort={requestSort} />
                     <th></th>
                   </tr>
                 </thead>
                 <tbody>
-                  {filtered.map(i => {
+                  {sortedFiltered.map(i => {
                     const catLabel = CATEGORIES.find(c => c.value === i.categorie)?.label || i.categorie || '—'
                     const statutInfo = STATUTS.find(s => s.value === i.statut)
                     return (

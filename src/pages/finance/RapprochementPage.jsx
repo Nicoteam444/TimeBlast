@@ -1,4 +1,6 @@
 import { useState, useMemo, useCallback } from 'react'
+import useSortableTable from '../../hooks/useSortableTable'
+import SortableHeader from '../../components/SortableHeader'
 
 function fmt(n) {
   if (n === null || n === undefined || n === '') return '—'
@@ -249,6 +251,10 @@ export default function RapprochementPage() {
     )
   }, [accountingEntries, acctSearch])
 
+  const { sortedData: sortedBank, sortKey: bankSortKey, sortDir: bankSortDir, requestSort: bankRequestSort } = useSortableTable(filteredBank)
+  const { sortedData: sortedAcct, sortKey: acctSortKey, sortDir: acctSortDir, requestSort: acctRequestSort } = useSortableTable(filteredAcct)
+  const { sortedData: sortedPairs, sortKey: pairsSortKey, sortDir: pairsSortDir, requestSort: pairsRequestSort } = useSortableTable(matchedPairs)
+
   // KPIs
   const totalBank = bankTransactions.reduce((s, bt) => s + bt.montant, 0)
   const totalAcct = accountingEntries.reduce((s, ae) => s + ae.montant, 0)
@@ -377,13 +383,13 @@ export default function RapprochementPage() {
                 <table className="users-table" style={{ margin: 0 }}>
                   <thead>
                     <tr>
-                      <th>Date</th>
-                      <th>Libelle</th>
-                      <th style={{ textAlign: 'right' }}>Montant</th>
+                      <SortableHeader label="Date" field="date" sortKey={bankSortKey} sortDir={bankSortDir} onSort={bankRequestSort} />
+                      <SortableHeader label="Libelle" field="libelle" sortKey={bankSortKey} sortDir={bankSortDir} onSort={bankRequestSort} />
+                      <SortableHeader label="Montant" field="montant" sortKey={bankSortKey} sortDir={bankSortDir} onSort={bankRequestSort} style={{ textAlign: 'right' }} />
                     </tr>
                   </thead>
                   <tbody>
-                    {filteredBank.map(bt => {
+                    {sortedBank.map(bt => {
                       const isMatched = matchedBankIds.has(bt.id)
                       const isSelected = selectedBank === bt.id
                       return (
@@ -442,14 +448,14 @@ export default function RapprochementPage() {
                 <table className="users-table" style={{ margin: 0 }}>
                   <thead>
                     <tr>
-                      <th>Date</th>
-                      <th>Libelle</th>
-                      <th>Compte</th>
-                      <th style={{ textAlign: 'right' }}>Montant</th>
+                      <SortableHeader label="Date" field="ecriture_date" sortKey={acctSortKey} sortDir={acctSortDir} onSort={acctRequestSort} />
+                      <SortableHeader label="Libelle" field="libelle" sortKey={acctSortKey} sortDir={acctSortDir} onSort={acctRequestSort} />
+                      <SortableHeader label="Compte" field="compte" sortKey={acctSortKey} sortDir={acctSortDir} onSort={acctRequestSort} />
+                      <SortableHeader label="Montant" field="montant" sortKey={acctSortKey} sortDir={acctSortDir} onSort={acctRequestSort} style={{ textAlign: 'right' }} />
                     </tr>
                   </thead>
                   <tbody>
-                    {filteredAcct.map(ae => {
+                    {sortedAcct.map(ae => {
                       const isMatched = matchedAcctIds.has(ae.id)
                       const isSelected = selectedAccounting === ae.id
                       return (
@@ -494,19 +500,19 @@ export default function RapprochementPage() {
                 <table className="users-table">
                   <thead>
                     <tr>
-                      <th>Date banque</th>
-                      <th>Libelle banque</th>
-                      <th style={{ textAlign: 'right' }}>Montant banque</th>
-                      <th>Date ecriture</th>
-                      <th>Libelle ecriture</th>
-                      <th>Compte</th>
-                      <th style={{ textAlign: 'right' }}>Montant ecriture</th>
+                      <SortableHeader label="Date banque" field="bank.date" sortKey={pairsSortKey} sortDir={pairsSortDir} onSort={pairsRequestSort} />
+                      <SortableHeader label="Libelle banque" field="bank.libelle" sortKey={pairsSortKey} sortDir={pairsSortDir} onSort={pairsRequestSort} />
+                      <SortableHeader label="Montant banque" field="bank.montant" sortKey={pairsSortKey} sortDir={pairsSortDir} onSort={pairsRequestSort} style={{ textAlign: 'right' }} />
+                      <SortableHeader label="Date ecriture" field="acct.ecriture_date" sortKey={pairsSortKey} sortDir={pairsSortDir} onSort={pairsRequestSort} />
+                      <SortableHeader label="Libelle ecriture" field="acct.libelle" sortKey={pairsSortKey} sortDir={pairsSortDir} onSort={pairsRequestSort} />
+                      <SortableHeader label="Compte" field="acct.compte" sortKey={pairsSortKey} sortDir={pairsSortDir} onSort={pairsRequestSort} />
+                      <SortableHeader label="Montant ecriture" field="acct.montant" sortKey={pairsSortKey} sortDir={pairsSortDir} onSort={pairsRequestSort} style={{ textAlign: 'right' }} />
                       <th>Statut</th>
                       <th></th>
                     </tr>
                   </thead>
                   <tbody>
-                    {matchedPairs.map(p => {
+                    {sortedPairs.map(p => {
                       const diff = Math.abs(p.bank.montant - p.acct.montant)
                       return (
                         <tr key={`${p.bankId}-${p.accountingId}`} style={{ background: '#f0fdf4' }}>

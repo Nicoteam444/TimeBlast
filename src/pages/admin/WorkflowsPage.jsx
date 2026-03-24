@@ -4,6 +4,8 @@ import { useDemo } from '../../contexts/DemoContext'
 import { useSociete } from '../../contexts/SocieteContext'
 import { DEMO_NOTES_DE_FRAIS, DEMO_USERS } from '../../data/demoData'
 import { supabase } from '../../lib/supabase'
+import useSortableTable from '../../hooks/useSortableTable'
+import SortableHeader from '../../components/SortableHeader'
 
 // ── Constantes ──────────────────────────────────────────────────
 
@@ -380,6 +382,8 @@ function NotesDeFraisTab({ isDemoMode, selectedSociete, profile }) {
     ]
   }
 
+  const { sortedData: sortedNotes, sortKey, sortDir, requestSort } = useSortableTable(notes, 'date', 'desc')
+
   if (loading) return <div style={{ textAlign: 'center', padding: '2rem', color: 'var(--text-muted)' }}>Chargement...</div>
 
   return (
@@ -408,10 +412,10 @@ function NotesDeFraisTab({ isDemoMode, selectedSociete, profile }) {
               <th style={{ width: 36 }}>
                 <input type="checkbox" checked={notes.length > 0 && selected.length === notes.length} onChange={toggleSelectAll} />
               </th>
-              <th>Collaborateur</th>
-              <th>Date</th>
-              <th>Montant</th>
-              <th>Categorie</th>
+              <SortableHeader label="Collaborateur" field="user_name" sortKey={sortKey} sortDir={sortDir} onSort={requestSort} />
+              <SortableHeader label="Date" field="date" sortKey={sortKey} sortDir={sortDir} onSort={requestSort} />
+              <SortableHeader label="Montant" field="montant" sortKey={sortKey} sortDir={sortDir} onSort={requestSort} />
+              <SortableHeader label="Categorie" field="categorie" sortKey={sortKey} sortDir={sortDir} onSort={requestSort} />
               <th>Description</th>
               <th>Justificatif</th>
               <th>Progression</th>
@@ -419,7 +423,7 @@ function NotesDeFraisTab({ isDemoMode, selectedSociete, profile }) {
             </tr>
           </thead>
           <tbody>
-            {notes.map(n => {
+            {sortedNotes.map(n => {
               const cat = CATEGORIE_META[n.categorie] || CATEGORIE_META.autre
               return (
                 <tr key={n.id}>
@@ -644,6 +648,8 @@ function CongesTab({ isDemoMode, profile }) {
     return weeks
   }, [absences])
 
+  const { sortedData: sortedAbsences, sortKey: absSortKey, sortDir: absSortDir, requestSort: absRequestSort } = useSortableTable(absences, 'date_debut', 'asc')
+
   if (loading) return <div style={{ textAlign: 'center', padding: '2rem', color: 'var(--text-muted)' }}>Chargement...</div>
 
   return (
@@ -706,10 +712,10 @@ function CongesTab({ isDemoMode, profile }) {
               <th style={{ width: 36 }}>
                 <input type="checkbox" checked={absences.length > 0 && selected.length === absences.length} onChange={() => setSelected(selected.length === absences.length ? [] : absences.map(a => a.id))} />
               </th>
-              <th>Collaborateur</th>
-              <th>Type</th>
-              <th>Date debut</th>
-              <th>Date fin</th>
+              <SortableHeader label="Collaborateur" field="user_id" sortKey={absSortKey} sortDir={absSortDir} onSort={absRequestSort} />
+              <SortableHeader label="Type" field="type" sortKey={absSortKey} sortDir={absSortDir} onSort={absRequestSort} />
+              <SortableHeader label="Date debut" field="date_debut" sortKey={absSortKey} sortDir={absSortDir} onSort={absRequestSort} />
+              <SortableHeader label="Date fin" field="date_fin" sortKey={absSortKey} sortDir={absSortDir} onSort={absRequestSort} />
               <th>Nb jours</th>
               <th>Note</th>
               <th>Progression</th>
@@ -717,7 +723,7 @@ function CongesTab({ isDemoMode, profile }) {
             </tr>
           </thead>
           <tbody>
-            {absences.map(a => {
+            {sortedAbsences.map(a => {
               const typeCfg = ABSENCE_TYPES[a.type] || { label: a.type, color: '#64748b', bg: '#f1f5f9' }
               const nbJours = countWorkdays(a.date_debut, a.date_fin)
               return (
@@ -886,6 +892,8 @@ function TempsTab({ isDemoMode, profile }) {
     setSelected(prev => prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id])
   }
 
+  const { sortedData: sortedTimesheets, sortKey: tsSortKey, sortDir: tsSortDir, requestSort: tsRequestSort } = useSortableTable(timesheets, 'semaine', 'desc')
+
   if (loading) return <div style={{ textAlign: 'center', padding: '2rem', color: 'var(--text-muted)' }}>Chargement...</div>
 
   return (
@@ -914,16 +922,16 @@ function TempsTab({ isDemoMode, profile }) {
               <th style={{ width: 36 }}>
                 <input type="checkbox" checked={timesheets.length > 0 && selected.length === timesheets.length} onChange={() => setSelected(selected.length === timesheets.length ? [] : timesheets.map(t => t.id))} />
               </th>
-              <th>Collaborateur</th>
-              <th>Semaine</th>
-              <th>Total heures</th>
+              <SortableHeader label="Collaborateur" field="user_name" sortKey={tsSortKey} sortDir={tsSortDir} onSort={tsRequestSort} />
+              <SortableHeader label="Semaine" field="semaine" sortKey={tsSortKey} sortDir={tsSortDir} onSort={tsRequestSort} />
+              <SortableHeader label="Total heures" field="total_heures" sortKey={tsSortKey} sortDir={tsSortDir} onSort={tsRequestSort} />
               <th>Repartition projets</th>
               <th>Progression</th>
               <th style={{ textAlign: 'right' }}>Actions</th>
             </tr>
           </thead>
           <tbody>
-            {timesheets.map(t => (
+            {sortedTimesheets.map(t => (
               <tr key={t.id}>
                 <td>
                   <input type="checkbox" checked={selected.includes(t.id)} onChange={() => toggleSelect(t.id)} />

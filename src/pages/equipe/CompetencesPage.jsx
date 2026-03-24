@@ -1,6 +1,8 @@
 import { useState, useEffect, useMemo } from 'react'
 import { supabase } from '../../lib/supabase'
 import { useSociete } from '../../contexts/SocieteContext'
+import useSortableTable from '../../hooks/useSortableTable'
+import SortableHeader from '../../components/SortableHeader'
 
 const LEVELS = [
   { value: 0, label: 'Non évalué', color: '#e2e8f0', emoji: '—' },
@@ -119,6 +121,8 @@ export default function CompetencesPage() {
       return true
     })
   }, [competences, search, filterCat])
+
+  const { sortedData: sortedComps, sortKey, sortDir, requestSort } = useSortableTable(filteredComps)
 
   // CRUD compétence
   async function handleSaveComp(e) {
@@ -268,8 +272,8 @@ CREATE POLICY "eval_all" ON competence_evaluations FOR ALL
               <table className="users-table" style={{ minWidth: 600 }}>
                 <thead>
                   <tr>
-                    <th style={{ position: 'sticky', left: 0, background: 'var(--surface)', zIndex: 2, minWidth: 180 }}>Compétence</th>
-                    <th style={{ minWidth: 80 }}>Cat.</th>
+                    <SortableHeader label="Compétence" field="nom" sortKey={sortKey} sortDir={sortDir} onSort={requestSort} style={{ position: 'sticky', left: 0, background: 'var(--surface)', zIndex: 2, minWidth: 180 }} />
+                    <SortableHeader label="Cat." field="categorie" sortKey={sortKey} sortDir={sortDir} onSort={requestSort} style={{ minWidth: 80 }} />
                     <th style={{ minWidth: 60, textAlign: 'center' }}>Moy.</th>
                     {equipe.slice(0, 15).map(e => (
                       <th key={e.id} style={{ textAlign: 'center', minWidth: 70, fontSize: '.72rem', whiteSpace: 'nowrap' }}>
@@ -280,7 +284,7 @@ CREATE POLICY "eval_all" ON competence_evaluations FOR ALL
                   </tr>
                 </thead>
                 <tbody>
-                  {filteredComps.map(comp => (
+                  {sortedComps.map(comp => (
                     <tr key={comp.id}>
                       <td style={{ position: 'sticky', left: 0, background: 'var(--surface)', zIndex: 1, fontWeight: 500 }}>
                         {comp.nom}
@@ -306,7 +310,7 @@ CREATE POLICY "eval_all" ON competence_evaluations FOR ALL
                       })}
                     </tr>
                   ))}
-                  {filteredComps.length === 0 && (
+                  {sortedComps.length === 0 && (
                     <tr>
                       <td colSpan={3 + Math.min(equipe.length, 15)} style={{ textAlign: 'center', color: 'var(--text-muted)', padding: '2rem' }}>
                         Aucune compétence définie.

@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react'
 import { useAuth } from '../../contexts/AuthContext'
 import { useDemo } from '../../contexts/DemoContext'
 import { DEMO_USERS } from '../../data/demoData'
+import useSortableTable from '../../hooks/useSortableTable'
+import SortableHeader from '../../components/SortableHeader'
 
 const STORAGE_KEY = 'validation_statuts'
 
@@ -93,6 +95,8 @@ export default function ValidationPage() {
 
   const users = isDemoMode ? DEMO_USERS : []
 
+  const { sortedData, sortKey, sortDir, requestSort } = useSortableTable(users, 'full_name', 'asc')
+
   const submittedCount = users.filter(u => getStatus(u.id) === 'soumis').length
   const validatedCount = users.filter(u => getStatus(u.id) === 'valide').length
 
@@ -133,14 +137,14 @@ export default function ValidationPage() {
         <table className="data-table">
           <thead>
             <tr className="data-table-header">
-              <th>Collaborateur</th>
-              <th>Rôle</th>
+              <SortableHeader label="Collaborateur" field="full_name" sortKey={sortKey} sortDir={sortDir} onSort={requestSort} />
+              <SortableHeader label="Rôle" field="role" sortKey={sortKey} sortDir={sortDir} onSort={requestSort} />
               <th>Statut</th>
               <th style={{ textAlign: 'right' }}>Actions</th>
             </tr>
           </thead>
           <tbody>
-            {users.map(user => {
+            {sortedData.map(user => {
               const status = getStatus(user.id)
               return (
                 <tr key={user.id} className="data-table-row">

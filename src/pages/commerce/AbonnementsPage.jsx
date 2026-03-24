@@ -1,6 +1,8 @@
 import { useState, useEffect, useMemo } from 'react'
 import { supabase } from '../../lib/supabase'
 import { useSociete } from '../../contexts/SocieteContext'
+import useSortableTable from '../../hooks/useSortableTable'
+import SortableHeader from '../../components/SortableHeader'
 
 const SQL_MIGRATION = `CREATE TABLE IF NOT EXISTS abonnements (
   id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
@@ -213,6 +215,8 @@ export default function AbonnementsPage() {
     })
   }, [abonnements, filterSearch, filterFreq, filterStatut])
 
+  const { sortedData, sortKey, sortDir, requestSort } = useSortableTable(filtered)
+
   const actifs = abonnements.filter(a => a.statut === 'actif')
   const kpiTotal  = abonnements.length
   const kpiActifs = actifs.length
@@ -331,17 +335,17 @@ export default function AbonnementsPage() {
               <table className="users-table" style={{ minWidth: 820 }}>
                 <thead>
                   <tr>
-                    <th>Nom</th>
-                    <th>Client</th>
-                    <th>Fréquence</th>
-                    <th style={{ textAlign: 'right' }}>Montant (€)</th>
-                    <th>Prochaine facturation</th>
-                    <th>Statut</th>
+                    <SortableHeader label="Nom" field="nom" sortKey={sortKey} sortDir={sortDir} onSort={requestSort} />
+                    <SortableHeader label="Client" field="clients.name" sortKey={sortKey} sortDir={sortDir} onSort={requestSort} />
+                    <SortableHeader label="Fréquence" field="frequence" sortKey={sortKey} sortDir={sortDir} onSort={requestSort} />
+                    <SortableHeader label="Montant (€)" field="montant" sortKey={sortKey} sortDir={sortDir} onSort={requestSort} style={{ textAlign: 'right' }} />
+                    <SortableHeader label="Prochaine facturation" field="date_prochaine_facturation" sortKey={sortKey} sortDir={sortDir} onSort={requestSort} />
+                    <SortableHeader label="Statut" field="statut" sortKey={sortKey} sortDir={sortDir} onSort={requestSort} />
                     <th>Actions</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {filtered.map(a => {
+                  {sortedData.map(a => {
                     const fi = freqInfo(a.frequence)
                     return (
                       <tr key={a.id}>

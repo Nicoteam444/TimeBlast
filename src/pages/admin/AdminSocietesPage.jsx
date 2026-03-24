@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { supabase } from '../../lib/supabase'
+import useSortableTable from '../../hooks/useSortableTable'
+import SortableHeader from '../../components/SortableHeader'
 
 export default function AdminSocietesPage() {
   const navigate = useNavigate()
@@ -89,6 +91,8 @@ CREATE POLICY "societes_admin" ON societes FOR ALL
 
 -- Lien user → société
 ALTER TABLE profiles ADD COLUMN IF NOT EXISTS societe_id uuid REFERENCES societes(id);`
+
+  const { sortedData, sortKey, sortDir, requestSort } = useSortableTable(societes, 'name', 'asc')
 
   if (sqlMissing) {
     return (
@@ -215,16 +219,16 @@ ALTER TABLE profiles ADD COLUMN IF NOT EXISTS societe_id uuid REFERENCES societe
           <table className="users-table">
             <thead>
               <tr>
-                <th>Société</th>
-                <th>Groupe</th>
-                <th>SIREN</th>
-                <th>Ville</th>
-                <th>Créée le</th>
+                <SortableHeader label="Société" field="name" sortKey={sortKey} sortDir={sortDir} onSort={requestSort} />
+                <SortableHeader label="Groupe" field="groupes.name" sortKey={sortKey} sortDir={sortDir} onSort={requestSort} />
+                <SortableHeader label="SIREN" field="siren" sortKey={sortKey} sortDir={sortDir} onSort={requestSort} />
+                <SortableHeader label="Ville" field="ville" sortKey={sortKey} sortDir={sortDir} onSort={requestSort} />
+                <SortableHeader label="Créée le" field="created_at" sortKey={sortKey} sortDir={sortDir} onSort={requestSort} />
                 <th></th>
               </tr>
             </thead>
             <tbody>
-              {societes.map(s => {
+              {sortedData.map(s => {
                 const groupe = s.groupes
                 return (
                 <tr key={s.id} style={{ cursor: 'pointer' }} onClick={() => navigate('/admin/societes/' + s.id)}>

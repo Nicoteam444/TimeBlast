@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { supabase } from '../../lib/supabase'
+import { useBreadcrumb } from '../../contexts/BreadcrumbContext'
 
 /* ── helpers ── */
 function calcAnciennete(dateEmbauche) {
@@ -82,6 +83,7 @@ const EMPTY_COLLAB = {
 export default function CollaborateurPage() {
   const { id } = useParams()
   const navigate = useNavigate()
+  const { setSegments, clearSegments } = useBreadcrumb()
 
   const [collab, setCollab]     = useState(null)
   const [societe, setSociete]   = useState(null)
@@ -111,7 +113,7 @@ export default function CollaborateurPage() {
   const [docForm, setDocForm] = useState({ nom: '', type: 'contrat', date: '', url: '' })
 
   /* ── fetch ── */
-  useEffect(() => { fetchCollab() }, [id])
+  useEffect(() => { fetchCollab(); return () => clearSegments() }, [id])
 
   async function fetchCollab() {
     setLoading(true)
@@ -119,6 +121,9 @@ export default function CollaborateurPage() {
     if (error || !data) { setNotFound(true); setLoading(false); return }
     setCollab(data)
     setNotesValue(data.notes || '')
+    // Set breadcrumb with collaborator name
+    const fullName = [data.prenom, data.nom].filter(Boolean).join(' ') || 'Collaborateur'
+    setSegments([{ id: data.id, label: fullName }])
     if (data.societe_id) {
       const { data: soc } = await supabase.from('societes').select('id, name').eq('id', data.societe_id).single()
       setSociete(soc || null)
