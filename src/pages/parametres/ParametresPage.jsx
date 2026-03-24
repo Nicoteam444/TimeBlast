@@ -4,7 +4,7 @@ import { useAppearance } from '../../contexts/AppearanceContext'
 
 // ── Onglet Affichage ─────────────────────────────────────────
 function AffichageTab() {
-  const { settings, update, reset } = useAppearance()
+  const { settings, update, updateAndSave, reset, COLOR_FIELDS } = useAppearance()
   const fileRef = useRef()
 
   function handleLogoUpload(e) {
@@ -101,29 +101,54 @@ function AffichageTab() {
         </div>
       </div>
 
-      {/* Couleur d'accent */}
+      {/* 5 couleurs personnalisables */}
       <div className="param-section">
         <div className="param-section-header">
-          <h2>Couleur d'accentuation</h2>
-          <p>Couleur principale des boutons et éléments actifs</p>
+          <h2>🎨 Couleurs de l'interface</h2>
+          <p>Personnalisez les couleurs de votre espace. Les changements sont sauvegardés automatiquement.</p>
         </div>
-        <div className="param-accent-row">
-          {ACCENTS.slice(0, -1).map(a => (
-            <div key={a.value} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '.25rem' }}>
-              <button
-                className={`param-accent-swatch ${settings.accentColor === a.value ? 'param-accent-swatch--active' : ''}`}
-                style={{ background: a.value }}
-                title={a.label}
-                onClick={() => update({ accentColor: a.value })}
-              />
-              {a.tag && <span style={{ fontSize: '.65rem', fontWeight: 700, color: settings.accentColor === a.value ? 'var(--primary)' : 'var(--text-muted)', letterSpacing: '.04em' }}>{a.tag}</span>}
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '1rem' }}>
+          {(COLOR_FIELDS || []).map(field => (
+            <div key={field.key} style={{
+              background: 'var(--surface)',
+              border: '1.5px solid var(--border)',
+              borderRadius: '10px',
+              padding: '1rem',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '1rem',
+            }}>
+              <label style={{
+                width: 44, height: 44, borderRadius: 8, cursor: 'pointer',
+                border: '2px solid var(--border)',
+                background: settings[field.key] || '#ccc',
+                flexShrink: 0,
+                position: 'relative',
+                overflow: 'hidden',
+              }}>
+                <input
+                  type="color"
+                  value={settings[field.key] || '#195C82'}
+                  onChange={e => updateAndSave({ [field.key]: e.target.value })}
+                  style={{ position: 'absolute', inset: 0, opacity: 0, cursor: 'pointer', width: '100%', height: '100%' }}
+                />
+              </label>
+              <div style={{ flex: 1 }}>
+                <div style={{ fontWeight: 600, fontSize: '.9rem', color: 'var(--text)' }}>{field.label}</div>
+                <div style={{ fontSize: '.78rem', color: 'var(--text-muted)' }}>{field.desc}</div>
+                <div style={{ fontSize: '.7rem', fontFamily: 'monospace', color: 'var(--text-muted)', marginTop: '.15rem' }}>
+                  {settings[field.key] || '#---'}
+                </div>
+              </div>
             </div>
           ))}
-          <label className="param-accent-custom" title="Couleur personnalisée">
-            <input type="color" value={isCustom ? settings.accentColor : '#1a5c82'}
-              onChange={e => update({ accentColor: e.target.value })} />
-            <span style={{ fontSize: '.75rem' }}>Autre…</span>
-          </label>
+        </div>
+        <div style={{ marginTop: '1rem', display: 'flex', gap: '.75rem' }}>
+          <button className="param-chip" onClick={() => updateAndSave({
+            menuColor: '#195C82', accentColor: '#1D9BF0', titleColor: '#0D1B24', surfaceColor: '#FFFFFF', bgColor: '#F0F0F0'
+          })}>
+            Restaurer les couleurs par défaut
+          </button>
         </div>
       </div>
 
