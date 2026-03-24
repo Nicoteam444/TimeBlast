@@ -77,9 +77,8 @@ const SECTIONS = [
     label: 'Finance',
     roles: ['admin', 'comptable'],
     items: [
-      { to: '/finance/comptabilite',    icon: '📊', label: 'Tableau de bord' },
-      { to: '/finance/saisie-ecriture', icon: '✍️', label: 'Comptabilité' },
-      { to: '/finance/ecritures',       icon: '📒', label: 'Écritures FEC' },
+      { to: '/finance/business-intelligence', icon: '📊', label: 'Business Intelligence' },
+      { to: '/finance/saisie-ecriture',      icon: '✍️', label: 'Comptabilité' },
       { to: '/finance/previsionnel',    icon: '📈', label: 'Prévisionnel' },
       { to: '/finance/immobilisations', icon: '🏢', label: 'Immobilisations' },
       { to: '/finance/rapprochement',   icon: '🔗', label: 'Rapprochement' },

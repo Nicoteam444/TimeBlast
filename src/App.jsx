@@ -39,6 +39,7 @@ import EquipePage from './pages/activite/EquipePage'
 import ValidationPage from './pages/manager/ValidationPage'
 import AbsencesPage from './pages/activite/AbsencesPage'
 import PlanificationPage from './pages/temps/PlanificationPage'
+import BusinessIntelligencePage from './pages/finance/BusinessIntelligencePage'
 import FacturationPage from './pages/facturation/FacturationPage'
 import FacturesFournisseursPage from './pages/facturation/FacturesFournisseursPage'
 import TransactionsBancairesPage from './pages/gestion/TransactionsBancairesPage'
@@ -157,20 +158,19 @@ function AppRoutes() {
       } />
 
       {/* Finance */}
-      <Route path="/finance/comptabilite" element={
-        <ProtectedRoute roles={['admin','comptable']}><Layout><ComptaPage /></Layout></ProtectedRoute>
+      <Route path="/finance/business-intelligence" element={
+        <ProtectedRoute roles={['admin','comptable']}><Layout><BusinessIntelligencePage /></Layout></ProtectedRoute>
       } />
+      <Route path="/finance/comptabilite" element={<Navigate to="/finance/business-intelligence" replace />} />
+      <Route path="/finance/ecritures" element={<Navigate to="/finance/business-intelligence" replace />} />
       <Route path="/finance/comptabilite/import" element={
         <ProtectedRoute roles={['admin','comptable']}><Layout><ComptaImportPage /></Layout></ProtectedRoute>
       } />
-      <Route path="/finance/ecritures" element={
-        <ProtectedRoute roles={['admin','comptable']}><Layout><ComptaEcrituresPage /></Layout></ProtectedRoute>
-      } />
-      <Route path="/finance/comptabilite/ecritures" element={<Navigate to="/finance/ecritures" replace />} />
+      <Route path="/finance/comptabilite/ecritures" element={<Navigate to="/finance/business-intelligence" replace />} />
       <Route path="/finance/saisie-ecriture" element={
         <ProtectedRoute roles={['admin','comptable']}><Layout><SaisieEcriturePage /></Layout></ProtectedRoute>
       } />
-      <Route path="/finance/comptabilite/analyse" element={<Navigate to="/finance/comptabilite" replace />} />
+      <Route path="/finance/comptabilite/analyse" element={<Navigate to="/finance/business-intelligence" replace />} />
       <Route path="/gestion/tableau-de-bord" element={
         <ProtectedRoute roles={['admin','comptable','manager']}><Layout><TableauDeBordGestionPage /></Layout></ProtectedRoute>
       } />
