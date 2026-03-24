@@ -3,10 +3,7 @@ import { NavLink, useNavigate, useLocation } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
 import { useLayout } from '../contexts/LayoutContext'
 import { useAppearance } from '../contexts/AppearanceContext'
-
-const FAV_KEY = 'timeblast_favorites'
-function loadFavorites() { try { return JSON.parse(localStorage.getItem(FAV_KEY) || '[]') } catch { return [] } }
-function saveFavorites(favs) { try { localStorage.setItem(FAV_KEY, JSON.stringify(favs)) } catch {} }
+import { useFavorites } from '../contexts/FavoritesContext'
 
 const SECTIONS = [
   {
@@ -110,22 +107,18 @@ export default function Sidebar() {
   const { profile } = useAuth()
   const { sidebarOpen, toggleSidebar } = useLayout()
   const { settings } = useAppearance()
+  const { favorites, toggleFavorite, syncing } = useFavorites()
   const navigate = useNavigate()
   const location = useLocation()
   const [hoveredId, setHoveredId] = useState(null)
   const [flyoutPos, setFlyoutPos] = useState({ top: 0 })
   const hideTimer = useRef(null)
   const userRole = profile?.role
-  const [favorites, setFavorites] = useState(() => loadFavorites())
 
-  function toggleFavorite(to, e) {
+  function handleToggleFavorite(to, e) {
     e.preventDefault()
     e.stopPropagation()
-    setFavorites(prev => {
-      const next = prev.includes(to) ? prev.filter(f => f !== to) : [...prev, to]
-      saveFavorites(next)
-      return next
-    })
+    toggleFavorite(to)
   }
 
   // Build favorites items from all sections
@@ -279,9 +272,10 @@ export default function Sidebar() {
                 <span>{item.label}</span>
               </NavLink>
               <button
-                className={`rail-flyout-fav ${favorites.includes(item.to) ? 'rail-flyout-fav--active' : ''}`}
-                onClick={e => toggleFavorite(item.to, e)}
+                className={`rail-flyout-fav ${favorites.includes(item.to) ? 'rail-flyout-fav--active' : ''} ${syncing ? 'rail-flyout-fav--syncing' : ''}`}
+                onClick={e => handleToggleFavorite(item.to, e)}
                 title={favorites.includes(item.to) ? 'Retirer des favoris' : 'Ajouter aux favoris'}
+                disabled={syncing}
               >
                 <svg width="14" height="14" viewBox="0 0 24 24" fill={favorites.includes(item.to) ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="2">
                   <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/>

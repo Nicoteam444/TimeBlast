@@ -1,0 +1,144 @@
+import { createContext, useContext, useState, useEffect, useCallback } from 'react'
+import { useAuth } from './AuthContext'
+import {
+  loadFavoritesLocal,
+  saveFavoritesLocal,
+  loadFavoritesFromDB,
+  addFavoriteToDBAsync,
+  removeFavoriteFromDBAsync,
+  migrateLocalFavoritesToDB,
+  shouldMigrateToDatabase,
+  syncDatabaseToLocal,
+  subscribeToFavoritesChanges,
+} from '../lib/favoritesSync'
+
+const FavoritesContext = createContext()
+
+export function FavoritesProvider({ children }) {
+  const { profile } = useAuth()
+  const [favorites, setFavorites] = useState([])
+  const [loading, setLoading] = useState(false)
+  const [syncing, setSyncing] = useState(false)
+
+  // Initialize favorites on mount and when user changes
+  useEffect(() => {
+    const initFavorites = async () => {
+      setLoading(true)
+      try {
+        if (profile?.id) {
+          // Check if migration needed
+          if (shouldMigrateToDatabase(profile.id)) {
+            await migrateLocalFavoritesToDB(profile.id)
+          }
+
+          // Load from database
+          const dbFavs = await loadFavoritesFromDB(profile.id)
+          setFavorites(dbFavs)
+        } else {
+          // Not logged in, use localStorage
+          const localFavs = loadFavoritesLocal()
+          setFavorites(localFavs)
+        }
+      } catch (err) {
+        console.error('Error initializing favorites:', err)
+        // Fallback to localStorage
+        const localFavs = loadFavoritesLocal()
+        setFavorites(localFavs)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    initFavorites()
+  }, [profile?.id])
+
+  // Subscribe to real-time changes
+  useEffect(() => {
+    if (!profile?.id) return
+
+    const onAdd = (routePath) => {
+      setFavorites(prev => {
+        if (!prev.includes(routePath)) {
+          return [...prev, routePath]
+        }
+        return prev
+      })
+    }
+
+    const onRemove = (routePath) => {
+      setFavorites(prev => prev.filter(r => r !== routePath))
+    }
+
+    const subscription = subscribeToFavoritesChanges(profile.id, onAdd, onRemove)
+    return () => {
+      if (subscription) {
+        subscription.unsubscribe()
+      }
+    }
+  }, [profile?.id])
+
+  // Toggle favorite
+  const toggleFavorite = useCallback(
+    async (routePath) => {
+      if (!routePath) return
+
+      const isFav = favorites.includes(routePath)
+      const newFavs = isFav
+        ? favorites.filter(r => r !== routePath)
+        : [...favorites, routePath]
+
+      // Update UI immediately (optimistic)
+      setFavorites(newFavs)
+
+      // Save to localStorage (always)
+      saveFavoritesLocal(newFavs)
+
+      // Sync to database if logged in
+      if (profile?.id) {
+        setSyncing(true)
+        try {
+          if (isFav) {
+            await removeFavoriteFromDBAsync(profile.id, routePath)
+          } else {
+            await addFavoriteToDBAsync(profile.id, routePath)
+          }
+        } catch (err) {
+          console.error('Error syncing favorite:', err)
+          // Revert on error
+          setFavorites(favorites)
+        } finally {
+          setSyncing(false)
+        }
+      }
+    },
+    [favorites, profile?.id]
+  )
+
+  // Check if a route is favorited
+  const isFavorite = useCallback(
+    (routePath) => favorites.includes(routePath),
+    [favorites]
+  )
+
+  const value = {
+    favorites,
+    loading,
+    syncing,
+    toggleFavorite,
+    isFavorite,
+  }
+
+  return (
+    <FavoritesContext.Provider value={value}>
+      {children}
+    </FavoritesContext.Provider>
+  )
+}
+
+export function useFavorites() {
+  const context = useContext(FavoritesContext)
+  if (!context) {
+    throw new Error('useFavorites must be used within FavoritesProvider')
+  }
+  return context
+}

@@ -5,6 +5,7 @@ import { DemoProvider } from './contexts/DemoContext'
 import { AppearanceProvider } from './contexts/AppearanceContext'
 import { NotificationsProvider } from './contexts/NotificationsContext'
 import { SocieteProvider } from './contexts/SocieteContext'
+import { FavoritesProvider } from './contexts/FavoritesContext'
 import ProtectedRoute from './components/ProtectedRoute'
 import Layout from './components/Layout'
 import LoginPage from './pages/LoginPage'
@@ -253,15 +254,17 @@ export default function App() {
   return (
     <AppearanceProvider>
       <AuthProvider>
-        <SocieteProvider>
-          <DemoProvider>
-            <NotificationsProvider>
-              <BrowserRouter>
-                <AppRoutes />
-              </BrowserRouter>
-            </NotificationsProvider>
-          </DemoProvider>
-        </SocieteProvider>
+        <FavoritesProvider>
+          <SocieteProvider>
+            <DemoProvider>
+              <NotificationsProvider>
+                <BrowserRouter>
+                  <AppRoutes />
+                </BrowserRouter>
+              </NotificationsProvider>
+            </DemoProvider>
+          </SocieteProvider>
+        </FavoritesProvider>
       </AuthProvider>
     </AppearanceProvider>
   )
