@@ -153,7 +153,7 @@ export default function DashboardPage() {
 
   if (!data) return <div style={{ padding: '2rem', textAlign: 'center' }}>Chargement…</div>
 
-  const prenom = profile?.prenom || profile?.email?.split('@')[0] || 'Utilisateur'
+  const prenom = profile?.full_name?.split(' ')[0] || profile?.email?.split('@')[0] || 'Utilisateur'
 
   return (
     <div style={{ padding: 0 }}>
