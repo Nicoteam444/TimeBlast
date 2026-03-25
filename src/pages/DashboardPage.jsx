@@ -123,7 +123,7 @@ export default function DashboardPage() {
 
   // ── Drag & Drop Widgets ──
   const STORAGE_KEY = 'timeblast_dashboard_order'
-  const DEFAULT_ORDER = ['tasks', 'time', 'alerts', 'projects', 'treasury', 'marketing', 'documents', 'activity']
+  const DEFAULT_ORDER = ['tasks', 'time', 'alerts', 'projects', 'treasury', 'marketing', 'documents', 'shortcuts', 'activity']
   const [widgetOrder, setWidgetOrder] = useState(() => {
     try { const s = localStorage.getItem(STORAGE_KEY); return s ? JSON.parse(s) : DEFAULT_ORDER } catch { return DEFAULT_ORDER }
   })
@@ -782,6 +782,36 @@ export default function DashboardPage() {
             </div>
           </div>
         )}
+      </>
+    ),
+
+    shortcuts: (
+      <>
+        <SectionHeader icon="⚡" title="Raccourcis" />
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '.5rem' }}>
+          {[
+            { icon: '➕', label: 'Nouvelle tache', path: '/activite/projets' },
+            { icon: '⏱', label: 'Saisir du temps', path: '/activite/saisie' },
+            { icon: '🧾', label: 'Nouvelle facture', path: '/finance/facturation' },
+            { icon: '👤', label: 'Nouveau contact', path: '/crm/contacts' },
+            { icon: '📁', label: 'Nouveau projet', path: '/activite/projets' },
+            { icon: '📄', label: 'Importer document', path: '/documents/archives' },
+          ].map((s, i) => (
+            <button key={i} onClick={() => navigate(s.path)} style={{
+              display: 'flex', alignItems: 'center', gap: '.5rem',
+              padding: '.6rem .75rem', borderRadius: 8, border: '1px solid var(--border, #e2e8f0)',
+              background: 'var(--surface, #f8fafc)', cursor: 'pointer',
+              fontSize: '.82rem', fontWeight: 500, color: 'var(--text)',
+              transition: 'all .15s', textAlign: 'left',
+            }}
+            onMouseEnter={e => { e.currentTarget.style.background = 'var(--primary, #1a5c82)'; e.currentTarget.style.color = '#fff'; e.currentTarget.style.borderColor = 'var(--primary)' }}
+            onMouseLeave={e => { e.currentTarget.style.background = 'var(--surface, #f8fafc)'; e.currentTarget.style.color = 'var(--text)'; e.currentTarget.style.borderColor = 'var(--border, #e2e8f0)' }}
+            >
+              <span style={{ fontSize: '1rem' }}>{s.icon}</span>
+              <span>{s.label}</span>
+            </button>
+          ))}
+        </div>
       </>
     ),
   }
