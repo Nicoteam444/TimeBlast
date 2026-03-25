@@ -110,14 +110,13 @@ const SECTIONS = [
     ],
   },
   {
-    id: 'automatisation',
-    icon: '⚡',
-    label: 'Automatisation',
-    directTo: '/automatisation/workflows',
+    id: 'workflows',
+    icon: '🔀',
+    label: 'Workflows',
+    directLink: true,
+    landingTo: '/automatisation/workflows',
     roles: ['admin', 'manager'],
-    items: [
-      { to: '/automatisation/workflows', icon: '🔀', label: 'Workflows' },
-    ],
+    items: [],
   },
 ]
 
@@ -134,7 +133,7 @@ const ADMIN_SECTION = {
     { to: '/admin/organigramme', icon: '🗂', label: 'Organigramme',      roles: ['admin'] },
     { to: '/admin/audit',        icon: '📋', label: "Journal d'audit",   roles: ['admin'] },
     { to: '/admin/messages',     icon: '📬', label: 'Messages contact',  roles: ['admin'] },
-    { to: '/admin/workflows',    icon: '✅', label: 'Approbations',      roles: ['admin', 'manager'] },
+    { to: '/admin/workflows',    icon: '🔄', label: 'Workflows',         roles: ['admin', 'manager'] },
     { to: '/admin/analytics',    icon: '📊', label: 'Analytics',         roles: ['admin', 'manager'] },
     { to: '/parametres',         icon: '🔧', label: 'Paramètres',        roles: ['admin'] },
   ],

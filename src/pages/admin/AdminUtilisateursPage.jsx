@@ -34,9 +34,16 @@ function formatDateTime(date) {
 }
 
 const EMPTY_CREATE = {
-  full_name: '', email: '', password: '', role: 'collaborateur',
+  prenom: '', nom: '', email: '', password: '', role: 'collaborateur',
   societe_id: '', send_invite: true,
-  telephone: '', poste: '', date_embauche: '',
+  telephone: '', poste: '', date_embauche: '', date_naissance: '',
+}
+
+function splitFullName(fullName) {
+  if (!fullName) return { prenom: '', nom: '' }
+  const parts = fullName.trim().split(/\s+/)
+  if (parts.length === 1) return { prenom: '', nom: parts[0] }
+  return { prenom: parts[0], nom: parts.slice(1).join(' ') }
 }
 
 export default function AdminUtilisateursPage() {
@@ -77,8 +84,11 @@ export default function AdminUtilisateursPage() {
     e.preventDefault()
     setFormLoading(true)
     setFormError(null)
+    const submitPayload = { ...form, full_name: [form.prenom, form.nom].filter(Boolean).join(' ') }
+    delete submitPayload.prenom
+    delete submitPayload.nom
     const { data, error } = await supabase.functions.invoke('manage-user', {
-      body: { action: 'create', ...form },
+      body: { action: 'create', ...submitPayload },
     })
     setFormLoading(false)
     if (error || data?.error) {
@@ -99,8 +109,10 @@ export default function AdminUtilisateursPage() {
 
   function openEdit(user) {
     setEditUser(user)
+    const { prenom, nom } = splitFullName(user.full_name)
     setEditForm({
-      full_name: user.full_name || '',
+      prenom,
+      nom,
       role: user.role || 'collaborateur',
       societe_id: user.societe_id || '',
       telephone: user.telephone || '',
@@ -116,7 +128,7 @@ export default function AdminUtilisateursPage() {
     setEditLoading(true)
     setEditError(null)
     const update = {
-      full_name: editForm.full_name,
+      full_name: [editForm.prenom, editForm.nom].filter(Boolean).join(' '),
       role: editForm.role,
       societe_id: editForm.societe_id || null,
     }
@@ -155,7 +167,13 @@ export default function AdminUtilisateursPage() {
     return list
   }, [users, search, filterRole, filterSociete])
 
-  const { sortedData, sortKey, sortDir, requestSort } = useSortableTable(filtered, 'full_name', 'asc')
+  const filteredWithNames = useMemo(() =>
+    filtered.map(u => {
+      const { prenom, nom } = splitFullName(u.full_name)
+      return { ...u, _prenom: prenom, _nom: nom }
+    }), [filtered])
+
+  const { sortedData, sortKey, sortDir, requestSort } = useSortableTable(filteredWithNames, '_nom', 'asc')
 
   const stats = {
     actifs: users.filter(u => getStatus(u).label === 'Actif').length,
@@ -242,10 +260,16 @@ export default function AdminUtilisateursPage() {
             <form onSubmit={handleCreate}>
               <div className="form-grid-2">
                 <div className="field">
-                  <label>Nom complet *</label>
-                  <input type="text" value={form.full_name}
-                    onChange={e => setForm(f => ({ ...f, full_name: e.target.value }))}
-                    placeholder="Prénom Nom" required autoFocus />
+                  <label>Prénom *</label>
+                  <input type="text" value={form.prenom}
+                    onChange={e => setForm(f => ({ ...f, prenom: e.target.value }))}
+                    placeholder="Prénom" required autoFocus />
+                </div>
+                <div className="field">
+                  <label>Nom *</label>
+                  <input type="text" value={form.nom}
+                    onChange={e => setForm(f => ({ ...f, nom: e.target.value }))}
+                    placeholder="Nom" required />
                 </div>
                 <div className="field">
                   <label>Email *</label>
@@ -275,6 +299,11 @@ export default function AdminUtilisateursPage() {
                   <label>Date d'embauche</label>
                   <input type="date" value={form.date_embauche}
                     onChange={e => setForm(f => ({ ...f, date_embauche: e.target.value }))} />
+                </div>
+                <div className="field">
+                  <label>Date de naissance</label>
+                  <input type="date" value={form.date_naissance || ''}
+                    onChange={e => setForm(f => ({ ...f, date_naissance: e.target.value }))} />
                 </div>
                 {societes.length > 0 && (
                   <div className="field" style={{ gridColumn: '1 / -1' }}>
@@ -363,10 +392,16 @@ export default function AdminUtilisateursPage() {
             <form onSubmit={handleEdit}>
               <div className="form-grid-2">
                 <div className="field">
-                  <label>Nom complet</label>
-                  <input type="text" value={editForm.full_name}
-                    onChange={e => setEditForm(f => ({ ...f, full_name: e.target.value }))}
-                    placeholder="Prénom Nom" />
+                  <label>Prénom</label>
+                  <input type="text" value={editForm.prenom}
+                    onChange={e => setEditForm(f => ({ ...f, prenom: e.target.value }))}
+                    placeholder="Prénom" />
+                </div>
+                <div className="field">
+                  <label>Nom</label>
+                  <input type="text" value={editForm.nom}
+                    onChange={e => setEditForm(f => ({ ...f, nom: e.target.value }))}
+                    placeholder="Nom" />
                 </div>
                 <div className="field">
                   <label>Poste / Fonction</label>
@@ -499,7 +534,8 @@ export default function AdminUtilisateursPage() {
           <table className="users-table">
             <thead>
               <tr>
-                <SortableHeader label="Utilisateur" field="full_name" sortKey={sortKey} sortDir={sortDir} onSort={requestSort} />
+                <SortableHeader label="Nom" field="_nom" sortKey={sortKey} sortDir={sortDir} onSort={requestSort} />
+                <SortableHeader label="Prénom" field="_prenom" sortKey={sortKey} sortDir={sortDir} onSort={requestSort} />
                 <SortableHeader label="Société / Groupe" field="societe_id" sortKey={sortKey} sortDir={sortDir} onSort={requestSort} />
                 <SortableHeader label="Rôle / Statut" field="role" sortKey={sortKey} sortDir={sortDir} onSort={requestSort} />
                 <SortableHeader label="Dernière connexion" field="last_sign_in_at" sortKey={sortKey} sortDir={sortDir} onSort={requestSort} />
@@ -520,7 +556,7 @@ export default function AdminUtilisateursPage() {
                         </span>
                         <div>
                           <p className="user-name">
-                            {user.full_name || '—'}
+                            {user._nom || '—'}
                             {user.actif === false && <span style={{ marginLeft: '.4rem', fontSize: '.72rem', color: '#dc2626', fontWeight: 600 }}>INACTIF</span>}
                           </p>
                           <p className="user-email">{user.email}</p>
@@ -529,6 +565,7 @@ export default function AdminUtilisateursPage() {
                         </div>
                       </div>
                     </td>
+                    <td style={{ fontWeight: 500 }}>{user._prenom || '—'}</td>
                     <td>
                       <div style={{ display: 'flex', flexDirection: 'column', gap: '.2rem' }}>
                         <span style={{ fontSize: '.82rem' }}>
@@ -569,7 +606,7 @@ export default function AdminUtilisateursPage() {
               })}
               {sortedData.length === 0 && (
                 <tr>
-                  <td colSpan={5} style={{ textAlign: 'center', padding: '2rem', color: 'var(--text-muted)' }}>
+                  <td colSpan={6} style={{ textAlign: 'center', padding: '2rem', color: 'var(--text-muted)' }}>
                     Aucun utilisateur trouvé
                   </td>
                 </tr>
