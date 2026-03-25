@@ -799,216 +799,109 @@ function BaseDeDonneesTab() {
 }
 
 // ── Page principale ───────────────────────────────────────────
-// ── Onglet Flux Métier (Éditeur drag & drop) ────────────────
-const DEFAULT_NODES = [
-  { id: 'lead', label: 'Reception Lead', sub: 'Marketing', route: '/crm/leads', available: true, x: 60, y: 60 },
-  { id: 'contact', label: 'Qualification Contact', sub: 'CRM', route: '/crm/contacts', available: true, x: 240, y: 60 },
-  { id: 'entreprise', label: 'Fiche Entreprise', sub: 'CRM', route: '/crm/entreprises', available: true, x: 420, y: 60 },
-  { id: 'opportunite', label: 'Opportunite', sub: 'Commerce', route: '/commerce/transactions', available: true, x: 60, y: 150 },
-  { id: 'devis', label: 'Devis', sub: 'Commerce', route: '/commerce/devis', available: true, x: 240, y: 150 },
-  { id: 'client', label: 'Creation Client', sub: 'Commerce', route: '/commerce/clients', available: true, x: 420, y: 150 },
-  { id: 'projet', label: 'Projet', sub: 'Activite', route: '/activite/projets', available: true, x: 60, y: 240 },
-  { id: 'planif', label: 'Planification', sub: 'Activite', route: '/activite/planification', available: true, x: 240, y: 240 },
-  { id: 'temps', label: 'Saisie des temps', sub: 'Calendrier', route: '/activite/saisie', available: true, x: 420, y: 240 },
-  { id: 'facture', label: 'Facturation', sub: 'Gestion', route: '/finance/facturation', available: true, x: 60, y: 330 },
-  { id: 'envoi', label: 'Envoi e-facture', sub: 'Gestion', route: '/finance/facturation', available: true, x: 240, y: 330 },
-  { id: 'encaissement', label: 'Encaissement', sub: 'Finance', route: '/gestion/transactions', available: true, x: 420, y: 330 },
-  { id: 'rapproch', label: 'Rapprochement', sub: 'Finance', route: '/finance/rapprochement', available: true, x: 60, y: 420 },
-  { id: 'compta', label: 'Comptabilite', sub: 'Finance', route: '/finance/business-intelligence', available: true, x: 240, y: 420 },
-  { id: 'reporting', label: 'Reporting', sub: 'Activite', route: '/activite/reporting', available: true, x: 420, y: 420 },
-  { id: 'campagne', label: 'Campagnes', sub: 'Marketing', route: '/marketing/campagnes', available: true, x: 600, y: 60 },
-  { id: 'produits', label: 'Produits', sub: 'Commerce', route: '/commerce/produits', available: true, x: 600, y: 150 },
-  { id: 'achats', label: 'Achats', sub: 'Gestion', route: '/gestion/achats', available: true, x: 600, y: 240 },
-  { id: 'notes', label: 'Notes de frais', sub: 'Equipe', route: '/equipe/notes-de-frais', available: true, x: 600, y: 330 },
-  { id: 'absences', label: 'Absences', sub: 'Equipe', route: '/activite/absences', available: true, x: 600, y: 420 },
-]
-const DEFAULT_EDGES = [
-  ['lead','contact'],['contact','entreprise'],['entreprise','opportunite'],['opportunite','devis'],['devis','client'],
-  ['client','projet'],['projet','planif'],['planif','temps'],['temps','facture'],['facture','envoi'],['envoi','encaissement'],
-  ['encaissement','rapproch'],['rapproch','compta'],['compta','reporting'],
-  ['campagne','lead'],['produits','devis'],['achats','compta'],['notes','compta'],
-]
-const FLUX_STORAGE = 'tb_flux_metier'
-
+// ── Onglet Flux Métier ──────────────────────────────────────
 function FluxMetierTab() {
+  const navigate = React.useCallback((path) => {
+    window.location.href = path
+  }, [])
+
   const B = '#2B4C7E'
   const GREY = '#94a3b8'
-  const W = 130, H = 50
 
-  const [nodes, setNodes] = useState(() => {
-    try { const s = localStorage.getItem(FLUX_STORAGE); return s ? JSON.parse(s).nodes || DEFAULT_NODES : DEFAULT_NODES } catch { return DEFAULT_NODES }
-  })
-  const [edges, setEdges] = useState(() => {
-    try { const s = localStorage.getItem(FLUX_STORAGE); return s ? JSON.parse(s).edges || DEFAULT_EDGES : DEFAULT_EDGES } catch { return DEFAULT_EDGES }
-  })
-  const [editMode, setEditMode] = useState(false)
-  const [dragging, setDragging] = useState(null)
-  const [dragOffset, setDragOffset] = useState({ dx: 0, dy: 0 })
-  const [connecting, setConnecting] = useState(null) // {fromId, mx, my}
-  const [editNode, setEditNode] = useState(null)
-  const [editForm, setEditForm] = useState({ label: '', sub: '' })
-  const svgRef = React.useRef(null)
+  // Étapes du processus complet lead → encaissement
+  const steps = [
+    // Ligne 1 : Acquisition
+    { id: 'lead', label: 'Réception Lead', sub: 'Marketing', route: '/crm/leads', available: true, x: 60, y: 60 },
+    { id: 'contact', label: 'Qualification Contact', sub: 'CRM', route: '/crm/contacts', available: true, x: 240, y: 60 },
+    { id: 'entreprise', label: 'Fiche Entreprise', sub: 'CRM', route: '/crm/entreprises', available: true, x: 420, y: 60 },
+    // Ligne 2 : Commercial
+    { id: 'opportunite', label: 'Opportunité', sub: 'Commerce', route: '/commerce/transactions', available: true, x: 60, y: 160 },
+    { id: 'devis', label: 'Devis', sub: 'Commerce', route: '/commerce/devis', available: true, x: 240, y: 160 },
+    { id: 'client', label: 'Création Client', sub: 'Commerce', route: '/commerce/clients', available: true, x: 420, y: 160 },
+    // Ligne 3 : Production
+    { id: 'projet', label: 'Projet', sub: 'Activité', route: '/activite/projets', available: true, x: 60, y: 260 },
+    { id: 'planif', label: 'Planification', sub: 'Activité', route: '/activite/planification', available: true, x: 240, y: 260 },
+    { id: 'temps', label: 'Saisie des temps', sub: 'Calendrier', route: '/activite/saisie', available: true, x: 420, y: 260 },
+    // Ligne 4 : Facturation & Encaissement
+    { id: 'facture', label: 'Facturation', sub: 'Gestion', route: '/finance/facturation', available: true, x: 60, y: 360 },
+    { id: 'envoi', label: 'Envoi e-facture', sub: 'Gestion', route: '/finance/facturation', available: true, x: 240, y: 360 },
+    { id: 'encaissement', label: 'Encaissement', sub: 'Finance', route: '/gestion/transactions', available: true, x: 420, y: 360 },
+    // Ligne 5 : Suivi & Analyse
+    { id: 'rapproch', label: 'Rapprochement', sub: 'Finance', route: '/finance/rapprochement', available: true, x: 60, y: 460 },
+    { id: 'compta', label: 'Comptabilité', sub: 'Finance', route: '/finance/business-intelligence', available: true, x: 240, y: 460 },
+    { id: 'reporting', label: 'Reporting', sub: 'Activité', route: '/activite/reporting', available: true, x: 420, y: 460 },
+  ]
 
-  function save(n, e) {
-    localStorage.setItem(FLUX_STORAGE, JSON.stringify({ nodes: n, edges: e }))
-  }
+  // Flux parallèles (non linéaires)
+  const sideSteps = [
+    { id: 'campagne', label: 'Campagne Marketing', sub: 'Marketing', route: '/marketing/campagnes', available: true, x: 600, y: 60 },
+    { id: 'produits', label: 'Catalogue Produits', sub: 'Commerce', route: '/commerce/produits', available: true, x: 600, y: 160 },
+    { id: 'achats', label: 'Achats Fournisseurs', sub: 'Gestion', route: '/gestion/achats', available: true, x: 600, y: 260 },
+    { id: 'notes', label: 'Notes de frais', sub: 'Équipe', route: '/equipe/notes-de-frais', available: true, x: 600, y: 360 },
+    { id: 'absences', label: 'Absences / Congés', sub: 'Équipe', route: '/activite/absences', available: true, x: 600, y: 460 },
+  ]
 
-  function getSvgPoint(e) {
-    const svg = svgRef.current
-    if (!svg) return { x: 0, y: 0 }
-    const pt = svg.createSVGPoint()
-    pt.x = e.clientX; pt.y = e.clientY
-    const ctm = svg.getScreenCTM().inverse()
-    const svgP = pt.matrixTransform(ctm)
-    return { x: svgP.x, y: svgP.y }
-  }
+  // Flèches principales (chaîne de valeur)
+  const arrows = [
+    ['lead', 'contact'], ['contact', 'entreprise'],
+    ['entreprise', 'opportunite'], ['opportunite', 'devis'], ['devis', 'client'],
+    ['client', 'projet'], ['projet', 'planif'], ['planif', 'temps'],
+    ['temps', 'facture'], ['facture', 'envoi'], ['envoi', 'encaissement'],
+    ['encaissement', 'rapproch'], ['rapproch', 'compta'], ['compta', 'reporting'],
+  ]
 
-  function onMouseDown(e, nodeId) {
-    if (!editMode) return
-    e.stopPropagation()
-    const { x, y } = getSvgPoint(e)
-    const node = nodes.find(n => n.id === nodeId)
-    setDragging(nodeId)
-    setDragOffset({ dx: x - node.x, dy: y - node.y })
-  }
+  // Flèches latérales
+  const sideArrows = [
+    ['campagne', 'lead'], ['produits', 'devis'], ['achats', 'compta'], ['notes', 'compta'],
+  ]
 
-  function onMouseMove(e) {
-    if (!dragging && !connecting) return
-    const { x, y } = getSvgPoint(e)
-    if (dragging) {
-      setNodes(prev => {
-        const updated = prev.map(n => n.id === dragging ? { ...n, x: x - dragOffset.dx, y: y - dragOffset.dy } : n)
-        return updated
-      })
-    }
-    if (connecting) {
-      setConnecting(prev => ({ ...prev, mx: x, my: y }))
-    }
-  }
+  const allSteps = [...steps, ...sideSteps]
+  const stepMap = Object.fromEntries(allSteps.map(s => [s.id, s]))
 
-  function onMouseUp() {
-    if (dragging) {
-      setDragging(null)
-      save(nodes, edges)
-    }
-    if (connecting) setConnecting(null)
-  }
-
-  function onNodeClick(e, nodeId) {
-    if (connecting) {
-      e.stopPropagation()
-      if (connecting.fromId !== nodeId) {
-        const newEdges = [...edges, [connecting.fromId, nodeId]]
-        setEdges(newEdges)
-        save(nodes, newEdges)
-      }
-      setConnecting(null)
-      return
-    }
-    if (!editMode) {
-      const node = nodes.find(n => n.id === nodeId)
-      if (node?.available && node?.route) window.location.href = node.route
-    }
-  }
-
-  function startConnect(e, nodeId) {
-    e.stopPropagation()
-    const { x, y } = getSvgPoint(e)
-    setConnecting({ fromId: nodeId, mx: x, my: y })
-  }
-
-  function addNode() {
-    const id = 'node_' + Date.now()
-    const newNode = { id, label: 'Nouvelle etape', sub: 'Custom', route: '', available: false, x: 350, y: 250 }
-    const updated = [...nodes, newNode]
-    setNodes(updated)
-    save(updated, edges)
-  }
-
-  function deleteNode(id) {
-    const updated = nodes.filter(n => n.id !== id)
-    const updatedEdges = edges.filter(([f, t]) => f !== id && t !== id)
-    setNodes(updated)
-    setEdges(updatedEdges)
-    save(updated, updatedEdges)
-    setEditNode(null)
-  }
-
-  function deleteEdge(from, to) {
-    const updated = edges.filter(([f, t]) => !(f === from && t === to))
-    setEdges(updated)
-    save(nodes, updated)
-  }
-
-  function openEdit(e, node) {
-    e.stopPropagation()
-    setEditNode(node.id)
-    setEditForm({ label: node.label, sub: node.sub })
-  }
-
-  function saveEdit() {
-    const updated = nodes.map(n => n.id === editNode ? { ...n, label: editForm.label, sub: editForm.sub } : n)
-    setNodes(updated)
-    save(updated, edges)
-    setEditNode(null)
-  }
-
-  function resetLayout() {
-    setNodes(DEFAULT_NODES)
-    setEdges(DEFAULT_EDGES)
-    localStorage.removeItem(FLUX_STORAGE)
-  }
-
-  const nodeMap = Object.fromEntries(nodes.map(n => [n.id, n]))
+  const W = 130, H = 52
 
   return (
     <div className="param-sections">
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
-        <div>
-          <h2 style={{ margin: 0, fontSize: '1.1rem' }}>🔄 Flux metier — Du lead a l'encaissement</h2>
-          <p style={{ color: '#64748b', fontSize: '.85rem', margin: '.25rem 0 0' }}>
-            {editMode ? 'Deplacez les etapes, connectez-les, ajoutez ou supprimez.' : 'Cliquez sur une etape pour acceder a la page.'}
-            <span style={{ marginLeft: 12, color: B, fontWeight: 600 }}>● Disponible</span>
-            <span style={{ marginLeft: 8, color: GREY, fontWeight: 600 }}>● Custom</span>
-          </p>
-        </div>
-        <div style={{ display: 'flex', gap: 8 }}>
-          {editMode && (
-            <>
-              <button onClick={addNode} style={{ padding: '6px 14px', borderRadius: 8, border: '1px solid #16a34a', background: '#f0fdf4', color: '#16a34a', cursor: 'pointer', fontSize: '.82rem', fontWeight: 600 }}>+ Etape</button>
-              <button onClick={resetLayout} style={{ padding: '6px 14px', borderRadius: 8, border: '1px solid #e2e8f0', background: '#fff', cursor: 'pointer', fontSize: '.82rem' }}>Reinitialiser</button>
-            </>
-          )}
-          <button onClick={() => setEditMode(!editMode)} style={{
-            padding: '6px 16px', borderRadius: 8, border: 'none', cursor: 'pointer', fontSize: '.82rem', fontWeight: 600,
-            background: editMode ? '#dc2626' : B, color: '#fff',
-          }}>{editMode ? '✓ Terminer' : '✏️ Modifier'}</button>
-        </div>
+      <div style={{ marginBottom: 16 }}>
+        <h2 style={{ margin: 0, fontSize: '1.1rem' }}>🔄 Flux métier — Du lead à l'encaissement</h2>
+        <p style={{ color: '#64748b', fontSize: '.85rem', margin: '.25rem 0 0' }}>
+          Cliquez sur une étape pour accéder à la page correspondante.
+          <span style={{ marginLeft: 12, color: B, fontWeight: 600 }}>● Disponible</span>
+          <span style={{ marginLeft: 12, color: GREY, fontWeight: 600 }}>● Bientôt</span>
+        </p>
       </div>
 
-      <div style={{ overflowX: 'auto', border: editMode ? `2px dashed ${B}40` : '1px solid #e2e8f0', borderRadius: 12, background: editMode ? '#fafbff' : '#fff' }}>
-        <svg ref={svgRef} viewBox="0 0 780 500" style={{ width: '100%', minWidth: 750, height: 'auto', cursor: editMode ? 'crosshair' : 'default' }}
-          onMouseMove={onMouseMove} onMouseUp={onMouseUp} onMouseLeave={onMouseUp}>
+      <div style={{ overflowX: 'auto', padding: '0 0 16px' }}>
+        <svg viewBox="0 0 750 520" style={{ width: '100%', minWidth: 700, height: 'auto' }}>
           <defs>
-            <marker id="arrowB" viewBox="0 0 10 7" refX="10" refY="3.5" markerWidth="8" markerHeight="6" orient="auto-start-reverse"><polygon points="0 0, 10 3.5, 0 7" fill={B} /></marker>
-            <marker id="arrowG" viewBox="0 0 10 7" refX="10" refY="3.5" markerWidth="8" markerHeight="6" orient="auto-start-reverse"><polygon points="0 0, 10 3.5, 0 7" fill={GREY} /></marker>
+            <marker id="arrowB" viewBox="0 0 10 7" refX="10" refY="3.5" markerWidth="8" markerHeight="6" orient="auto-start-reverse">
+              <polygon points="0 0, 10 3.5, 0 7" fill={B} />
+            </marker>
+            <marker id="arrowG" viewBox="0 0 10 7" refX="10" refY="3.5" markerWidth="8" markerHeight="6" orient="auto-start-reverse">
+              <polygon points="0 0, 10 3.5, 0 7" fill={GREY} />
+            </marker>
             <filter id="cardSh"><feDropShadow dx="0" dy="1" stdDeviation="2" floodColor="#000" floodOpacity="0.08" /></filter>
             <filter id="bGlow2"><feGaussianBlur stdDeviation="2" /><feMerge><feMergeNode /><feMergeNode in="SourceGraphic" /></feMerge></filter>
           </defs>
 
-          {/* Grille en mode édition */}
-          {editMode && Array.from({ length: 20 }, (_, i) => (
-            <React.Fragment key={`grid-${i}`}>
-              <line x1={i * 40} y1={0} x2={i * 40} y2={500} stroke="#e2e8f0" strokeWidth="0.5" />
-              <line x1={0} y1={i * 40} x2={780} y2={i * 40} stroke="#e2e8f0" strokeWidth="0.5" />
-            </React.Fragment>
+          {/* Labels de phases */}
+          {[
+            { y: 40, label: '1. ACQUISITION', color: '#0ea5e9' },
+            { y: 140, label: '2. COMMERCIAL', color: '#8b5cf6' },
+            { y: 240, label: '3. PRODUCTION', color: '#16a34a' },
+            { y: 340, label: '4. FACTURATION', color: '#f59e0b' },
+            { y: 440, label: '5. ANALYSE', color: '#ef4444' },
+          ].map(p => (
+            <text key={p.label} x={8} y={p.y} fill={p.color} fontSize="7" fontWeight="700" opacity="0.6" letterSpacing="0.5">{p.label}</text>
           ))}
 
-          {/* Connexions */}
-          {edges.map(([from, to], i) => {
-            const s = nodeMap[from], e = nodeMap[to]
+          {/* Flèches principales */}
+          {arrows.map(([from, to], i) => {
+            const s = stepMap[from], e = stepMap[to]
             if (!s || !e) return null
-            const sx = s.x + W / 2, sy = s.y + H / 2, ex = e.x + W / 2, ey = e.y + H / 2
+            const sx = s.x + W / 2, sy = s.y + H / 2
+            const ex = e.x + W / 2, ey = e.y + H / 2
+            // Ajuster les points de départ/arrivée
             let x1 = sx, y1 = sy, x2 = ex, y2 = ey
             if (Math.abs(ex - sx) > Math.abs(ey - sy)) {
               x1 = sx + (ex > sx ? W / 2 + 4 : -W / 2 - 4); x2 = ex + (ex > sx ? -W / 2 - 4 : W / 2 + 4); y1 = sy; y2 = ey
@@ -1017,89 +910,46 @@ function FluxMetierTab() {
             }
             const avail = s.available && e.available
             return (
-              <g key={`edge-${i}`}>
+              <g key={`arr-${i}`}>
                 <line x1={x1} y1={y1} x2={x2} y2={y2} stroke={avail ? B : GREY} strokeWidth="1.5" opacity={avail ? 0.3 : 0.15} markerEnd={avail ? 'url(#arrowB)' : 'url(#arrowG)'} />
-                {avail && !editMode && (
+                {avail && (
                   <circle r="3" fill={B} filter="url(#bGlow2)" opacity="0.8">
-                    <animate attributeName="cx" values={`${x1};${x2}`} dur={`${2 + (i % 3) * 0.3}s`} repeatCount="indefinite" begin={`${i * 0.15}s`} />
-                    <animate attributeName="cy" values={`${y1};${y2}`} dur={`${2 + (i % 3) * 0.3}s`} repeatCount="indefinite" begin={`${i * 0.15}s`} />
+                    <animate attributeName="cx" values={`${x1};${x2}`} dur={`${2 + (i % 3) * 0.3}s`} repeatCount="indefinite" begin={`${i * 0.2}s`} />
+                    <animate attributeName="cy" values={`${y1};${y2}`} dur={`${2 + (i % 3) * 0.3}s`} repeatCount="indefinite" begin={`${i * 0.2}s`} />
                   </circle>
-                )}
-                {editMode && (
-                  <g style={{ cursor: 'pointer' }} onClick={() => deleteEdge(from, to)}>
-                    <circle cx={(x1 + x2) / 2} cy={(y1 + y2) / 2} r={6} fill="#dc2626" opacity="0.8" />
-                    <text x={(x1 + x2) / 2} y={(y1 + y2) / 2 + 1} textAnchor="middle" dominantBaseline="central" fill="#fff" fontSize="7" fontWeight="700">×</text>
-                  </g>
                 )}
               </g>
             )
           })}
 
-          {/* Ligne de connexion en cours */}
-          {connecting && (() => {
-            const s = nodeMap[connecting.fromId]
-            return s ? <line x1={s.x + W / 2} y1={s.y + H / 2} x2={connecting.mx} y2={connecting.my} stroke={B} strokeWidth="2" opacity="0.5" strokeDasharray="6 4" /> : null
-          })()}
+          {/* Flèches latérales */}
+          {sideArrows.map(([from, to], i) => {
+            const s = stepMap[from], e = stepMap[to]
+            if (!s || !e) return null
+            const x1 = s.x, y1 = s.y + H / 2
+            const x2 = e.x + W + 4, y2 = e.y + H / 2
+            return <line key={`side-${i}`} x1={x1} y1={y1} x2={x2} y2={y2} stroke={B} strokeWidth="1" opacity="0.15" strokeDasharray="4 4" markerEnd="url(#arrowB)" />
+          })}
 
-          {/* Noeuds */}
-          {nodes.map(node => {
-            const color = node.available ? B : GREY
+          {/* Label colonne latérale */}
+          <text x={600 + W / 2} y={40} textAnchor="middle" fill="#64748b" fontSize="7" fontWeight="700" letterSpacing="0.5">FLUX PARALLELES</text>
+
+          {/* Cartes étapes */}
+          {allSteps.map(step => {
+            const color = step.available ? B : GREY
             return (
-              <g key={node.id} onMouseDown={e => onMouseDown(e, node.id)} onClick={e => onNodeClick(e, node.id)}
-                style={{ cursor: editMode ? (dragging === node.id ? 'grabbing' : 'grab') : (node.available ? 'pointer' : 'default') }}>
-                <rect x={node.x} y={node.y} width={W} height={H} rx={8} fill="#fff" stroke={color} strokeWidth={node.available ? 1.5 : 1} filter="url(#cardSh)" />
-                {node.available && <rect x={node.x} y={node.y} width={4} height={H} rx="2 0 0 2" fill={color} />}
-                <text x={node.x + W / 2} y={node.y + 18} textAnchor="middle" fill={node.available ? '#1a2332' : '#94a3b8'} fontSize="7.5" fontWeight="700">{node.label}</text>
-                <text x={node.x + W / 2} y={node.y + 32} textAnchor="middle" fill={node.available ? '#64748b' : '#cbd5e1'} fontSize="6" fontWeight="500">{node.sub}</text>
-                {node.available && <circle cx={node.x + W - 8} cy={node.y + 8} r="3" fill={B} opacity="0.4" />}
-                {editMode && (
-                  <>
-                    {/* Bouton connecter */}
-                    <g style={{ cursor: 'crosshair' }} onMouseDown={e => startConnect(e, node.id)}>
-                      <circle cx={node.x + W} cy={node.y + H / 2} r={7} fill={B} opacity="0.7" />
-                      <text x={node.x + W} y={node.y + H / 2 + 1} textAnchor="middle" dominantBaseline="central" fill="#fff" fontSize="8">→</text>
-                    </g>
-                    {/* Bouton éditer */}
-                    <g style={{ cursor: 'pointer' }} onClick={e => openEdit(e, node)}>
-                      <circle cx={node.x + W - 8} cy={node.y + H - 8} r={7} fill="#f59e0b" opacity="0.8" />
-                      <text x={node.x + W - 8} y={node.y + H - 7} textAnchor="middle" dominantBaseline="central" fill="#fff" fontSize="7">✏</text>
-                    </g>
-                    {/* Bouton supprimer */}
-                    <g style={{ cursor: 'pointer' }} onClick={e => { e.stopPropagation(); deleteNode(node.id) }}>
-                      <circle cx={node.x + 8} cy={node.y - 6} r={7} fill="#dc2626" opacity="0.8" />
-                      <text x={node.x + 8} y={node.y - 5} textAnchor="middle" dominantBaseline="central" fill="#fff" fontSize="8">×</text>
-                    </g>
-                  </>
-                )}
+              <g key={step.id} style={{ cursor: step.available ? 'pointer' : 'default' }} onClick={() => step.available && navigate(step.route)}>
+                <rect x={step.x} y={step.y} width={W} height={H} rx={8} fill="#fff" stroke={color} strokeWidth={step.available ? 1.5 : 1} filter="url(#cardSh)" />
+                {step.available && <rect x={step.x} y={step.y} width={4} height={H} rx="2 0 0 2" fill={color} />}
+                <text x={step.x + W / 2} y={step.y + 20} textAnchor="middle" fill={step.available ? '#1a2332' : '#94a3b8'} fontSize="8" fontWeight="700">{step.label}</text>
+                <text x={step.x + W / 2} y={step.y + 34} textAnchor="middle" fill={step.available ? '#64748b' : '#cbd5e1'} fontSize="6.5" fontWeight="500">{step.sub}</text>
+                {step.available && <circle cx={step.x + W - 10} cy={step.y + 10} r="3" fill={B} opacity="0.5" />}
+                {!step.available && <circle cx={step.x + W - 10} cy={step.y + 10} r="3" fill={GREY} opacity="0.3" />}
               </g>
             )
           })}
         </svg>
       </div>
-
-      {/* Modal édition nœud */}
-      {editNode && (
-        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000 }}
-          onClick={() => setEditNode(null)}>
-          <div style={{ background: '#fff', borderRadius: 12, padding: 24, width: 340, boxShadow: '0 20px 60px rgba(0,0,0,0.15)' }} onClick={e => e.stopPropagation()}>
-            <h3 style={{ margin: '0 0 16px', fontSize: '1rem' }}>Modifier l'etape</h3>
-            <div style={{ marginBottom: 12 }}>
-              <label style={{ fontSize: '.82rem', fontWeight: 600, display: 'block', marginBottom: 4 }}>Nom</label>
-              <input value={editForm.label} onChange={e => setEditForm(f => ({ ...f, label: e.target.value }))}
-                style={{ width: '100%', padding: '8px 12px', borderRadius: 8, border: '1px solid #d1d5db', fontSize: '.9rem' }} />
-            </div>
-            <div style={{ marginBottom: 16 }}>
-              <label style={{ fontSize: '.82rem', fontWeight: 600, display: 'block', marginBottom: 4 }}>Categorie</label>
-              <input value={editForm.sub} onChange={e => setEditForm(f => ({ ...f, sub: e.target.value }))}
-                style={{ width: '100%', padding: '8px 12px', borderRadius: 8, border: '1px solid #d1d5db', fontSize: '.9rem' }} />
-            </div>
-            <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end' }}>
-              <button onClick={() => setEditNode(null)} style={{ padding: '8px 16px', borderRadius: 8, border: '1px solid #d1d5db', background: '#fff', cursor: 'pointer' }}>Annuler</button>
-              <button onClick={saveEdit} style={{ padding: '8px 16px', borderRadius: 8, border: 'none', background: B, color: '#fff', cursor: 'pointer', fontWeight: 600 }}>Enregistrer</button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   )
 }
