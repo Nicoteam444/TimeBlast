@@ -146,16 +146,17 @@ export default function AdminUtilisateursPage() {
 
   async function handleDelete(userId) {
     try {
-      // Supprimer le profil (cascade les dépendances)
-      const { error } = await supabase.from('profiles').delete().eq('id', userId)
-      if (error) {
-        // Si la suppression échoue (contraintes FK), désactiver le compte
-        await supabase.from('profiles').update({ role: 'inactif' }).eq('id', userId)
-        alert('Utilisateur désactivé (impossible de supprimer : données liées existantes)')
+      // Désactiver le compte (plus sûr que supprimer)
+      const { error: updateErr } = await supabase.from('profiles').update({ actif: false }).eq('id', userId)
+      if (updateErr) {
+        console.error('Erreur désactivation:', updateErr)
+        alert(`Erreur: ${updateErr.message}`)
+      } else {
+        alert('Utilisateur désactivé avec succès')
       }
     } catch (err) {
-      console.error('Erreur suppression:', err)
-      alert('Erreur lors de la suppression')
+      console.error('Erreur:', err)
+      alert('Erreur lors de la désactivation')
     }
     setDeleteConfirm(null)
     fetchUsers()
