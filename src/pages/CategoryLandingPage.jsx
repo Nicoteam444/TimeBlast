@@ -63,6 +63,7 @@ const CATEGORY_DATA = {
       { to: '/finance/previsionnel', icon: '📈', label: 'Prévisionnel', desc: 'Construisez vos budgets prévisionnels. Comparez le réalisé au prévisionnel par poste.' },
       { to: '/finance/immobilisations', icon: '🏢', label: 'Immobilisations', desc: 'Gérez votre parc d\'immobilisations. Amortissements, cessions et inventaire.' },
       { to: '/finance/rapprochement', icon: '🔗', label: 'Rapprochement', desc: 'Rapprochez automatiquement vos relevés bancaires avec vos écritures comptables.' },
+      { to: '/finance/workflows', icon: '⚡', label: 'Workflows', desc: 'Creez des automatisations : quand un evenement se produit, declenchez des actions automatiques.' },
     ],
   },
   marketing: {

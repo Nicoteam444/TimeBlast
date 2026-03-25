@@ -52,6 +52,7 @@ import SaisieEcriturePage from './pages/compta/SaisieEcriturePage'
 import PrevisionnelPage from './pages/finance/PrevisionnelPage'
 import ImmobilisationsPage from './pages/finance/ImmobilisationsPage'
 import RapprochementPage from './pages/finance/RapprochementPage'
+import AutomationWorkflowsPage from './pages/finance/AutomationWorkflowsPage'
 import TrombinosccopePage from './pages/equipe/TrombinosccopePage'
 import CollaborateurPage from './pages/equipe/CollaborateurPage'
 import OrganigrammePage from './pages/equipe/OrganigrammePage'
@@ -237,6 +238,9 @@ function AppRoutes() {
       } />
       <Route path="/finance/rapprochement" element={
         <ProtectedRoute roles={['admin','comptable']}><Layout><RapprochementPage /></Layout></ProtectedRoute>
+      } />
+      <Route path="/finance/workflows" element={
+        <ProtectedRoute roles={['admin','comptable']}><Layout><AutomationWorkflowsPage /></Layout></ProtectedRoute>
       } />
 
       {/* Équipe */}

@@ -99,6 +99,7 @@ const SECTIONS = [
       { to: '/finance/previsionnel',    icon: '📈', label: 'Prévisionnel' },
       { to: '/finance/immobilisations', icon: '🏢', label: 'Immobilisations' },
       { to: '/finance/rapprochement',   icon: '🔗', label: 'Rapprochement' },
+      { to: '/finance/workflows',      icon: '⚡', label: 'Workflows' },
     ],
   },
 ]
