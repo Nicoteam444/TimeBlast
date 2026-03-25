@@ -123,7 +123,43 @@ export default function DashboardPage() {
 
   // ── Drag & Drop Widgets ──
   const STORAGE_KEY = 'timeblast_dashboard_order'
-  const DEFAULT_ORDER = ['tasks', 'time', 'alerts', 'projects', 'treasury', 'marketing', 'documents', 'shortcuts', 'activity']
+  const DEFAULT_ORDER = ['tasks', 'time', 'alerts', 'projects', 'treasury', 'mood', 'marketing', 'documents', 'shortcuts', 'activity']
+  const MOODS = [
+    { emoji: '😄', label: 'Super', color: '#16a34a' },
+    { emoji: '🙂', label: 'Bien', color: '#3b82f6' },
+    { emoji: '😐', label: 'Neutre', color: '#f59e0b' },
+    { emoji: '😟', label: 'Bof', color: '#f97316' },
+    { emoji: '😫', label: 'Difficile', color: '#ef4444' },
+  ]
+  const [myMood, setMyMood] = useState(() => {
+    try { return JSON.parse(localStorage.getItem('timeblast_mood') || 'null') } catch { return null }
+  })
+  const [teamMoods, setTeamMoods] = useState([])
+
+  function submitMood(mood) {
+    const entry = { ...mood, user: profile?.full_name || 'Moi', date: new Date().toISOString() }
+    setMyMood(entry)
+    localStorage.setItem('timeblast_mood', JSON.stringify(entry))
+    // Simuler les humeurs d'équipe (en prod ça serait une table Supabase)
+    setTeamMoods(prev => [entry, ...prev.filter(m => m.user !== entry.user)].slice(0, 8))
+  }
+
+  // Charger des humeurs d'équipe simulées au mount
+  useEffect(() => {
+    const fakeTeam = [
+      { emoji: '😄', label: 'Super', color: '#16a34a', user: 'Sophie Martin', date: new Date(Date.now() - 3600000).toISOString() },
+      { emoji: '🙂', label: 'Bien', color: '#3b82f6', user: 'Thomas Leroy', date: new Date(Date.now() - 7200000).toISOString() },
+      { emoji: '😄', label: 'Super', color: '#16a34a', user: 'Claire Moreau', date: new Date(Date.now() - 10800000).toISOString() },
+      { emoji: '😐', label: 'Neutre', color: '#f59e0b', user: 'Marc Garcia', date: new Date(Date.now() - 14400000).toISOString() },
+      { emoji: '🙂', label: 'Bien', color: '#3b82f6', user: 'Laura Michel', date: new Date(Date.now() - 18000000).toISOString() },
+    ]
+    if (myMood) {
+      setTeamMoods([myMood, ...fakeTeam.filter(m => m.user !== myMood.user)])
+    } else {
+      setTeamMoods(fakeTeam)
+    }
+  }, [])
+
   const [widgetOrder, setWidgetOrder] = useState(() => {
     try { const s = localStorage.getItem(STORAGE_KEY); return s ? JSON.parse(s) : DEFAULT_ORDER } catch { return DEFAULT_ORDER }
   })
@@ -782,6 +818,43 @@ export default function DashboardPage() {
             </div>
           </div>
         )}
+      </>
+    ),
+
+    mood: (
+      <>
+        <SectionHeader icon="😊" title="Humeur equipe" />
+        {/* Mon humeur */}
+        <div style={{ marginBottom: '.75rem' }}>
+          <div style={{ fontSize: '.75rem', fontWeight: 600, color: 'var(--text-muted)', marginBottom: '.4rem' }}>Comment tu te sens ?</div>
+          <div style={{ display: 'flex', gap: '.35rem' }}>
+            {MOODS.map(m => (
+              <button key={m.emoji} onClick={() => submitMood(m)} style={{
+                flex: 1, padding: '.4rem', border: myMood?.emoji === m.emoji ? `2px solid ${m.color}` : '2px solid transparent',
+                background: myMood?.emoji === m.emoji ? m.color + '15' : 'var(--surface, #f8fafc)',
+                borderRadius: 10, cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2,
+                transition: 'all .15s',
+              }}>
+                <span style={{ fontSize: '1.3rem' }}>{m.emoji}</span>
+                <span style={{ fontSize: '.6rem', color: m.color, fontWeight: 600 }}>{m.label}</span>
+              </button>
+            ))}
+          </div>
+        </div>
+        {/* Humeurs équipe */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '.35rem' }}>
+          {teamMoods.slice(0, 6).map((m, i) => (
+            <div key={i} style={{
+              display: 'flex', alignItems: 'center', gap: '.5rem',
+              padding: '.35rem .6rem', borderRadius: 6,
+              background: 'var(--surface, #f8fafc)', fontSize: '.82rem',
+            }}>
+              <span style={{ fontSize: '1.1rem' }}>{m.emoji}</span>
+              <span style={{ flex: 1, fontWeight: 500, color: 'var(--text)' }}>{m.user}</span>
+              <span style={{ fontSize: '.7rem', color: 'var(--text-muted)' }}>{relativeTime(m.date)}</span>
+            </div>
+          ))}
+        </div>
       </>
     ),
 
