@@ -1,4 +1,7 @@
 import { useNavigate } from 'react-router-dom'
+import { useAuth } from '../../contexts/AuthContext'
+
+const SUPER_ADMIN_EMAIL = 'nicolas.nabhan@groupe-sra.fr'
 
 const ADMIN_CARDS = [
   {
@@ -7,12 +10,14 @@ const ADMIN_CARDS = [
     color: '#6366f1',
     title: 'Utilisateurs',
     desc: 'Créer, modifier et gérer les comptes collaborateurs',
+    superAdminOnly: true,
   },
   {
     to: '/admin/societes',
     icon: '🏢',
     color: '#1a5c82',
     title: 'Sociétés',
+    superAdminOnly: true,
     desc: 'Gérer les entités et les sociétés du groupe',
   },
   {
@@ -56,6 +61,7 @@ const ADMIN_CARDS = [
     color: '#8b5cf6',
     title: 'Historique navigation',
     desc: 'Voir toutes les pages consultées par chaque utilisateur',
+    superAdminOnly: true,
   },
   {
     to: '/parametres',
@@ -68,6 +74,10 @@ const ADMIN_CARDS = [
 
 export default function AdminPage() {
   const navigate = useNavigate()
+  const { user } = useAuth()
+  const isSuperAdmin = (user?.email || '').toLowerCase().trim() === SUPER_ADMIN_EMAIL
+
+  const visibleCards = ADMIN_CARDS.filter(c => !c.superAdminOnly || isSuperAdmin)
 
   return (
     <div className="home-page">
@@ -81,7 +91,7 @@ export default function AdminPage() {
       </div>
 
       <div className="admin-cards-grid">
-        {ADMIN_CARDS.map(card => (
+        {visibleCards.map(card => (
           <button
             key={card.to}
             className="admin-hub-card"
