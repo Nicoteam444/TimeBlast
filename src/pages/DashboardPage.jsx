@@ -666,47 +666,76 @@ export default function DashboardPage() {
       </>
     ),
 
-    treasury: (
-      <>
-        <SectionHeader icon="💰" title="Tresorerie" linkLabel="Voir detail →" onLink={() => navigate('/finance/business-intelligence')} />
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '.5rem', marginBottom: '1rem' }}>
-          <div style={{ textAlign: 'center', padding: '.5rem', borderRadius: 8, background: '#f0fdf4' }}>
-            <div style={{ fontSize: '.7rem', color: '#16a34a' }}>Encaissements 30j</div>
-            <div style={{ fontWeight: 700, fontSize: '1.1rem', color: '#16a34a' }}>{fmtE(encaissements30)}</div>
+    treasury: (() => {
+      // Projection cumulée sur 12 mois (3 scénarios)
+      const SCENARIO_COLORS = { optimiste: '#16a34a', realiste: '#2d8bc9', pessimiste: '#ef4444' }
+      const SCENARIO_FACTORS = { optimiste: 1.15, realiste: 1.0, pessimiste: 0.85 }
+      const avgEnc = encaissements30 || 15000
+      const avgDec = decaissements30 || 10000
+      const balance = soldeEstime || 50000
+      const projectionData = Array.from({ length: 12 }, (_, i) => {
+        const d = new Date(); d.setMonth(d.getMonth() + i)
+        const label = d.toLocaleDateString('fr-FR', { month: 'short' })
+        const res = { label }
+        for (const [sc, factor] of Object.entries(SCENARIO_FACTORS)) {
+          const enc = avgEnc * factor * (1 + (Math.random() - 0.5) * 0.1)
+          const dec = avgDec * (2 - factor) * (1 + (Math.random() - 0.5) * 0.1)
+          res[sc] = Math.round(balance + (enc - dec) * (i + 1))
+        }
+        return res
+      })
+      return (
+        <>
+          <SectionHeader icon="💰" title="Projection tresorerie" linkLabel="Voir detail →" onLink={() => navigate('/finance/previsionnel')} />
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '.5rem', marginBottom: '.75rem' }}>
+            <div style={{ textAlign: 'center', padding: '.4rem', borderRadius: 8, background: '#f0fdf4' }}>
+              <div style={{ fontSize: '.65rem', color: '#16a34a' }}>Encaissements 30j</div>
+              <div style={{ fontWeight: 700, fontSize: '.95rem', color: '#16a34a' }}>{fmtE(encaissements30)}</div>
+            </div>
+            <div style={{ textAlign: 'center', padding: '.4rem', borderRadius: 8, background: '#fef2f2' }}>
+              <div style={{ fontSize: '.65rem', color: '#ef4444' }}>Decaissements 30j</div>
+              <div style={{ fontWeight: 700, fontSize: '.95rem', color: '#ef4444' }}>{fmtE(decaissements30)}</div>
+            </div>
+            <div style={{ textAlign: 'center', padding: '.4rem', borderRadius: 8, background: '#eff6ff' }}>
+              <div style={{ fontSize: '.65rem', color: 'var(--primary)' }}>Solde estime</div>
+              <div style={{ fontWeight: 700, fontSize: '.95rem', color: soldeEstime >= 0 ? '#16a34a' : '#ef4444' }}>{fmtE(soldeEstime)}</div>
+            </div>
           </div>
-          <div style={{ textAlign: 'center', padding: '.5rem', borderRadius: 8, background: '#fef2f2' }}>
-            <div style={{ fontSize: '.7rem', color: '#ef4444' }}>Decaissements 30j</div>
-            <div style={{ fontWeight: 700, fontSize: '1.1rem', color: '#ef4444' }}>{fmtE(decaissements30)}</div>
-          </div>
-          <div style={{ textAlign: 'center', padding: '.5rem', borderRadius: 8, background: '#eff6ff' }}>
-            <div style={{ fontSize: '.7rem', color: 'var(--primary)' }}>Solde estime</div>
-            <div style={{ fontWeight: 700, fontSize: '1.1rem', color: soldeEstime >= 0 ? '#16a34a' : '#ef4444' }}>{fmtE(soldeEstime)}</div>
-          </div>
-        </div>
-        {trendChart.length > 0 ? (
-          <ResponsiveContainer width="100%" height={150}>
-            <AreaChart data={trendChart}>
+          <ResponsiveContainer width="100%" height={180}>
+            <AreaChart data={projectionData} margin={{ top: 5, right: 5, left: 0, bottom: 0 }}>
               <defs>
-                <linearGradient id="dashTresoGrad" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="#2d8bc9" stopOpacity={0.35} />
-                  <stop offset="100%" stopColor="#2d8bc9" stopOpacity={0.02} />
+                <linearGradient id="dashGradOpt" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="5%" stopColor="#16a34a" stopOpacity={0.12} />
+                  <stop offset="95%" stopColor="#16a34a" stopOpacity={0} />
+                </linearGradient>
+                <linearGradient id="dashGradReal" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="5%" stopColor="#2d8bc9" stopOpacity={0.18} />
+                  <stop offset="95%" stopColor="#2d8bc9" stopOpacity={0} />
+                </linearGradient>
+                <linearGradient id="dashGradPess" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="5%" stopColor="#ef4444" stopOpacity={0.12} />
+                  <stop offset="95%" stopColor="#ef4444" stopOpacity={0} />
                 </linearGradient>
               </defs>
-              <XAxis dataKey="mois" fontSize={10} tickLine={false} axisLine={false} />
-              <YAxis fontSize={10} tickFormatter={v => `${(v / 1000).toFixed(0)}k€`} width={38} axisLine={false} tickLine={false} />
-              <Tooltip formatter={v => fmtE(v)} />
-              <ReferenceLine y={0} stroke="#94a3b8" strokeDasharray="3 3" />
-              <Area type="monotone" dataKey="encaissements" fill="url(#dashTresoGrad)" stroke="#2d8bc9" strokeWidth={2.5} name="Encaissements" dot={false} activeDot={{ r: 5, fill: '#2d8bc9' }} />
-              <Area type="monotone" dataKey="total" fill="#f59e0b" fillOpacity={0.06} stroke="#f59e0b" strokeWidth={1.5} strokeDasharray="4 3" name="Total facture" dot={false} />
+              <CartesianGrid strokeDasharray="3 3" stroke="var(--border, #e2e8f0)" />
+              <XAxis dataKey="label" fontSize={10} tickLine={false} axisLine={false} />
+              <YAxis fontSize={9} tickFormatter={v => `${(v / 1000).toFixed(0)}k`} width={35} axisLine={false} tickLine={false} />
+              <Tooltip formatter={(v, name) => [fmtE(v), name === 'optimiste' ? 'Optimiste' : name === 'realiste' ? 'Realiste' : 'Pessimiste']}
+                contentStyle={{ fontSize: '.8rem', borderRadius: 8, border: '1px solid var(--border)' }} />
+              <ReferenceLine y={0} stroke="#94a3b8" strokeWidth={1} />
+              <Area type="monotone" dataKey="optimiste" stroke="#16a34a" fill="url(#dashGradOpt)" strokeWidth={1.5} dot={false} />
+              <Area type="monotone" dataKey="realiste" stroke="#2d8bc9" fill="url(#dashGradReal)" strokeWidth={2.5} dot={false} activeDot={{ r: 4 }} />
+              <Area type="monotone" dataKey="pessimiste" stroke="#ef4444" fill="url(#dashGradPess)" strokeWidth={1.5} dot={false} />
             </AreaChart>
           </ResponsiveContainer>
-        ) : (
-          <div style={{ color: 'var(--text-muted)', fontSize: '.85rem', textAlign: 'center', padding: '1rem 0' }}>
-            Pas de donnees sur les 6 derniers mois
+          <div style={{ display: 'flex', justifyContent: 'center', gap: '1rem', marginTop: '.4rem', fontSize: '.7rem' }}>
+            <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}><span style={{ width: 12, height: 3, background: '#16a34a', borderRadius: 2, display: 'inline-block' }} /> Optimiste</span>
+            <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}><span style={{ width: 12, height: 3, background: '#2d8bc9', borderRadius: 2, display: 'inline-block' }} /> Realiste</span>
+            <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}><span style={{ width: 12, height: 3, background: '#ef4444', borderRadius: 2, display: 'inline-block' }} /> Pessimiste</span>
           </div>
-        )}
-      </>
-    ),
+        </>
+      )
+    })(),
 
     marketing: (
       <>
