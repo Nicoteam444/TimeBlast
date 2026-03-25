@@ -439,7 +439,7 @@ function collabColor(idx) { return COLLAB_COLORS[idx % COLLAB_COLORS.length] }
 
 // ── Page principale ──────────────────────────────────────────
 export default function SaisiePage() {
-  const { profile } = useAuth()
+  const { profile, user } = useAuth()
   const { selectedSociete } = useSociete()
   const [weekStart, setWeekStart] = useState(() => getMonday(new Date()))
   const [events, setEvents] = useState({})
@@ -477,7 +477,12 @@ export default function SaisiePage() {
 
       if (equipeData.length > 0) {
         setCollabs(equipeData)
-        setSelectedCollabs(new Set(equipeData.map(c => c.id))) // Tous sélectionnés par défaut
+        // Par défaut : seulement l'utilisateur connecté (matcher par email/nom)
+        const me = equipeData.find(c =>
+          (c.email && c.email.toLowerCase() === (profile?.email || user?.email || '').toLowerCase()) ||
+          (c.nom && profile?.full_name && c.nom.toLowerCase() === profile.full_name.split(' ').pop()?.toLowerCase())
+        )
+        setSelectedCollabs(new Set(me ? [me.id] : [equipeData[0]?.id]))
       } else {
         // Fallback profiles
         const mapped = profilesData.map(p => {
@@ -823,39 +828,66 @@ export default function SaisiePage() {
                   <div key={`h${h}`} className="cal-half-line" style={{ top: hi * HOUR_H + HOUR_H / 2 }} />
                 ))}
 
-                {/* Événements */}
-                {!loading && dayEvents.map(ev => {
-                  const isMoving = movingEvent?.ev?.id === ev.id
-                  const top = minToY(ev.startMin)
-                  const height = Math.max(20, minToY(ev.endMin) - top)
-                  const isMulti = selectedCollabs.size > 1
-                  const color = isMulti ? collabColorForId(ev.user_id) : (ev.color || colorFor(ev.projets?.id))
-                  const info = collabInfo(ev.user_id)
-                  const isOther = ev.user_id !== profile?.id
-                  return (
-                    <div key={ev.id} className="cal-event"
-                      style={{
-                        top, height, background: color + '22', borderLeftColor: color,
-                        opacity: isMoving ? 0.3 : isOther ? 0.85 : 1,
-                        cursor: isOther ? 'default' : 'grab',
-                      }}
-                      onMouseDown={e => !isOther && handleEventDragStart(e, ev, e.currentTarget.parentElement)}
-                      onClick={e => { e.stopPropagation(); if (!movingEvent) setSelectedEvent(ev) }}
-                    >
-                      <div className="cal-event-title" style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-                        {isMulti && (
-                          <span style={{
-                            width: 16, height: 16, borderRadius: '50%', background: color,
-                            color: '#fff', fontSize: 8, fontWeight: 700, display: 'inline-flex',
-                            alignItems: 'center', justifyContent: 'center', flexShrink: 0
-                          }}>{info.initials}</span>
-                        )}
-                        <span>{ev.projets?.name || ev.title || '—'}</span>
+                {/* Événements — côte à côte quand ils se chevauchent */}
+                {!loading && (() => {
+                  // Calculer les colonnes pour les événements qui se chevauchent
+                  const sorted = [...dayEvents].sort((a, b) => a.startMin - b.startMin)
+                  const positioned = []
+                  sorted.forEach(ev => {
+                    let col = 0
+                    const overlaps = positioned.filter(p => p.startMin < ev.endMin && p.endMin > ev.startMin)
+                    const usedCols = overlaps.map(o => o._col)
+                    while (usedCols.includes(col)) col++
+                    const maxCols = Math.max(col + 1, ...overlaps.map(o => o._maxCols || 1))
+                    overlaps.forEach(o => { o._maxCols = maxCols })
+                    positioned.push({ ...ev, _col: col, _maxCols: maxCols })
+                  })
+                  // Deuxième passe pour propager maxCols
+                  positioned.forEach(ev => {
+                    const overlaps = positioned.filter(p => p !== ev && p.startMin < ev.endMin && p.endMin > ev.startMin)
+                    const maxCols = Math.max(ev._col + 1, ...overlaps.map(o => o._col + 1), ev._maxCols || 1)
+                    ev._maxCols = maxCols
+                    overlaps.forEach(o => { o._maxCols = maxCols })
+                  })
+
+                  return positioned.map(ev => {
+                    const isMoving = movingEvent?.ev?.id === ev.id
+                    const top = minToY(ev.startMin)
+                    const height = Math.max(20, minToY(ev.endMin) - top)
+                    const isMulti = selectedCollabs.size > 1
+                    const color = isMulti ? collabColorForId(ev.user_id) : (ev.color || colorFor(ev.projets?.id))
+                    const info = collabInfo(ev.user_id)
+                    const isOther = ev._profileId ? ev._profileId !== profile?.id : ev.user_id !== profile?.id
+                    const totalCols = ev._maxCols || 1
+                    const colWidth = (96 - 2) / totalCols
+                    const colLeft = 2 + ev._col * colWidth
+
+                    return (
+                      <div key={ev.id} className="cal-event"
+                        style={{
+                          top, height, background: color + '22', borderLeftColor: color,
+                          opacity: isMoving ? 0.3 : isOther ? 0.85 : 1,
+                          cursor: isOther ? 'default' : 'grab',
+                          left: `${colLeft}%`, right: 'auto', width: `${colWidth - 1}%`,
+                        }}
+                        onMouseDown={e => !isOther && handleEventDragStart(e, ev, e.currentTarget.parentElement)}
+                        onClick={e => { e.stopPropagation(); if (!movingEvent) setSelectedEvent(ev) }}
+                      >
+                        <div className="cal-event-title" style={{ display: 'flex', alignItems: 'center', gap: 3 }}>
+                          {isMulti && (
+                            <span style={{
+                              width: 14, height: 14, borderRadius: '50%', background: color,
+                              color: '#fff', fontSize: 7, fontWeight: 700, display: 'inline-flex',
+                              alignItems: 'center', justifyContent: 'center', flexShrink: 0
+                            }}>{info.initials}</span>
+                          )}
+                          <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{ev.projets?.name || ev.title || '—'}</span>
+                        </div>
+                        <div className="cal-event-time">{fmtTime(ev.startMin)}–{fmtTime(ev.endMin)}{ev.location ? ` · ${ev.location}` : ''}</div>
                       </div>
-                      <div className="cal-event-time">{fmtTime(ev.startMin)}–{fmtTime(ev.endMin)}{ev.location ? ` · ${ev.location}` : ''}</div>
-                    </div>
-                  )
-                })}
+                    )
+                  })
+                })()}
 
                 {/* Ghost de l'événement en cours de déplacement */}
                 {movingEvent && movingEvent.date === iso && (
