@@ -1050,6 +1050,61 @@ export default function DashboardPage() {
       </>
     ),
 
+    presence: (
+      <>
+        <SectionHeader icon="👁" title="En ligne maintenant" />
+        <div style={{ fontSize: '.8rem', color: 'var(--text-muted)', marginBottom: '.75rem' }}>
+          {presenceData.length}/{allProfiles.length} connectes
+        </div>
+        {presenceData.length === 0 ? (
+          <div style={{ color: 'var(--text-muted)', fontSize: '.85rem', textAlign: 'center', padding: '1rem 0' }}>
+            Personne en ligne pour le moment
+          </div>
+        ) : (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '.4rem' }}>
+            {presenceData.map((p) => {
+              const isMe = p.user_id === user?.id
+              const initials = (p.full_name || '?').split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2)
+              return (
+                <div key={p.user_id} style={{
+                  display: 'flex', alignItems: 'center', gap: '.6rem',
+                  padding: '.5rem .6rem', borderRadius: 8,
+                  background: isMe ? 'var(--primary, #2B4C7E)0A' : 'var(--surface, #f8fafc)',
+                  border: isMe ? '1px solid var(--primary, #2B4C7E)25' : '1px solid transparent',
+                }}>
+                  <div style={{ position: 'relative', flexShrink: 0 }}>
+                    <div style={{
+                      width: 28, height: 28, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      background: isMe ? 'var(--primary, #2B4C7E)' : '#e2e8f0',
+                      color: isMe ? '#fff' : '#475569', fontSize: '.65rem', fontWeight: 700,
+                    }}>
+                      {initials}
+                    </div>
+                    <div style={{
+                      position: 'absolute', bottom: -1, right: -1, width: 10, height: 10, borderRadius: '50%',
+                      background: p.active ? '#16a34a' : '#9ca3af',
+                      border: '2px solid var(--card-bg, #fff)',
+                    }} />
+                  </div>
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <div style={{ fontSize: '.82rem', fontWeight: 600, color: 'var(--text)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                      {p.full_name}{isMe ? ' (moi)' : ''}
+                    </div>
+                    <div style={{ fontSize: '.75rem', color: 'var(--text-muted)' }}>
+                      {p.page_label}
+                    </div>
+                  </div>
+                  <div style={{ fontSize: '.7rem', color: 'var(--text-muted)', flexShrink: 0 }}>
+                    {relativeTime(p.last_seen)}
+                  </div>
+                </div>
+              )
+            })}
+          </div>
+        )}
+      </>
+    ),
+
     activity: (
       <>
         <SectionHeader icon="🕐" title="Activite Recente" />
@@ -1236,6 +1291,97 @@ export default function DashboardPage() {
               )
             })}
           </div>
+        </>
+      )
+    })(),
+
+    feed: (() => {
+      const activities = (raw.activityLog || []).slice(0, 5)
+      const contacts = raw.recentContacts || []
+      const docs = raw.recentDocs || []
+      function feedIcon(action) {
+        if (action === 'created') return '🆕'
+        if (action === 'updated') return '✏️'
+        if (action === 'deleted') return '🗑️'
+        if (action === 'completed') return '✅'
+        return '📌'
+      }
+      function feedLabel(item) {
+        const name = item.entity_name || item.details || 'Element'
+        if (item.action === 'created') return `a cree "${name}"`
+        if (item.action === 'updated') return `a modifie "${name}"`
+        if (item.action === 'deleted') return `a supprime "${name}"`
+        if (item.action === 'completed') return `a termine "${name}"`
+        return `${item.action || 'action'} sur "${name}"`
+      }
+      const feedItems = [
+        ...activities.map(a => ({
+          key: `act-${a.id || a.created_at}`,
+          icon: feedIcon(a.action),
+          text: feedLabel(a),
+          date: a.created_at,
+        })),
+        ...contacts.slice(0, 2).map(c => ({
+          key: `contact-${c.id}`,
+          icon: '👤',
+          text: `Nouveau contact: ${c.nom || c.full_name || 'Inconnu'}`,
+          date: c.created_at,
+        })),
+        ...docs.slice(0, 2).map(d => ({
+          key: `doc-${d.id}`,
+          icon: '📄',
+          text: `Document: ${d.nom || d.name || 'Sans titre'}`,
+          date: d.created_at,
+        })),
+      ]
+        .sort((a, b) => new Date(b.date) - new Date(a.date))
+        .slice(0, 5)
+
+      return (
+        <>
+          <SectionHeader icon="💬" title="Fil d'equipe" />
+          {feedItems.length === 0 ? (
+            <div style={{ color: 'var(--text-muted)', fontSize: '.85rem', textAlign: 'center', padding: '1.5rem 0' }}>
+              Aucune activite recente
+            </div>
+          ) : (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '.5rem' }}>
+              {feedItems.map(item => {
+                const reactions = feedReactions[item.key] || {}
+                return (
+                  <div key={item.key} style={{
+                    padding: '.6rem .75rem', borderRadius: 10,
+                    background: 'var(--surface, #f8fafc)',
+                    border: '1px solid var(--border, #e2e8f0)',
+                  }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '.5rem', marginBottom: '.35rem' }}>
+                      <span style={{ fontSize: '1rem' }}>{item.icon}</span>
+                      <span style={{ flex: 1, fontSize: '.85rem', color: 'var(--text)' }}>{item.text}</span>
+                      <span style={{ fontSize: '.72rem', color: 'var(--text-muted)', whiteSpace: 'nowrap' }}>{relativeTime(item.date)}</span>
+                    </div>
+                    <div style={{ display: 'flex', gap: '.3rem', paddingLeft: '1.5rem' }}>
+                      {FEED_EMOJIS.map(emoji => {
+                        const count = reactions[emoji] || 0
+                        const active = count > 0
+                        return (
+                          <button key={emoji} onClick={() => toggleFeedReaction(item.key, emoji)} style={{
+                            display: 'flex', alignItems: 'center', gap: 3,
+                            padding: '.15rem .45rem', borderRadius: 20,
+                            border: active ? '1px solid var(--primary, #1a5c82)' : '1px solid var(--border, #e2e8f0)',
+                            background: active ? 'var(--primary, #1a5c82)' + '12' : 'transparent',
+                            cursor: 'pointer', fontSize: '.78rem', transition: 'all .15s',
+                          }}>
+                            <span>{emoji}</span>
+                            {count > 0 && <span style={{ fontSize: '.7rem', fontWeight: 600, color: 'var(--primary, #1a5c82)' }}>{count}</span>}
+                          </button>
+                        )
+                      })}
+                    </div>
+                  </div>
+                )
+              })}
+            </div>
+          )}
         </>
       )
     })(),
