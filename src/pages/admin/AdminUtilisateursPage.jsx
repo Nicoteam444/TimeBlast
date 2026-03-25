@@ -484,15 +484,15 @@ export default function AdminUtilisateursPage() {
         <div className="modal-overlay" onClick={() => setDeleteConfirm(null)}>
           <div className="modal modal--sm" onClick={e => e.stopPropagation()}>
             <div className="modal-header">
-              <h2>Supprimer l'utilisateur</h2>
+              <h2>Désactiver l'utilisateur</h2>
             </div>
             <p style={{ padding: '0 0 1.5rem' }}>
-              Êtes-vous sûr de vouloir supprimer <strong>{deleteConfirm.full_name}</strong> ?<br />
-              <span style={{ color: '#dc2626', fontSize: '.85rem' }}>Cette action est irréversible.</span>
+              Êtes-vous sûr de vouloir désactiver <strong>{deleteConfirm.full_name}</strong> ?<br />
+              <span style={{ color: '#64748b', fontSize: '.85rem' }}>L'utilisateur ne pourra plus se connecter. Ses données seront conservées.</span>
             </p>
             <div className="modal-actions">
               <button className="btn-secondary" onClick={() => setDeleteConfirm(null)}>Annuler</button>
-              <button className="btn-danger" onClick={() => handleDelete(deleteConfirm.id)}>Supprimer définitivement</button>
+              <button className="btn-danger" onClick={() => handleDelete(deleteConfirm.id)}>Désactiver le compte</button>
             </div>
           </div>
         </div>
