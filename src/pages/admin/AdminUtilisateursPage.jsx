@@ -534,12 +534,12 @@ export default function AdminUtilisateursPage() {
           <table className="users-table">
             <thead>
               <tr>
-                <SortableHeader label="Nom" field="_nom" sortKey={sortKey} sortDir={sortDir} onSort={requestSort} />
                 <SortableHeader label="Prénom" field="_prenom" sortKey={sortKey} sortDir={sortDir} onSort={requestSort} />
+                <SortableHeader label="Nom" field="_nom" sortKey={sortKey} sortDir={sortDir} onSort={requestSort} />
+                <SortableHeader label="Email" field="email" sortKey={sortKey} sortDir={sortDir} onSort={requestSort} />
                 <SortableHeader label="Société / Groupe" field="societe_id" sortKey={sortKey} sortDir={sortDir} onSort={requestSort} />
                 <SortableHeader label="Rôle / Statut" field="role" sortKey={sortKey} sortDir={sortDir} onSort={requestSort} />
                 <SortableHeader label="Dernière connexion" field="last_sign_in_at" sortKey={sortKey} sortDir={sortDir} onSort={requestSort} />
-                <SortableHeader label="Membre depuis" field="created_at" sortKey={sortKey} sortDir={sortDir} onSort={requestSort} />
               </tr>
             </thead>
             <tbody>
@@ -552,20 +552,21 @@ export default function AdminUtilisateursPage() {
                     <td>
                       <div className="user-cell">
                         <span className="user-avatar" style={{ background: ROLE_COLORS[user.role] }}>
-                          {user.full_name?.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2) || '?'}
+                          {`${(user._prenom || '')[0] || ''}${(user._nom || '')[0] || ''}`.toUpperCase() || '?'}
                         </span>
-                        <div>
-                          <p className="user-name">
-                            {user._nom || '—'}
-                            {user.actif === false && <span style={{ marginLeft: '.4rem', fontSize: '.72rem', color: '#dc2626', fontWeight: 600 }}>INACTIF</span>}
-                          </p>
-                          <p className="user-email">{user.email}</p>
-                          {user.poste && <p className="user-email" style={{ color: '#6366f1' }}>💼 {user.poste}</p>}
-                          {user.telephone && <p className="user-email" style={{ color: '#0891b2' }}>📞 {user.telephone}</p>}
-                        </div>
+                        <span className="user-name">{user._prenom || '—'}</span>
                       </div>
                     </td>
-                    <td style={{ fontWeight: 500 }}>{user._prenom || '—'}</td>
+                    <td>
+                      <span style={{ fontWeight: 600 }}>
+                        {user._nom || '—'}
+                        {user.actif === false && <span style={{ marginLeft: '.4rem', fontSize: '.72rem', color: '#dc2626', fontWeight: 600 }}>INACTIF</span>}
+                      </span>
+                    </td>
+                    <td>
+                      <span style={{ fontSize: '.85rem', color: '#2563eb' }}>{user.email || '—'}</span>
+                      {user.poste && <div style={{ fontSize: '.75rem', color: '#6366f1' }}>💼 {user.poste}</div>}
+                    </td>
                     <td>
                       <div style={{ display: 'flex', flexDirection: 'column', gap: '.2rem' }}>
                         <span style={{ fontSize: '.82rem' }}>
