@@ -1,7 +1,10 @@
 import { LayoutProvider } from '../contexts/LayoutContext'
 import { BreadcrumbProvider } from '../contexts/BreadcrumbContext'
 import { useFavorites } from '../contexts/FavoritesContext'
+import { useAuth } from '../contexts/AuthContext'
 import { useLocation } from 'react-router-dom'
+import { useEffect, useRef } from 'react'
+import { supabase } from '../lib/supabase'
 import Sidebar from './Sidebar'
 import TopBar from './TopBar'
 import ChatWidget from './ChatWidget'
@@ -63,7 +66,25 @@ function FavoriteButton() {
   )
 }
 
+function usePageTracking() {
+  const { user } = useAuth()
+  const location = useLocation()
+  const lastPath = useRef(null)
+
+  useEffect(() => {
+    if (!user?.id || location.pathname === lastPath.current) return
+    lastPath.current = location.pathname
+    const title = document.title || ''
+    supabase.from('page_views').insert({
+      user_id: user.id,
+      page_path: location.pathname,
+      page_title: title,
+    }).then(() => {})
+  }, [location.pathname, user?.id])
+}
+
 function LayoutInner({ children }) {
+  usePageTracking()
   return (
     <div className="app-layout">
       <Sidebar />

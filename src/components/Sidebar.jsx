@@ -127,19 +127,21 @@ const ADMIN_SECTION = {
   roles: ['admin'],
   items: [
     { to: '/admin',              icon: '🏠', label: 'Vue d\'ensemble',   roles: ['admin'] },
-    { to: '/admin/utilisateurs', icon: '👥', label: 'Utilisateurs',      roles: ['admin'] },
-    { to: '/admin/societes',     icon: '🏢', label: 'Sociétés',          roles: ['admin'] },
+    { to: '/admin/utilisateurs', icon: '👥', label: 'Utilisateurs',      roles: ['admin'], superAdminOnly: true },
+    { to: '/admin/societes',     icon: '🏢', label: 'Sociétés',          roles: ['admin'], superAdminOnly: true },
     { to: '/admin/groupes',      icon: '🏛', label: 'Groupes',           roles: ['admin'] },
     { to: '/admin/organigramme', icon: '🗂', label: 'Organigramme',      roles: ['admin'] },
     { to: '/admin/audit',        icon: '📋', label: "Journal d'audit",   roles: ['admin'] },
     { to: '/admin/messages',     icon: '📬', label: 'Messages contact',  roles: ['admin'] },
+    { to: '/admin/historique',   icon: '👁️', label: 'Historique navigation', roles: ['admin'], superAdminOnly: true },
     { to: '/admin/analytics',    icon: '📊', label: 'Analytics',         roles: ['admin', 'manager'] },
     { to: '/parametres',         icon: '🔧', label: 'Paramètres',        roles: ['admin'] },
   ],
 }
 
 export default function Sidebar() {
-  const { profile } = useAuth()
+  const { profile, user } = useAuth()
+  const isSuperAdmin = user?.email === 'nicolas.nabhan@groupe-sra.fr'
   const { sidebarOpen, toggleSidebar } = useLayout()
   const { settings } = useAppearance()
   const { favorites, favLabels, toggleFavorite, syncing } = useFavorites()
@@ -191,7 +193,10 @@ export default function Sidebar() {
   })
 
   function filterItems(items) {
-    return items.filter(i => !i.roles || i.roles.includes(userRole))
+    return items.filter(i => {
+      if (i.superAdminOnly && !isSuperAdmin) return false
+      return !i.roles || i.roles.includes(userRole)
+    })
   }
 
   const visibleSections = SECTIONS.filter(s =>

@@ -182,7 +182,7 @@ export default function AdminUtilisateursPage() {
   }
 
   return (
-    <div className="admin-page">
+    <div className="admin-page admin-page--full">
       <div className="admin-page-header">
         <div>
           <h1>Utilisateurs</h1>
