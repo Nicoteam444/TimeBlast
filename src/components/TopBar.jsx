@@ -199,26 +199,16 @@ export default function TopBar() {
       {/* Hamburger mobile */}
       <button className="sidebar-hamburger" onClick={toggleSidebar} aria-label="Menu">☰</button>
 
-      {/* Barre de recherche globale */}
-      <div className="topbar-search" ref={searchRef}>
+      {/* Barre de recherche → ouvre Command Palette */}
+      <div className="topbar-search" ref={searchRef}
+        onClick={() => window.dispatchEvent(new KeyboardEvent('keydown', { key: 'k', metaKey: true }))}
+        style={{ cursor: 'pointer' }}>
         <div className="topbar-search-wrap">
           <span className="topbar-search-icon">🔍</span>
-          <input
-            type="text"
-            className="topbar-search-input"
-            placeholder="Rechercher clients, transactions, projets..."
-            value={searchQuery}
-            onChange={handleSearchInput}
-            onFocus={() => searchResults.length && setSearchOpen(true)}
-            onKeyDown={handleSearchSubmit}
-          />
-          {searchQuery && (
-            <button className="topbar-search-clear" onClick={() => { setSearchQuery(''); setSearchResults([]); setSearchOpen(false) }}>✕</button>
-          )}
-          {!searchQuery && (
-            <kbd style={{ padding: '2px 6px', borderRadius: 4, background: 'rgba(255,255,255,0.15)', border: '1px solid rgba(255,255,255,0.2)', fontSize: '.65rem', color: 'rgba(255,255,255,0.6)', fontFamily: 'monospace', cursor: 'pointer', whiteSpace: 'nowrap' }}
-              onClick={() => window.dispatchEvent(new KeyboardEvent('keydown', { key: 'k', metaKey: true }))}>⌘K</kbd>
-          )}
+          <span className="topbar-search-input" style={{ opacity: 0.6, fontSize: '.9rem', userSelect: 'none' }}>
+            Rechercher, naviguer, agir...
+          </span>
+          <kbd style={{ padding: '2px 8px', borderRadius: 4, background: 'rgba(255,255,255,0.15)', border: '1px solid rgba(255,255,255,0.2)', fontSize: '.7rem', color: 'rgba(255,255,255,0.6)', fontFamily: 'monospace', whiteSpace: 'nowrap' }}>⌘K</kbd>
         </div>
         {searchOpen && searchResults.length > 0 && (
           <ul className="topbar-search-dropdown">
@@ -228,17 +218,6 @@ export default function TopBar() {
                 <span className="topbar-search-result-name">{r.name}</span>
                 <span className="topbar-search-result-type">{r.type}</span>
               </li>
-            ))}
-            <li className="topbar-search-more" onMouseDown={() => { setSearchOpen(false); navigate(`/recherche?q=${encodeURIComponent(searchQuery)}`) }}>
-              Voir tous les résultats →
-            </li>
-          </ul>
-        )}
-        {searchOpen && searchQuery && searchResults.length === 0 && (
-          <ul className="topbar-search-dropdown">
-            <li className="topbar-search-empty">Aucun résultat</li>
-          </ul>
-        )}
       </div>
 
       {/* Quick Add Button ⊕ */}
