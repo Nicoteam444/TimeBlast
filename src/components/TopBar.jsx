@@ -272,7 +272,7 @@ export default function TopBar() {
           <input
             type="text"
             className="topbar-search-input"
-            placeholder="Rechercher, naviguer, agir..."
+            placeholder="Rechercher clients, projets, factures..."
             value={searchQuery}
             onChange={handleSearchInput}
             onFocus={() => setSearchOpen(true)}
@@ -290,46 +290,29 @@ export default function TopBar() {
             <kbd style={{ padding: '2px 6px', borderRadius: 4, background: 'rgba(255,255,255,0.15)', border: '1px solid rgba(255,255,255,0.2)', fontSize: '.65rem', color: 'rgba(255,255,255,0.6)', fontFamily: 'monospace', whiteSpace: 'nowrap' }}>⌘K</kbd>
           )}
         </div>
-        {/* Dropdown collé sous la barre */}
-        {searchOpen && (
+        {/* Dropdown résultats recherche */}
+        {searchOpen && searchQuery && searchResults.length > 0 && (
           <div style={{
             position: 'absolute', top: '100%', left: 0, right: 0, marginTop: 4,
-            background: '#fff', borderRadius: 12, boxShadow: '0 12px 40px rgba(0,0,0,0.18)',
-            maxHeight: 400, overflowY: 'auto', zIndex: 9999, border: '1px solid #e2e8f0',
+            background: '#fff', borderRadius: 10, boxShadow: '0 10px 30px rgba(0,0,0,0.15)',
+            maxHeight: 300, overflowY: 'auto', zIndex: 9999, border: '1px solid #e2e8f0',
           }}>
-            {cmdSections.map((sec, si) => (
-              <div key={si}>
-                <div style={{ padding: '8px 16px 4px', fontSize: '.68rem', fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '.5px' }}>{sec.label}</div>
-                {sec.items.map((item, ii) => {
-                  const gIdx = cmdItems.indexOf(item)
-                  const active = gIdx === cmdIdx
-                  return (
-                    <div key={ii} onMouseDown={() => { handleCmdSelect(item); setSearchOpen(false); setSearchQuery('') }}
-                      onMouseEnter={() => setCmdIdx(gIdx)}
-                      style={{
-                        display: 'flex', alignItems: 'center', gap: 10, padding: '8px 16px', cursor: 'pointer',
-                        background: active ? '#2B4C7E0F' : 'transparent',
-                        borderLeft: active ? '3px solid #2B4C7E' : '3px solid transparent',
-                      }}>
-                      <span style={{ fontSize: 14 }}>{item.icon}</span>
-                      <div style={{ flex: 1 }}>
-                        <div style={{ fontSize: '.85rem', fontWeight: 600, color: '#1a2332' }}>{item.label}</div>
-                        {item.sub && <div style={{ fontSize: '.7rem', color: '#94a3b8' }}>{item.sub}</div>}
-                      </div>
-                      {active && <span style={{ fontSize: '.65rem', color: '#94a3b8' }}>↵</span>}
-                    </div>
-                  )
-                })}
+            {searchResults.map((r, i) => (
+              <div key={`${r.type}-${r.id}`}
+                onMouseDown={() => { handleSelectResult(r); setSearchOpen(false); setSearchQuery('') }}
+                style={{
+                  display: 'flex', alignItems: 'center', gap: 10, padding: '8px 14px', cursor: 'pointer',
+                  background: i === 0 ? '#f0f9ff' : 'transparent',
+                  borderBottom: '1px solid #f1f5f9',
+                }}>
+                <span style={{ fontSize: 14 }}>{r.icon}</span>
+                <div style={{ flex: 1 }}>
+                  <div style={{ fontSize: '.85rem', fontWeight: 600, color: '#1a2332' }}>{r.name}</div>
+                  <div style={{ fontSize: '.7rem', color: '#94a3b8' }}>{r.type}</div>
+                </div>
+                <span style={{ fontSize: '.65rem', color: '#94a3b8' }}>↵</span>
               </div>
             ))}
-            {cmdItems.length === 0 && searchQuery && (
-              <div style={{ textAlign: 'center', padding: '20px', color: '#94a3b8', fontSize: '.85rem' }}>Aucun resultat pour "{searchQuery}"</div>
-            )}
-            <div style={{ padding: '6px 16px', borderTop: '1px solid #f1f5f9', background: '#fafbfc', display: 'flex', gap: 10, fontSize: '.65rem', color: '#94a3b8' }}>
-              <span><kbd style={{ padding: '1px 3px', borderRadius: 2, background: '#e2e8f0' }}>↑↓</kbd> naviguer</span>
-              <span><kbd style={{ padding: '1px 3px', borderRadius: 2, background: '#e2e8f0' }}>↵</kbd> ouvrir</span>
-              <span><kbd style={{ padding: '1px 3px', borderRadius: 2, background: '#e2e8f0' }}>esc</kbd> fermer</span>
-            </div>
           </div>
         )}
       </div>
