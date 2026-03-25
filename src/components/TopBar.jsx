@@ -66,26 +66,16 @@ export default function TopBar() {
     { label: 'Documents', icon: '🗄️', path: '/documents/archives' },
     { label: 'Parametres', icon: '⚙️', path: '/parametres' },
   ]
-  const CMD_ACTIONS = [
-    { label: 'Creer un contact', icon: '➕ 👤', path: '/crm/contacts' },
-    { label: 'Nouvelle opportunite', icon: '➕ 💼', path: '/commerce/transactions' },
-    { label: 'Nouveau projet', icon: '➕ 📁', path: '/activite/projets' },
-    { label: 'Saisir du temps', icon: '➕ ⏱️', path: '/activite/saisie' },
-  ]
-
   const cmdSections = useMemo(() => {
     const q = searchQuery.toLowerCase()
     const sections = []
-    // Resultats Supabase
+    // Resultats Supabase (contacts, clients, projets, factures)
     if (searchResults.length > 0) {
       sections.push({ label: '🔍 Resultats', items: searchResults.map(r => ({ label: r.name, icon: r.icon || '📄', path: r.path || '/', sub: r.type })) })
     }
-    // Pages filtrées
-    const pages = q ? CMD_PAGES.filter(p => p.label.toLowerCase().includes(q)) : CMD_PAGES.slice(0, 5)
-    if (pages.length > 0) sections.push({ label: '🧭 Navigation', items: pages.slice(0, 6) })
-    // Actions
-    const actions = q ? CMD_ACTIONS.filter(a => a.label.toLowerCase().includes(q)) : CMD_ACTIONS
-    if (actions.length > 0) sections.push({ label: '⚡ Actions rapides', items: actions })
+    // Pages filtrées par la saisie
+    const pages = q ? CMD_PAGES.filter(p => p.label.toLowerCase().includes(q)) : CMD_PAGES.slice(0, 6)
+    if (pages.length > 0) sections.push({ label: '🧭 Navigation', items: pages.slice(0, 8) })
     return sections
   }, [searchQuery, searchResults])
 
