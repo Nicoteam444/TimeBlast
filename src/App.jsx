@@ -112,6 +112,9 @@ function AppRoutes() {
       <Route path="/finance" element={
         <ProtectedRoute roles={['admin','comptable']}><Layout><CategoryLandingPage categoryId="finance" /></Layout></ProtectedRoute>
       } />
+      <Route path="/automatisation" element={
+        <ProtectedRoute roles={['admin','manager']}><Layout><CategoryLandingPage categoryId="automatisation" /></Layout></ProtectedRoute>
+      } />
 
       {/* CRM */}
       <Route path="/crm/contacts" element={
@@ -239,8 +242,8 @@ function AppRoutes() {
       <Route path="/finance/rapprochement" element={
         <ProtectedRoute roles={['admin','comptable']}><Layout><RapprochementPage /></Layout></ProtectedRoute>
       } />
-      <Route path="/finance/workflows" element={
-        <ProtectedRoute roles={['admin','comptable']}><Layout><AutomationWorkflowsPage /></Layout></ProtectedRoute>
+      <Route path="/automatisation/workflows" element={
+        <ProtectedRoute roles={['admin','manager']}><Layout><AutomationWorkflowsPage /></Layout></ProtectedRoute>
       } />
 
       {/* Équipe */}

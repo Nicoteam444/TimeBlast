@@ -63,7 +63,7 @@ const CATEGORY_DATA = {
       { to: '/finance/previsionnel', icon: '📈', label: 'Prévisionnel', desc: 'Construisez vos budgets prévisionnels. Comparez le réalisé au prévisionnel par poste.' },
       { to: '/finance/immobilisations', icon: '🏢', label: 'Immobilisations', desc: 'Gérez votre parc d\'immobilisations. Amortissements, cessions et inventaire.' },
       { to: '/finance/rapprochement', icon: '🔗', label: 'Rapprochement', desc: 'Rapprochez automatiquement vos relevés bancaires avec vos écritures comptables.' },
-      { to: '/finance/workflows', icon: '⚡', label: 'Workflows', desc: 'Creez des automatisations : quand un evenement se produit, declenchez des actions automatiques.' },
+      { to: '/documents/archives', icon: '🗄️', label: 'Documents', desc: 'Archivez, indexez et retrouvez tous vos documents d\'entreprise avec OCR.' },
     ],
   },
   marketing: {
@@ -81,6 +81,14 @@ const CATEGORY_DATA = {
     icon: '📁',
     items: [
       { to: '/documents/archives', icon: '🗄️', label: 'Archives', desc: 'Recherche avancée avec OCR, aperçu des documents, filtres multicritères et indexation automatique.' },
+    ],
+  },
+  automatisation: {
+    title: 'Automatisation',
+    subtitle: 'Automatisez vos processus metier avec des workflows intelligents.',
+    icon: '⚡',
+    items: [
+      { to: '/automatisation/workflows', icon: '🔀', label: 'Workflows', desc: 'Creez des automatisations visuelles : quand un evenement se produit, declenchez des actions automatiques.' },
     ],
   },
 }

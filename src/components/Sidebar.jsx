@@ -78,16 +78,6 @@ const SECTIONS = [
     ],
   },
   {
-    id: 'documents',
-    icon: '📁',
-    label: 'Documents',
-    landingTo: '/documents',
-    roles: ['admin', 'manager', 'collaborateur', 'comptable'],
-    items: [
-      { to: '/documents/archives', icon: '🗄️', label: 'Archives' },
-    ],
-  },
-  {
     id: 'finance',
     icon: '💰',
     label: 'Finance',
@@ -99,7 +89,26 @@ const SECTIONS = [
       { to: '/finance/previsionnel',    icon: '📈', label: 'Prévisionnel' },
       { to: '/finance/immobilisations', icon: '🏢', label: 'Immobilisations' },
       { to: '/finance/rapprochement',   icon: '🔗', label: 'Rapprochement' },
-      { to: '/finance/workflows',      icon: '⚡', label: 'Workflows' },
+    ],
+  },
+  {
+    id: 'documents',
+    icon: '📁',
+    label: 'Documents',
+    directTo: '/documents/archives',
+    roles: ['admin', 'manager', 'collaborateur', 'comptable'],
+    items: [
+      { to: '/documents/archives', icon: '🗄️', label: 'Archives' },
+    ],
+  },
+  {
+    id: 'automatisation',
+    icon: '⚡',
+    label: 'Automatisation',
+    directTo: '/automatisation/workflows',
+    roles: ['admin', 'manager'],
+    items: [
+      { to: '/automatisation/workflows', icon: '🔀', label: 'Workflows' },
     ],
   },
 ]
@@ -270,10 +279,13 @@ export default function Sidebar() {
               <div
                 key={section.id}
                 className={`rail-item ${isActive ? 'rail-item--active' : ''} ${hoveredId === section.id ? 'rail-item--hover' : ''}`}
-                onMouseEnter={e => showFlyout(section.id, e)}
+                onMouseEnter={e => section.directTo ? null : showFlyout(section.id, e)}
                 onMouseLeave={scheduleHide}
-                onClick={() => section.landingTo && navigate(section.landingTo)}
-                style={{ cursor: section.landingTo ? 'pointer' : undefined }}
+                onClick={() => {
+                  if (section.directTo) { navigate(section.directTo); setHoveredId(null); }
+                  else if (section.landingTo) navigate(section.landingTo)
+                }}
+                style={{ cursor: (section.directTo || section.landingTo) ? 'pointer' : undefined }}
               >
                 <span className="rail-item-icon">{section.icon}</span>
                 {sidebarOpen && <span className="rail-item-label">{section.label}</span>}
