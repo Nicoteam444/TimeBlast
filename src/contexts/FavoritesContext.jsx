@@ -134,6 +134,17 @@ export function FavoritesProvider({ children }) {
     [favorites, profile?.id]
   )
 
+  // Update label for an existing favorite (auto-refresh)
+  const updateFavLabel = useCallback((routePath, label) => {
+    if (!routePath || !label || !favorites.includes(routePath)) return
+    setFavLabels(prev => {
+      if (prev[routePath] === label) return prev // no change
+      const updated = { ...prev, [routePath]: label }
+      localStorage.setItem('tb_fav_labels', JSON.stringify(updated))
+      return updated
+    })
+  }, [favorites])
+
   // Check if a route is favorited
   const isFavorite = useCallback(
     (routePath) => favorites.includes(routePath),
@@ -146,6 +157,7 @@ export function FavoritesProvider({ children }) {
     loading,
     syncing,
     toggleFavorite,
+    updateFavLabel,
     isFavorite,
   }
 
