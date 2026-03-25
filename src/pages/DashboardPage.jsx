@@ -509,49 +509,39 @@ export default function DashboardPage() {
     return unique.sort((a, b) => (b.date || '') > (a.date || '') ? 1 : -1).slice(0, 10)
   }, [raw.recentTasks, raw.recentDocs, raw.recentContacts, raw.activityLog])
 
-  // Score de santé entreprise
-  const healthScore = useMemo(() => {
-    let score = 0
-    const details = []
-    // Temps saisi cette semaine (max 25pts)
-    const heuresSemaine = (raw.temps || []).reduce((s, t) => s + (t.duree || t.heures || 0), 0)
-    const tempsPct = Math.min(1, heuresSemaine / 35)
-    const tempsPts = Math.round(tempsPct * 25)
-    score += tempsPts
-    details.push({ label: 'Temps saisi', pts: tempsPts, max: 25, pct: Math.round(tempsPct * 100), icon: '⏱' })
-    // Factures sans retard (max 20pts)
-    const overdueCount = raw.facturesOverdueCount || 0
-    const facturePts = overdueCount === 0 ? 20 : Math.max(0, 20 - overdueCount * 5)
-    score += facturePts
-    details.push({ label: 'Factures a jour', pts: facturePts, max: 20, pct: Math.round(facturePts / 20 * 100), icon: '🧾' })
-    // Projets actifs avec taches (max 20pts)
-    const projets = raw.projets || []
-    const projetsAvecTaches = projets.filter(p => (raw.projetTaskCounts?.[p.id]?.total || 0) > 0).length
-    const projetPts = projets.length > 0 ? Math.round((projetsAvecTaches / projets.length) * 20) : 10
-    score += projetPts
-    details.push({ label: 'Projets structures', pts: projetPts, max: 20, pct: Math.round(projetPts / 20 * 100), icon: '📁' })
-    // Pipeline commercial rempli (max 15pts)
-    const pipeline = (raw.leadsPipeline || []).reduce((s, l) => s + (l.montant || 0), 0)
-    const pipelinePts = pipeline > 0 ? Math.min(15, Math.round(Math.log10(pipeline + 1) * 3)) : 0
-    score += pipelinePts
-    details.push({ label: 'Pipeline commercial', pts: pipelinePts, max: 15, pct: Math.round(pipelinePts / 15 * 100), icon: '🎯' })
-    // Documents archives (max 10pts)
-    const docsCount = (raw.documents || []).length
-    const docsPts = Math.min(10, docsCount * 2)
-    score += docsPts
-    details.push({ label: 'Documents archives', pts: docsPts, max: 10, pct: Math.round(docsPts / 10 * 100), icon: '📄' })
-    // Contacts CRM (max 10pts)
-    const contactsPts = (raw.recentContacts || []).length > 0 ? 10 : 0
-    score += contactsPts
-    details.push({ label: 'CRM actif', pts: contactsPts, max: 10, pct: Math.round(contactsPts / 10 * 100), icon: '👤' })
-
-    const grade = score >= 85 ? { label: 'Excellent', color: '#16a34a', emoji: '🏆' }
-      : score >= 65 ? { label: 'Bon', color: '#3b82f6', emoji: '👍' }
-      : score >= 40 ? { label: 'A ameliorer', color: '#f59e0b', emoji: '⚠️' }
-      : { label: 'Critique', color: '#dc2626', emoji: '🚨' }
-
-    return { score: Math.min(100, score), details, grade }
-  }, [raw])
+  // Classement utilisation plateforme
+  const [leaderboard, setLeaderboard] = useState([])
+  useEffect(() => {
+    if (!user) return
+    const socId = selectedSociete?.id
+    async function loadLeaderboard() {
+      try {
+        // Compter les page_views par user ces 7 derniers jours
+        const weekAgo = new Date(Date.now() - 7 * 86400000).toISOString()
+        let q = supabase.from('page_views').select('user_id, created_at').gte('created_at', weekAgo)
+        const { data: views } = await q
+        if (!views) return
+        // Agréger par user
+        const counts = {}
+        for (const v of views) {
+          counts[v.user_id] = (counts[v.user_id] || 0) + 1
+        }
+        // Récupérer les noms
+        const userIds = Object.keys(counts)
+        if (userIds.length === 0) return
+        const { data: profiles } = await supabase.from('profiles').select('id, full_name').in('id', userIds)
+        const board = userIds.map(uid => {
+          const p = (profiles || []).find(pr => pr.id === uid)
+          const name = p?.full_name || 'Utilisateur'
+          const parts = name.split(' ')
+          const initials = parts.map(p => p[0] || '').join('').toUpperCase().slice(0, 2)
+          return { uid, name, initials, count: counts[uid], isMe: uid === user.id }
+        }).sort((a, b) => b.count - a.count).slice(0, 6)
+        setLeaderboard(board)
+      } catch {}
+    }
+    loadLeaderboard()
+  }, [user?.id, selectedSociete?.id])
 
   // Header subtitle
   const headerSubtitle = useMemo(() => {
@@ -610,29 +600,46 @@ export default function DashboardPage() {
   const widgetMap = {
     score: (
       <>
-        <SectionHeader icon={healthScore.grade.emoji} title="Score de sante" />
-        <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem' }}>
-          <DonutChart size={80} stroke={7} pct={healthScore.score} color={healthScore.grade.color} label={`${healthScore.score}`} />
-          <div style={{ flex: 1 }}>
-            <div style={{ fontSize: '1rem', fontWeight: 800, color: healthScore.grade.color, marginBottom: '.25rem' }}>
-              {healthScore.grade.label}
-            </div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '.35rem' }}>
-              {healthScore.details.map(d => (
-                <div key={d.label} style={{ display: 'flex', alignItems: 'center', gap: '.5rem' }}>
-                  <span style={{ fontSize: 12, width: 18 }}>{d.icon}</span>
-                  <div style={{ flex: 1, display: 'flex', alignItems: 'center', gap: '.4rem' }}>
-                    <span style={{ fontSize: '.72rem', color: 'var(--text-muted)', minWidth: 100 }}>{d.label}</span>
-                    <div style={{ flex: 1, height: 5, borderRadius: 3, background: 'var(--border, #e2e8f0)', overflow: 'hidden' }}>
-                      <div style={{ height: '100%', borderRadius: 3, width: `${d.pct}%`, background: d.pct >= 80 ? '#16a34a' : d.pct >= 50 ? '#f59e0b' : '#dc2626', transition: 'width .6s ease' }} />
+        <SectionHeader icon="🏅" title="Top utilisateurs cette semaine" />
+        {leaderboard.length === 0 ? (
+          <div style={{ textAlign: 'center', padding: '1rem', color: 'var(--text-muted)', fontSize: '.85rem' }}>
+            Pas encore de donnees cette semaine
+          </div>
+        ) : (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '.4rem' }}>
+            {leaderboard.map((u, i) => {
+              const medals = ['🥇', '🥈', '🥉']
+              const maxCount = leaderboard[0]?.count || 1
+              const pct = Math.round((u.count / maxCount) * 100)
+              return (
+                <div key={u.uid} style={{
+                  display: 'flex', alignItems: 'center', gap: '.6rem',
+                  padding: '.5rem .6rem', borderRadius: 8,
+                  background: u.isMe ? 'var(--primary, #2B4C7E)' + '0A' : 'var(--surface, #f8fafc)',
+                  border: u.isMe ? '1px solid var(--primary, #2B4C7E)' + '25' : '1px solid transparent',
+                }}>
+                  <span style={{ fontSize: 14, width: 20, textAlign: 'center' }}>{i < 3 ? medals[i] : `${i + 1}.`}</span>
+                  <div style={{
+                    width: 26, height: 26, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    background: u.isMe ? 'var(--primary, #2B4C7E)' : '#e2e8f0', color: u.isMe ? '#fff' : '#475569',
+                    fontSize: '.6rem', fontWeight: 700, flexShrink: 0,
+                  }}>{u.initials}</div>
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 2 }}>
+                      <span style={{ fontSize: '.8rem', fontWeight: u.isMe ? 700 : 600, color: 'var(--text)' }}>
+                        {u.name} {u.isMe && <span style={{ fontSize: '.65rem', color: 'var(--primary)', fontWeight: 500 }}>(vous)</span>}
+                      </span>
+                      <span style={{ fontSize: '.7rem', fontWeight: 700, color: 'var(--text-muted)' }}>{u.count} pages</span>
                     </div>
-                    <span style={{ fontSize: '.65rem', fontWeight: 700, color: d.pct >= 80 ? '#16a34a' : d.pct >= 50 ? '#f59e0b' : '#dc2626', minWidth: 28, textAlign: 'right' }}>{d.pts}/{d.max}</span>
+                    <div style={{ height: 4, borderRadius: 2, background: 'var(--border, #e2e8f0)', overflow: 'hidden' }}>
+                      <div style={{ height: '100%', borderRadius: 2, width: `${pct}%`, background: i === 0 ? '#f59e0b' : i === 1 ? '#94a3b8' : i === 2 ? '#c2875a' : 'var(--primary, #2B4C7E)', transition: 'width .6s ease' }} />
+                    </div>
                   </div>
                 </div>
-              ))}
-            </div>
+              )
+            })}
           </div>
-        </div>
+        )}
       </>
     ),
 
