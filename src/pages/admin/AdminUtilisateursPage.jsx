@@ -18,6 +18,7 @@ const ROLE_COLORS = {
 }
 
 function getStatus(user) {
+  if (user.actif === false) return { label: 'Désactivé', color: '#dc2626', bg: '#fef2f2' }
   if (!user.email_confirmed_at && user.invited_at) return { label: 'Invitation envoyée', color: '#f59e0b', bg: '#fffbeb' }
   if (!user.email_confirmed_at) return { label: 'Non confirmé', color: '#f59e0b', bg: '#fffbeb' }
   if (!user.last_sign_in_at) return { label: 'Jamais connecté', color: '#64748b', bg: '#f8fafc' }
