@@ -72,15 +72,8 @@ export function FavoritesProvider({ children }) {
       setFavorites(prev => prev.filter(r => r !== routePath))
     }
 
-    let subscription = null
-    try {
-      subscription = subscribeToFavoritesChanges(profile.id, onAdd, onRemove)
-    } catch (err) {
-      console.warn('Favorites realtime disabled:', err.message)
-    }
-    return () => {
-      try { subscription?.unsubscribe?.() } catch {}
-    }
+    // Realtime subscription disabled — not essential
+    return () => {}
   }, [profile?.id])
 
   // Toggle favorite

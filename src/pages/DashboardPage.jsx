@@ -641,21 +641,6 @@ export default function DashboardPage() {
   }, [raw.tasks, raw.facturesOverdueCount, campagnesActives])
 
   // ── Loading state ──
-  if (loading) {
-    return (
-      <div className="admin-page admin-page--full" style={{
-        display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
-        minHeight: 'calc(100vh - 120px)', color: 'var(--text-muted)'
-      }}>
-        <div style={{
-          width: 40, height: 40, border: '4px solid #e2e8f0', borderTopColor: '#2B4C7E',
-          borderRadius: '50%', animation: 'spin 0.8s linear infinite', marginBottom: 16
-        }} />
-        <style>{`@keyframes spin { to { transform: rotate(360deg) } }`}</style>
-      </div>
-    )
-  }
-
   const todayStr = today.toISOString().slice(0, 10)
 
   const priorityIcon = (p) => {
@@ -695,7 +680,7 @@ export default function DashboardPage() {
     if (overdueCount > 0) todos.push({ text: `Relancer ${overdueCount} facture${overdueCount > 1 ? 's' : ''} en retard de paiement`, icon: '🧾', link: '/finance/facturation', priority: 'high' })
     if (heures < 7) todos.push({ text: 'Saisir vos heures de la journee', icon: '⏱', link: '/activite/saisie', priority: 'medium' })
     if (urgentTasks > 0) todos.push({ text: `Traiter ${urgentTasks} tache${urgentTasks > 1 ? 's' : ''} prioritaire${urgentTasks > 1 ? 's' : ''}`, icon: '🔴', link: '/activite/projets', priority: 'high' })
-    if (raw.absencesPendingCount > 0) todos.push({ text: `Valider ${raw.absencesPendingCount} demande${raw.absencesPendingCount > 1 ? 's' : ''} d\'absence`, icon: '🏖️', link: '/activite/absences', priority: 'medium' })
+    if (raw.absencesPendingCount > 0) todos.push({ text: `Valider ${raw.absencesPendingCount} demande${raw.absencesPendingCount > 1 ? 's' : ''} d'absence`, icon: '🏖️', link: '/activite/absences', priority: 'medium' })
     if (raw.notesFraisPendingCount > 0) todos.push({ text: `Approuver ${raw.notesFraisPendingCount} note${raw.notesFraisPendingCount > 1 ? 's' : ''} de frais`, icon: '💳', link: '/equipe/notes-de-frais', priority: 'medium' })
     if ((raw.leadsCount || 0) > 0) todos.push({ text: 'Qualifier les nouveaux leads du mois', icon: '🚀', link: '/crm/leads', priority: 'low' })
     if (todos.length < 3) todos.push({ text: 'Mettre a jour votre pipeline commercial', icon: '🎯', link: '/commerce/transactions', priority: 'low' })
@@ -1463,6 +1448,21 @@ export default function DashboardPage() {
         </>
       )
     })(),
+  }
+
+  if (loading) {
+    return (
+      <div className="admin-page admin-page--full" style={{
+        display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+        minHeight: 'calc(100vh - 120px)', color: 'var(--text-muted)'
+      }}>
+        <div style={{
+          width: 40, height: 40, border: '4px solid #e2e8f0', borderTopColor: '#2B4C7E',
+          borderRadius: '50%', animation: 'spin 0.8s linear infinite', marginBottom: 16
+        }} />
+        <style>{`@keyframes spin { to { transform: rotate(360deg) } }`}</style>
+      </div>
+    )
   }
 
   return (
