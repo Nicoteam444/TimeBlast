@@ -799,8 +799,164 @@ function BaseDeDonneesTab() {
 }
 
 // ── Page principale ───────────────────────────────────────────
+// ── Onglet Flux Métier ──────────────────────────────────────
+function FluxMetierTab() {
+  const navigate = React.useCallback((path) => {
+    window.location.href = path
+  }, [])
+
+  const B = '#2B4C7E'
+  const GREY = '#94a3b8'
+
+  // Étapes du processus complet lead → encaissement
+  const steps = [
+    // Ligne 1 : Acquisition
+    { id: 'lead', label: 'Réception Lead', sub: 'Marketing', route: '/crm/leads', available: true, x: 60, y: 60 },
+    { id: 'contact', label: 'Qualification Contact', sub: 'CRM', route: '/crm/contacts', available: true, x: 240, y: 60 },
+    { id: 'entreprise', label: 'Fiche Entreprise', sub: 'CRM', route: '/crm/entreprises', available: true, x: 420, y: 60 },
+    // Ligne 2 : Commercial
+    { id: 'opportunite', label: 'Opportunité', sub: 'Commerce', route: '/commerce/transactions', available: true, x: 60, y: 160 },
+    { id: 'devis', label: 'Devis', sub: 'Commerce', route: '/commerce/devis', available: true, x: 240, y: 160 },
+    { id: 'client', label: 'Création Client', sub: 'Commerce', route: '/commerce/clients', available: true, x: 420, y: 160 },
+    // Ligne 3 : Production
+    { id: 'projet', label: 'Projet', sub: 'Activité', route: '/activite/projets', available: true, x: 60, y: 260 },
+    { id: 'planif', label: 'Planification', sub: 'Activité', route: '/activite/planification', available: true, x: 240, y: 260 },
+    { id: 'temps', label: 'Saisie des temps', sub: 'Calendrier', route: '/activite/saisie', available: true, x: 420, y: 260 },
+    // Ligne 4 : Facturation & Encaissement
+    { id: 'facture', label: 'Facturation', sub: 'Gestion', route: '/finance/facturation', available: true, x: 60, y: 360 },
+    { id: 'envoi', label: 'Envoi e-facture', sub: 'Gestion', route: '/finance/facturation', available: true, x: 240, y: 360 },
+    { id: 'encaissement', label: 'Encaissement', sub: 'Finance', route: '/gestion/transactions', available: true, x: 420, y: 360 },
+    // Ligne 5 : Suivi & Analyse
+    { id: 'rapproch', label: 'Rapprochement', sub: 'Finance', route: '/finance/rapprochement', available: true, x: 60, y: 460 },
+    { id: 'compta', label: 'Comptabilité', sub: 'Finance', route: '/finance/business-intelligence', available: true, x: 240, y: 460 },
+    { id: 'reporting', label: 'Reporting', sub: 'Activité', route: '/activite/reporting', available: true, x: 420, y: 460 },
+  ]
+
+  // Flux parallèles (non linéaires)
+  const sideSteps = [
+    { id: 'campagne', label: 'Campagne Marketing', sub: 'Marketing', route: '/marketing/campagnes', available: true, x: 600, y: 60 },
+    { id: 'produits', label: 'Catalogue Produits', sub: 'Commerce', route: '/commerce/produits', available: true, x: 600, y: 160 },
+    { id: 'achats', label: 'Achats Fournisseurs', sub: 'Gestion', route: '/gestion/achats', available: true, x: 600, y: 260 },
+    { id: 'notes', label: 'Notes de frais', sub: 'Équipe', route: '/equipe/notes-de-frais', available: true, x: 600, y: 360 },
+    { id: 'absences', label: 'Absences / Congés', sub: 'Équipe', route: '/activite/absences', available: true, x: 600, y: 460 },
+  ]
+
+  // Flèches principales (chaîne de valeur)
+  const arrows = [
+    ['lead', 'contact'], ['contact', 'entreprise'],
+    ['entreprise', 'opportunite'], ['opportunite', 'devis'], ['devis', 'client'],
+    ['client', 'projet'], ['projet', 'planif'], ['planif', 'temps'],
+    ['temps', 'facture'], ['facture', 'envoi'], ['envoi', 'encaissement'],
+    ['encaissement', 'rapproch'], ['rapproch', 'compta'], ['compta', 'reporting'],
+  ]
+
+  // Flèches latérales
+  const sideArrows = [
+    ['campagne', 'lead'], ['produits', 'devis'], ['achats', 'compta'], ['notes', 'compta'],
+  ]
+
+  const allSteps = [...steps, ...sideSteps]
+  const stepMap = Object.fromEntries(allSteps.map(s => [s.id, s]))
+
+  const W = 130, H = 52
+
+  return (
+    <div className="param-sections">
+      <div style={{ marginBottom: 16 }}>
+        <h2 style={{ margin: 0, fontSize: '1.1rem' }}>🔄 Flux métier — Du lead à l'encaissement</h2>
+        <p style={{ color: '#64748b', fontSize: '.85rem', margin: '.25rem 0 0' }}>
+          Cliquez sur une étape pour accéder à la page correspondante.
+          <span style={{ marginLeft: 12, color: B, fontWeight: 600 }}>● Disponible</span>
+          <span style={{ marginLeft: 12, color: GREY, fontWeight: 600 }}>● Bientôt</span>
+        </p>
+      </div>
+
+      <div style={{ overflowX: 'auto', padding: '0 0 16px' }}>
+        <svg viewBox="0 0 750 520" style={{ width: '100%', minWidth: 700, height: 'auto' }}>
+          <defs>
+            <marker id="arrowB" viewBox="0 0 10 7" refX="10" refY="3.5" markerWidth="8" markerHeight="6" orient="auto-start-reverse">
+              <polygon points="0 0, 10 3.5, 0 7" fill={B} />
+            </marker>
+            <marker id="arrowG" viewBox="0 0 10 7" refX="10" refY="3.5" markerWidth="8" markerHeight="6" orient="auto-start-reverse">
+              <polygon points="0 0, 10 3.5, 0 7" fill={GREY} />
+            </marker>
+            <filter id="cardSh"><feDropShadow dx="0" dy="1" stdDeviation="2" floodColor="#000" floodOpacity="0.08" /></filter>
+            <filter id="bGlow2"><feGaussianBlur stdDeviation="2" /><feMerge><feMergeNode /><feMergeNode in="SourceGraphic" /></feMerge></filter>
+          </defs>
+
+          {/* Labels de phases */}
+          {[
+            { y: 40, label: '1. ACQUISITION', color: '#0ea5e9' },
+            { y: 140, label: '2. COMMERCIAL', color: '#8b5cf6' },
+            { y: 240, label: '3. PRODUCTION', color: '#16a34a' },
+            { y: 340, label: '4. FACTURATION', color: '#f59e0b' },
+            { y: 440, label: '5. ANALYSE', color: '#ef4444' },
+          ].map(p => (
+            <text key={p.label} x={8} y={p.y} fill={p.color} fontSize="7" fontWeight="700" opacity="0.6" letterSpacing="0.5">{p.label}</text>
+          ))}
+
+          {/* Flèches principales */}
+          {arrows.map(([from, to], i) => {
+            const s = stepMap[from], e = stepMap[to]
+            if (!s || !e) return null
+            const sx = s.x + W / 2, sy = s.y + H / 2
+            const ex = e.x + W / 2, ey = e.y + H / 2
+            // Ajuster les points de départ/arrivée
+            let x1 = sx, y1 = sy, x2 = ex, y2 = ey
+            if (Math.abs(ex - sx) > Math.abs(ey - sy)) {
+              x1 = sx + (ex > sx ? W / 2 + 4 : -W / 2 - 4); x2 = ex + (ex > sx ? -W / 2 - 4 : W / 2 + 4); y1 = sy; y2 = ey
+            } else {
+              y1 = sy + (ey > sy ? H / 2 + 4 : -H / 2 - 4); y2 = ey + (ey > sy ? -H / 2 - 4 : H / 2 + 4); x1 = sx; x2 = ex
+            }
+            const avail = s.available && e.available
+            return (
+              <g key={`arr-${i}`}>
+                <line x1={x1} y1={y1} x2={x2} y2={y2} stroke={avail ? B : GREY} strokeWidth="1.5" opacity={avail ? 0.3 : 0.15} markerEnd={avail ? 'url(#arrowB)' : 'url(#arrowG)'} />
+                {avail && (
+                  <circle r="3" fill={B} filter="url(#bGlow2)" opacity="0.8">
+                    <animate attributeName="cx" values={`${x1};${x2}`} dur={`${2 + (i % 3) * 0.3}s`} repeatCount="indefinite" begin={`${i * 0.2}s`} />
+                    <animate attributeName="cy" values={`${y1};${y2}`} dur={`${2 + (i % 3) * 0.3}s`} repeatCount="indefinite" begin={`${i * 0.2}s`} />
+                  </circle>
+                )}
+              </g>
+            )
+          })}
+
+          {/* Flèches latérales */}
+          {sideArrows.map(([from, to], i) => {
+            const s = stepMap[from], e = stepMap[to]
+            if (!s || !e) return null
+            const x1 = s.x, y1 = s.y + H / 2
+            const x2 = e.x + W + 4, y2 = e.y + H / 2
+            return <line key={`side-${i}`} x1={x1} y1={y1} x2={x2} y2={y2} stroke={B} strokeWidth="1" opacity="0.15" strokeDasharray="4 4" markerEnd="url(#arrowB)" />
+          })}
+
+          {/* Label colonne latérale */}
+          <text x={600 + W / 2} y={40} textAnchor="middle" fill="#64748b" fontSize="7" fontWeight="700" letterSpacing="0.5">FLUX PARALLELES</text>
+
+          {/* Cartes étapes */}
+          {allSteps.map(step => {
+            const color = step.available ? B : GREY
+            return (
+              <g key={step.id} style={{ cursor: step.available ? 'pointer' : 'default' }} onClick={() => step.available && navigate(step.route)}>
+                <rect x={step.x} y={step.y} width={W} height={H} rx={8} fill="#fff" stroke={color} strokeWidth={step.available ? 1.5 : 1} filter="url(#cardSh)" />
+                {step.available && <rect x={step.x} y={step.y} width={4} height={H} rx="2 0 0 2" fill={color} />}
+                <text x={step.x + W / 2} y={step.y + 20} textAnchor="middle" fill={step.available ? '#1a2332' : '#94a3b8'} fontSize="8" fontWeight="700">{step.label}</text>
+                <text x={step.x + W / 2} y={step.y + 34} textAnchor="middle" fill={step.available ? '#64748b' : '#cbd5e1'} fontSize="6.5" fontWeight="500">{step.sub}</text>
+                {step.available && <circle cx={step.x + W - 10} cy={step.y + 10} r="3" fill={B} opacity="0.5" />}
+                {!step.available && <circle cx={step.x + W - 10} cy={step.y + 10} r="3" fill={GREY} opacity="0.3" />}
+              </g>
+            )
+          })}
+        </svg>
+      </div>
+    </div>
+  )
+}
+
 const TABS = [
   { id: 'affichage',     label: 'Affichage',     icon: '🎨' },
+  { id: 'flux',          label: 'Flux métier',    icon: '🔄' },
   { id: 'integrations',  label: 'Intégrations',  icon: '🔗' },
   { id: 'bdd',           label: 'Base de données', icon: '🗄️' },
 ]
@@ -827,6 +983,7 @@ export default function ParametresPage() {
       </div>
 
       {tab === 'affichage'    && <AffichageTab />}
+      {tab === 'flux'          && <FluxMetierTab />}
       {tab === 'integrations' && <IntegrationsTab />}
       {tab === 'bdd'          && <BaseDeDonneesTab />}
     </div>
