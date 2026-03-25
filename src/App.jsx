@@ -276,7 +276,7 @@ function AppRoutes() {
         <ProtectedRoute roles={['admin']}><Layout><AdminPage /></Layout></ProtectedRoute>
       } />
       <Route path="/admin/utilisateurs" element={
-        <ProtectedRoute roles={['admin']}><Layout><AdminUtilisateursPage /></Layout></ProtectedRoute>
+        <ProtectedRoute roles={['admin']} superAdminOnly><Layout><AdminUtilisateursPage /></Layout></ProtectedRoute>
       } />
       <Route path="/admin/audit" element={
         <ProtectedRoute roles={['admin']}><Layout><AdminAuditPage /></Layout></ProtectedRoute>
@@ -285,10 +285,10 @@ function AppRoutes() {
         <ProtectedRoute roles={['admin']}><Layout><AdminMessagesPage /></Layout></ProtectedRoute>
       } />
       <Route path="/admin/historique" element={
-        <ProtectedRoute roles={['admin']}><Layout><AdminPageViewsPage /></Layout></ProtectedRoute>
+        <ProtectedRoute roles={['admin']} superAdminOnly><Layout><AdminPageViewsPage /></Layout></ProtectedRoute>
       } />
       <Route path="/admin/societes" element={
-        <ProtectedRoute roles={['admin']}><Layout><AdminSocietesPage /></Layout></ProtectedRoute>
+        <ProtectedRoute roles={['admin']} superAdminOnly><Layout><AdminSocietesPage /></Layout></ProtectedRoute>
       } />
       <Route path="/admin/societes/:id" element={
         <ProtectedRoute roles={['admin']}><Layout><AdminSocieteDetailPage /></Layout></ProtectedRoute>
