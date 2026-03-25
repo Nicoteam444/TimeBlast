@@ -275,6 +275,7 @@ export default function AutomationWorkflowsPage() {
   const [formError, setFormError] = useState('')
   const [deleteTarget, setDeleteTarget] = useState(null)
   const [deleting, setDeleting] = useState(false)
+  const [showCreateMenu, setShowCreateMenu] = useState(false)
   const [filterTrigger, setFilterTrigger] = useState('')
   const [filterActive, setFilterActive] = useState('')
   const [search, setSearch] = useState('')
@@ -369,8 +370,19 @@ export default function AutomationWorkflowsPage() {
             <button onClick={() => { setViewMode('list') }} style={{ padding: '.4rem .75rem', border: 'none', background: viewMode === 'list' ? 'var(--primary)' : '#fff', color: viewMode === 'list' ? '#fff' : '#64748b', cursor: 'pointer', fontSize: '.8rem', fontWeight: 600 }}>≡ Liste</button>
             <button onClick={() => { setViewMode('visual') }} style={{ padding: '.4rem .75rem', border: 'none', background: viewMode === 'visual' ? 'var(--primary)' : '#fff', color: viewMode === 'visual' ? '#fff' : '#64748b', cursor: 'pointer', fontSize: '.8rem', fontWeight: 600 }}>◎ Visuel</button>
           </div>
-          <button className="btn-primary" onClick={() => setVisualWorkflow('new')}>+ Visuel</button>
-          <button className="btn-secondary" onClick={openCreate} style={{ marginLeft: 0 }}>+ Formulaire</button>
+          <div style={{ position: 'relative' }}>
+            <button className="btn-primary" onClick={() => setShowCreateMenu(p => !p)}>+ Nouveau workflow</button>
+            {showCreateMenu && (
+              <div style={{ position: 'absolute', right: 0, top: '100%', marginTop: 4, background: '#fff', borderRadius: 10, boxShadow: '0 8px 24px rgba(0,0,0,.15)', border: '1px solid #e2e8f0', overflow: 'hidden', zIndex: 20, width: 220 }}>
+                <button onClick={() => { setVisualWorkflow('new'); setShowCreateMenu(false) }} style={{ display: 'flex', alignItems: 'center', gap: '.6rem', width: '100%', padding: '.7rem 1rem', border: 'none', background: '#fff', cursor: 'pointer', fontSize: '.85rem', fontWeight: 500, textAlign: 'left' }} onMouseEnter={e => e.currentTarget.style.background = '#f8fafc'} onMouseLeave={e => e.currentTarget.style.background = '#fff'}>
+                  <span style={{ fontSize: '1.1rem' }}>◎</span> Editeur visuel
+                </button>
+                <button onClick={() => { openCreate(); setShowCreateMenu(false) }} style={{ display: 'flex', alignItems: 'center', gap: '.6rem', width: '100%', padding: '.7rem 1rem', border: 'none', background: '#fff', cursor: 'pointer', fontSize: '.85rem', fontWeight: 500, textAlign: 'left', borderTop: '1px solid #f1f5f9' }} onMouseEnter={e => e.currentTarget.style.background = '#f8fafc'} onMouseLeave={e => e.currentTarget.style.background = '#fff'}>
+                  <span style={{ fontSize: '1.1rem' }}>📝</span> Formulaire
+                </button>
+              </div>
+            )}
+          </div>
         </div>
       </div>
 
