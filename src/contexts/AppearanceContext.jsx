@@ -30,9 +30,13 @@ export const COLOR_FIELDS = [
 const FONT_SCALE = { sm: '13px', md: '15px', lg: '17px' }
 const DENSITY_SCALE = { compact: '0.3rem', normal: '0.45rem', comfortable: '0.7rem' }
 
-function load() {
+function getStorageKey(userId) {
+  return `tb_appearance_${userId || 'anon'}`
+}
+
+function load(userId) {
   try {
-    const s = localStorage.getItem('tb_appearance')
+    const s = localStorage.getItem(getStorageKey(userId))
     return s ? { ...DEFAULTS, ...JSON.parse(s) } : DEFAULTS
   } catch { return DEFAULTS }
 }
@@ -62,24 +66,27 @@ function applyToDOM(settings) {
 }
 
 export function AppearanceProvider({ children }) {
-  const [settings, setSettings] = useState(load)
+  const [settings, setSettings] = useState(() => load())
   const [userId, setUserId] = useState(null)
 
   // Detect logged-in user
   useEffect(() => {
     supabase.auth.getUser().then(({ data }) => {
       if (data?.user?.id) {
-        setUserId(data.user.id)
+        const uid = data.user.id
+        setUserId(uid)
+        // Re-load from user-specific localStorage key
+        setSettings(load(uid))
         // Load appearance from DB
         supabase.from('profiles')
           .select('appearance_settings')
-          .eq('id', data.user.id)
+          .eq('id', uid)
           .single()
           .then(({ data: profile }) => {
             if (profile?.appearance_settings) {
               const dbSettings = { ...DEFAULTS, ...profile.appearance_settings }
               setSettings(dbSettings)
-              try { localStorage.setItem('tb_appearance', JSON.stringify(dbSettings)) } catch {}
+              try { localStorage.setItem(getStorageKey(uid), JSON.stringify(dbSettings)) } catch {}
             }
           })
       }
@@ -89,8 +96,8 @@ export function AppearanceProvider({ children }) {
   // Apply to DOM + save locally whenever settings change
   useEffect(() => {
     applyToDOM(settings)
-    try { localStorage.setItem('tb_appearance', JSON.stringify(settings)) } catch {}
-  }, [settings])
+    try { localStorage.setItem(getStorageKey(userId), JSON.stringify(settings)) } catch {}
+  }, [settings, userId])
 
   function update(patch) { setSettings(s => ({ ...s, ...patch })) }
 

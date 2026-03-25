@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { supabase } from '../../lib/supabase'
 import { useBreadcrumb } from '../../contexts/BreadcrumbContext'
+import { useSociete } from '../../contexts/SocieteContext'
 import ClientAutocomplete from '../../components/ClientAutocomplete'
 import { phaseInfo } from './TransactionsPage'
 
@@ -17,6 +18,7 @@ export default function TransactionDetailPage() {
   const { id } = useParams()
   const navigate = useNavigate()
   const { setSegments, clearSegments } = useBreadcrumb() || {}
+  const { selectedSociete } = useSociete()
   const [transaction, setTransaction] = useState(null)
   const [loading, setLoading] = useState(true)
   const [editing, setEditing] = useState(false)
@@ -34,6 +36,11 @@ export default function TransactionDetailPage() {
       .select('*, clients(id, name)')
       .eq('id', id)
       .single()
+    if (data && selectedSociete?.id && data.societe_id !== selectedSociete.id) {
+      setTransaction(null)
+      setLoading(false)
+      return
+    }
     if (data) {
       setTransaction(data)
       setForm({

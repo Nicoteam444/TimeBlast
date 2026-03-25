@@ -4,10 +4,13 @@ import { useAuth } from './AuthContext'
 
 const SocieteContext = createContext(null)
 
-const STORAGE_KEY = 'timeblast_selected_societe'
+function getStorageKey(userId) {
+  return `timeblast_selected_societe_${userId || 'anon'}`
+}
 
 export function SocieteProvider({ children }) {
   const { profile } = useAuth()
+  const uid = profile?.id || 'anon'
   const [societes, setSocietes] = useState([])
   const [selectedSociete, setSelectedSociete] = useState(null)
   const [loadingSocietes, setLoadingSocietes] = useState(true)
@@ -24,7 +27,7 @@ export function SocieteProvider({ children }) {
         setSocietes(list)
         if (list.length > 0) {
           // Restaure la sélection depuis localStorage, sinon prend la société du profil, sinon la première
-          const stored = localStorage.getItem(STORAGE_KEY)
+          const stored = localStorage.getItem(getStorageKey(uid))
           const found = (stored && list.find(s => s.id === stored))
             || list.find(s => s.id === profile.societe_id)
             || list[0]
@@ -47,8 +50,8 @@ export function SocieteProvider({ children }) {
 
   function handleSelectSociete(societe) {
     setSelectedSociete(societe)
-    if (societe) localStorage.setItem(STORAGE_KEY, societe.id)
-    else localStorage.removeItem(STORAGE_KEY)
+    if (societe) localStorage.setItem(getStorageKey(uid), societe.id)
+    else localStorage.removeItem(getStorageKey(uid))
   }
 
   return (

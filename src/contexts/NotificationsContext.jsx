@@ -1,23 +1,26 @@
 import { createContext, useContext, useState, useEffect, useCallback } from 'react'
 import { useDemo } from './DemoContext'
 import { useSociete } from './SocieteContext'
+import { useAuth } from './AuthContext'
 import { supabase } from '../lib/supabase'
 
 const NotificationsContext = createContext(null)
 
-const STORAGE_KEY = 'notif_read_ids'
+function getStorageKey(userId) {
+  return `notif_read_ids_${userId || 'anon'}`
+}
 
-function loadReadIds() {
+function loadReadIds(userId) {
   try {
-    return new Set(JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]'))
+    return new Set(JSON.parse(localStorage.getItem(getStorageKey(userId)) || '[]'))
   } catch {
     return new Set()
   }
 }
 
-function saveReadIds(ids) {
+function saveReadIds(ids, userId) {
   try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify([...ids]))
+    localStorage.setItem(getStorageKey(userId), JSON.stringify([...ids]))
   } catch {}
 }
 
@@ -288,11 +291,13 @@ async function fetchSmartNotifications(societeId) {
 export function NotificationsProvider({ children }) {
   const { isDemoMode } = useDemo()
   const { selectedSociete } = useSociete() || {}
+  const { user } = useAuth()
+  const uid = user?.id || 'anon'
   const [notifications, setNotifications] = useState([])
   const [loading, setLoading] = useState(false)
 
   const refreshNotifications = useCallback(async () => {
-    const readIds = loadReadIds()
+    const readIds = loadReadIds(uid)
     setLoading(true)
 
     if (isDemoMode) {
@@ -311,7 +316,7 @@ export function NotificationsProvider({ children }) {
       setNotifications(withRead)
       setLoading(false)
     }
-  }, [isDemoMode, selectedSociete?.id])
+  }, [isDemoMode, selectedSociete?.id, uid])
 
   useEffect(() => {
     refreshNotifications()
@@ -321,23 +326,23 @@ export function NotificationsProvider({ children }) {
   }, [refreshNotifications])
 
   function markRead(id) {
-    const readIds = loadReadIds()
+    const readIds = loadReadIds(uid)
     readIds.add(id)
-    saveReadIds(readIds)
+    saveReadIds(readIds, uid)
     setNotifications(prev => prev.map(n => n.id === id ? { ...n, read: true } : n))
   }
 
   function markUnread(id) {
-    const readIds = loadReadIds()
+    const readIds = loadReadIds(uid)
     readIds.delete(id)
-    saveReadIds(readIds)
+    saveReadIds(readIds, uid)
     setNotifications(prev => prev.map(n => n.id === id ? { ...n, read: false } : n))
   }
 
   function markAllRead() {
-    const readIds = loadReadIds()
+    const readIds = loadReadIds(uid)
     notifications.forEach(n => readIds.add(n.id))
-    saveReadIds(readIds)
+    saveReadIds(readIds, uid)
     setNotifications(prev => prev.map(n => ({ ...n, read: true })))
   }
 

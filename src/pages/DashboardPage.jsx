@@ -122,7 +122,9 @@ export default function DashboardPage() {
   const [raw, setRaw] = useState({})
 
   // ── Drag & Drop Widgets ──
-  const STORAGE_KEY = 'timeblast_dashboard_order'
+  const uid = user?.id || 'anon'
+  const STORAGE_KEY = `timeblast_dashboard_order_${uid}`
+  const MOOD_KEY = `timeblast_mood_${uid}`
   const DEFAULT_ORDER = ['tasks', 'time', 'alerts', 'projects', 'treasury', 'mood', 'marketing', 'documents', 'shortcuts', 'activity']
   const MOODS = [
     { emoji: '😄', label: 'Super', color: '#16a34a' },
@@ -132,14 +134,14 @@ export default function DashboardPage() {
     { emoji: '😫', label: 'Difficile', color: '#ef4444' },
   ]
   const [myMood, setMyMood] = useState(() => {
-    try { return JSON.parse(localStorage.getItem('timeblast_mood') || 'null') } catch { return null }
+    try { return JSON.parse(localStorage.getItem(MOOD_KEY) || 'null') } catch { return null }
   })
   const [teamMoods, setTeamMoods] = useState([])
 
   function submitMood(mood) {
     const entry = { ...mood, user: profile?.full_name || 'Moi', date: new Date().toISOString() }
     setMyMood(entry)
-    localStorage.setItem('timeblast_mood', JSON.stringify(entry))
+    localStorage.setItem(MOOD_KEY, JSON.stringify(entry))
     // Simuler les humeurs d'équipe (en prod ça serait une table Supabase)
     setTeamMoods(prev => [entry, ...prev.filter(m => m.user !== entry.user)].slice(0, 8))
   }
@@ -201,6 +203,15 @@ export default function DashboardPage() {
     async function load() {
       setLoading(true)
       try {
+        // Pre-fetch projet IDs for societe to filter kanban_tasks
+        let socProjetIds = null
+        if (socId) {
+          const { data: socProjets } = await safeQuery(() =>
+            supabase.from('projets').select('id').eq('societe_id', socId)
+          )
+          socProjetIds = (socProjets || []).map(p => p.id)
+        }
+
         const [
           tasksRes,
           tempsRes,
@@ -223,9 +234,17 @@ export default function DashboardPage() {
           projetsActifsCountRes,
         ] = await Promise.all([
           // 1. Mes taches
-          safeQuery(() => supabase.from('kanban_tasks').select('*').eq('assigned_to', user.id).order('priority', { ascending: true }).order('due_date', { ascending: true }).limit(6)),
+          safeQuery(() => {
+            let q = supabase.from('kanban_tasks').select('*').eq('assigned_to', user.id).order('priority', { ascending: true }).order('due_date', { ascending: true }).limit(6)
+            if (socProjetIds) q = q.in('projet_id', socProjetIds)
+            return q
+          }),
           // 2. Mon temps (this week)
-          safeQuery(() => supabase.from('saisies_temps').select('*').eq('user_id', user.id).gte('date', monday).lte('date', sunday)),
+          safeQuery(() => {
+            let q = supabase.from('saisies_temps').select('*').eq('user_id', user.id).gte('date', monday).lte('date', sunday)
+            if (socId) q = q.eq('societe_id', socId)
+            return q
+          }),
           // 3. Alertes - factures overdue
           safeQuery(() => {
             let q = supabase.from('factures').select('id', { count: 'exact', head: true }).lt('date_echeance', today).neq('statut', 'payee')
@@ -233,7 +252,11 @@ export default function DashboardPage() {
             return q
           }),
           // Alertes - tasks overdue
-          safeQuery(() => supabase.from('kanban_tasks').select('id', { count: 'exact', head: true }).lt('due_date', today).neq('status', 'done')),
+          safeQuery(() => {
+            let q = supabase.from('kanban_tasks').select('id', { count: 'exact', head: true }).lt('due_date', today).neq('status', 'done')
+            if (socProjetIds) q = q.in('projet_id', socProjetIds)
+            return q
+          }),
           // Alertes - absences pending
           safeQuery(() => {
             let q = supabase.from('absences').select('id', { count: 'exact', head: true }).eq('statut', 'en_attente')
@@ -295,7 +318,11 @@ export default function DashboardPage() {
             return q
           }),
           // 8. Activite recente - tasks
-          safeQuery(() => supabase.from('kanban_tasks').select('id, title, projet_id, created_at').order('created_at', { ascending: false }).limit(5)),
+          safeQuery(() => {
+            let q = supabase.from('kanban_tasks').select('id, title, projet_id, created_at').order('created_at', { ascending: false }).limit(5)
+            if (socProjetIds) q = q.in('projet_id', socProjetIds)
+            return q
+          }),
           // Activite recente - docs
           safeQuery(() => {
             let q = supabase.from('documents_archive').select('id, nom, created_at').order('created_at', { ascending: false }).limit(3)

@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useAuth } from '../../contexts/AuthContext'
 import { useDemo } from '../../contexts/DemoContext'
+import { useSociete } from '../../contexts/SocieteContext'
 import { DEMO_USERS } from '../../data/demoData'
 import { supabase } from '../../lib/supabase'
 import useSortableTable from '../../hooks/useSortableTable'
@@ -140,6 +141,7 @@ function saveLocalAbsences(data) {
 export default function AbsencesPage() {
   const { profile } = useAuth()
   const { isDemoMode } = useDemo()
+  const { selectedSociete } = useSociete()
   const [absences, setAbsences] = useState([])
   const [loading, setLoading] = useState(true)
   const [showForm, setShowForm] = useState(false)
@@ -163,7 +165,10 @@ export default function AbsencesPage() {
       setAbsences(data.map(a => ({ ...a, statut: a.statut || 'brouillon' })))
     } else {
       try {
-        const { data } = await supabase.from('absences').select('*').order('date_debut', { ascending: false })
+        let q = supabase.from('absences').select('*')
+        if (selectedSociete?.id) q = q.eq('societe_id', selectedSociete.id)
+        if (profile?.role === 'collaborateur') q = q.eq('user_id', profile.id)
+        const { data } = await q.order('date_debut', { ascending: false })
         setAbsences((data || []).map(a => ({ ...a, statut: a.statut || 'brouillon' })))
       } catch {
         setAbsences([])
@@ -172,7 +177,7 @@ export default function AbsencesPage() {
     setLoading(false)
   }
 
-  useEffect(() => { loadAbsences() }, [isDemoMode])
+  useEffect(() => { loadAbsences() }, [isDemoMode, selectedSociete?.id])
 
   function getUserName(userId) {
     const user = DEMO_USERS.find(u => u.id === userId)
