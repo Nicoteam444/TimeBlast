@@ -36,6 +36,7 @@ import DevisPage from './pages/commerce/DevisPage'
 import ReportingPage from './pages/activite/ReportingPage'
 import RentabilitePage from './pages/activite/RentabilitePage'
 import SaisiePage from './pages/activite/SaisiePage'
+import CalendrierPage from './pages/CalendrierPage'
 import EquipePage from './pages/activite/EquipePage'
 import ValidationPage from './pages/manager/ValidationPage'
 import AbsencesPage from './pages/activite/AbsencesPage'
@@ -174,6 +175,11 @@ function AppRoutes() {
       } />
       <Route path="/commerce/devis" element={
         <ProtectedRoute roles={['admin','manager','comptable']}><Layout><DevisPage /></Layout></ProtectedRoute>
+      } />
+
+      {/* Calendrier */}
+      <Route path="/calendrier" element={
+        <ProtectedRoute roles={['admin','manager','collaborateur']}><Layout><CalendrierPage /></Layout></ProtectedRoute>
       } />
 
       {/* Activité */}

@@ -7,6 +7,17 @@ import { useFavorites } from '../contexts/FavoritesContext'
 
 const SECTIONS = [
   {
+    id: 'calendrier',
+    icon: '📆',
+    label: 'Calendrier',
+    landingTo: '/calendrier',
+    roles: ['admin', 'manager', 'collaborateur'],
+    items: [
+      { to: '/calendrier',          icon: '📅', label: 'Calendrier' },
+      { to: '/activite/saisie',     icon: '✏️', label: 'Saisie des temps' },
+    ],
+  },
+  {
     id: 'activite',
     icon: '⏱',
     label: 'Activité',
