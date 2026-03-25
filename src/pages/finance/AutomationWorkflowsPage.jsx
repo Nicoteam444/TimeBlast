@@ -37,12 +37,12 @@ const EMPTY_FORM = { name: '', description: '', trigger_type: 'lead_created', ac
 
 function fmtDate(iso) { return iso ? new Date(iso).toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric' }) : '—' }
 
-/* ───────── Visual Editor Component ───────── */
+/* ───────── Visual Editor (organigramme style) ───────── */
 function WorkflowVisualEditor({ workflow, onSave, onCancel, societeId }) {
   const canvasRef = useRef(null)
   const [name, setName] = useState(workflow?.name || '')
   const [description, setDescription] = useState(workflow?.description || '')
-  const [trigger, setTrigger] = useState(workflow?.trigger_type || 'lead_created')
+  const [triggerType, setTriggerType] = useState(workflow?.trigger_type || 'lead_created')
   const [actions, setActions] = useState(() => {
     const a = workflow?.actions
     return Array.isArray(a) && a.length ? a : [{ type: 'create_client', config: {} }]
@@ -50,166 +50,209 @@ function WorkflowVisualEditor({ workflow, onSave, onCancel, societeId }) {
   const [active, setActive] = useState(workflow?.active !== false)
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState('')
-  const [dragIdx, setDragIdx] = useState(null)
   const [showAddMenu, setShowAddMenu] = useState(false)
+  const [selectedNode, setSelectedNode] = useState(null) // 'trigger' | index
 
-  // Node positions (auto-calculated)
-  const nodePositions = useMemo(() => {
-    const positions = []
-    // Trigger node at top center
-    positions.push({ x: 400, y: 60, type: 'trigger' })
-    // Action nodes below
-    const startY = 200
-    const spacingY = 120
-    actions.forEach((_, i) => {
-      positions.push({ x: 400, y: startY + i * spacingY, type: 'action', idx: i })
+  // Draggable nodes
+  const [nodes, setNodes] = useState(() => {
+    const n = [{ id: 'trigger', x: 350, y: 40, w: 260, h: 70 }]
+    const acts = Array.isArray(workflow?.actions) && workflow.actions.length ? workflow.actions : [{ type: 'create_client', config: {} }]
+    acts.forEach((_, i) => n.push({ id: `action-${i}`, x: 350, y: 160 + i * 120, w: 260, h: 70 }))
+    return n
+  })
+
+  // Keep nodes in sync when actions change
+  useEffect(() => {
+    setNodes(prev => {
+      const trigNode = prev[0] || { id: 'trigger', x: 350, y: 40, w: 260, h: 70 }
+      const newNodes = [trigNode]
+      actions.forEach((_, i) => {
+        const existing = prev[i + 1]
+        newNodes.push(existing || { id: `action-${i}`, x: 350, y: 160 + i * 120, w: 260, h: 70 })
+      })
+      return newNodes
     })
-    return positions
-  }, [actions])
+  }, [actions.length])
+
+  const dragRef = useRef(null)
+
+  function startDrag(e, idx) {
+    e.preventDefault()
+    const node = nodes[idx]
+    const rect = canvasRef.current.getBoundingClientRect()
+    const scrollLeft = canvasRef.current.scrollLeft
+    const scrollTop = canvasRef.current.scrollTop
+    dragRef.current = { idx, offsetX: e.clientX - rect.left + scrollLeft - node.x, offsetY: e.clientY - rect.top + scrollTop - node.y }
+    function onMove(ev) {
+      if (!dragRef.current) return
+      const nx = ev.clientX - rect.left + canvasRef.current.scrollLeft - dragRef.current.offsetX
+      const ny = ev.clientY - rect.top + canvasRef.current.scrollTop - dragRef.current.offsetY
+      setNodes(prev => prev.map((n, i) => i === dragRef.current.idx ? { ...n, x: Math.max(0, nx), y: Math.max(0, ny) } : n))
+    }
+    function onUp() { dragRef.current = null; window.removeEventListener('mousemove', onMove); window.removeEventListener('mouseup', onUp) }
+    window.addEventListener('mousemove', onMove)
+    window.addEventListener('mouseup', onUp)
+  }
 
   async function handleSave() {
     if (!name.trim()) { setError('Le nom est requis.'); return }
     if (!actions.length) { setError('Au moins une action.'); return }
     setSaving(true); setError('')
-    const payload = {
-      name: name.trim(), description: description.trim() || null,
-      trigger_type: trigger, trigger_config: {}, actions, active,
-      societe_id: societeId || null, updated_at: new Date().toISOString(),
-    }
+    const payload = { name: name.trim(), description: description.trim() || null, trigger_type: triggerType, trigger_config: {}, actions, active, societe_id: societeId || null, updated_at: new Date().toISOString() }
     await onSave(payload, workflow?.id)
     setSaving(false)
   }
 
-  function addAction(type) {
-    setActions(a => [...a, { type, config: {} }])
-    setShowAddMenu(false)
-  }
-
-  function removeAction(idx) { setActions(a => a.filter((_, i) => i !== idx)) }
+  function addAction(type) { setActions(a => [...a, { type, config: {} }]); setShowAddMenu(false) }
+  function removeAction(idx) { setActions(a => a.filter((_, i) => i !== idx)); setSelectedNode(null) }
   function updateAction(idx, type) { setActions(a => a.map((act, i) => i === idx ? { ...act, type } : act)) }
 
-  const trig = TRIGGER_META[trigger]
+  const trig = TRIGGER_META[triggerType]
+  const canvasH = Math.max(600, (nodes[nodes.length - 1]?.y || 400) + 200)
 
   return (
-    <div style={{ position: 'fixed', inset: 0, zIndex: 1000, display: 'flex', flexDirection: 'column', background: '#fff' }}>
-      {/* Header */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', padding: '.75rem 1.5rem', borderBottom: '1px solid #e2e8f0', background: '#fff', zIndex: 10 }}>
-        <button onClick={onCancel} style={{ background: 'none', border: 'none', fontSize: '1.2rem', cursor: 'pointer', padding: '.25rem' }}>←</button>
-        <input value={name} onChange={e => setName(e.target.value)} placeholder="Nom du workflow..." style={{ flex: 1, fontSize: '1.1rem', fontWeight: 600, border: 'none', outline: 'none', background: 'transparent' }} />
-        <label style={{ display: 'flex', alignItems: 'center', gap: '.4rem', cursor: 'pointer' }}>
-          <input type="checkbox" checked={active} onChange={e => setActive(e.target.checked)} />
-          <span style={{ fontSize: '.85rem', fontWeight: 500, color: active ? '#16a34a' : '#94a3b8' }}>{active ? 'Actif' : 'Inactif'}</span>
+    <div style={{ position: 'fixed', inset: 0, zIndex: 1000, display: 'flex', flexDirection: 'column', background: '#f1f5f9' }}>
+      {/* Toolbar */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', padding: '.6rem 1.25rem', borderBottom: '1px solid #e2e8f0', background: '#fff', zIndex: 10 }}>
+        <button onClick={onCancel} style={{ background: 'none', border: 'none', fontSize: '1.1rem', cursor: 'pointer' }}>← Retour</button>
+        <div style={{ width: 1, height: 28, background: '#e2e8f0' }} />
+        <input value={name} onChange={e => setName(e.target.value)} placeholder="Nom du workflow..." style={{ flex: 1, fontSize: '1rem', fontWeight: 600, border: 'none', outline: 'none', background: 'transparent' }} />
+        <label style={{ display: 'flex', alignItems: 'center', gap: '.4rem', cursor: 'pointer', fontSize: '.85rem' }}>
+          <input type="checkbox" checked={active} onChange={e => setActive(e.target.checked)} style={{ width: 16, height: 16 }} />
+          <span style={{ fontWeight: 500, color: active ? '#16a34a' : '#94a3b8' }}>{active ? 'Actif' : 'Inactif'}</span>
         </label>
-        <button onClick={handleSave} disabled={saving} style={{ background: 'var(--primary)', color: '#fff', border: 'none', padding: '.5rem 1.25rem', borderRadius: 8, fontWeight: 600, cursor: 'pointer' }}>
+        <button onClick={handleSave} disabled={saving} className="btn-primary" style={{ padding: '.45rem 1.25rem' }}>
           {saving ? 'Sauvegarde...' : 'Sauvegarder'}
         </button>
       </div>
-      {error && <div style={{ background: '#fef2f2', color: '#dc2626', padding: '.5rem 1.5rem', fontSize: '.85rem' }}>{error}</div>}
+      {error && <div style={{ background: '#fef2f2', color: '#dc2626', padding: '.4rem 1.25rem', fontSize: '.85rem' }}>{error}</div>}
 
-      {/* Canvas */}
-      <div ref={canvasRef} style={{
-        flex: 1, overflow: 'auto', position: 'relative',
-        backgroundImage: 'radial-gradient(circle, #d1d5db 1px, transparent 1px)',
-        backgroundSize: '24px 24px', backgroundColor: '#f8fafc',
-      }}>
-        {/* SVG Connections */}
-        <svg style={{ position: 'absolute', inset: 0, width: '100%', height: Math.max(600, 200 + actions.length * 120 + 100), pointerEvents: 'none' }}>
-          {actions.map((_, i) => {
-            const fromY = i === 0 ? 60 + 40 : 200 + (i - 1) * 120 + 40
-            const toY = 200 + i * 120
-            return (
-              <g key={i}>
-                <line x1={400} y1={fromY} x2={400} y2={toY} stroke="#94a3b8" strokeWidth={2} strokeDasharray="6 4" />
-                <polygon points={`${400 - 6},${toY - 8} ${400 + 6},${toY - 8} ${400},${toY}`} fill="#94a3b8" />
-              </g>
-            )
-          })}
-        </svg>
-
-        {/* Trigger Node */}
-        <div style={{
-          position: 'absolute', left: 400 - 140, top: 60 - 10, width: 280,
-          background: trig.bg, border: `2px solid ${trig.color}`, borderRadius: 12,
-          padding: '1rem', boxShadow: '0 4px 12px rgba(0,0,0,.1)', cursor: 'default',
+      <div style={{ flex: 1, display: 'flex', overflow: 'hidden' }}>
+        {/* Canvas */}
+        <div ref={canvasRef} onClick={() => setSelectedNode(null)} style={{
+          flex: 1, overflow: 'auto', position: 'relative',
+          backgroundImage: 'radial-gradient(circle, #cbd5e1 1px, transparent 1px)',
+          backgroundSize: '20px 20px', backgroundColor: '#f1f5f9',
         }}>
-          <div style={{ fontSize: '.7rem', fontWeight: 700, color: trig.color, textTransform: 'uppercase', marginBottom: '.35rem', letterSpacing: '.5px' }}>Declencheur</div>
-          <select value={trigger} onChange={e => setTrigger(e.target.value)} style={{ width: '100%', padding: '.4rem', borderRadius: 6, border: `1px solid ${trig.color}40`, background: '#fff', fontSize: '.85rem', fontWeight: 500 }}>
-            {Object.entries(TRIGGER_META).map(([k, v]) => <option key={k} value={k}>{v.icon} {v.label}</option>)}
-          </select>
+          <div style={{ position: 'relative', width: '100%', minHeight: canvasH }}>
+            {/* SVG Edges */}
+            <svg style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', pointerEvents: 'none', overflow: 'visible' }}>
+              <defs>
+                <marker id="wf-arrow" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+                  <polygon points="0 0, 10 3.5, 0 7" fill="#94a3b8" />
+                </marker>
+              </defs>
+              {nodes.slice(1).map((node, i) => {
+                const src = nodes[i] // previous node (trigger or action[i-1])
+                const srcCx = src.x + src.w / 2, srcCy = src.y + src.h
+                const tgtCx = node.x + node.w / 2, tgtCy = node.y
+                const dx = tgtCx - srcCx
+                const midY = (srcCy + tgtCy) / 2
+                const d = `M ${srcCx} ${srcCy} C ${srcCx} ${midY} ${tgtCx} ${midY} ${tgtCx} ${tgtCy}`
+                return <path key={i} d={d} stroke="#94a3b8" strokeWidth={2} fill="none" markerEnd="url(#wf-arrow)" strokeDasharray="6,3" />
+              })}
+            </svg>
+
+            {/* Trigger Node */}
+            <div
+              className={`org-node org-node-societe${selectedNode === 'trigger' ? ' org-node--selected' : ''}`}
+              style={{ left: nodes[0].x, top: nodes[0].y, width: nodes[0].w, borderColor: trig.color, cursor: 'grab' }}
+              onMouseDown={e => { e.stopPropagation(); setSelectedNode('trigger'); startDrag(e, 0) }}
+            >
+              <div className="org-node-societe-bar" style={{ backgroundColor: trig.color }} />
+              <div className="org-node-societe-avatar" style={{ backgroundColor: trig.color }}>
+                <span style={{ fontSize: '1.1rem' }}>{trig.icon}</span>
+              </div>
+              <div style={{ flex: 1, minWidth: 0, padding: '.4rem 0' }}>
+                <div style={{ fontSize: '.65rem', fontWeight: 700, color: trig.color, textTransform: 'uppercase', letterSpacing: '.5px' }}>Declencheur</div>
+                <div style={{ fontSize: '.82rem', fontWeight: 600, color: 'var(--text)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{trig.label}</div>
+              </div>
+            </div>
+
+            {/* Action Nodes */}
+            {actions.map((action, idx) => {
+              const am = ACTION_META[action.type] || ACTION_META.create_client
+              const node = nodes[idx + 1]
+              if (!node) return null
+              return (
+                <div
+                  key={idx}
+                  className={`org-node org-node-personne${selectedNode === idx ? ' org-node--selected' : ''}`}
+                  style={{ left: node.x, top: node.y, width: node.w, borderColor: am.color, cursor: 'grab' }}
+                  onMouseDown={e => { e.stopPropagation(); setSelectedNode(idx); startDrag(e, idx + 1) }}
+                >
+                  <div className="org-node-personne-avatar" style={{ backgroundColor: am.color }}>
+                    <span style={{ fontSize: '1rem' }}>{am.icon}</span>
+                  </div>
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <div style={{ fontSize: '.65rem', fontWeight: 700, color: am.color, textTransform: 'uppercase', letterSpacing: '.5px' }}>Action {idx + 1}</div>
+                    <div style={{ fontSize: '.82rem', fontWeight: 600, color: 'var(--text)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{am.label}</div>
+                  </div>
+                  <div className="org-node-actions">
+                    {actions.length > 1 && <button className="org-node-icon-btn" title="Supprimer" onMouseDown={e => { e.stopPropagation(); removeAction(idx) }}>✕</button>}
+                  </div>
+                </div>
+              )
+            })}
+
+            {/* Add button */}
+            <div style={{ position: 'absolute', left: (nodes[nodes.length - 1]?.x || 350) + 60, top: (nodes[nodes.length - 1]?.y || 400) + 100 }}>
+              {!showAddMenu ? (
+                <button onClick={e => { e.stopPropagation(); setShowAddMenu(true) }} style={{
+                  padding: '.5rem 1rem', background: '#fff', border: '2px dashed #94a3b8',
+                  borderRadius: 10, cursor: 'pointer', fontSize: '.85rem', fontWeight: 600, color: '#64748b',
+                  boxShadow: '0 2px 8px rgba(0,0,0,.06)',
+                }}>+ Ajouter une action</button>
+              ) : (
+                <div style={{ background: '#fff', borderRadius: 10, boxShadow: '0 8px 24px rgba(0,0,0,.15)', border: '1px solid #e2e8f0', overflow: 'hidden', width: 220 }}>
+                  {Object.entries(ACTION_META).map(([k, v]) => (
+                    <button key={k} onClick={e => { e.stopPropagation(); addAction(k) }} style={{
+                      display: 'flex', alignItems: 'center', gap: '.5rem', width: '100%',
+                      padding: '.5rem .75rem', border: 'none', background: '#fff', cursor: 'pointer',
+                      fontSize: '.8rem', fontWeight: 500, textAlign: 'left', borderBottom: '1px solid #f1f5f9',
+                    }} onMouseEnter={e => e.currentTarget.style.background = '#f8fafc'} onMouseLeave={e => e.currentTarget.style.background = '#fff'}>
+                      <span>{v.icon}</span> {v.label}
+                    </button>
+                  ))}
+                  <button onClick={e => { e.stopPropagation(); setShowAddMenu(false) }} style={{ width: '100%', padding: '.4rem', border: 'none', background: '#f1f5f9', cursor: 'pointer', fontSize: '.75rem', color: '#64748b' }}>Annuler</button>
+                </div>
+              )}
+            </div>
+          </div>
         </div>
 
-        {/* Action Nodes */}
-        {actions.map((action, idx) => {
-          const am = ACTION_META[action.type] || ACTION_META.create_client
-          const y = 200 + idx * 120
-          return (
-            <div key={idx} style={{
-              position: 'absolute', left: 400 - 140, top: y - 10, width: 280,
-              background: '#fff', border: '2px solid #e2e8f0', borderRadius: 12,
-              padding: '1rem', boxShadow: '0 4px 12px rgba(0,0,0,.08)',
-              borderLeft: `4px solid ${am.color}`,
-            }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '.35rem' }}>
-                <span style={{ fontSize: '.7rem', fontWeight: 700, color: am.color, textTransform: 'uppercase', letterSpacing: '.5px' }}>Action {idx + 1}</span>
-                {actions.length > 1 && (
-                  <button onClick={() => removeAction(idx)} style={{ background: '#fee2e2', color: '#dc2626', border: 'none', borderRadius: 4, padding: '.15rem .35rem', cursor: 'pointer', fontSize: '.75rem' }}>✕</button>
-                )}
-              </div>
-              <select value={action.type} onChange={e => updateAction(idx, e.target.value)} style={{ width: '100%', padding: '.4rem', borderRadius: 6, border: '1px solid #e2e8f0', fontSize: '.85rem', fontWeight: 500 }}>
+        {/* Right Panel */}
+        <div style={{ width: 280, borderLeft: '1px solid #e2e8f0', background: '#fff', padding: '1rem', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+          <div>
+            <div style={{ fontSize: '.75rem', fontWeight: 700, color: '#64748b', textTransform: 'uppercase', marginBottom: '.4rem' }}>Description</div>
+            <textarea value={description} onChange={e => setDescription(e.target.value)} placeholder="Notes..." rows={3} style={{ width: '100%', padding: '.5rem', borderRadius: 8, border: '1px solid #e2e8f0', fontSize: '.8rem', resize: 'vertical' }} />
+          </div>
+
+          <div>
+            <div style={{ fontSize: '.75rem', fontWeight: 700, color: '#64748b', textTransform: 'uppercase', marginBottom: '.4rem' }}>Declencheur</div>
+            <select value={triggerType} onChange={e => setTriggerType(e.target.value)} style={{ width: '100%', padding: '.5rem', borderRadius: 6, border: '1px solid #e2e8f0', fontSize: '.85rem' }}>
+              {Object.entries(TRIGGER_META).map(([k, v]) => <option key={k} value={k}>{v.icon} {v.label}</option>)}
+            </select>
+          </div>
+
+          {selectedNode !== null && selectedNode !== 'trigger' && actions[selectedNode] && (
+            <div>
+              <div style={{ fontSize: '.75rem', fontWeight: 700, color: '#64748b', textTransform: 'uppercase', marginBottom: '.4rem' }}>Action {selectedNode + 1}</div>
+              <select value={actions[selectedNode].type} onChange={e => updateAction(selectedNode, e.target.value)} style={{ width: '100%', padding: '.5rem', borderRadius: 6, border: '1px solid #e2e8f0', fontSize: '.85rem' }}>
                 {Object.entries(ACTION_META).map(([k, v]) => <option key={k} value={k}>{v.icon} {v.label}</option>)}
               </select>
             </div>
-          )
-        })}
-
-        {/* Add Action Button */}
-        <div style={{
-          position: 'absolute', left: 400 - 80, top: 200 + actions.length * 120 + 10, width: 160,
-        }}>
-          {!showAddMenu ? (
-            <button onClick={() => setShowAddMenu(true)} style={{
-              width: '100%', padding: '.6rem', background: '#fff', border: '2px dashed #94a3b8',
-              borderRadius: 12, cursor: 'pointer', fontSize: '.85rem', fontWeight: 600, color: '#64748b',
-              display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '.4rem',
-            }}>
-              + Ajouter une action
-            </button>
-          ) : (
-            <div style={{ background: '#fff', borderRadius: 12, boxShadow: '0 8px 24px rgba(0,0,0,.15)', border: '1px solid #e2e8f0', overflow: 'hidden' }}>
-              {Object.entries(ACTION_META).map(([k, v]) => (
-                <button key={k} onClick={() => addAction(k)} style={{
-                  display: 'flex', alignItems: 'center', gap: '.5rem', width: '100%',
-                  padding: '.5rem .75rem', border: 'none', background: '#fff', cursor: 'pointer',
-                  fontSize: '.8rem', fontWeight: 500, textAlign: 'left', borderBottom: '1px solid #f1f5f9',
-                }}
-                  onMouseEnter={e => e.target.style.background = '#f8fafc'}
-                  onMouseLeave={e => e.target.style.background = '#fff'}
-                >
-                  <span>{v.icon}</span> {v.label}
-                </button>
-              ))}
-              <button onClick={() => setShowAddMenu(false)} style={{ width: '100%', padding: '.4rem', border: 'none', background: '#f1f5f9', cursor: 'pointer', fontSize: '.75rem', color: '#64748b' }}>Annuler</button>
-            </div>
           )}
-        </div>
 
-        {/* Description */}
-        <div style={{ position: 'absolute', left: 30, top: 60, width: 200 }}>
-          <div style={{ fontSize: '.75rem', fontWeight: 600, color: '#64748b', marginBottom: '.35rem' }}>Description</div>
-          <textarea value={description} onChange={e => setDescription(e.target.value)} placeholder="Notes..." rows={3}
-            style={{ width: '100%', padding: '.5rem', borderRadius: 8, border: '1px solid #e2e8f0', fontSize: '.8rem', resize: 'vertical', background: '#fff' }} />
-        </div>
-
-        {/* Summary */}
-        <div style={{ position: 'absolute', right: 30, top: 60, width: 220, background: '#eff6ff', borderRadius: 10, padding: '.75rem', border: '1px solid #bfdbfe' }}>
-          <div style={{ fontSize: '.75rem', fontWeight: 700, color: '#1e40af', marginBottom: '.5rem' }}>Resume du workflow</div>
-          <div style={{ fontSize: '.8rem', color: '#1e3a5f', lineHeight: 1.5 }}>
-            {trig.icon} {trig.label}<br />
-            <span style={{ color: '#64748b' }}>→</span><br />
-            {actions.map((a, i) => {
-              const am = ACTION_META[a.type]
-              return <div key={i}>{am?.icon} {am?.label}</div>
-            })}
+          <div style={{ background: '#eff6ff', borderRadius: 8, padding: '.75rem', border: '1px solid #bfdbfe' }}>
+            <div style={{ fontSize: '.75rem', fontWeight: 700, color: '#1e40af', marginBottom: '.4rem' }}>Resume</div>
+            <div style={{ fontSize: '.8rem', color: '#1e3a5f', lineHeight: 1.6 }}>
+              {trig.icon} {trig.label}
+              {actions.map((a, i) => {
+                const am = ACTION_META[a.type]
+                return <div key={i} style={{ paddingLeft: '.5rem' }}>→ {am?.icon} {am?.label}</div>
+              })}
+            </div>
           </div>
         </div>
       </div>
