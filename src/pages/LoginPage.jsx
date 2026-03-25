@@ -342,7 +342,7 @@ export default function LoginPage() {
             <div className="landing-hero-badge">🤖 La donnée propre, le socle de l'IA agentique</div>
             <h1 className="landing-hero-title">TimeBlast</h1>
             <h2 className="landing-hero-subtitle" style={{ fontSize: '1.4rem', fontWeight: 600, color: '#475569', marginBottom: '1.5rem', marginTop: '0.5rem' }}>
-              La plateforme IA qui active vos données.
+              La plateforme IA qui active vos données et vous fait gagner 80% de temps en plus par jour.
             </h2>
             <p className="landing-hero-subtitle">
               <strong>68% des PME sont immatures en données.</strong> TimeBlast.ai est la plateforme convergente
