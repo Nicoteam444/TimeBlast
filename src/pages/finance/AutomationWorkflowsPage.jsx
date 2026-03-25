@@ -369,7 +369,8 @@ export default function AutomationWorkflowsPage() {
             <button onClick={() => { setViewMode('list') }} style={{ padding: '.4rem .75rem', border: 'none', background: viewMode === 'list' ? 'var(--primary)' : '#fff', color: viewMode === 'list' ? '#fff' : '#64748b', cursor: 'pointer', fontSize: '.8rem', fontWeight: 600 }}>≡ Liste</button>
             <button onClick={() => { setViewMode('visual') }} style={{ padding: '.4rem .75rem', border: 'none', background: viewMode === 'visual' ? 'var(--primary)' : '#fff', color: viewMode === 'visual' ? '#fff' : '#64748b', cursor: 'pointer', fontSize: '.8rem', fontWeight: 600 }}>◎ Visuel</button>
           </div>
-          <button className="btn-primary" onClick={() => setVisualWorkflow('new')}>+ Nouveau workflow</button>
+          <button className="btn-primary" onClick={() => setVisualWorkflow('new')}>+ Visuel</button>
+          <button className="btn-secondary" onClick={openCreate} style={{ marginLeft: 0 }}>+ Formulaire</button>
         </div>
       </div>
 
@@ -533,7 +534,8 @@ export default function AutomationWorkflowsPage() {
                     <td style={{ whiteSpace: 'nowrap', color: 'var(--text-muted)' }}>{fmtDate(w.created_at)}</td>
                     <td>
                       <div style={{ display: 'flex', gap: '.35rem' }}>
-                        <button className="btn-icon" title="Modifier" onClick={() => setVisualWorkflow(w)}>✏️</button>
+                        <button className="btn-icon" title="Visuel" onClick={() => setVisualWorkflow(w)}>◎</button>
+                        <button className="btn-icon" title="Formulaire" onClick={() => openEdit(w)}>✏️</button>
                         <button className="btn-icon btn-icon--danger" title="Supprimer" onClick={() => setDeleteTarget(w)}>🗑</button>
                       </div>
                     </td>
