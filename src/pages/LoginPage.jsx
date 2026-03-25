@@ -496,6 +496,160 @@ export default function LoginPage() {
         </div>
       </section>
 
+      {/* ── Previews App ── */}
+      <section style={{ padding: '60px 0', background: '#f8fafc' }} id="previews">
+        <h2 className="landing-section-title">Decouvrez la plateforme</h2>
+        <p className="landing-section-subtitle">Un apercu de ce qui vous attend a l'interieur.</p>
+
+        {/* Preview 1 — Dashboard */}
+        <div style={{ maxWidth: 900, margin: '40px auto 50px', padding: '0 20px' }}>
+          <div style={{ background: '#fff', borderRadius: 16, boxShadow: '0 20px 60px rgba(0,0,0,0.1)', overflow: 'hidden', border: '1px solid #e2e8f0' }}>
+            {/* Fake topbar */}
+            <div style={{ background: '#2B4C7E', padding: '10px 20px', display: 'flex', alignItems: 'center', gap: 12 }}>
+              <div style={{ width: 10, height: 10, borderRadius: '50%', background: '#ff5f57' }} />
+              <div style={{ width: 10, height: 10, borderRadius: '50%', background: '#febc2e' }} />
+              <div style={{ width: 10, height: 10, borderRadius: '50%', background: '#28c840' }} />
+              <div style={{ flex: 1, textAlign: 'center', color: 'rgba(255,255,255,0.7)', fontSize: '.75rem' }}>timeblast.ai — Dashboard</div>
+            </div>
+            <div style={{ display: 'flex' }}>
+              {/* Fake sidebar */}
+              <div style={{ width: 50, background: '#1a3a5c', padding: '12px 0', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 14 }}>
+                {['📆','⏱','👥','🧾','🎯','📣','💰','📁'].map((e, i) => (
+                  <div key={i} style={{ fontSize: 14, opacity: i === 0 ? 1 : 0.5, cursor: 'pointer' }}>{e}</div>
+                ))}
+              </div>
+              {/* Fake content */}
+              <div style={{ flex: 1, padding: 20, background: '#f1f5f9' }}>
+                {/* Greeting */}
+                <div style={{ background: 'linear-gradient(135deg, #2B4C7E, #1a6fa8)', borderRadius: 12, padding: '16px 20px', marginBottom: 16, color: '#fff' }}>
+                  <div style={{ fontSize: '.9rem', fontWeight: 700 }}>Bonjour Nicolas 👋</div>
+                  <div style={{ fontSize: '.7rem', opacity: 0.8, marginTop: 2 }}>3 taches urgentes · 2 factures impayees · 1 campagne active</div>
+                </div>
+                {/* KPIs row */}
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 10, marginBottom: 16 }}>
+                  {[
+                    { label: 'Mes Taches', val: '6', color: '#2563eb' },
+                    { label: 'Heures/sem.', val: '37.5h', color: '#16a34a' },
+                    { label: 'Pipeline', val: '343k€', color: '#8b5cf6' },
+                  ].map((k, i) => (
+                    <div key={i} style={{ background: '#fff', borderRadius: 10, padding: '12px 14px', border: '1px solid #e2e8f0' }}>
+                      <div style={{ fontSize: '.6rem', color: '#64748b', marginBottom: 4 }}>{k.label}</div>
+                      <div style={{ fontSize: '1.1rem', fontWeight: 800, color: k.color }}>{k.val}</div>
+                    </div>
+                  ))}
+                </div>
+                {/* Fake chart */}
+                <div style={{ background: '#fff', borderRadius: 10, padding: 14, border: '1px solid #e2e8f0', height: 90, display: 'flex', alignItems: 'flex-end', gap: 6 }}>
+                  {[40, 65, 50, 80, 70, 90, 45, 75, 60, 85, 55, 95].map((h, i) => (
+                    <div key={i} style={{ flex: 1, background: `linear-gradient(to top, #2B4C7E, #5B9BD5)`, borderRadius: 3, height: `${h}%`, opacity: 0.7 + i * 0.02 }} />
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+          <p style={{ textAlign: 'center', marginTop: 12, color: '#64748b', fontSize: '.85rem', fontWeight: 500 }}>
+            📊 Dashboard personnalise — KPIs, taches, tresorerie, projets en un coup d'oeil
+          </p>
+        </div>
+
+        {/* Preview 2 & 3 side by side */}
+        <div style={{ maxWidth: 900, margin: '0 auto 50px', padding: '0 20px', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24 }}>
+          {/* Preview 2 — Kanban */}
+          <div>
+            <div style={{ background: '#fff', borderRadius: 12, boxShadow: '0 10px 30px rgba(0,0,0,0.08)', overflow: 'hidden', border: '1px solid #e2e8f0' }}>
+              <div style={{ background: '#2B4C7E', padding: '8px 16px', display: 'flex', alignItems: 'center', gap: 8 }}>
+                <div style={{ width: 8, height: 8, borderRadius: '50%', background: '#ff5f57' }} />
+                <div style={{ width: 8, height: 8, borderRadius: '50%', background: '#febc2e' }} />
+                <div style={{ width: 8, height: 8, borderRadius: '50%', background: '#28c840' }} />
+                <span style={{ flex: 1, textAlign: 'center', color: 'rgba(255,255,255,0.7)', fontSize: '.65rem' }}>Pipeline commercial</span>
+              </div>
+              <div style={{ padding: 12, display: 'flex', gap: 8 }}>
+                {['Nouveau', 'Qualifie', 'Proposition', 'Gagne'].map((col, ci) => (
+                  <div key={ci} style={{ flex: 1, minWidth: 0 }}>
+                    <div style={{ fontSize: '.6rem', fontWeight: 700, color: ['#f59e0b', '#3b82f6', '#8b5cf6', '#16a34a'][ci], marginBottom: 6, textAlign: 'center' }}>{col}</div>
+                    {[0, 1].map(ri => (
+                      <div key={ri} style={{ background: '#f8fafc', borderRadius: 6, padding: 6, marginBottom: 4, border: '1px solid #e2e8f0', fontSize: '.55rem' }}>
+                        <div style={{ fontWeight: 700, color: '#1a2332', marginBottom: 2 }}>{['ERP Nexia', 'CRM Greentech', 'Audit Cyber', 'Infra Cloud', 'App Mobile', 'Refonte SI', 'Migration', 'Consulting'][ci * 2 + ri]}</div>
+                        <div style={{ color: '#16a34a', fontWeight: 600 }}>{[45, 85, 28, 150, 65, 92, 35, 120][ci * 2 + ri]}k€</div>
+                      </div>
+                    ))}
+                  </div>
+                ))}
+              </div>
+            </div>
+            <p style={{ textAlign: 'center', marginTop: 8, color: '#64748b', fontSize: '.8rem', fontWeight: 500 }}>🎯 Pipeline commercial Kanban</p>
+          </div>
+
+          {/* Preview 3 — Calendrier */}
+          <div>
+            <div style={{ background: '#fff', borderRadius: 12, boxShadow: '0 10px 30px rgba(0,0,0,0.08)', overflow: 'hidden', border: '1px solid #e2e8f0' }}>
+              <div style={{ background: '#2B4C7E', padding: '8px 16px', display: 'flex', alignItems: 'center', gap: 8 }}>
+                <div style={{ width: 8, height: 8, borderRadius: '50%', background: '#ff5f57' }} />
+                <div style={{ width: 8, height: 8, borderRadius: '50%', background: '#febc2e' }} />
+                <div style={{ width: 8, height: 8, borderRadius: '50%', background: '#28c840' }} />
+                <span style={{ flex: 1, textAlign: 'center', color: 'rgba(255,255,255,0.7)', fontSize: '.65rem' }}>Calendrier collaboratif</span>
+              </div>
+              <div style={{ padding: 12 }}>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 4, marginBottom: 8 }}>
+                  {['Lun', 'Mar', 'Mer', 'Jeu', 'Ven'].map(d => (
+                    <div key={d} style={{ fontSize: '.55rem', fontWeight: 700, textAlign: 'center', color: '#64748b' }}>{d}</div>
+                  ))}
+                </div>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 4 }}>
+                  {[
+                    { h: 35, c: '#6366f1' }, { h: 25, c: '#0ea5e9' }, { h: 40, c: '#16a34a' }, { h: 30, c: '#ec4899' }, { h: 20, c: '#f59e0b' },
+                    { h: 20, c: '#8b5cf6' }, { h: 35, c: '#14b8a6' }, { h: 15, c: '#f97316' }, { h: 40, c: '#6366f1' }, { h: 25, c: '#dc2626' },
+                    { h: 30, c: '#3b82f6' }, { h: 20, c: '#16a34a' }, { h: 35, c: '#f59e0b' }, { h: 25, c: '#8b5cf6' }, { h: 30, c: '#0ea5e9' },
+                  ].map((b, i) => (
+                    <div key={i} style={{ background: b.c + '20', borderLeft: `3px solid ${b.c}`, borderRadius: 4, height: b.h, padding: '2px 4px' }}>
+                      <div style={{ fontSize: '.4rem', color: b.c, fontWeight: 600 }}>{['CODIR', 'Dev API', 'Client', 'Sprint', 'Review', 'Call', 'Deploy', 'Test', 'Demo', 'Audit', 'RDV', 'Form.', 'Point', 'Retro', 'Hebdo'][i]}</div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+            <p style={{ textAlign: 'center', marginTop: 8, color: '#64748b', fontSize: '.8rem', fontWeight: 500 }}>📆 Calendrier d'equipe temps reel</p>
+          </div>
+        </div>
+
+        {/* Preview 4 — Full width facturation */}
+        <div style={{ maxWidth: 900, margin: '0 auto', padding: '0 20px' }}>
+          <div style={{ background: '#fff', borderRadius: 16, boxShadow: '0 20px 60px rgba(0,0,0,0.1)', overflow: 'hidden', border: '1px solid #e2e8f0' }}>
+            <div style={{ background: '#2B4C7E', padding: '10px 20px', display: 'flex', alignItems: 'center', gap: 12 }}>
+              <div style={{ width: 10, height: 10, borderRadius: '50%', background: '#ff5f57' }} />
+              <div style={{ width: 10, height: 10, borderRadius: '50%', background: '#febc2e' }} />
+              <div style={{ width: 10, height: 10, borderRadius: '50%', background: '#28c840' }} />
+              <div style={{ flex: 1, textAlign: 'center', color: 'rgba(255,255,255,0.7)', fontSize: '.75rem' }}>timeblast.ai — Facturation</div>
+            </div>
+            <div style={{ padding: 20 }}>
+              {/* Fake table */}
+              <div style={{ borderRadius: 8, border: '1px solid #e2e8f0', overflow: 'hidden' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: '2fr 1.5fr 1fr 1fr 1fr', background: '#f8fafc', padding: '8px 14px', fontSize: '.65rem', fontWeight: 700, color: '#64748b', borderBottom: '1px solid #e2e8f0' }}>
+                  <span>Numero</span><span>Client</span><span>Montant</span><span>Statut</span><span>Echeance</span>
+                </div>
+                {[
+                  { num: 'FAC-2026-0089', client: 'Nexia Technologies', mt: '15 200 €', st: 'Payee', stc: '#16a34a', date: '15/03/2026' },
+                  { num: 'FAC-2026-0090', client: 'Greentech Solutions', mt: '8 500 €', st: 'Envoyee', stc: '#3b82f6', date: '22/03/2026' },
+                  { num: 'FAC-2026-0091', client: 'BatiGroup SA', mt: '42 000 €', st: 'En retard', stc: '#dc2626', date: '10/03/2026' },
+                  { num: 'FAC-2026-0092', client: 'PharmaLab', mt: '6 750 €', st: 'Brouillon', stc: '#f59e0b', date: '30/03/2026' },
+                ].map((r, i) => (
+                  <div key={i} style={{ display: 'grid', gridTemplateColumns: '2fr 1.5fr 1fr 1fr 1fr', padding: '10px 14px', fontSize: '.7rem', borderBottom: '1px solid #f1f5f9', alignItems: 'center' }}>
+                    <span style={{ fontWeight: 600, color: '#2B4C7E' }}>{r.num}</span>
+                    <span style={{ color: '#1a2332' }}>{r.client}</span>
+                    <span style={{ fontWeight: 700 }}>{r.mt}</span>
+                    <span><span style={{ padding: '2px 8px', borderRadius: 12, background: r.stc + '15', color: r.stc, fontSize: '.6rem', fontWeight: 600 }}>{r.st}</span></span>
+                    <span style={{ color: '#64748b' }}>{r.date}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+          <p style={{ textAlign: 'center', marginTop: 12, color: '#64748b', fontSize: '.85rem', fontWeight: 500 }}>
+            🧾 Facturation — Creation, envoi e-facture, suivi paiements
+          </p>
+        </div>
+      </section>
+
       {/* ── Distribution / Canaux ── */}
       <section className="landing-channels" id="canaux">
         <h2 className="landing-section-title">Comment nous arrivons chez vous</h2>
