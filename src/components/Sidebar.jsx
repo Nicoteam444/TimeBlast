@@ -10,11 +10,10 @@ const SECTIONS = [
     id: 'calendrier',
     icon: '📆',
     label: 'Calendrier',
-    landingTo: '/calendrier',
+    landingTo: '/activite/saisie',
     roles: ['admin', 'manager', 'collaborateur'],
     items: [
-      { to: '/calendrier',          icon: '📅', label: 'Calendrier' },
-      { to: '/activite/saisie',     icon: '✏️', label: 'Saisie des temps' },
+      { to: '/activite/saisie',     icon: '📅', label: 'Calendrier' },
     ],
   },
   {
@@ -24,7 +23,6 @@ const SECTIONS = [
     landingTo: '/activite',
     roles: ['admin', 'manager', 'collaborateur'],
     items: [
-      { to: '/activite/saisie',       icon: '✏️', label: 'Saisie des temps' },
       { to: '/activite/planification', icon: '📅', label: 'Planification',      roles: ['admin', 'manager'] },
       { to: '/activite/projets',       icon: '📁', label: 'Gestion de projet' },
       { to: '/activite/reporting',     icon: '📊', label: 'Reporting temps',    roles: ['admin', 'manager'] },

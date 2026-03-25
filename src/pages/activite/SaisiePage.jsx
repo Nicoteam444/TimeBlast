@@ -433,6 +433,10 @@ function exportCSV(weekDates, events) {
   URL.revokeObjectURL(url)
 }
 
+// ── Couleurs collaborateurs ──────────────────────────────────
+const COLLAB_COLORS = ['#6366f1','#0ea5e9','#16a34a','#f59e0b','#ec4899','#8b5cf6','#14b8a6','#f97316','#dc2626','#0891b2']
+function collabColor(idx) { return COLLAB_COLORS[idx % COLLAB_COLORS.length] }
+
 // ── Page principale ──────────────────────────────────────────
 export default function SaisiePage() {
   const { profile } = useAuth()
@@ -440,33 +444,79 @@ export default function SaisiePage() {
   const [weekStart, setWeekStart] = useState(() => getMonday(new Date()))
   const [events, setEvents] = useState({})
   const [loading, setLoading] = useState(true)
-  const [dragPreview, setDragPreview] = useState(null) // { date, startMin, endMin }
-  const [movingEvent, setMovingEvent] = useState(null)   // { ev, date, startMin, endMin }
+  const [dragPreview, setDragPreview] = useState(null)
+  const [movingEvent, setMovingEvent] = useState(null)
   const movingRef = useRef(null)
   const [selectedEvent, setSelectedEvent] = useState(null)
-  const [newEvent, setNewEvent] = useState(null)        // { date, startMin, endMin }
+  const [newEvent, setNewEvent] = useState(null)
+
+  // Multi-collaborateur
+  const [collabs, setCollabs] = useState([])
+  const [selectedCollabs, setSelectedCollabs] = useState(new Set())
+  const [collabSearch, setCollabSearch] = useState('')
+  const [showCollabPanel, setShowCollabPanel] = useState(false)
 
   const weekDates = Array.from({ length: 7 }, (_, i) => addDays(weekStart, i))
+
+  // Charger la liste des collaborateurs
+  useEffect(() => {
+    async function loadCollabs() {
+      const { data } = await supabase.from('profiles').select('id, prenom, nom, email, role')
+      if (data) {
+        setCollabs(data)
+        setSelectedCollabs(new Set([profile?.id]))
+      }
+    }
+    loadCollabs()
+  }, [profile?.id])
+
+  function toggleCollab(id) {
+    setSelectedCollabs(prev => {
+      const next = new Set(prev)
+      if (next.has(id)) next.delete(id); else next.add(id)
+      return next
+    })
+  }
+
+  function collabInfo(uid) {
+    const c = collabs.find(c => c.id === uid)
+    return c ? { name: `${c.prenom || ''} ${c.nom || ''}`.trim(), initials: `${(c.prenom || '')[0] || ''}${(c.nom || '')[0] || ''}`.toUpperCase() } : { name: 'Inconnu', initials: '?' }
+  }
+  function collabColorForId(uid) {
+    const idx = collabs.findIndex(c => c.id === uid)
+    return collabColor(idx >= 0 ? idx : 0)
+  }
 
   const fetchWeek = useCallback(async () => {
     setLoading(true)
 
-    if (!profile?.id) { setLoading(false); return }
-    let query = supabase
+    if (!profile?.id || selectedCollabs.size === 0) { setEvents({}); setLoading(false); return }
+    const userIds = [...selectedCollabs]
+    const startISO = toISO(weekStart)
+    const endISO = toISO(addDays(weekStart, 6))
+
+    // Charger saisies de temps de tous les collaborateurs sélectionnés
+    const { data: saisiesData } = await supabase
       .from('saisies_temps')
-      .select('id, date, heures, commentaire')
-      .eq('user_id', profile.id)
-      .gte('date', toISO(weekStart))
-      .lte('date', toISO(addDays(weekStart, 6)))
-    if (selectedSociete?.id) query = query.eq('societe_id', selectedSociete.id)
-    const { data } = await query
-    let rows = data || []
+      .select('id, date, heures, commentaire, user_id')
+      .in('user_id', userIds)
+      .gte('date', startISO)
+      .lte('date', endISO)
+
+    // Charger les événements calendrier
+    const { data: calData } = await supabase
+      .from('calendar_events')
+      .select('*')
+      .in('user_id', userIds)
+      .gte('start_time', startISO)
+      .lt('start_time', toISO(addDays(weekStart, 7)))
 
     const map = {}
-    for (const s of rows) {
+
+    // Saisies de temps
+    for (const s of (saisiesData || [])) {
       const dateKey = s.date
       if (!map[dateKey]) map[dateKey] = []
-      // Lire les métadonnées depuis commentaire JSON
       let meta = {}
       try { meta = JSON.parse(s.commentaire || '{}') } catch {}
       let startMin = START_H * 60
@@ -478,11 +528,39 @@ export default function SaisiePage() {
         startMin, endMin,
         projets: { id: meta.projet_id, name: meta.projet_name || '—' },
         noteText: meta.note,
+        _source: 'saisie',
       })
     }
+
+    // Événements calendrier (seulement ceux qui ne sont pas des saisies dupliquées)
+    for (const ev of (calData || [])) {
+      const start = new Date(ev.start_time)
+      const end = new Date(ev.end_time)
+      const dateKey = toISO(start)
+      if (!map[dateKey]) map[dateKey] = []
+      // Eviter les doublons avec saisies
+      const alreadyExists = map[dateKey].some(e => e._source === 'saisie' && Math.abs(e.startMin - (start.getHours() * 60 + start.getMinutes())) < 5 && e.user_id === ev.user_id)
+      if (!alreadyExists) {
+        map[dateKey].push({
+          id: ev.id,
+          date: dateKey,
+          heures: ev.duree_heures || Math.round((end - start) / 3600000 * 10) / 10,
+          startMin: start.getHours() * 60 + start.getMinutes(),
+          endMin: end.getHours() * 60 + end.getMinutes(),
+          projets: { id: ev.projet_id, name: ev.title },
+          noteText: ev.description,
+          user_id: ev.user_id,
+          event_type: ev.event_type,
+          location: ev.location,
+          color: ev.color,
+          _source: 'calendar',
+        })
+      }
+    }
+
     setEvents(map)
     setLoading(false)
-  }, [profile?.id, weekStart, selectedSociete?.id])
+  }, [profile?.id, weekStart, selectedCollabs])
 
   useEffect(() => { fetchWeek() }, [fetchWeek])
 
@@ -587,25 +665,78 @@ export default function SaisiePage() {
       {/* Header */}
       <div className="admin-page-header">
         <div>
-          <h1>Saisie des temps</h1>
+          <h1>📅 Calendrier</h1>
           <p style={{ textTransform: 'capitalize' }}>{fmtMonthYear(weekStart)} · {totalWeek > 0 ? `${totalWeek}h cette semaine` : 'Aucune saisie'}</p>
         </div>
         <div style={{ display: 'flex', gap: '.5rem', alignItems: 'center', flexWrap: 'wrap' }}>
-          <WeekStatusBar
-            userId={profile?.id || 'unknown'}
-            mondayISO={toISO(weekStart)}
-            userRole={profile?.role}
-          />
+          <WeekStatusBar userId={profile?.id || 'unknown'} mondayISO={toISO(weekStart)} userRole={profile?.role} />
+
+          {/* Sélecteur collaborateurs */}
+          <div style={{ position: 'relative' }}>
+            <button className="btn-secondary" onClick={() => setShowCollabPanel(!showCollabPanel)}
+              style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+              👥 {selectedCollabs.size} collaborateur{selectedCollabs.size > 1 ? 's' : ''}
+              <span style={{ fontSize: 10 }}>▼</span>
+            </button>
+            {showCollabPanel && (
+              <div style={{
+                position: 'absolute', top: '100%', right: 0, marginTop: 6, width: 280,
+                background: '#fff', borderRadius: 10, boxShadow: '0 8px 30px rgba(0,0,0,.18)',
+                border: '1px solid #e2e8f0', zIndex: 100, overflow: 'hidden'
+              }}>
+                <div style={{ padding: '10px 12px', borderBottom: '1px solid #f1f5f9' }}>
+                  <input type="text" value={collabSearch} onChange={e => setCollabSearch(e.target.value)}
+                    placeholder="Rechercher..." style={{
+                      width: '100%', padding: '6px 10px', borderRadius: 6, border: '1px solid #e2e8f0',
+                      fontSize: 12, outline: 'none', boxSizing: 'border-box'
+                    }} />
+                  <div style={{ display: 'flex', gap: 6, marginTop: 6 }}>
+                    <button onClick={() => setSelectedCollabs(new Set(collabs.map(c => c.id)))}
+                      style={{ fontSize: 11, padding: '2px 8px', borderRadius: 4, border: '1px solid #e2e8f0', background: '#f8fafc', cursor: 'pointer' }}>Tous</button>
+                    <button onClick={() => setSelectedCollabs(new Set([profile?.id]))}
+                      style={{ fontSize: 11, padding: '2px 8px', borderRadius: 4, border: '1px solid #e2e8f0', background: '#f8fafc', cursor: 'pointer' }}>Moi seul</button>
+                    <button onClick={() => setSelectedCollabs(new Set())}
+                      style={{ fontSize: 11, padding: '2px 8px', borderRadius: 4, border: '1px solid #e2e8f0', background: '#f8fafc', cursor: 'pointer' }}>Aucun</button>
+                  </div>
+                </div>
+                <div style={{ maxHeight: 250, overflowY: 'auto', padding: '4px 6px' }}>
+                  {collabs.filter(c => {
+                    if (!collabSearch) return true
+                    return `${c.prenom} ${c.nom} ${c.email}`.toLowerCase().includes(collabSearch.toLowerCase())
+                  }).map((c, i) => {
+                    const color = collabColor(collabs.indexOf(c))
+                    const checked = selectedCollabs.has(c.id)
+                    const isMe = c.id === profile?.id
+                    return (
+                      <label key={c.id} style={{
+                        display: 'flex', alignItems: 'center', gap: 8, padding: '5px 8px',
+                        borderRadius: 6, cursor: 'pointer', fontSize: 13,
+                        background: checked ? color + '10' : 'transparent'
+                      }}>
+                        <input type="checkbox" checked={checked} onChange={() => toggleCollab(c.id)}
+                          style={{ accentColor: color }} />
+                        <div style={{
+                          width: 24, height: 24, borderRadius: '50%', background: color,
+                          color: '#fff', fontSize: 10, fontWeight: 700, display: 'flex',
+                          alignItems: 'center', justifyContent: 'center', flexShrink: 0
+                        }}>
+                          {`${(c.prenom || '')[0] || ''}${(c.nom || '')[0] || ''}`.toUpperCase()}
+                        </div>
+                        <span style={{ fontWeight: isMe ? 600 : 400 }}>
+                          {c.prenom} {c.nom} {isMe && <span style={{ color: '#94a3b8', fontSize: 10 }}>(moi)</span>}
+                        </span>
+                      </label>
+                    )
+                  })}
+                </div>
+              </div>
+            )}
+          </div>
+
           <button className="btn-secondary" onClick={() => setWeekStart(w => addDays(w, -7))}>← Préc.</button>
           <button className="btn-secondary" onClick={() => setWeekStart(getMonday(new Date()))}>Aujourd'hui</button>
           <button className="btn-secondary" onClick={() => setWeekStart(w => addDays(w, 7))}>Suiv. →</button>
-          <button
-            className="btn-secondary"
-            title="Exporter la semaine en CSV"
-            onClick={() => exportCSV(weekDates, events)}
-          >
-            ↓ CSV
-          </button>
+          <button className="btn-secondary" title="Exporter la semaine en CSV" onClick={() => exportCSV(weekDates, events)}>↓ CSV</button>
         </div>
       </div>
 
@@ -664,18 +795,31 @@ export default function SaisiePage() {
                   const isMoving = movingEvent?.ev?.id === ev.id
                   const top = minToY(ev.startMin)
                   const height = Math.max(20, minToY(ev.endMin) - top)
-                  const color = colorFor(ev.projets?.id)
+                  const isMulti = selectedCollabs.size > 1
+                  const color = isMulti ? collabColorForId(ev.user_id) : (ev.color || colorFor(ev.projets?.id))
+                  const info = collabInfo(ev.user_id)
+                  const isOther = ev.user_id !== profile?.id
                   return (
                     <div key={ev.id} className="cal-event"
                       style={{
                         top, height, background: color + '22', borderLeftColor: color,
-                        opacity: isMoving ? 0.3 : 1, cursor: 'grab',
+                        opacity: isMoving ? 0.3 : isOther ? 0.85 : 1,
+                        cursor: isOther ? 'default' : 'grab',
                       }}
-                      onMouseDown={e => handleEventDragStart(e, ev, e.currentTarget.parentElement)}
+                      onMouseDown={e => !isOther && handleEventDragStart(e, ev, e.currentTarget.parentElement)}
                       onClick={e => { e.stopPropagation(); if (!movingEvent) setSelectedEvent(ev) }}
                     >
-                      <div className="cal-event-title">{ev.projets?.name || '—'}</div>
-                      <div className="cal-event-time">{fmtTime(ev.startMin)}–{fmtTime(ev.endMin)}</div>
+                      <div className="cal-event-title" style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+                        {isMulti && (
+                          <span style={{
+                            width: 16, height: 16, borderRadius: '50%', background: color,
+                            color: '#fff', fontSize: 8, fontWeight: 700, display: 'inline-flex',
+                            alignItems: 'center', justifyContent: 'center', flexShrink: 0
+                          }}>{info.initials}</span>
+                        )}
+                        <span>{ev.projets?.name || ev.title || '—'}</span>
+                      </div>
+                      <div className="cal-event-time">{fmtTime(ev.startMin)}–{fmtTime(ev.endMin)}{ev.location ? ` · ${ev.location}` : ''}</div>
                     </div>
                   )
                 })}
