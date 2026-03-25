@@ -6,6 +6,7 @@ import InvoiceDistributionModal from '../../components/InvoiceDistributionModal'
 import { getDistributionHistory } from '../../lib/invoiceDistribution'
 import useSortableTable from '../../hooks/useSortableTable'
 import SortableHeader from '../../components/SortableHeader'
+import Spinner from '../../components/Spinner'
 
 // ── Helpers ───────────────────────────────────────────────────
 function fmtE(n) {
@@ -418,7 +419,7 @@ export default function FacturationPage() {
             </thead>
             <tbody>
               {loading ? (
-                <tr><td colSpan={8} style={{textAlign:'center',padding:'2rem',color:'var(--text-muted)'}}>Chargement…</td></tr>
+                <tr><td colSpan={8}><Spinner /></td></tr>
               ) : paged.length === 0 ? (
                 <tr><td colSpan={8} style={{textAlign:'center',padding:'2rem',color:'var(--text-muted)'}}>Aucune facture</td></tr>
               ) : paged.map(f => {

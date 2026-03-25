@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { supabase } from '../../lib/supabase'
 import useSortableTable from '../../hooks/useSortableTable'
 import SortableHeader from '../../components/SortableHeader'
+import Spinner from '../../components/Spinner'
 
 export default function AdminMessagesPage() {
   const [messages, setMessages] = useState([])
@@ -89,7 +90,7 @@ export default function AdminMessagesPage() {
         </div>
 
         {loading ? (
-          <div style={{ textAlign: 'center', padding: 40, color: '#94a3b8' }}>Chargement...</div>
+          <Spinner />
         ) : sortedData.length === 0 ? (
           <div style={{ textAlign: 'center', padding: 60, color: '#94a3b8' }}>
             <div style={{ fontSize: 48, marginBottom: 12 }}>📭</div>

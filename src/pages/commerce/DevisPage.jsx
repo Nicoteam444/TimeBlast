@@ -35,6 +35,7 @@ import { supabase } from '../../lib/supabase'
 import { useSociete } from '../../contexts/SocieteContext'
 import useSortableTable from '../../hooks/useSortableTable'
 import SortableHeader from '../../components/SortableHeader'
+import Spinner from '../../components/Spinner'
 
 // ── Helpers ───────────────────────────────────────────────────
 function fmtE(n) {
@@ -523,7 +524,7 @@ CREATE POLICY "Users can manage devis"
           </thead>
           <tbody>
             {loading ? (
-              <tr><td colSpan={7} style={{ textAlign: 'center', padding: '2rem', color: 'var(--text-muted)' }}>Chargement…</td></tr>
+              <tr><td colSpan={7}><Spinner /></td></tr>
             ) : paged.length === 0 ? (
               <tr><td colSpan={7} style={{ textAlign: 'center', padding: '2rem', color: 'var(--text-muted)' }}>Aucun devis</td></tr>
             ) : paged.map(d => {

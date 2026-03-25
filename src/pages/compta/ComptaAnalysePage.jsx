@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { supabase } from '../../lib/supabase'
 import { useDemo } from '../../contexts/DemoContext'
 import { DEMO_IMPORTS, DEMO_ECRITURES } from '../../data/demoData'
+import Spinner from '../../components/Spinner'
 import {
   BarChart, Bar, LineChart, Line, ComposedChart,
   XAxis, YAxis, CartesianGrid, Tooltip, Legend,
@@ -250,7 +251,7 @@ export default function ComptaAnalysePage() {
   const caMonthly    = monthly.map(m => ({ label: m.label, ca: m.ca, ebitda: m.ebitda }))
   const tresoMonthly = monthly.map(m => ({ label: m.label, tresorerie: m.tresorerie }))
 
-  if (loadingImports) return <div className="admin-page"><p style={{ padding: '2rem' }}>Chargement…</p></div>
+  if (loadingImports) return <div className="admin-page"><Spinner /></div>
 
   if (imports.length === 0) return (
     <div className="admin-page">

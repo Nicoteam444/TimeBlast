@@ -5,6 +5,7 @@ import { useBreadcrumb } from '../../contexts/BreadcrumbContext'
 import useSortableTable from '../../hooks/useSortableTable'
 import SortableHeader from '../../components/SortableHeader'
 import MiniCalendar from '../../components/MiniCalendar'
+import Spinner from '../../components/Spinner'
 
 const PRIORITY_CONFIG = {
   haute:   { label: 'Haute',   color: '#dc2626', bg: '#fef2f2', icon: '🔴' },
@@ -141,7 +142,7 @@ export default function TaskDetailPage() {
     })
   }
 
-  if (loading) return <div className="admin-page"><div className="loading-inline">Chargement...</div></div>
+  if (loading) return <div className="admin-page"><Spinner /></div>
   if (!projet) return <div className="admin-page"><p className="empty-state">Projet introuvable.</p></div>
 
   const fmtD = iso => iso ? new Date(iso + 'T12:00:00').toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric' }) : '—'

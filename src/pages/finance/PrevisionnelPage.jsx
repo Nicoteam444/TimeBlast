@@ -3,6 +3,7 @@ import { supabase } from '../../lib/supabase'
 import { useSociete } from '../../contexts/SocieteContext'
 import useSortableTable from '../../hooks/useSortableTable'
 import SortableHeader from '../../components/SortableHeader'
+import Spinner from '../../components/Spinner'
 import {
   AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip,
   Legend, ResponsiveContainer, ReferenceLine
@@ -380,7 +381,7 @@ export default function PrevisionnelPage() {
       </div>
 
       {loading ? (
-        <div className="loading-inline" style={{ marginTop: '2rem' }}>Chargement des données...</div>
+        <Spinner />
       ) : (
         <>
           {/* ── Area Chart ───────────────────────────────────── */}

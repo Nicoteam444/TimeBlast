@@ -3,6 +3,7 @@ import { useSearchParams, useNavigate } from 'react-router-dom'
 import { supabase } from '../../lib/supabase'
 import { verifyInvoiceToken, downloadXmlFile } from '../../lib/invoiceDistribution'
 import { generateInvoicePDF } from '../../lib/pdfGenerator'
+import Spinner from '../../components/Spinner'
 
 /**
  * Public Invoice Portal Page
@@ -81,10 +82,7 @@ export default function ClientInvoicePortal() {
         justifyContent: 'center',
         background: '#f5f7fa',
       }}>
-        <div style={{ textAlign: 'center' }}>
-          <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>⏳</div>
-          <p>Chargement de la facture...</p>
-        </div>
+        <Spinner />
       </div>
     )
   }

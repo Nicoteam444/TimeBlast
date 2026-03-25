@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo } from 'react'
 import { supabase } from '../../lib/supabase'
 import { useSociete } from '../../contexts/SocieteContext'
+import Spinner from '../../components/Spinner'
 import { BarChart, Bar, LineChart, Line, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend, ComposedChart, Area } from 'recharts'
 
 const COLORS = ['#1a5c82', '#22c55e', '#f59e0b', '#ef4444', '#8b5cf6', '#06b6d4', '#ec4899', '#14b8a6']
@@ -129,7 +130,7 @@ export default function AnalyticsPage() {
     }
   }, [data])
 
-  if (loading) return <div className="admin-page"><p style={{ padding: '2rem', color: 'var(--text-muted)' }}>Chargement…</p></div>
+  if (loading) return <div className="admin-page"><Spinner /></div>
 
   const k = analytics?.kpis || {}
   const c = analytics?.charts || {}

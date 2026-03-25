@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { supabase } from '../../lib/supabase'
 import { useBreadcrumb } from '../../contexts/BreadcrumbContext'
+import Spinner from '../../components/Spinner'
 
 /* ── helpers ── */
 function calcAnciennete(dateEmbauche) {
@@ -208,7 +209,7 @@ export default function CollaborateurPage() {
   }
 
   /* ── render states ── */
-  if (loading) return <div className="admin-page"><div className="loading-inline">Chargement…</div></div>
+  if (loading) return <div className="admin-page"><Spinner /></div>
 
   if (notFound) return (
     <div className="admin-page" style={{ textAlign: 'center', padding: '5rem 2rem' }}>

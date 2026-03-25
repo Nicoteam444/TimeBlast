@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useSearchParams, useNavigate } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
+import Spinner from '../components/Spinner'
 
 const SECTIONS = [
   {
@@ -91,7 +92,7 @@ export default function SearchPage() {
         </div>
       </div>
 
-      {loading && <div className="loading-inline">Chargement...</div>}
+      {loading && <Spinner />}
 
       {!loading && q && total === 0 && (
         <p className="empty-state" style={{ marginTop: '3rem' }}>Aucun résultat pour « {q} ».</p>

@@ -3,6 +3,7 @@ import { supabase } from '../../lib/supabase'
 import { useAuth } from '../../contexts/AuthContext'
 import useSortableTable from '../../hooks/useSortableTable'
 import SortableHeader from '../../components/SortableHeader'
+import Spinner from '../../components/Spinner'
 
 const ROLES = ['collaborateur', 'manager', 'comptable', 'admin']
 const ROLE_LABELS = {
@@ -573,7 +574,7 @@ export default function AdminUtilisateursPage() {
 
       {/* ── Table ── */}
       {loading ? (
-        <div className="loading-inline">Chargement...</div>
+        <Spinner />
       ) : (
         <div className="users-table-wrapper">
           <table className="users-table">

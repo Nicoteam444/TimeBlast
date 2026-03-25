@@ -1,6 +1,7 @@
 import { useState, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useNotifications } from '../contexts/NotificationsContext'
+import Spinner from '../components/Spinner'
 
 const SEVERITY_META = {
   danger:  { label: 'Urgent',      color: '#dc2626', bg: '#fef2f2', icon: '🔴' },
@@ -146,7 +147,7 @@ export default function NotificationsPage() {
 
       {/* Notification list */}
       {loading ? (
-        <div className="nc-loading">Chargement des notifications...</div>
+        <Spinner />
       ) : filtered.length === 0 ? (
         <div className="nc-empty">
           <div className="nc-empty-icon">🔔</div>

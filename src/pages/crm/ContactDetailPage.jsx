@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { supabase } from '../../lib/supabase'
 import { useBreadcrumb } from '../../contexts/BreadcrumbContext'
+import Spinner from '../../components/Spinner'
 
 function fmtK(n) {
   if (!n) return '0 €'
@@ -70,7 +71,7 @@ export default function ContactDetailPage() {
     loadContact()
   }
 
-  if (loading) return <div className="admin-page"><p style={{ padding: '2rem', color: 'var(--text-muted)' }}>Chargement…</p></div>
+  if (loading) return <div className="admin-page"><Spinner /></div>
   if (!contact) return <div className="admin-page"><p style={{ padding: '2rem', color: 'var(--text-muted)' }}>Contact introuvable</p></div>
 
   const totalPipeline = leads.filter(l => !['perdu', 'gagne'].includes(l.phase)).reduce((s, l) => s + (l.montant_estime || 0), 0)

@@ -6,6 +6,7 @@ import { DEMO_NOTES_DE_FRAIS, DEMO_USERS } from '../../data/demoData'
 import { supabase } from '../../lib/supabase'
 import useSortableTable from '../../hooks/useSortableTable'
 import SortableHeader from '../../components/SortableHeader'
+import Spinner from '../../components/Spinner'
 
 // ── Constantes ──────────────────────────────────────────────────
 
@@ -384,7 +385,7 @@ function NotesDeFraisTab({ isDemoMode, selectedSociete, profile }) {
 
   const { sortedData: sortedNotes, sortKey, sortDir, requestSort } = useSortableTable(notes, 'date', 'desc')
 
-  if (loading) return <div style={{ textAlign: 'center', padding: '2rem', color: 'var(--text-muted)' }}>Chargement...</div>
+  if (loading) return <Spinner />
 
   return (
     <div>
@@ -650,7 +651,7 @@ function CongesTab({ isDemoMode, profile }) {
 
   const { sortedData: sortedAbsences, sortKey: absSortKey, sortDir: absSortDir, requestSort: absRequestSort } = useSortableTable(absences, 'date_debut', 'asc')
 
-  if (loading) return <div style={{ textAlign: 'center', padding: '2rem', color: 'var(--text-muted)' }}>Chargement...</div>
+  if (loading) return <Spinner />
 
   return (
     <div>
@@ -894,7 +895,7 @@ function TempsTab({ isDemoMode, profile }) {
 
   const { sortedData: sortedTimesheets, sortKey: tsSortKey, sortDir: tsSortDir, requestSort: tsRequestSort } = useSortableTable(timesheets, 'semaine', 'desc')
 
-  if (loading) return <div style={{ textAlign: 'center', padding: '2rem', color: 'var(--text-muted)' }}>Chargement...</div>
+  if (loading) return <Spinner />
 
   return (
     <div>

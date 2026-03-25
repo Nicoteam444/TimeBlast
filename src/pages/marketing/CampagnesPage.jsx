@@ -3,6 +3,7 @@ import { supabase } from '../../lib/supabase'
 import { useSociete } from '../../contexts/SocieteContext'
 import useSortableTable from '../../hooks/useSortableTable'
 import SortableHeader from '../../components/SortableHeader'
+import Spinner from '../../components/Spinner'
 
 const TYPE_META = {
   email:  { label: 'Email',           icon: '\u{1F4E7}', color: '#3b82f6', bg: '#eff6ff' },
@@ -373,7 +374,7 @@ export default function CampagnesPage() {
 
       {/* Table */}
       {loading ? (
-        <div className="loading-inline">Chargement\u2026</div>
+        <Spinner />
       ) : (
         <div className="users-table-wrapper">
           <table className="users-table">

@@ -5,6 +5,7 @@ import { useSociete } from '../../contexts/SocieteContext'
 import { useAuth } from '../../contexts/AuthContext'
 import useSortableTable from '../../hooks/useSortableTable'
 import SortableHeader from '../../components/SortableHeader'
+import Spinner from '../../components/Spinner'
 
 function splitFullName(fullName) {
   const parts = (fullName || '').trim().split(/\s+/)
@@ -423,7 +424,7 @@ export default function ReportingPage() {
   if (loading) {
     return (
       <div className="page-content">
-        <div className="loading-state">Chargement des données…</div>
+        <Spinner />
       </div>
     )
   }

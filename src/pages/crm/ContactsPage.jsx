@@ -4,6 +4,7 @@ import { supabase } from '../../lib/supabase'
 import { useSociete } from '../../contexts/SocieteContext'
 import useSortableTable from '../../hooks/useSortableTable'
 import SortableHeader from '../../components/SortableHeader'
+import Spinner from '../../components/Spinner'
 
 const STATUT_MAP = {
   actif:   { label: 'Actif',   color: '#16a34a', bg: '#dcfce7' },
@@ -222,7 +223,7 @@ export default function ContactsPage() {
       </div>
 
       {/* Table */}
-      {loading ? <div className="loading-inline">Chargement...</div> : (
+      {loading ? <Spinner /> : (
         <>
           <div className="users-table-wrapper">
             <table className="users-table">

@@ -6,6 +6,7 @@ import { DEMO_NOTES_DE_FRAIS } from '../../data/demoData'
 import { supabase } from '../../lib/supabase'
 import useSortableTable from '../../hooks/useSortableTable'
 import SortableHeader from '../../components/SortableHeader'
+import Spinner from '../../components/Spinner'
 
 const CATEGORIE_META = {
   transport:    { label: 'Transport',      icon: '🚗', color: '#3b82f6', bg: '#eff6ff' },
@@ -308,7 +309,7 @@ export default function NotesDeFraisPage() {
       )}
 
       {loading ? (
-        <div className="loading-inline">Chargement…</div>
+        <Spinner />
       ) : (
         <div className="users-table-wrapper">
           <table className="users-table">

@@ -3,6 +3,7 @@ import { supabase } from '../../lib/supabase'
 import { useSociete } from '../../contexts/SocieteContext'
 import useSortableTable from '../../hooks/useSortableTable'
 import SortableHeader from '../../components/SortableHeader'
+import Spinner from '../../components/Spinner'
 
 const LEVELS = [
   { value: 0, label: 'Non évalué', color: '#e2e8f0', emoji: '—' },
@@ -267,7 +268,7 @@ CREATE POLICY "eval_all" ON competence_evaluations FOR ALL
           </div>
 
           {/* Matrice */}
-          {loading ? <div className="loading-inline">Chargement...</div> : (
+          {loading ? <Spinner /> : (
             <div style={{ overflowX: 'auto', marginTop: '.5rem' }}>
               <table className="users-table" style={{ minWidth: 600 }}>
                 <thead>

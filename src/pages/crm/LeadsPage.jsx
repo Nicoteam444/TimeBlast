@@ -3,6 +3,7 @@ import { supabase } from '../../lib/supabase'
 import { useSociete } from '../../contexts/SocieteContext'
 import useSortableTable from '../../hooks/useSortableTable'
 import SortableHeader from '../../components/SortableHeader'
+import Spinner from '../../components/Spinner'
 
 const PHASES = [
   { id: 'nouveau',      label: 'Nouveau',      color: '#94a3b8', bg: '#f1f5f9' },
@@ -395,7 +396,7 @@ export default function LeadsPage() {
         </select>
       </div>
 
-      {loading ? <div className="loading-inline">Chargement...</div> : (
+      {loading ? <Spinner /> : (
         view === 'kanban' ? (
           // ── KANBAN VIEW ──
           <div className="kanban-board">

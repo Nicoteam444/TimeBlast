@@ -2,6 +2,7 @@ import { useState, useEffect, useMemo, useCallback, useRef } from 'react'
 import { useSociete } from '../../contexts/SocieteContext'
 import useSortableTable from '../../hooks/useSortableTable'
 import SortableHeader from '../../components/SortableHeader'
+import Spinner from '../../components/Spinner'
 
 // ── Helpers ───────────────────────────────────────────────────
 function fmtE(n) {
@@ -226,7 +227,7 @@ export default function FacturesFournisseursPage() {
               </thead>
               <tbody>
                 {loading ? (
-                  <tr><td colSpan={8} style={{ textAlign: 'center', padding: '2rem', color: 'var(--text-muted)' }}>Chargement…</td></tr>
+                  <tr><td colSpan={8}><Spinner /></td></tr>
                 ) : paged.length === 0 ? (
                   <tr><td colSpan={8} style={{ textAlign: 'center', padding: '2rem', color: 'var(--text-muted)' }}>Aucune facture</td></tr>
                 ) : paged.map(f => {

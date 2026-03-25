@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo } from 'react'
 import { supabase } from '../../lib/supabase'
 import { useSociete } from '../../contexts/SocieteContext'
+import Spinner from '../../components/Spinner'
 
 const STATUTS = [
   { id: 'actif', label: 'Actif', color: '#22c55e', bg: '#f0fdf4' },
@@ -167,7 +168,7 @@ CREATE POLICY "formulaires_all" ON formulaires FOR ALL
           </thead>
           <tbody>
             {loading ? (
-              <tr><td colSpan={8} style={{ textAlign: 'center', padding: '2rem', color: 'var(--text-muted)' }}>Chargement…</td></tr>
+              <tr><td colSpan={8}><Spinner /></td></tr>
             ) : filtered.length === 0 ? (
               <tr><td colSpan={8} style={{ textAlign: 'center', padding: '2rem', color: 'var(--text-muted)' }}>Aucun formulaire</td></tr>
             ) : filtered.map(f => {

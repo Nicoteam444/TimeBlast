@@ -2,6 +2,7 @@ import { useState, useEffect, useMemo } from 'react'
 import { supabase } from '../../lib/supabase'
 import { useSociete } from '../../contexts/SocieteContext'
 import { useAuth } from '../../contexts/AuthContext'
+import Spinner from '../../components/Spinner'
 
 const JOURNALS = [
   { code: 'AC', label: 'Achats' },
@@ -454,7 +455,7 @@ export default function SaisieEcriturePage() {
               </div>
 
               {loading ? (
-                <p style={{ textAlign: 'center', padding: '2rem', color: 'var(--text-muted)' }}>Chargement…</p>
+                <Spinner />
               ) : filteredRows.length === 0 ? (
                 <p style={{ textAlign: 'center', padding: '2rem', color: 'var(--text-muted)' }}>
                   Aucune écriture pour l'instant.

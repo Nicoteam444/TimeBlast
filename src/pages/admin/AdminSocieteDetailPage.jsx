@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { supabase } from '../../lib/supabase'
 import { useBreadcrumb } from '../../contexts/BreadcrumbContext'
+import Spinner from '../../components/Spinner'
 
 // ── HoldingOrgChart ──────────────────────────────────────────────────────────
 
@@ -227,7 +228,7 @@ export default function AdminSocieteDetailPage() {
   if (loading) {
     return (
       <div className="admin-page">
-        <div className="loading-inline">Chargement...</div>
+        <Spinner />
       </div>
     )
   }

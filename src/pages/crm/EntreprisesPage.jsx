@@ -4,6 +4,7 @@ import { useSociete } from '../../contexts/SocieteContext'
 import { useNavigate } from 'react-router-dom'
 import useSortableTable from '../../hooks/useSortableTable'
 import SortableHeader from '../../components/SortableHeader'
+import Spinner from '../../components/Spinner'
 
 function fmtK(n) {
   if (!n) return '0 €'
@@ -224,7 +225,7 @@ export default function EntreprisesPage() {
           </thead>
           <tbody>
             {loading ? (
-              <tr><td colSpan={7} style={{ textAlign: 'center', padding: '2rem', color: 'var(--text-muted)' }}>Chargement…</td></tr>
+              <tr><td colSpan={7}><Spinner /></td></tr>
             ) : paged.length === 0 ? (
               <tr><td colSpan={7} style={{ textAlign: 'center', padding: '2rem', color: 'var(--text-muted)' }}>Aucune entreprise</td></tr>
             ) : paged.map(e => (

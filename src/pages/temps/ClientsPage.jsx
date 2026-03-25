@@ -2,6 +2,7 @@ import { useState, useEffect, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { supabase } from '../../lib/supabase'
 import { useSociete } from '../../contexts/SocieteContext'
+import Spinner from '../../components/Spinner'
 
 export default function ClientsPage() {
   const navigate = useNavigate()
@@ -132,7 +133,7 @@ export default function ClientsPage() {
         </div>
       </div>
 
-      {loading ? <div className="loading-inline">Chargement...</div> : (
+      {loading ? <Spinner /> : (
         <>
           <div className="data-table">
             <div className="data-table-header">

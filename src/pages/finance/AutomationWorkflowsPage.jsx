@@ -3,6 +3,7 @@ import { supabase } from '../../lib/supabase'
 import { useSociete } from '../../contexts/SocieteContext'
 import useSortableTable from '../../hooks/useSortableTable'
 import SortableHeader from '../../components/SortableHeader'
+import Spinner from '../../components/Spinner'
 
 const TRIGGER_META = {
   lead_created:      { label: 'Quand un lead est cree',              icon: '🚀', color: '#3b82f6', bg: '#eff6ff' },
@@ -484,7 +485,7 @@ export default function AutomationWorkflowsPage() {
         </div>
       )}
 
-      {loading ? <div className="loading-inline">Chargement...</div> : viewMode === 'visual' ? (
+      {loading ? <Spinner /> : viewMode === 'visual' ? (
         /* Visual card grid */
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: '1rem', marginTop: '.5rem' }}>
           {sortedData.map(w => {

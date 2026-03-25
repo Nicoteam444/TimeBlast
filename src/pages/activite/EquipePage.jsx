@@ -4,6 +4,7 @@ import { supabase } from '../../lib/supabase'
 import { useSociete } from '../../contexts/SocieteContext'
 import useSortableTable from '../../hooks/useSortableTable'
 import SortableHeader from '../../components/SortableHeader'
+import Spinner from '../../components/Spinner'
 
 function calcAnciennete(dateEmbauche) {
   if (!dateEmbauche) return { label: '—', months: 0 }
@@ -129,7 +130,7 @@ export default function EquipePage() {
       </div>
 
       {loading ? (
-        <div className="loading-inline">Chargement…</div>
+        <Spinner />
       ) : (
         <>
           <div className="users-table-wrapper">

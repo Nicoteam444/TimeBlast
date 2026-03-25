@@ -1,5 +1,6 @@
 import { useState, useEffect, useMemo } from 'react'
 import { supabase } from '../../lib/supabase'
+import Spinner from '../../components/Spinner'
 
 const PALETTE = [
   '#1a5c82', '#6366f1', '#8b5cf6', '#ec4899', '#f59e0b',
@@ -236,7 +237,7 @@ export default function AdminGroupesPage() {
 
       {/* Liste */}
       {loading ? (
-        <div className="loading-inline">Chargement…</div>
+        <Spinner />
       ) : groupes.length === 0 ? (
         <div style={{ textAlign: 'center', padding: '4rem 2rem', color: 'var(--text-muted)' }}>
           <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>🏛</div>

@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo } from 'react'
 import { supabase } from '../../lib/supabase'
 import { useSociete } from '../../contexts/SocieteContext'
+import Spinner from '../../components/Spinner'
 
 // Niveaux hiérarchiques selon le poste
 const LEVELS = [
@@ -136,7 +137,7 @@ export default function OrganigrammePage() {
       </div>
 
       {loading ? (
-        <div className="loading-inline">Chargement…</div>
+        <Spinner />
       ) : equipe.length === 0 ? (
         <div style={{ textAlign: 'center', color: 'var(--text-muted)', padding: '4rem 2rem' }}>
           <div style={{ fontSize: '2.5rem', marginBottom: '1rem' }}>🏢</div>

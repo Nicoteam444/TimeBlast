@@ -3,6 +3,7 @@ import { supabase } from '../../lib/supabase'
 import { useSociete } from '../../contexts/SocieteContext'
 import useSortableTable from '../../hooks/useSortableTable'
 import SortableHeader from '../../components/SortableHeader'
+import Spinner from '../../components/Spinner'
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend,
   ResponsiveContainer, PieChart, Pie, Cell, ScatterChart, Scatter,
@@ -408,7 +409,7 @@ export default function RentabilitePage() {
       </div>
 
       {loading ? (
-        <div className="page-loading">Chargement…</div>
+        <Spinner />
       ) : (
         <div className="rent-content">
 

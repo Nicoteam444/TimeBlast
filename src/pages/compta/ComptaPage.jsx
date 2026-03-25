@@ -2,6 +2,7 @@ import { useState, useEffect, useMemo, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { supabase } from '../../lib/supabase'
 import { useSociete } from '../../contexts/SocieteContext'
+import Spinner from '../../components/Spinner'
 import {
   BarChart, Bar, ComposedChart, Line,
   XAxis, YAxis, CartesianGrid, Tooltip, Legend,
@@ -304,7 +305,7 @@ export default function ComptaPage() {
   const caMonthly    = monthly.map(m => ({ label: m.label, ca: m.ca, ebitda: m.ebitda }))
   const tresoMonthly = monthly.map(m => ({ label: m.label, tresorerie: m.tresorerie }))
 
-  if (loadingImports) return <div className="admin-page"><p style={{ padding: '2rem', color: 'var(--text-muted)' }}>Chargement…</p></div>
+  if (loadingImports) return <div className="admin-page"><Spinner /></div>
 
   return (
     <div className="admin-page">
@@ -499,7 +500,7 @@ export default function ComptaPage() {
 
           {loadingEc ? (
             <div style={{ textAlign: 'center', padding: '3rem', color: 'var(--text-muted)' }}>
-              <p style={{ marginBottom: '1rem' }}>Chargement des écritures… {loadingEcProgress}%</p>
+              <Spinner label={`Chargement des écritures… ${loadingEcProgress}%`} />
               <div style={{ maxWidth: 300, margin: '0 auto', height: 6, background: 'var(--border)', borderRadius: 3 }}>
                 <div style={{ height: '100%', width: `${loadingEcProgress}%`, background: 'var(--primary)', borderRadius: 3, transition: 'width .3s' }} />
               </div>

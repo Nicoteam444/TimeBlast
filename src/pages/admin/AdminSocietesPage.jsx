@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { supabase } from '../../lib/supabase'
 import useSortableTable from '../../hooks/useSortableTable'
 import SortableHeader from '../../components/SortableHeader'
+import Spinner from '../../components/Spinner'
 
 export default function AdminSocietesPage() {
   const navigate = useNavigate()
@@ -229,7 +230,7 @@ ALTER TABLE profiles ADD COLUMN IF NOT EXISTS societe_id uuid REFERENCES societe
 
       {/* Liste */}
       {loading ? (
-        <div className="loading-inline">Chargement...</div>
+        <Spinner />
       ) : societes.length === 0 ? (
         <div style={{ textAlign: 'center', padding: '3rem', color: 'var(--text-muted)' }}>
           <p style={{ fontSize: '2rem', marginBottom: '1rem' }}>🏢</p>

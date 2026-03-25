@@ -4,6 +4,7 @@ import { supabase } from '../../lib/supabase'
 import { useAuth } from '../../contexts/AuthContext'
 import ConfirmDeleteModal from '../../components/ConfirmDeleteModal'
 import MiniCalendar from '../../components/MiniCalendar'
+import Spinner from '../../components/Spinner'
 
 const DEFAULT_COLUMNS = [
   { name: 'À faire', order: 0 },
@@ -286,7 +287,7 @@ export default function ProjetDetailPage({ projet, onBack }) {
   const today = new Date().toISOString().slice(0, 10)
   const overdueTasks = tasks.filter(t => t.due_date && t.due_date < today && t.column_id !== doneColId)
 
-  if (loading) return <div className="admin-page"><div className="loading-inline">Chargement...</div></div>
+  if (loading) return <div className="admin-page"><Spinner /></div>
 
   return (
     <div className="admin-page" style={{ maxWidth: 'none' }}>

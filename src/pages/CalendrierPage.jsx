@@ -2,6 +2,7 @@ import { useState, useEffect, useRef, useCallback, useMemo } from 'react'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../contexts/AuthContext'
 import { useSociete } from '../contexts/SocieteContext'
+import Spinner from '../components/Spinner'
 
 // ── Constantes ─────────────────────────────────────────────
 const HOUR_H = 60
@@ -650,9 +651,7 @@ export default function CalendrierPage() {
         {/* Calendar body */}
         <div style={{ flex: 1, overflow: 'hidden', background: '#fff' }}>
           {loading ? (
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', color: '#94a3b8' }}>
-              Chargement...
-            </div>
+            <Spinner />
           ) : view === 'Mois' ? (
             <div style={{ padding: 20, overflowY: 'auto', height: '100%' }}>
               {renderMonth()}

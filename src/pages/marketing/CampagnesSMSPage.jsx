@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo } from 'react'
 import { supabase } from '../../lib/supabase'
 import { useSociete } from '../../contexts/SocieteContext'
+import Spinner from '../../components/Spinner'
 
 const SQL_MIGRATION = `CREATE TABLE IF NOT EXISTS campagnes_sms (
   id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
@@ -340,7 +341,7 @@ export default function CampagnesSMSPage() {
 
           {/* Table */}
           {loading ? (
-            <div className="loading-inline">Chargement...</div>
+            <Spinner />
           ) : (
             <div style={{ padding: '0 1.5rem 2rem', overflowX: 'auto' }}>
               <table className="users-table" style={{ minWidth: 920 }}>

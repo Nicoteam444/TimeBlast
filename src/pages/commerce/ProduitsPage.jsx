@@ -3,6 +3,7 @@ import { supabase } from '../../lib/supabase'
 import { useSociete } from '../../contexts/SocieteContext'
 import useSortableTable from '../../hooks/useSortableTable'
 import SortableHeader from '../../components/SortableHeader'
+import Spinner from '../../components/Spinner'
 
 const SQL_MIGRATION = `CREATE TABLE IF NOT EXISTS produits (
   id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
@@ -292,7 +293,7 @@ export default function ProduitsPage() {
 
           {/* Table */}
           {loading ? (
-            <div className="loading-inline">Chargement...</div>
+            <Spinner />
           ) : (
             <div style={{ padding: '0 1.5rem 2rem' }}>
               <table className="produit-table">

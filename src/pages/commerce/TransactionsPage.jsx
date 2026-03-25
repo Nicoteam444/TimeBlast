@@ -6,6 +6,7 @@ import { useSociete } from '../../contexts/SocieteContext'
 import { useAuth } from '../../contexts/AuthContext'
 import useSortableTable from '../../hooks/useSortableTable'
 import SortableHeader from '../../components/SortableHeader'
+import Spinner from '../../components/Spinner'
 
 const PHASES = [
   { id: 'qualification',  label: 'Qualification',   color: '#6366f1', bg: '#eef2ff' },
@@ -297,7 +298,7 @@ export default function TransactionsPage() {
         {gained > 0 && <span style={{ fontSize: '.85rem', color: '#16a34a', fontWeight: 600 }}>Gagné : {formatMontant(gained)}</span>}
       </div>
 
-      {loading ? <div className="loading-inline">Chargement...</div> : (
+      {loading ? <Spinner /> : (
         view === 'kanban' ? (
           // ── KANBAN VIEW ──
           <div className="kanban-board">

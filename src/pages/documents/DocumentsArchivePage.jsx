@@ -3,6 +3,7 @@ import { supabase } from '../../lib/supabase'
 import { useSociete } from '../../contexts/SocieteContext'
 import useSortableTable from '../../hooks/useSortableTable'
 import SortableHeader from '../../components/SortableHeader'
+import Spinner from '../../components/Spinner'
 
 const TYPE_OPTIONS = [
   { value: '', label: 'Tous' },
@@ -368,7 +369,7 @@ export default function DocumentsArchivePage() {
             Select all
           </label>
 
-          {loading && <div className="loading-inline">Chargement...</div>}
+          {loading && <Spinner />}
 
           {!loading && filtered.length === 0 && !tableError && (
             <div style={{ textAlign: 'center', padding: '3rem', color: 'var(--text-muted)' }}>

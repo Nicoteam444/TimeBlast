@@ -3,6 +3,7 @@ import { supabase } from '../../lib/supabase'
 import { useSociete } from '../../contexts/SocieteContext'
 import useSortableTable from '../../hooks/useSortableTable'
 import SortableHeader from '../../components/SortableHeader'
+import Spinner from '../../components/Spinner'
 
 const CATEGORIES = [
   { value: 'materiel_info', label: 'Matériel informatique' },
@@ -265,7 +266,7 @@ CREATE POLICY "immo_all" ON immobilisations FOR ALL
 
           {/* Tableau */}
           {loading ? (
-            <div className="loading-inline">Chargement...</div>
+            <Spinner />
           ) : (
             <div className="users-table-wrapper">
               <table className="users-table">

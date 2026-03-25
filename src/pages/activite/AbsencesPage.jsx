@@ -6,6 +6,7 @@ import { DEMO_USERS } from '../../data/demoData'
 import { supabase } from '../../lib/supabase'
 import useSortableTable from '../../hooks/useSortableTable'
 import SortableHeader from '../../components/SortableHeader'
+import Spinner from '../../components/Spinner'
 
 const STORAGE_KEY = 'absences_data'
 
@@ -405,7 +406,7 @@ export default function AbsencesPage() {
 
       {/* Tableau */}
       {loading ? (
-        <div style={{ textAlign: 'center', padding: '2rem', color: 'var(--text-muted)' }}>Chargement...</div>
+        <Spinner />
       ) : (
         <div className="table-wrap">
           <table className="data-table">

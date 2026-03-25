@@ -4,6 +4,7 @@ import ClientAutocomplete from '../../components/ClientAutocomplete'
 import { useSociete } from '../../contexts/SocieteContext'
 import useSortableTable from '../../hooks/useSortableTable'
 import SortableHeader from '../../components/SortableHeader'
+import Spinner from '../../components/Spinner'
 
 const STATUT_COLORS = {
   actif:    { color: '#16a34a', bg: '#f0fdf4' },
@@ -212,7 +213,7 @@ export default function ProjetsPage({ onSelect }) {
         </div>
       </div>
 
-      {loading ? <div className="loading-inline">Chargement...</div> : (
+      {loading ? <Spinner /> : (
         <>
           <div className="users-table-wrapper">
             <table className="users-table">

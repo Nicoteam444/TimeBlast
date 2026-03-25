@@ -3,6 +3,7 @@ import { supabase } from '../../lib/supabase'
 import { useSociete } from '../../contexts/SocieteContext'
 import useSortableTable from '../../hooks/useSortableTable'
 import SortableHeader from '../../components/SortableHeader'
+import Spinner from '../../components/Spinner'
 
 const CATEGORIE_META = {
   materiel:   { label: 'Matériel',    icon: '🔧', color: '#0ea5e9', bg: '#f0f9ff' },
@@ -392,7 +393,7 @@ export default function AchatsPage() {
 
       {/* Table */}
       {loading ? (
-        <div className="loading-inline">Chargement…</div>
+        <Spinner />
       ) : (
         <div className="users-table-wrapper">
           <table className="users-table">

@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { supabase } from '../../lib/supabase'
 import { useDemo } from '../../contexts/DemoContext'
 import { DEMO_IMPORTS, DEMO_ECRITURES } from '../../data/demoData'
+import Spinner from '../../components/Spinner'
 
 function fmtNum(n) {
   return new Intl.NumberFormat('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(n || 0)
@@ -107,7 +108,7 @@ export default function ComptaEcrituresPage() {
   const sumCredit  = filtered.reduce((s, r) => s + (r.credit || 0), 0)
   const balanced   = Math.abs(sumDebit - sumCredit) < 0.01
 
-  if (loadingImports) return <div className="admin-page"><p style={{ padding: '2rem', color: 'var(--text-muted)' }}>Chargement…</p></div>
+  if (loadingImports) return <div className="admin-page"><Spinner /></div>
 
   if (imports.length === 0) {
     return (
@@ -199,7 +200,7 @@ export default function ComptaEcrituresPage() {
 
       {/* Table */}
       {loading ? (
-        <p style={{ textAlign: 'center', padding: '3rem', color: 'var(--text-muted)' }}>Chargement des écritures…</p>
+        <Spinner />
       ) : (
         <div style={{ overflowX: 'auto' }}>
           <table className="data-table" style={{ fontSize: '.8rem' }}>

@@ -3,6 +3,7 @@ import { useDemo } from '../../contexts/DemoContext'
 import { supabase } from '../../lib/supabase'
 import useSortableTable from '../../hooks/useSortableTable'
 import SortableHeader from '../../components/SortableHeader'
+import Spinner from '../../components/Spinner'
 
 const ACTION_TYPES = {
   user_created:    { label: 'Utilisateur créé',   color: '#16a34a', bg: '#f0fdf4' },
@@ -152,7 +153,7 @@ export default function AdminAuditPage() {
       </div>
 
       {loading ? (
-        <div style={{ textAlign: 'center', padding: '2rem', color: 'var(--text-muted)' }}>Chargement...</div>
+        <Spinner />
       ) : (
         <div className="table-wrap">
           <table className="data-table">

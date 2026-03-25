@@ -4,6 +4,7 @@ import { supabase } from '../../lib/supabase'
 import ProjetsPage from '../temps/ProjetsPage'
 import ProjetDetailPage from '../temps/ProjetDetailPage'
 import { useBreadcrumb } from '../../contexts/BreadcrumbContext'
+import Spinner from '../../components/Spinner'
 
 export default function ProjetsWrapper() {
   const { projetId } = useParams()
@@ -43,7 +44,7 @@ export default function ProjetsWrapper() {
     navigate('/activite/projets')
   }
 
-  if (loading) return <div className="admin-page"><div className="loading-inline">Chargement...</div></div>
+  if (loading) return <div className="admin-page"><Spinner /></div>
 
   if (projet) return <ProjetDetailPage projet={projet} onBack={handleBack} />
   return <ProjetsPage onSelect={handleSelect} />

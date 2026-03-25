@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { supabase } from '../../lib/supabase'
+import Spinner from '../../components/Spinner'
 
 const CANVAS_ID = 'admin_global'
 const ROLES = ['admin', 'manager', 'collaborateur', 'comptable']
@@ -1163,9 +1164,7 @@ export default function AdminOrganigrammePage() {
   const selectedNode = selected ? nodes.find(n => n.id === selected) : null
 
   if (loading) return (
-    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: 300 }}>
-      <span style={{ color: 'var(--text-muted)' }}>Chargement de l'organigramme…</span>
-    </div>
+    <Spinner />
   )
 
   return (

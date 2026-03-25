@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react'
 import { supabase } from '../../lib/supabase'
 import { useAppearance } from '../../contexts/AppearanceContext'
+import Spinner from '../../components/Spinner'
 
 // ── Onglet Affichage ─────────────────────────────────────────
 function AffichageTab() {
@@ -714,7 +715,7 @@ function BaseDeDonneesTab() {
           </div>
         </div>
 
-        {loading ? <div className="loading-inline">Chargement...</div> : (
+        {loading ? <Spinner /> : (
           <div className="users-table-wrapper">
             <table className="users-table">
               <thead>
@@ -761,7 +762,7 @@ function BaseDeDonneesTab() {
                         <td colSpan={3} style={{ padding: 0 }}>
                           <div style={{ background: 'var(--hover-bg, #f8fafc)', padding: '.75rem 1rem .75rem 3rem', borderTop: '1px solid var(--border, #e2e8f0)' }}>
                             {detailLoading ? (
-                              <span style={{ fontSize: '.8rem', color: 'var(--text-muted)' }}>Chargement...</span>
+                              <Spinner size={20} />
                             ) : detailData[s.name] && Object.keys(detailData[s.name]).length > 0 ? (
                               <div style={{ display: 'flex', flexWrap: 'wrap', gap: '.5rem' }}>
                                 {Object.entries(detailData[s.name]).sort((a, b) => b[1] - a[1]).map(([socName, cnt]) => (

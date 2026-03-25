@@ -5,6 +5,7 @@ import { useBreadcrumb } from '../../contexts/BreadcrumbContext'
 import { useSociete } from '../../contexts/SocieteContext'
 import ClientAutocomplete from '../../components/ClientAutocomplete'
 import { phaseInfo } from './TransactionsPage'
+import Spinner from '../../components/Spinner'
 
 const PHASES = [
   { id: 'qualification',  label: 'Qualification',  color: '#6366f1', bg: '#eef2ff' },
@@ -89,7 +90,7 @@ export default function TransactionDetailPage() {
     return new Date(d).toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric' })
   }
 
-  if (loading) return <div className="admin-page"><div className="loading-inline">Chargement...</div></div>
+  if (loading) return <div className="admin-page"><Spinner /></div>
   if (!transaction) return <div className="admin-page"><p className="empty-state">Transaction introuvable.</p></div>
 
   const currentPhaseIndex = PHASES.findIndex(p => p.id === transaction.phase)

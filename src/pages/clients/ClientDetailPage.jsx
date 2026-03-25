@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom'
 import { supabase } from '../../lib/supabase'
 import { useBreadcrumb } from '../../contexts/BreadcrumbContext'
 import { useSociete } from '../../contexts/SocieteContext'
+import Spinner from '../../components/Spinner'
 
 const STATUT_COLORS = {
   actif:    { color: '#16a34a', bg: '#f0fdf4' },
@@ -52,7 +53,7 @@ export default function ClientDetailPage() {
     setEditName(false)
   }
 
-  if (loading) return <div className="loading-inline">Chargement...</div>
+  if (loading) return <Spinner />
   if (!client) return <div className="admin-page"><p className="empty-state">Client introuvable.</p></div>
 
   const totalJours = projets.reduce((s, p) => s + parseFloat(p.total_jours || 0), 0)

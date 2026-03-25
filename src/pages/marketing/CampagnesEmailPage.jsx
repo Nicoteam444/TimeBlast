@@ -31,6 +31,7 @@ CREATE POLICY "Users can manage campagnes_email for their societe"
 import { useState, useMemo, useEffect, useCallback } from 'react'
 import { supabase } from '../../lib/supabase'
 import { useSociete } from '../../contexts/SocieteContext'
+import Spinner from '../../components/Spinner'
 
 // ── Status config ──────────────────────────────────────────
 const STATUTS = [
@@ -583,7 +584,7 @@ CREATE POLICY "Users can manage campagnes_email"
           </thead>
           <tbody>
             {loading ? (
-              <tr><td colSpan={9} style={{ textAlign: 'center', padding: '2rem', color: 'var(--text-muted)' }}>Chargement...</td></tr>
+              <tr><td colSpan={9}><Spinner /></td></tr>
             ) : paged.length === 0 ? (
               <tr><td colSpan={9} style={{ textAlign: 'center', padding: '2rem', color: 'var(--text-muted)' }}>Aucune campagne</td></tr>
             ) : paged.map(c => {
