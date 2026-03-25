@@ -1,5 +1,6 @@
-import { useState, useEffect, useMemo } from 'react'
+import { useState, useEffect, useMemo, useCallback } from 'react'
 import { supabase } from '../../lib/supabase'
+import { useAuth } from '../../contexts/AuthContext'
 import useSortableTable from '../../hooks/useSortableTable'
 import SortableHeader from '../../components/SortableHeader'
 
@@ -72,6 +73,9 @@ export default function AdminUtilisateursPage() {
   const [filterRole, setFilterRole]   = useState('')
   const [filterSociete, setFilterSociete] = useState('')
   const [showMigration, setShowMigration] = useState(false)
+  const [activeTab, setActiveTab] = useState('users')
+  const { user: authUser } = useAuth()
+  const isSuperAdmin = authUser?.email === SUPER_ADMIN_EMAIL
 
   useEffect(() => {
     fetchUsers()
@@ -225,6 +229,29 @@ export default function AdminUtilisateursPage() {
           </button>
         </div>
       </div>
+
+      {/* ── Onglets ── */}
+      {isSuperAdmin && (
+        <div style={{ display: 'flex', gap: 0, marginBottom: '1.5rem', borderBottom: '2px solid #e2e8f0' }}>
+          {[
+            { id: 'users', label: '👥 Utilisateurs' },
+            { id: 'permissions', label: '🔐 Gestion des droits' },
+          ].map(tab => (
+            <button key={tab.id} onClick={() => setActiveTab(tab.id)} style={{
+              padding: '.75rem 1.5rem', border: 'none', background: 'none', cursor: 'pointer',
+              fontSize: '.9rem', fontWeight: activeTab === tab.id ? 700 : 500,
+              color: activeTab === tab.id ? '#2B4C7E' : '#64748b',
+              borderBottom: activeTab === tab.id ? '3px solid #2B4C7E' : '3px solid transparent',
+              marginBottom: '-2px', transition: 'all .15s',
+            }}>{tab.label}</button>
+          ))}
+        </div>
+      )}
+
+      {activeTab === 'permissions' && isSuperAdmin ? (
+        <PermissionsMatrix />
+      ) : (
+      <>
 
       {/* ── Proposition migration ── */}
       {showMigration && (
@@ -634,6 +661,291 @@ export default function AdminUtilisateursPage() {
           </table>
         </div>
       )}
+      </>
+      )}
+    </div>
+  )
+}
+
+// ── Matrice de permissions ──────────────────────────────────────
+const MODULES = [
+  { id: 'calendrier', label: 'Calendrier', icon: '📆', subs: [
+    { id: 'saisie', label: 'Saisie des temps' },
+  ]},
+  { id: 'activite', label: 'Activité', icon: '⏱', subs: [
+    { id: 'planification', label: 'Planification' },
+    { id: 'projets', label: 'Gestion de projet' },
+    { id: 'reporting', label: 'Reporting temps' },
+    { id: 'rentabilite', label: 'Rentabilité' },
+  ]},
+  { id: 'equipe', label: 'Équipe', icon: '👥', subs: [
+    { id: 'collaborateurs', label: 'Collaborateurs' },
+    { id: 'absences', label: 'Absences' },
+    { id: 'validations', label: 'Validations' },
+    { id: 'notes-de-frais', label: 'Notes de frais' },
+    { id: 'trombinoscope', label: 'Trombinoscope' },
+    { id: 'organigramme', label: 'Organigramme' },
+    { id: 'competences', label: 'Compétences' },
+  ]},
+  { id: 'gestion', label: 'Gestion', icon: '🧾', subs: [
+    { id: 'tableau-de-bord', label: 'Tableau de bord' },
+    { id: 'transactions', label: 'Transactions bancaires' },
+    { id: 'ventes', label: 'Ventes' },
+    { id: 'achats', label: 'Achats' },
+    { id: 'stock', label: 'Stock' },
+  ]},
+  { id: 'crm', label: 'CRM', icon: '🎯', subs: [
+    { id: 'contacts', label: 'Contacts' },
+    { id: 'entreprises', label: 'Entreprises' },
+    { id: 'clients', label: 'Clients' },
+    { id: 'opportunites', label: 'Opportunités' },
+    { id: 'devis', label: 'Devis' },
+    { id: 'produits', label: 'Produits' },
+    { id: 'abonnements', label: 'Abonnements' },
+  ]},
+  { id: 'marketing', label: 'Marketing', icon: '📣', subs: [
+    { id: 'campagnes', label: 'Campagnes' },
+    { id: 'leads', label: 'Leads' },
+  ]},
+  { id: 'finance', label: 'Finance', icon: '💰', subs: [
+    { id: 'business-intelligence', label: 'Business Intelligence' },
+    { id: 'comptabilite', label: 'Comptabilité' },
+    { id: 'previsionnel', label: 'Prévisionnel' },
+    { id: 'immobilisations', label: 'Immobilisations' },
+    { id: 'rapprochement', label: 'Rapprochement' },
+  ]},
+  { id: 'documents', label: 'Documents', icon: '📁', subs: [
+    { id: 'archives', label: 'Archives' },
+  ]},
+  { id: 'administration', label: 'Administration', icon: '⚙️', subs: [
+    { id: 'utilisateurs', label: 'Utilisateurs' },
+    { id: 'societes', label: 'Sociétés' },
+    { id: 'audit', label: 'Journal d\'audit' },
+    { id: 'parametres', label: 'Paramètres' },
+  ]},
+]
+
+const PERM_ROLES = ['collaborateur', 'manager', 'comptable', 'admin', 'superadmin']
+const PERM_ROLE_LABELS = { collaborateur: 'Collaborateur', manager: 'Manager', comptable: 'Comptable', admin: 'Admin', superadmin: 'Super Admin' }
+const PERM_ROLE_COLORS = { collaborateur: '#64748b', manager: '#0891b2', comptable: '#7c3aed', admin: '#dc2626', superadmin: '#7c2d12' }
+const ACTIONS = ['can_view', 'can_create', 'can_edit', 'can_delete']
+const ACTION_LABELS = { can_view: 'V', can_create: 'C', can_edit: 'M', can_delete: 'S' }
+const ACTION_COLORS = { can_view: '#2563eb', can_create: '#16a34a', can_edit: '#f59e0b', can_delete: '#dc2626' }
+const ACTION_TOOLTIPS = { can_view: 'Voir', can_create: 'Créer', can_edit: 'Modifier', can_delete: 'Supprimer' }
+
+// Permissions par défaut
+const DEFAULT_PERMS = {
+  collaborateur: { calendrier: 'VCMS', activite: 'V', equipe: 'VC', gestion: '', crm: 'VC', marketing: '', finance: '', documents: 'V', administration: '' },
+  manager: { calendrier: 'VCMS', activite: 'VCMS', equipe: 'VCMS', gestion: 'V', crm: 'VCMS', marketing: 'VCMS', finance: '', documents: 'VCMS', administration: '' },
+  comptable: { calendrier: 'V', activite: '', equipe: '', gestion: 'VCMS', crm: '', marketing: '', finance: 'VCMS', documents: 'V', administration: '' },
+  admin: { calendrier: 'VCMS', activite: 'VCMS', equipe: 'VCMS', gestion: 'VCMS', crm: 'VCMS', marketing: 'VCMS', finance: 'VCMS', documents: 'VCMS', administration: 'V' },
+  superadmin: { calendrier: 'VCMS', activite: 'VCMS', equipe: 'VCMS', gestion: 'VCMS', crm: 'VCMS', marketing: 'VCMS', finance: 'VCMS', documents: 'VCMS', administration: 'VCMS' },
+}
+
+function PermissionsMatrix() {
+  const [perms, setPerms] = useState({})
+  const [loading, setLoading] = useState(true)
+  const [saving, setSaving] = useState(false)
+  const [expanded, setExpanded] = useState({})
+  const [dirty, setDirty] = useState(false)
+
+  useEffect(() => { loadPerms() }, [])
+
+  async function loadPerms() {
+    setLoading(true)
+    const { data } = await supabase.from('role_permissions').select('*')
+    const map = {}
+    for (const r of PERM_ROLES) {
+      map[r] = {}
+      for (const m of MODULES) {
+        for (const s of m.subs) {
+          const key = `${m.id}:${s.id}`
+          const row = (data || []).find(d => d.role === r && d.module === m.id && d.sub_module === s.id)
+          map[r][key] = row ? {
+            can_view: row.can_view, can_create: row.can_create, can_edit: row.can_edit, can_delete: row.can_delete,
+          } : getDefault(r, m.id)
+        }
+      }
+    }
+    setPerms(map)
+    setLoading(false)
+  }
+
+  function getDefault(role, moduleId) {
+    const d = DEFAULT_PERMS[role]?.[moduleId] || ''
+    return { can_view: d.includes('V'), can_create: d.includes('C'), can_edit: d.includes('M'), can_delete: d.includes('S') }
+  }
+
+  function togglePerm(role, moduleId, subId, action) {
+    if (role === 'superadmin') return
+    const key = `${moduleId}:${subId}`
+    setPerms(prev => ({
+      ...prev,
+      [role]: { ...prev[role], [key]: { ...prev[role][key], [action]: !prev[role]?.[key]?.[action] } }
+    }))
+    setDirty(true)
+  }
+
+  function toggleAllRole(role, enable) {
+    if (role === 'superadmin') return
+    const updated = { ...perms[role] }
+    for (const m of MODULES) {
+      for (const s of m.subs) {
+        const key = `${m.id}:${s.id}`
+        updated[key] = { can_view: enable, can_create: enable, can_edit: enable, can_delete: enable }
+      }
+    }
+    setPerms(prev => ({ ...prev, [role]: updated }))
+    setDirty(true)
+  }
+
+  function resetDefaults() {
+    const map = {}
+    for (const r of PERM_ROLES) {
+      map[r] = {}
+      for (const m of MODULES) {
+        for (const s of m.subs) {
+          map[r][`${m.id}:${s.id}`] = getDefault(r, m.id)
+        }
+      }
+    }
+    setPerms(map)
+    setDirty(true)
+  }
+
+  async function save() {
+    setSaving(true)
+    const rows = []
+    for (const role of PERM_ROLES) {
+      if (role === 'superadmin') continue
+      for (const m of MODULES) {
+        for (const s of m.subs) {
+          const key = `${m.id}:${s.id}`
+          const p = perms[role]?.[key] || {}
+          rows.push({ role, module: m.id, sub_module: s.id, can_view: !!p.can_view, can_create: !!p.can_create, can_edit: !!p.can_edit, can_delete: !!p.can_delete, updated_at: new Date().toISOString() })
+        }
+      }
+    }
+    await supabase.from('role_permissions').delete().neq('id', '00000000-0000-0000-0000-000000000000')
+    const { error } = await supabase.from('role_permissions').insert(rows)
+    if (error) alert('Erreur: ' + error.message)
+    else { alert('Permissions sauvegardées !'); setDirty(false) }
+    setSaving(false)
+  }
+
+  if (loading) return (
+    <div style={{ display: 'flex', justifyContent: 'center', padding: '3rem' }}>
+      <div style={{ width: 36, height: 36, border: '4px solid #e2e8f0', borderTopColor: '#2B4C7E', borderRadius: '50%', animation: 'spin .8s linear infinite' }} />
+    </div>
+  )
+
+  const cbStyle = (checked, color, disabled) => ({
+    width: 22, height: 22, borderRadius: 4, border: `2px solid ${checked ? color : '#cbd5e1'}`,
+    background: checked ? color + '20' : '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center',
+    cursor: disabled ? 'not-allowed' : 'pointer', opacity: disabled ? .5 : 1, fontSize: 11, fontWeight: 700,
+    color: checked ? color : 'transparent', transition: 'all .15s',
+  })
+
+  return (
+    <div>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+        <div>
+          <h2 style={{ margin: 0, fontSize: '1.2rem' }}>🔐 Matrice des permissions</h2>
+          <p style={{ color: '#64748b', fontSize: '.85rem', margin: '.25rem 0 0' }}>Définissez les droits de chaque rôle sur chaque module</p>
+        </div>
+        <div style={{ display: 'flex', gap: '.5rem' }}>
+          <button onClick={resetDefaults} style={{ padding: '8px 16px', borderRadius: 8, border: '1px solid #e2e8f0', background: '#fff', cursor: 'pointer', fontSize: '.85rem' }}>🔄 Réinitialiser par défaut</button>
+          <button onClick={save} disabled={saving || !dirty} style={{
+            padding: '8px 20px', borderRadius: 8, border: 'none', cursor: dirty ? 'pointer' : 'default',
+            background: dirty ? '#2B4C7E' : '#94a3b8', color: '#fff', fontSize: '.85rem', fontWeight: 600,
+          }}>{saving ? 'Enregistrement...' : '💾 Enregistrer'}</button>
+        </div>
+      </div>
+
+      {dirty && <div style={{ background: '#fef3c7', border: '1px solid #fcd34d', borderRadius: 8, padding: '.5rem 1rem', marginBottom: '1rem', fontSize: '.85rem', color: '#92400e' }}>⚠️ Modifications non sauvegardées</div>}
+
+      <div style={{ overflowX: 'auto', borderRadius: 12, border: '1px solid #e2e8f0' }}>
+        <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '.8rem' }}>
+          <thead>
+            <tr style={{ background: '#f8fafc' }}>
+              <th style={{ padding: '.75rem', textAlign: 'left', borderBottom: '2px solid #e2e8f0', minWidth: 200, position: 'sticky', left: 0, background: '#f8fafc', zIndex: 2 }}>Module</th>
+              {PERM_ROLES.map(r => (
+                <th key={r} colSpan={4} style={{ padding: '.5rem', textAlign: 'center', borderBottom: '2px solid #e2e8f0', borderLeft: '1px solid #e2e8f0' }}>
+                  <div style={{ fontWeight: 700, color: PERM_ROLE_COLORS[r], marginBottom: '.25rem' }}>{PERM_ROLE_LABELS[r]}</div>
+                  {r !== 'superadmin' && (
+                    <div style={{ display: 'flex', gap: 4, justifyContent: 'center' }}>
+                      <button onClick={() => toggleAllRole(r, true)} style={{ fontSize: '.65rem', padding: '1px 6px', borderRadius: 4, border: '1px solid #d1d5db', background: '#f0fdf4', color: '#16a34a', cursor: 'pointer' }}>Tout</button>
+                      <button onClick={() => toggleAllRole(r, false)} style={{ fontSize: '.65rem', padding: '1px 6px', borderRadius: 4, border: '1px solid #d1d5db', background: '#fef2f2', color: '#dc2626', cursor: 'pointer' }}>Aucun</button>
+                    </div>
+                  )}
+                </th>
+              ))}
+            </tr>
+            <tr style={{ background: '#f1f5f9' }}>
+              <th style={{ padding: '.4rem .75rem', borderBottom: '1px solid #e2e8f0', position: 'sticky', left: 0, background: '#f1f5f9', zIndex: 2 }}></th>
+              {PERM_ROLES.map(r => ACTIONS.map(a => (
+                <th key={`${r}-${a}`} style={{ padding: '.3rem', textAlign: 'center', borderBottom: '1px solid #e2e8f0', borderLeft: a === 'can_view' ? '1px solid #e2e8f0' : 'none', minWidth: 32 }} title={ACTION_TOOLTIPS[a]}>
+                  <span style={{ color: ACTION_COLORS[a], fontWeight: 700, fontSize: '.7rem' }}>{ACTION_LABELS[a]}</span>
+                </th>
+              )))}
+            </tr>
+          </thead>
+          <tbody>
+            {MODULES.map(m => {
+              const isExpanded = expanded[m.id] !== false
+              return [
+                <tr key={m.id} style={{ background: '#f8fafc', cursor: 'pointer' }} onClick={() => setExpanded(prev => ({ ...prev, [m.id]: !isExpanded }))}>
+                  <td style={{ padding: '.6rem .75rem', fontWeight: 700, borderBottom: '1px solid #e2e8f0', position: 'sticky', left: 0, background: '#f8fafc', zIndex: 1 }}>
+                    <span style={{ marginRight: '.4rem' }}>{isExpanded ? '▼' : '▶'}</span>
+                    {m.icon} {m.label}
+                    <span style={{ color: '#94a3b8', fontWeight: 400, marginLeft: '.4rem', fontSize: '.75rem' }}>({m.subs.length})</span>
+                  </td>
+                  {PERM_ROLES.map(r => ACTIONS.map(a => {
+                    const allChecked = m.subs.every(s => perms[r]?.[`${m.id}:${s.id}`]?.[a])
+                    const someChecked = m.subs.some(s => perms[r]?.[`${m.id}:${s.id}`]?.[a])
+                    const isSA = r === 'superadmin'
+                    return (
+                      <td key={`${r}-${a}`} style={{ textAlign: 'center', borderBottom: '1px solid #e2e8f0', borderLeft: a === 'can_view' ? '1px solid #e2e8f0' : 'none', padding: '.3rem' }}
+                        onClick={e => { e.stopPropagation(); if (!isSA) m.subs.forEach(s => { const key = `${m.id}:${s.id}`; setPerms(prev => ({ ...prev, [r]: { ...prev[r], [key]: { ...prev[r][key], [a]: !allChecked } } })); }); setDirty(true) }}>
+                        <div style={cbStyle(allChecked || isSA, ACTION_COLORS[a], isSA)}>
+                          {(allChecked || isSA) ? '✓' : someChecked ? '–' : ''}
+                        </div>
+                      </td>
+                    )
+                  }))}
+                </tr>,
+                ...(isExpanded ? m.subs.map(s => (
+                  <tr key={`${m.id}:${s.id}`} style={{ background: '#fff' }}>
+                    <td style={{ padding: '.4rem .75rem .4rem 2.5rem', borderBottom: '1px solid #f1f5f9', color: '#475569', position: 'sticky', left: 0, background: '#fff', zIndex: 1 }}>
+                      {s.label}
+                    </td>
+                    {PERM_ROLES.map(r => ACTIONS.map(a => {
+                      const key = `${m.id}:${s.id}`
+                      const checked = r === 'superadmin' ? true : !!perms[r]?.[key]?.[a]
+                      const isSA = r === 'superadmin'
+                      return (
+                        <td key={`${r}-${a}-${s.id}`} style={{ textAlign: 'center', borderBottom: '1px solid #f1f5f9', borderLeft: a === 'can_view' ? '1px solid #e2e8f0' : 'none', padding: '.25rem' }}
+                          onClick={() => togglePerm(r, m.id, s.id, a)}>
+                          <div style={cbStyle(checked, ACTION_COLORS[a], isSA)}>
+                            {checked ? '✓' : ''}
+                          </div>
+                        </td>
+                      )
+                    }))}
+                  </tr>
+                )) : [])
+              ]
+            })}
+          </tbody>
+        </table>
+      </div>
+
+      <div style={{ marginTop: '1rem', display: 'flex', gap: '1rem', fontSize: '.8rem', color: '#64748b' }}>
+        <span><span style={{ color: ACTION_COLORS.can_view, fontWeight: 700 }}>V</span> = Voir</span>
+        <span><span style={{ color: ACTION_COLORS.can_create, fontWeight: 700 }}>C</span> = Créer</span>
+        <span><span style={{ color: ACTION_COLORS.can_edit, fontWeight: 700 }}>M</span> = Modifier</span>
+        <span><span style={{ color: ACTION_COLORS.can_delete, fontWeight: 700 }}>S</span> = Supprimer</span>
+      </div>
     </div>
   )
 }
