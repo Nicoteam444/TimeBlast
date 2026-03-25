@@ -394,7 +394,7 @@ export default function ChatWidget() {
         title="Chat IA"
         aria-label="Ouvrir le chat IA"
       >
-        {open ? '✕' : '🤖'}
+        {open ? '✕' : '👾'}
       </button>
 
       {/* Chat panel */}
@@ -403,7 +403,7 @@ export default function ChatWidget() {
           {/* Header */}
           <div className="chat-panel-header">
             <div className="chat-panel-title">
-              <span className="chat-panel-icon">🤖</span>
+              <span className="chat-panel-icon">👾</span>
               <div>
                 <span className="chat-panel-name">Assistant IA</span>
                 {selectedSociete && (
@@ -487,7 +487,7 @@ export default function ChatWidget() {
             {messages.map((msg, i) => (
               <div key={i} className={`chat-msg chat-msg--${msg.role} ${msg.isError ? 'chat-msg--error' : ''}`}>
                 {msg.role === 'assistant' && (
-                  <span className="chat-msg-avatar">🤖</span>
+                  <span className="chat-msg-avatar">👾</span>
                 )}
                 <div className="chat-msg-bubble">
                   {msg.content
