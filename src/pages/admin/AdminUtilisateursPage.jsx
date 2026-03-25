@@ -145,9 +145,18 @@ export default function AdminUtilisateursPage() {
   }
 
   async function handleDelete(userId) {
-    await supabase.functions.invoke('manage-user', {
-      body: { action: 'delete', user_id: userId },
-    })
+    try {
+      // Supprimer le profil (cascade les dépendances)
+      const { error } = await supabase.from('profiles').delete().eq('id', userId)
+      if (error) {
+        // Si la suppression échoue (contraintes FK), désactiver le compte
+        await supabase.from('profiles').update({ role: 'inactif' }).eq('id', userId)
+        alert('Utilisateur désactivé (impossible de supprimer : données liées existantes)')
+      }
+    } catch (err) {
+      console.error('Erreur suppression:', err)
+      alert('Erreur lors de la suppression')
+    }
     setDeleteConfirm(null)
     fetchUsers()
   }
