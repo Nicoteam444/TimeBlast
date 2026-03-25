@@ -458,36 +458,38 @@ export default function SaisiePage() {
 
   const weekDates = Array.from({ length: 7 }, (_, i) => addDays(weekStart, i))
 
-  // Charger la liste des collaborateurs depuis la table equipe (filtrée par société)
+  // Charger collaborateurs equipe + profiles
+  const [profilesList, setProfilesList] = useState([])
+
   useEffect(() => {
     async function loadCollabs() {
-      let query = supabase.from('equipe').select('id, prenom, nom, email, poste')
-      if (selectedSociete?.id) query = query.eq('societe_id', selectedSociete.id)
-      const { data } = await query.order('nom')
-      if (data && data.length > 0) {
-        setCollabs(data)
-        const me = data.find(c => c.email === profile?.email)
-        setSelectedCollabs(new Set([me?.id || data[0]?.id]))
+      // Charger les deux : equipe (pour la sidebar) et profiles (pour mapper les events)
+      const [equipeRes, profilesRes] = await Promise.all([
+        selectedSociete?.id
+          ? supabase.from('equipe').select('id, prenom, nom, email, poste').eq('societe_id', selectedSociete.id).order('nom')
+          : Promise.resolve({ data: [] }),
+        supabase.from('profiles').select('id, full_name, role')
+      ])
+
+      const equipeData = equipeRes.data || []
+      const profilesData = profilesRes.data || []
+      setProfilesList(profilesData)
+
+      if (equipeData.length > 0) {
+        setCollabs(equipeData)
+        setSelectedCollabs(new Set(equipeData.map(c => c.id))) // Tous sélectionnés par défaut
       } else {
-        const { data: profiles } = await supabase.from('profiles').select('id, prenom, nom, email, role')
-        if (profiles) {
-          setCollabs(profiles)
-          setSelectedCollabs(new Set([profile?.id]))
-        }
+        // Fallback profiles
+        const mapped = profilesData.map(p => {
+          const parts = (p.full_name || '').trim().split(/\s+/)
+          return { id: p.id, prenom: parts[0] || '', nom: parts.slice(1).join(' ') || '', email: '', poste: p.role }
+        })
+        setCollabs(mapped)
+        setSelectedCollabs(new Set(mapped.map(c => c.id)))
       }
     }
     loadCollabs()
   }, [profile?.id, selectedSociete?.id])
-
-  // Mapping equipe_id → profile pour les événements (les events sont liés à profiles.id)
-  // On affiche tous les événements, et on les colore par collaborateur equipe via email
-  function findCollabByUserId(uid) {
-    // D'abord chercher dans collabs par id direct
-    const direct = collabs.find(c => c.id === uid)
-    if (direct) return direct
-    // Sinon retourner null (l'événement appartient à un profile sans fiche equipe)
-    return null
-  }
 
   function toggleCollab(id) {
     setSelectedCollabs(prev => {
@@ -506,14 +508,28 @@ export default function SaisiePage() {
     return collabColor(idx >= 0 ? idx : 0)
   }
 
+  // Mapping profile_id → equipe collab (par nom)
+  function mapProfileToCollab(profileId) {
+    const p = profilesList.find(pr => pr.id === profileId)
+    if (!p) return null
+    const parts = (p.full_name || '').trim().split(/\s+/)
+    const prenom = (parts[0] || '').toLowerCase()
+    const nom = (parts.slice(1).join(' ') || parts[0] || '').toLowerCase()
+    return collabs.find(c =>
+      (c.nom || '').toLowerCase() === nom ||
+      (c.prenom || '').toLowerCase() === prenom ||
+      c.id === profileId // direct match si fallback profiles
+    )
+  }
+
   const fetchWeek = useCallback(async () => {
     setLoading(true)
 
-    if (!profile?.id || selectedCollabs.size === 0) { setEvents({}); setLoading(false); return }
+    if (!profile?.id) { setEvents({}); setLoading(false); return }
     const startISO = toISO(weekStart)
     const endISO = toISO(addDays(weekStart, 6))
 
-    // Charger les saisies de temps par profile.id (l'utilisateur connecté)
+    // Charger les saisies de temps de l'utilisateur connecté
     const { data: saisiesData } = await supabase
       .from('saisies_temps')
       .select('id, date, heures, commentaire, user_id')
@@ -521,7 +537,7 @@ export default function SaisiePage() {
       .gte('date', startISO)
       .lte('date', endISO)
 
-    // Charger TOUS les événements calendrier de la société (pas filtrés par user)
+    // Charger TOUS les événements calendrier de la société
     let calQuery = supabase
       .from('calendar_events')
       .select('*')
@@ -529,25 +545,6 @@ export default function SaisiePage() {
       .lt('start_time', toISO(addDays(weekStart, 7)))
     if (selectedSociete?.id) calQuery = calQuery.eq('societe_id', selectedSociete.id)
     const { data: calData } = await calQuery
-
-    // Mapper profiles.id → equipe.id pour la coloration
-    // Les events ont user_id = profiles.id, les collabs ont id = equipe.id
-    // On charge les profiles pour mapper
-    const profileIds = [...new Set((calData || []).map(e => e.user_id))]
-    let profileToCollab = {}
-    if (profileIds.length > 0) {
-      const { data: profilesData } = await supabase.from('profiles').select('id, full_name')
-        .in('id', profileIds)
-      for (const p of (profilesData || [])) {
-        // Trouver le collaborateur equipe par nom
-        const nameParts = (p.full_name || '').trim().split(/\s+/)
-        const match = collabs.find(c =>
-          (c.nom || '').toLowerCase() === (nameParts[nameParts.length - 1] || '').toLowerCase() ||
-          (c.prenom || '').toLowerCase() === (nameParts[0] || '').toLowerCase()
-        )
-        if (match) profileToCollab[p.id] = match.id
-      }
-    }
 
     const map = {}
 
@@ -570,47 +567,34 @@ export default function SaisiePage() {
       })
     }
 
-    // Événements calendrier — filtrer par collabs sélectionnés via mapping
-    const selectedEquipeIds = [...selectedCollabs]
+    // Événements calendrier — tous affichés, mappés vers equipe pour coloration
     for (const ev of (calData || [])) {
-      // Mapper le profile user_id vers un equipe id
-      const equipeId = profileToCollab[ev.user_id]
-      // Afficher si: le collab equipe est sélectionné, OU si c'est le user connecté et sélectionné
-      const isSelected = (equipeId && selectedEquipeIds.includes(equipeId))
-        || (ev.user_id === profile?.id && selectedEquipeIds.some(id => {
-          const c = collabs.find(c2 => c2.id === id)
-          return c && (c.email === profile?.email || c.nom?.toLowerCase() === (profile?.full_name || '').split(' ').pop()?.toLowerCase())
-        }))
-        || selectedEquipeIds.length === collabs.length // "Tous" sélectionné
-      if (!isSelected) continue
-
+      const matchedCollab = mapProfileToCollab(ev.user_id)
       const start = new Date(ev.start_time)
       const end = new Date(ev.end_time)
       const dateKey = toISO(start)
       if (!map[dateKey]) map[dateKey] = []
-      const alreadyExists = map[dateKey].some(e => e._source === 'saisie' && Math.abs(e.startMin - (start.getHours() * 60 + start.getMinutes())) < 5 && e.user_id === ev.user_id)
-      if (!alreadyExists) {
-        map[dateKey].push({
-          id: ev.id,
-          date: dateKey,
-          heures: ev.duree_heures || Math.round((end - start) / 3600000 * 10) / 10,
-          startMin: start.getHours() * 60 + start.getMinutes(),
-          endMin: end.getHours() * 60 + end.getMinutes(),
-          projets: { id: ev.projet_id, name: ev.title },
-          noteText: ev.description,
-          user_id: equipeId || ev.user_id,
-          _profileId: ev.user_id,
-          event_type: ev.event_type,
-          location: ev.location,
-          color: ev.color,
-          _source: 'calendar',
-        })
-      }
+      map[dateKey].push({
+        id: ev.id,
+        date: dateKey,
+        heures: ev.duree_heures || Math.round((end - start) / 3600000 * 10) / 10,
+        startMin: start.getHours() * 60 + start.getMinutes(),
+        endMin: end.getHours() * 60 + end.getMinutes(),
+        projets: { id: ev.projet_id, name: ev.title },
+        noteText: ev.description,
+        user_id: matchedCollab?.id || ev.user_id,
+        _profileId: ev.user_id,
+        _collabName: matchedCollab ? `${matchedCollab.prenom} ${matchedCollab.nom}` : null,
+        event_type: ev.event_type,
+        location: ev.location,
+        color: ev.color,
+        _source: 'calendar',
+      })
     }
 
     setEvents(map)
     setLoading(false)
-  }, [profile?.id, weekStart, selectedCollabs, selectedSociete?.id, collabs])
+  }, [profile?.id, weekStart, selectedSociete?.id, collabs, profilesList])
 
   useEffect(() => { fetchWeek() }, [fetchWeek])
 
