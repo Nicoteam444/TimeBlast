@@ -229,9 +229,9 @@ export default function ContactsPage() {
               <thead>
                 <tr>
                   <SortableHeader label="Nom" field="nom" sortKey={sortKey} sortDir={sortDir} onSort={requestSort} />
-                  <SortableHeader label="Prenom" field="prenom" sortKey={sortKey} sortDir={sortDir} onSort={requestSort} />
+                  <SortableHeader label="Prénom" field="prenom" sortKey={sortKey} sortDir={sortDir} onSort={requestSort} />
                   <SortableHeader label="Email" field="email" sortKey={sortKey} sortDir={sortDir} onSort={requestSort} />
-                  <SortableHeader label="Telephone" field="telephone" sortKey={sortKey} sortDir={sortDir} onSort={requestSort} />
+                  <SortableHeader label="Téléphone" field="telephone" sortKey={sortKey} sortDir={sortDir} onSort={requestSort} />
                   <SortableHeader label="Poste" field="poste" sortKey={sortKey} sortDir={sortDir} onSort={requestSort} />
                   <SortableHeader label="Entreprise" field="clients.name" sortKey={sortKey} sortDir={sortDir} onSort={requestSort} />
                   <SortableHeader label="Statut" field="statut" sortKey={sortKey} sortDir={sortDir} onSort={requestSort} />
@@ -315,7 +315,7 @@ export default function ContactsPage() {
                   <input value={form.nom} onChange={e => updateField('nom', e.target.value)} required autoFocus />
                 </div>
                 <div className="fac-field">
-                  <label>Prenom</label>
+                  <label>Prénom</label>
                   <input value={form.prenom} onChange={e => updateField('prenom', e.target.value)} />
                 </div>
                 <div className="fac-field">
@@ -323,7 +323,7 @@ export default function ContactsPage() {
                   <input type="email" value={form.email} onChange={e => updateField('email', e.target.value)} />
                 </div>
                 <div className="fac-field">
-                  <label>Telephone</label>
+                  <label>Téléphone</label>
                   <input value={form.telephone} onChange={e => updateField('telephone', e.target.value)} />
                 </div>
                 <div className="fac-field">

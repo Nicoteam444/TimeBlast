@@ -181,6 +181,18 @@ export default function AbsencesPage() {
     return userId
   }
 
+  function getUserNom(userId) {
+    const name = getUserName(userId)
+    const parts = (name || '').trim().split(/\s+/)
+    return parts.length > 1 ? parts.slice(1).join(' ') : parts[0] || '—'
+  }
+
+  function getUserPrenom(userId) {
+    const name = getUserName(userId)
+    const parts = (name || '').trim().split(/\s+/)
+    return parts.length > 1 ? parts[0] : ''
+  }
+
   async function handleAdd(e) {
     e.preventDefault()
     if (!form.user_id || !form.date_debut || !form.date_fin) return
@@ -394,7 +406,8 @@ export default function AbsencesPage() {
           <table className="data-table">
             <thead>
               <tr className="data-table-header">
-                <SortableHeader label="Collaborateur" field="user_id" sortKey={sortKey} sortDir={sortDir} onSort={requestSort} />
+                <SortableHeader label="Nom" field="user_id" sortKey={sortKey} sortDir={sortDir} onSort={requestSort} />
+                <th>Prénom</th>
                 <SortableHeader label="Type" field="type" sortKey={sortKey} sortDir={sortDir} onSort={requestSort} />
                 <SortableHeader label="Debut" field="date_debut" sortKey={sortKey} sortDir={sortDir} onSort={requestSort} />
                 <SortableHeader label="Fin" field="date_fin" sortKey={sortKey} sortDir={sortDir} onSort={requestSort} />
@@ -407,7 +420,8 @@ export default function AbsencesPage() {
             <tbody>
               {sortedFiltered.map(absence => (
                 <tr key={absence.id} className="data-table-row">
-                  <td style={{ fontWeight: 600 }}>{getUserName(absence.user_id)}</td>
+                  <td style={{ fontWeight: 600 }}>{getUserNom(absence.user_id)}</td>
+                  <td style={{ fontWeight: 500 }}>{getUserPrenom(absence.user_id)}</td>
                   <td><TypeBadge type={absence.type} /></td>
                   <td>{fmtDate(absence.date_debut)}</td>
                   <td>{fmtDate(absence.date_fin)}</td>

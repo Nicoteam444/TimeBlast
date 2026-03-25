@@ -431,7 +431,8 @@ export default function LeadsPage() {
                 <thead>
                   <tr>
                     <SortableHeader label="Titre" field="titre" sortKey={sortKey} sortDir={sortDir} onSort={requestSort} />
-                    <SortableHeader label="Contact" field="contacts.nom" sortKey={sortKey} sortDir={sortDir} onSort={requestSort} />
+                    <SortableHeader label="Nom" field="contacts.nom" sortKey={sortKey} sortDir={sortDir} onSort={requestSort} />
+                    <SortableHeader label="Prénom" field="contacts.prenom" sortKey={sortKey} sortDir={sortDir} onSort={requestSort} />
                     <SortableHeader label="Entreprise" field="clients.name" sortKey={sortKey} sortDir={sortDir} onSort={requestSort} />
                     <SortableHeader label="Source" field="source" sortKey={sortKey} sortDir={sortDir} onSort={requestSort} />
                     <SortableHeader label="Phase" field="phase" sortKey={sortKey} sortDir={sortDir} onSort={requestSort} />
@@ -450,9 +451,8 @@ export default function LeadsPage() {
                             <span className="user-name">{l.titre}</span>
                           </div>
                         </td>
-                        <td>
-                          {l.contacts ? `${l.contacts.prenom} ${l.contacts.nom}` : '—'}
-                        </td>
+                        <td style={{ fontWeight: 600 }}>{l.contacts?.nom || '—'}</td>
+                        <td>{l.contacts?.prenom || '—'}</td>
                         <td>{l.clients?.name || '—'}</td>
                         <td>
                           {l.source ? (
@@ -472,7 +472,7 @@ export default function LeadsPage() {
                     )
                   })}
                   {paginated.length === 0 && (
-                    <tr><td colSpan={8} style={{ textAlign: 'center', padding: '2rem' }}>Aucun lead trouvé.</td></tr>
+                    <tr><td colSpan={9} style={{ textAlign: 'center', padding: '2rem' }}>Aucun lead trouvé.</td></tr>
                   )}
                 </tbody>
               </table>

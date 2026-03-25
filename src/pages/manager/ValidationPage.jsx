@@ -95,10 +95,15 @@ export default function ValidationPage() {
 
   const users = isDemoMode ? DEMO_USERS : []
 
-  const { sortedData, sortKey, sortDir, requestSort } = useSortableTable(users, 'full_name', 'asc')
+  const usersWithNames = users.map(u => {
+    const parts = (u.full_name || '').trim().split(/\s+/)
+    return { ...u, _prenom: parts[0] || '', _nom: parts.slice(1).join(' ') || '' }
+  })
 
-  const submittedCount = users.filter(u => getStatus(u.id) === 'soumis').length
-  const validatedCount = users.filter(u => getStatus(u.id) === 'valide').length
+  const { sortedData, sortKey, sortDir, requestSort } = useSortableTable(usersWithNames, '_nom', 'asc')
+
+  const submittedCount = usersWithNames.filter(u => getStatus(u.id) === 'soumis').length
+  const validatedCount = usersWithNames.filter(u => getStatus(u.id) === 'valide').length
 
   return (
     <div className="admin-page">
@@ -128,7 +133,7 @@ export default function ValidationPage() {
         </div>
         <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 10, padding: '.75rem 1.25rem', minWidth: 130 }}>
           <div style={{ fontSize: '.75rem', color: 'var(--text-muted)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '.05em' }}>Total équipe</div>
-          <div style={{ fontSize: '1.6rem', fontWeight: 800, color: 'var(--text)', marginTop: '.1rem' }}>{users.length}</div>
+          <div style={{ fontSize: '1.6rem', fontWeight: 800, color: 'var(--text)', marginTop: '.1rem' }}>{usersWithNames.length}</div>
         </div>
       </div>
 
@@ -137,7 +142,8 @@ export default function ValidationPage() {
         <table className="data-table">
           <thead>
             <tr className="data-table-header">
-              <SortableHeader label="Collaborateur" field="full_name" sortKey={sortKey} sortDir={sortDir} onSort={requestSort} />
+              <SortableHeader label="Nom" field="_nom" sortKey={sortKey} sortDir={sortDir} onSort={requestSort} />
+              <SortableHeader label="Prénom" field="_prenom" sortKey={sortKey} sortDir={sortDir} onSort={requestSort} />
               <SortableHeader label="Rôle" field="role" sortKey={sortKey} sortDir={sortDir} onSort={requestSort} />
               <th>Statut</th>
               <th style={{ textAlign: 'right' }}>Actions</th>
@@ -159,11 +165,12 @@ export default function ValidationPage() {
                         {user.full_name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase()}
                       </span>
                       <div>
-                        <div style={{ fontWeight: 600, fontSize: '.9rem' }}>{user.full_name}</div>
+                        <div style={{ fontWeight: 600, fontSize: '.9rem' }}>{user._nom}</div>
                         <div style={{ fontSize: '.75rem', color: 'var(--text-muted)' }}>{user.email}</div>
                       </div>
                     </div>
                   </td>
+                  <td style={{ fontWeight: 500 }}>{user._prenom}</td>
                   <td>
                     <span style={{ fontSize: '.8rem', color: 'var(--text-muted)', textTransform: 'capitalize' }}>{user.role}</span>
                   </td>

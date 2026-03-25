@@ -171,7 +171,8 @@ export default function TrombinosccopePage() {
           <table className="users-table">
             <thead>
               <tr>
-                <th>Collaborateur</th>
+                <th>Nom</th>
+                <th>Prénom</th>
                 <th>Poste</th>
                 <th>Email</th>
                 <th>Téléphone</th>
@@ -188,9 +189,10 @@ export default function TrombinosccopePage() {
                     <td>
                       <div className="user-cell">
                         <span className="user-avatar" style={{ background: color, fontSize: '.72rem' }}>{initials}</span>
-                        <span className="user-name">{e.prenom} {e.nom}</span>
+                        <span className="user-name">{e.nom}</span>
                       </div>
                     </td>
+                    <td style={{ fontWeight: 500 }}>{e.prenom}</td>
                     <td>
                       <span className="status-badge" style={{ color, background: color + '18' }}>{e.poste || '—'}</span>
                     </td>

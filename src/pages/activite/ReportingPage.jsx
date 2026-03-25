@@ -6,6 +6,12 @@ import { useAuth } from '../../contexts/AuthContext'
 import useSortableTable from '../../hooks/useSortableTable'
 import SortableHeader from '../../components/SortableHeader'
 
+function splitFullName(fullName) {
+  const parts = (fullName || '').trim().split(/\s+/)
+  if (parts.length <= 1) return { prenom: '', nom: parts[0] || '—' }
+  return { prenom: parts[0], nom: parts.slice(1).join(' ') }
+}
+
 // ── Helpers ISO week ──────────────────────────────────────────
 function getISOWeek(date) {
   const d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()))
@@ -576,7 +582,8 @@ export default function ReportingPage() {
               <table className="taux-grid">
                 <thead>
                   <tr>
-                    <th className="taux-name-col">Collaborateur</th>
+                    <th className="taux-name-col">Nom</th>
+                    <th className="taux-name-col">Prénom</th>
                     {t2Columns.map(iso => (
                       <th key={iso} className="taux-week-col">
                         {fmtMonday(iso).split('\n').map((line, i) => (
@@ -590,7 +597,8 @@ export default function ReportingPage() {
                 <tbody>
                   {t2Data.map(({ collab, weekTotals, avgPct }) => (
                     <tr key={collab.id}>
-                      <td className="taux-name-col">{collab.full_name || '—'}</td>
+                      <td className="taux-name-col">{splitFullName(collab.full_name).nom}</td>
+                      <td className="taux-name-col">{splitFullName(collab.full_name).prenom}</td>
                       {t2Columns.map(iso => {
                         const h = weekTotals[iso] || 0
                         return (
@@ -710,7 +718,8 @@ export default function ReportingPage() {
                   <thead>
                     <tr>
                       <SortableHeader label="Date" field="date" sortKey={t4SortKey} sortDir={t4SortDir} onSort={t4RequestSort} />
-                      <SortableHeader label="Collaborateur" field="user_id" sortKey={t4SortKey} sortDir={t4SortDir} onSort={t4RequestSort} />
+                      <SortableHeader label="Nom" field="user_id" sortKey={t4SortKey} sortDir={t4SortDir} onSort={t4RequestSort} />
+                      <th>Prénom</th>
                       <th>Projet</th>
                       <th>Lot</th>
                       <SortableHeader label="Heures" field="heures" sortKey={t4SortKey} sortDir={t4SortDir} onSort={t4RequestSort} style={{ textAlign: 'right' }} />
@@ -738,7 +747,8 @@ export default function ReportingPage() {
                           } : undefined}
                         >
                           <td style={{ whiteSpace: 'nowrap' }}>{fmtDate(s.date)}</td>
-                          <td>{collab?.full_name || '—'}</td>
+                          <td>{splitFullName(collab?.full_name).nom}</td>
+                          <td>{splitFullName(collab?.full_name).prenom}</td>
                           <td>{info.projetName}</td>
                           <td>{info.lotName}</td>
                           <td className="text-right">{fmtNum(s.heures, 1)} h</td>
