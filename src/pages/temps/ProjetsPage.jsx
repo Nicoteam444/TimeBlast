@@ -224,7 +224,8 @@ export default function ProjetsPage({ onSelect }) {
                   <SortableHeader label="Statut" field="statut" sortKey={sortKey} sortDir={sortDir} onSort={requestSort} />
                   <SortableHeader label="Début" field="date_debut" sortKey={sortKey} sortDir={sortDir} onSort={requestSort} />
                   <SortableHeader label="Fin" field="date_fin" sortKey={sortKey} sortDir={sortDir} onSort={requestSort} />
-                  <SortableHeader label="Budget (h)" field="total_jours" sortKey={sortKey} sortDir={sortDir} onSort={requestSort} style={{ textAlign: 'right' }} />
+                  <SortableHeader label="Charge vendue (j)" field="total_jours" sortKey={sortKey} sortDir={sortDir} onSort={requestSort} style={{ textAlign: 'right' }} />
+                  <SortableHeader label="Consommé / Budget (h)" field="total_jours" sortKey={sortKey} sortDir={sortDir} onSort={requestSort} style={{ textAlign: 'right' }} />
                   <th style={{ width: 60 }}>Action</th>
                 </tr>
               </thead>
@@ -252,10 +253,21 @@ export default function ProjetsPage({ onSelect }) {
                       <td className="date-cell">{fmtD(projet.date_debut)}</td>
                       <td className="date-cell">{fmtD(projet.date_fin)}</td>
                       <td style={{ textAlign: 'right', fontWeight: 600, fontSize: '.85rem' }}>
+                        {projet.total_jours ? (
+                          <span style={{ color: '#2563eb' }}>{projet.total_jours}j</span>
+                        ) : <span style={{ color: '#94a3b8' }}>—</span>}
+                      </td>
+                      <td style={{ textAlign: 'right', fontWeight: 600, fontSize: '.85rem' }}>
                         {budgetH ? (
-                          <span style={{ color: consumed > budgetH ? '#dc2626' : 'var(--text)' }}>
-                            {consumed}h / {budgetH}h
-                          </span>
+                          <>
+                            <span style={{ color: consumed > budgetH ? '#dc2626' : consumed > budgetH * 0.8 ? '#f59e0b' : '#16a34a' }}>
+                              {consumed}h
+                            </span>
+                            <span style={{ color: '#94a3b8' }}> / {budgetH}h</span>
+                            <div style={{ height: 4, borderRadius: 2, background: '#e2e8f0', marginTop: 4, overflow: 'hidden' }}>
+                              <div style={{ height: '100%', borderRadius: 2, width: `${Math.min(100, (consumed / budgetH) * 100)}%`, background: consumed > budgetH ? '#dc2626' : consumed > budgetH * 0.8 ? '#f59e0b' : '#16a34a' }} />
+                            </div>
+                          </>
                         ) : '—'}
                       </td>
                       <td onClick={e => e.stopPropagation()}>
@@ -265,7 +277,7 @@ export default function ProjetsPage({ onSelect }) {
                   )
                 })}
                 {paginated.length === 0 && (
-                  <tr><td colSpan={8} style={{ textAlign: 'center', color: 'var(--text-muted)', padding: '3rem' }}>Aucun projet trouvé.</td></tr>
+                  <tr><td colSpan={9} style={{ textAlign: 'center', color: 'var(--text-muted)', padding: '3rem' }}>Aucun projet trouvé.</td></tr>
                 )}
               </tbody>
             </table>
