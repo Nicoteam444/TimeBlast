@@ -458,17 +458,36 @@ export default function SaisiePage() {
 
   const weekDates = Array.from({ length: 7 }, (_, i) => addDays(weekStart, i))
 
-  // Charger la liste des collaborateurs
+  // Charger la liste des collaborateurs depuis la table equipe (filtrée par société)
   useEffect(() => {
     async function loadCollabs() {
-      const { data } = await supabase.from('profiles').select('id, prenom, nom, email, role')
-      if (data) {
+      let query = supabase.from('equipe').select('id, prenom, nom, email, poste')
+      if (selectedSociete?.id) query = query.eq('societe_id', selectedSociete.id)
+      const { data } = await query.order('nom')
+      if (data && data.length > 0) {
         setCollabs(data)
-        setSelectedCollabs(new Set([profile?.id]))
+        const me = data.find(c => c.email === profile?.email)
+        setSelectedCollabs(new Set([me?.id || data[0]?.id]))
+      } else {
+        const { data: profiles } = await supabase.from('profiles').select('id, prenom, nom, email, role')
+        if (profiles) {
+          setCollabs(profiles)
+          setSelectedCollabs(new Set([profile?.id]))
+        }
       }
     }
     loadCollabs()
-  }, [profile?.id])
+  }, [profile?.id, selectedSociete?.id])
+
+  // Mapping equipe_id → profile pour les événements (les events sont liés à profiles.id)
+  // On affiche tous les événements, et on les colore par collaborateur equipe via email
+  function findCollabByUserId(uid) {
+    // D'abord chercher dans collabs par id direct
+    const direct = collabs.find(c => c.id === uid)
+    if (direct) return direct
+    // Sinon retourner null (l'événement appartient à un profile sans fiche equipe)
+    return null
+  }
 
   function toggleCollab(id) {
     setSelectedCollabs(prev => {

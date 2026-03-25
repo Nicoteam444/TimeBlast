@@ -11,10 +11,9 @@ const SECTIONS = [
     icon: '📆',
     label: 'Calendrier',
     landingTo: '/activite/saisie',
+    directLink: true,
     roles: ['admin', 'manager', 'collaborateur'],
-    items: [
-      { to: '/activite/saisie',     icon: '📅', label: 'Calendrier' },
-    ],
+    items: [],
   },
   {
     id: 'activite',
@@ -289,10 +288,11 @@ export default function Sidebar() {
               <div
                 key={section.id}
                 className={`rail-item ${isActive ? 'rail-item--active' : ''} ${hoveredId === section.id ? 'rail-item--hover' : ''}`}
-                onMouseEnter={e => section.directTo ? null : showFlyout(section.id, e)}
+                onMouseEnter={e => (section.directTo || section.directLink) ? null : showFlyout(section.id, e)}
                 onMouseLeave={scheduleHide}
                 onClick={() => {
                   if (section.directTo) { navigate(section.directTo); setHoveredId(null); }
+                  else if (section.directLink && section.landingTo) { navigate(section.landingTo); setHoveredId(null); }
                   else if (section.landingTo) navigate(section.landingTo)
                 }}
                 style={{ cursor: (section.directTo || section.landingTo) ? 'pointer' : undefined }}
