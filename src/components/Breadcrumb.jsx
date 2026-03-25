@@ -88,40 +88,16 @@ const ROUTE_LABELS = {
  * Certains chemins construits à partir de l'URL ne correspondent pas aux vraies routes.
  * Cette table redirige vers les bonnes landing pages.
  */
+/**
+ * Override UNIQUEMENT pour les chemins intermédiaires qui n'ont PAS de route propre.
+ * Ex: /commerce n'a pas de route → on redirige vers /crm
+ * Les pages qui ONT une route (/crm/contacts, /activite/projets, etc.) gardent leur propre path.
+ */
 const PATH_OVERRIDES = {
-  '/equipe/collaborateurs': '/equipe',
-  '/equipe/notes-de-frais': '/equipe',
-  '/equipe/trombinoscope':  '/equipe',
-  '/equipe/organigramme':   '/equipe',
-  '/equipe/competences':    '/equipe',
-  '/crm/contacts':          '/crm',
-  '/crm/entreprises':       '/crm',
-  '/commerce/clients':      '/crm',
-  '/commerce/transactions': '/crm',
-  '/commerce/devis':        '/crm',
-  '/commerce/produits':     '/crm',
-  '/commerce/abonnements':  '/crm',
-  '/commerce/stock':        '/gestion',
-  '/activite/projets':      '/activite/projets',
-  '/activite/saisie':       '/activite',
-  '/activite/planification':'/activite',
-  '/activite/equipe':       '/equipe',
-  '/activite/absences':     '/equipe',
-  '/activite/validation':   '/equipe',
-  '/activite/reporting':    '/activite',
-  '/activite/rentabilite':  '/activite',
-  '/finance/facturation':   '/gestion',
-  '/finance/business-intelligence': '/finance',
-  '/finance/saisie-ecriture':      '/finance',
-  '/finance/previsionnel':  '/finance',
-  '/finance/immobilisations':'/finance',
-  '/finance/rapprochement': '/finance',
-  '/gestion/tableau-de-bord':'/gestion',
-  '/gestion/transactions':  '/gestion',
-  '/gestion/achats':        '/gestion',
-  '/marketing/campagnes':   '/marketing',
-  '/marketing/leads':       '/marketing',
-  '/documents/archives':    '/documents',
+  // /commerce/* n'a pas de landing → redirige vers la catégorie parente
+  '/commerce':              '/crm',
+  // /equipe/* sous-pages qui sont dans le sidebar sous Équipe
+  '/equipe':                '/equipe',
 }
 
 /**
