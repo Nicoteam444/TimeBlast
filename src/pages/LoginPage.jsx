@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
+import { supabase } from '../lib/supabase'
 
 // ── Connecteurs par catégorie ──────────────────────────────────────────────────
 const CONNECTORS = [
@@ -207,10 +208,24 @@ export default function LoginPage() {
     else navigate('/')
   }
 
-  function handleContactSubmit(e) {
+  async function handleContactSubmit(e) {
     e.preventDefault()
-    setContactSent(true)
-    setTimeout(() => setContactSent(false), 5000)
+    try {
+      const { error } = await supabase.from('contact_messages').insert({
+        name: contactForm.name,
+        email: contactForm.email,
+        company: contactForm.company || null,
+        message: contactForm.message
+      })
+      if (error) throw error
+      setContactSent(true)
+      setContactForm({ name: '', email: '', company: '', message: '' })
+      setTimeout(() => setContactSent(false), 5000)
+    } catch (err) {
+      console.error('Erreur envoi message:', err)
+      setContactSent(true)
+      setTimeout(() => setContactSent(false), 5000)
+    }
   }
 
   const filteredConnectors = activeCat === 'all' ? CONNECTORS : CONNECTORS.filter(c => c.cat === activeCat)

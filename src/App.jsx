@@ -14,6 +14,7 @@ import DashboardPage from './pages/DashboardPage'
 import AdminPage from './pages/admin/AdminPage'
 import AdminUtilisateursPage from './pages/admin/AdminUtilisateursPage'
 import AdminAuditPage from './pages/admin/AdminAuditPage'
+import AdminMessagesPage from './pages/admin/AdminMessagesPage'
 import AdminSocietesPage from './pages/admin/AdminSocietesPage'
 import AdminSocieteDetailPage from './pages/admin/AdminSocieteDetailPage'
 import AdminGroupesPage from './pages/admin/AdminGroupesPage'
@@ -272,6 +273,9 @@ function AppRoutes() {
       } />
       <Route path="/admin/audit" element={
         <ProtectedRoute roles={['admin']}><Layout><AdminAuditPage /></Layout></ProtectedRoute>
+      } />
+      <Route path="/admin/messages" element={
+        <ProtectedRoute roles={['admin']}><Layout><AdminMessagesPage /></Layout></ProtectedRoute>
       } />
       <Route path="/admin/societes" element={
         <ProtectedRoute roles={['admin']}><Layout><AdminSocietesPage /></Layout></ProtectedRoute>

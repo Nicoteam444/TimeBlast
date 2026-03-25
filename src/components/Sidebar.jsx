@@ -125,6 +125,7 @@ const ADMIN_SECTION = {
     { to: '/admin/groupes',      icon: '🏛', label: 'Groupes',           roles: ['admin'] },
     { to: '/admin/organigramme', icon: '🗂', label: 'Organigramme',      roles: ['admin'] },
     { to: '/admin/audit',        icon: '📋', label: "Journal d'audit",   roles: ['admin'] },
+    { to: '/admin/messages',     icon: '📬', label: 'Messages contact',  roles: ['admin'] },
     { to: '/admin/workflows',    icon: '✅', label: 'Approbations',      roles: ['admin', 'manager'] },
     { to: '/admin/analytics',    icon: '📊', label: 'Analytics',         roles: ['admin', 'manager'] },
     { to: '/parametres',         icon: '🔧', label: 'Paramètres',        roles: ['admin'] },
