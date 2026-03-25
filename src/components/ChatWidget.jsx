@@ -132,13 +132,26 @@ function buildSystemPrompt(societe, ctx) {
   return lines.join('\n')
 }
 
-const HISTORY_KEY = 'timeblast_chat_history'
-
-function loadHistory() {
-  try { return JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]') } catch { return [] }
+function getHistoryKey(userId) {
+  return `timeblast_chat_history_${userId || 'anon'}`
 }
-function saveHistory(history) {
-  try { localStorage.setItem(HISTORY_KEY, JSON.stringify(history.slice(0, 20))) } catch {}
+
+function loadHistory(userId) {
+  const key = getHistoryKey(userId)
+  try {
+    // Migration: si l'ancienne clé globale existe, la migrer vers l'utilisateur courant
+    const oldKey = 'timeblast_chat_history'
+    const oldData = localStorage.getItem(oldKey)
+    if (oldData && userId) {
+      const existing = localStorage.getItem(key)
+      if (!existing) localStorage.setItem(key, oldData)
+      localStorage.removeItem(oldKey)
+    }
+    return JSON.parse(localStorage.getItem(key) || '[]')
+  } catch { return [] }
+}
+function saveHistory(history, userId) {
+  try { localStorage.setItem(getHistoryKey(userId), JSON.stringify(history.slice(0, 20))) } catch {}
 }
 
 export default function ChatWidget() {
@@ -153,12 +166,19 @@ export default function ChatWidget() {
   const [ctxLoading, setCtxLoading] = useState(false)
   const [error, setError] = useState(null)
   const [showHistory, setShowHistory] = useState(false)
-  const [history, setHistory] = useState(() => loadHistory())
+  const [history, setHistory] = useState(() => loadHistory(profile?.id))
   const [activeConvId, setActiveConvId] = useState(null)
 
   const messagesEndRef = useRef(null)
   const inputRef = useRef(null)
   const abortRef = useRef(null)
+
+  // Recharger l'historique quand l'utilisateur change
+  useEffect(() => {
+    setHistory(loadHistory(profile?.id))
+    setMessages([])
+    setActiveConvId(null)
+  }, [profile?.id])
 
   // Sauvegarder la conversation active dans l'historique
   useEffect(() => {
@@ -176,7 +196,7 @@ export default function ChatWidget() {
         { id: convId, title, messages, date: new Date().toISOString(), societe: selectedSociete?.name },
         ...existing,
       ].slice(0, 20)
-      saveHistory(updated)
+      saveHistory(updated, profile?.id)
       return updated
     })
   }, [messages])
@@ -359,7 +379,7 @@ export default function ChatWidget() {
     e.stopPropagation()
     setHistory(prev => {
       const updated = prev.filter(c => c.id !== convId)
-      saveHistory(updated)
+      saveHistory(updated, profile?.id)
       return updated
     })
     if (activeConvId === convId) clearChat()
