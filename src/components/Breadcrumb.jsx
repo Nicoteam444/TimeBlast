@@ -102,7 +102,7 @@ const PATH_OVERRIDES = {
   '/commerce/produits':     '/crm',
   '/commerce/abonnements':  '/crm',
   '/commerce/stock':        '/gestion',
-  '/activite/projets':      '/activite',
+  '/activite/projets':      '/activite/projets',
   '/activite/saisie':       '/activite',
   '/activite/planification':'/activite',
   '/activite/equipe':       '/equipe',
