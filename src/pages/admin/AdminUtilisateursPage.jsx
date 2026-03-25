@@ -15,6 +15,13 @@ const ROLE_COLORS = {
   manager: '#0891b2',
   comptable: '#7c3aed',
   admin: '#dc2626',
+  superadmin: '#7c2d12',
+}
+const SUPER_ADMIN_EMAIL = 'nicolas.nabhan@groupe-sra.fr'
+
+function getRoleDisplay(user) {
+  if (user.email === SUPER_ADMIN_EMAIL) return { label: 'Super Administrateur', color: '#7c2d12' }
+  return { label: ROLE_LABELS[user.role] || user.role, color: ROLE_COLORS[user.role] || '#64748b' }
 }
 
 function getStatus(user) {
@@ -596,8 +603,8 @@ export default function AdminUtilisateursPage() {
                     </td>
                     <td>
                       <div style={{ display: 'flex', flexDirection: 'column', gap: '.25rem' }}>
-                        <span className="status-badge" style={{ color: ROLE_COLORS[user.role], background: ROLE_COLORS[user.role] + '18', fontSize: '.72rem', fontWeight: 600, width: 'fit-content' }}>
-                          {ROLE_LABELS[user.role] || user.role}
+                        <span className="status-badge" style={{ color: getRoleDisplay(user).color, background: getRoleDisplay(user).color + '18', fontSize: '.72rem', fontWeight: 600, width: 'fit-content' }}>
+                          {getRoleDisplay(user).label}
                         </span>
                         <span className="status-badge" style={{ color: status.color, background: status.bg, width: 'fit-content' }}>
                           {status.label}
