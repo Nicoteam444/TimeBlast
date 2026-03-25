@@ -199,25 +199,15 @@ export default function TopBar() {
       {/* Hamburger mobile */}
       <button className="sidebar-hamburger" onClick={toggleSidebar} aria-label="Menu">☰</button>
 
-      {/* Barre de recherche → ouvre Command Palette */}
-      <div className="topbar-search" ref={searchRef}
-        onClick={() => window.dispatchEvent(new KeyboardEvent('keydown', { key: 'k', metaKey: true }))}
-        style={{ cursor: 'pointer' }}>
-        <div className="topbar-search-wrap">
+      {/* Barre de recherche → ouvre Command Palette intégrée */}
+      <div className="topbar-search" ref={searchRef}>
+        <div className="topbar-search-wrap" onClick={() => window.dispatchEvent(new KeyboardEvent('keydown', { key: 'k', metaKey: true }))} style={{ cursor: 'pointer' }}>
           <span className="topbar-search-icon">🔍</span>
           <span className="topbar-search-input" style={{ opacity: 0.6, fontSize: '.9rem', userSelect: 'none' }}>
             Rechercher, naviguer, agir...
           </span>
-          <kbd style={{ padding: '2px 8px', borderRadius: 4, background: 'rgba(255,255,255,0.15)', border: '1px solid rgba(255,255,255,0.2)', fontSize: '.7rem', color: 'rgba(255,255,255,0.6)', fontFamily: 'monospace', whiteSpace: 'nowrap' }}>⌘K</kbd>
+          <kbd style={{ padding: '2px 6px', borderRadius: 4, background: 'rgba(255,255,255,0.15)', border: '1px solid rgba(255,255,255,0.2)', fontSize: '.65rem', color: 'rgba(255,255,255,0.6)', fontFamily: 'monospace', whiteSpace: 'nowrap' }}>⌘K</kbd>
         </div>
-        {searchOpen && searchResults.length > 0 && (
-          <ul className="topbar-search-dropdown">
-            {searchResults.map((r) => (
-              <li key={`${r.type}-${r.id}`} className="topbar-search-result" onMouseDown={() => handleSelectResult(r)}>
-                <span className="topbar-search-result-icon">{r.icon}</span>
-                <span className="topbar-search-result-name">{r.name}</span>
-                <span className="topbar-search-result-type">{r.type}</span>
-              </li>
       </div>
 
       {/* Quick Add Button ⊕ */}
