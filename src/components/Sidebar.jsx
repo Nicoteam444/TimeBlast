@@ -141,7 +141,7 @@ const ADMIN_SECTION = {
 
 export default function Sidebar() {
   const { profile, user } = useAuth()
-  const isSuperAdmin = user?.email === 'nicolas.nabhan@groupe-sra.fr'
+  const isSuperAdmin = (user?.email || '').toLowerCase().trim() === 'nicolas.nabhan@groupe-sra.fr'
   const { sidebarOpen, toggleSidebar } = useLayout()
   const { settings } = useAppearance()
   const { favorites, favLabels, toggleFavorite, syncing } = useFavorites()
