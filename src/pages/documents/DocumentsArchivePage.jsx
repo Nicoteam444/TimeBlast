@@ -568,7 +568,8 @@ export default function DocumentsArchivePage() {
             {/* A4 Paper */}
             <div style={{
               background: '#fff', borderRadius: 4, boxShadow: '0 2px 12px rgba(0,0,0,.12)',
-              padding: '1.5rem 1.25rem', minHeight: 500, fontSize: '.78rem', color: '#1e293b', overflow: 'hidden',
+              padding: '1.5rem 1.25rem', fontSize: '.78rem', color: '#1e293b', overflow: 'hidden',
+              aspectRatio: '0.707', width: '100%', position: 'relative',
               lineHeight: 1.5, position: 'relative',
             }}>
               {/* En-tête : Fournisseur + Type badge */}
