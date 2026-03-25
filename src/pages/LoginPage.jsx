@@ -208,12 +208,21 @@ function MultipriseVisual() {
           )
         })}
 
-        {/* HUB CENTRAL */}
-        <circle cx={cx} cy={cy} r={50} fill="none" stroke={B} strokeWidth="0.8" opacity="0.15">
-          <animate attributeName="r" values="50;56;50" dur="3s" repeatCount="indefinite" />
-          <animate attributeName="opacity" values="0.15;0.05;0.15" dur="3s" repeatCount="indefinite" />
-        </circle>
-        <circle cx={cx} cy={cy} r={44} fill="url(#hubGrad)" stroke="#5B9BD5" strokeWidth="1.5" />
+        {/* HUB CENTRAL — Octogone */}
+        {(() => {
+          const oct = (r, rot = -22.5) => Array.from({ length: 8 }, (_, i) => {
+            const a = (rot + i * 45) * Math.PI / 180
+            return `${cx + r * Math.cos(a)},${cy + r * Math.sin(a)}`
+          }).join(' ')
+          return (
+            <>
+              <polygon points={oct(54)} fill="none" stroke={B} strokeWidth="0.8" opacity="0.15">
+                <animate attributeName="opacity" values="0.15;0.05;0.15" dur="3s" repeatCount="indefinite" />
+              </polygon>
+              <polygon points={oct(46)} fill="url(#hubGrad)" stroke="#5B9BD5" strokeWidth="1.5" />
+            </>
+          )
+        })()}
         <text x={cx} y={cy - 12} textAnchor="middle" fill="#fff" fontSize="7" fontWeight="700">🤖 Agent IA</text>
         <text x={cx} y={cy + 2} textAnchor="middle" fill="#5B9BD5" fontSize="9" fontWeight="800">TimeBlast</text>
         <text x={cx} y={cy + 14} textAnchor="middle" fill="#7ec8a0" fontSize="7" fontWeight="700">.ai</text>
