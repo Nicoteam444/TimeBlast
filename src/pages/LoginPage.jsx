@@ -118,119 +118,157 @@ const ADVANTAGES = [
   { icon: '🤖', title: 'IA agentique', desc: "L'IA ne suggère pas, elle agit. Relances, alertes, validation — en autonomie." },
 ]
 
-// ── Composant SVG Agent IA Flux Circulaire ───────────────────────────────────
+// ── Composant SVG Mosaïque Hexagonale Agent IA ───────────────────────────────
 function MultipriseVisual() {
-  const topModules = [
-    { id: 'compta', label: 'Compta', icon: '📊', color: '#6366f1' },
-    { id: 'finance', label: 'Finance', icon: '💰', color: '#16a34a' },
-    { id: 'crm', label: 'CRM', icon: '🎯', color: '#0ea5e9' },
-    { id: 'rh', label: 'RH', icon: '👥', color: '#ec4899' },
-  ]
-  const bottomModules = [
-    { id: 'factures', label: 'Factures', icon: '🧾', color: '#f59e0b' },
-    { id: 'achats', label: 'Achats', icon: '🛒', color: '#8b5cf6' },
-    { id: 'projets', label: 'Projets', icon: '📁', color: '#14b8a6' },
-    { id: 'documents', label: 'Documents', icon: '📄', color: '#f97316' },
+  const modules = [
+    { id: 'sage', label: 'Sage', color: '#00DC82' },
+    { id: 'pennylane', label: 'Pennylane', color: '#6C5CE7' },
+    { id: 'salesforce', label: 'Salesforce', color: '#00A1E0' },
+    { id: 'hubspot', label: 'HubSpot', color: '#FF7A59' },
+    { id: 'stripe', label: 'Stripe', color: '#635BFF' },
+    { id: 'slack', label: 'Slack', color: '#E01E5A' },
+    { id: 'teams', label: 'Teams', color: '#5059C9' },
+    { id: 'google', label: 'Google', color: '#4285F4' },
+    { id: 'chorus', label: 'Chorus Pro', color: '#1D4ED8' },
+    { id: 'qonto', label: 'Qonto', color: '#1A1A2E' },
+    { id: 'notion', label: 'Notion', color: '#000000' },
+    { id: 'zapier', label: 'Zapier', color: '#FF4A00' },
   ]
 
-  const cx = 250, hubY = 220, hubW = 280, hubH = 80
-  const topY = 60, bottomY = 380, moduleW = 90, moduleH = 36
+  const cx = 260, cy = 250
+  const hexR = 38 // rayon de chaque hexagone
+  const SRA_BLUE = '#2B4C7E'
+
+  // Hexagone pointy-top
+  function hex(x, y, r) {
+    return Array.from({ length: 6 }, (_, i) => {
+      const a = (Math.PI / 180) * (60 * i - 30)
+      return `${x + r * Math.cos(a)},${y + r * Math.sin(a)}`
+    }).join(' ')
+  }
+
+  // Grille honeycomb : positions relatives au centre (col, row) → pixel
+  // Le hub est au centre (0,0), les modules autour en 2 couronnes
+  const w = hexR * Math.sqrt(3)
+  const h = hexR * 2
+  // Couronne 1 (6 hexagones adjacents)
+  const ring1 = [
+    { dc: 0, dr: -1 },   // haut
+    { dc: 1, dr: -0.5 },  // haut-droite
+    { dc: 1, dr: 0.5 },   // bas-droite
+    { dc: 0, dr: 1 },     // bas
+    { dc: -1, dr: 0.5 },  // bas-gauche
+    { dc: -1, dr: -0.5 }, // haut-gauche
+  ]
+  // Couronne 2 (6 hexagones en diagonale)
+  const ring2 = [
+    { dc: 0, dr: -2 },    // très haut
+    { dc: 2, dr: 0 },     // très droite
+    { dc: 1, dr: 1.5 },   // bas-droite loin
+    { dc: -1, dr: 1.5 },  // bas-gauche loin
+    { dc: -2, dr: 0 },    // très gauche
+    { dc: -1, dr: -1.5 }, // haut-gauche loin
+  ]
+
+  function toXY(dc, dr) {
+    return { x: cx + dc * w, y: cy + dr * h * 0.75 }
+  }
+
+  // Hexagones de fond (mosaïque décorative)
+  const bgHexes = []
+  for (let r = -3; r <= 3; r++) {
+    for (let c = -3; c <= 3; c++) {
+      const offset = r % 2 !== 0 ? 0.5 : 0
+      const px = cx + (c + offset) * w
+      const py = cy + r * h * 0.75
+      const dist = Math.sqrt((px - cx) ** 2 + (py - cy) ** 2)
+      if (dist > 40 && dist < 280) bgHexes.push({ x: px, y: py, dist })
+    }
+  }
+
+  const modulePositions = [...ring1, ...ring2].map((pos, i) => {
+    if (i >= modules.length) return null
+    return { ...modules[i], ...toXY(pos.dc, pos.dr) }
+  }).filter(Boolean)
 
   return (
     <div className="multiprise-container">
-      <svg viewBox="0 0 500 460" className="multiprise-svg">
+      <svg viewBox="0 0 520 500" className="multiprise-svg">
         <defs>
           <linearGradient id="hubGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="#0f3d5c" />
-            <stop offset="100%" stopColor="#1a6fa8" />
+            <stop offset="0%" stopColor="#163a5f" />
+            <stop offset="100%" stopColor="#2B4C7E" />
           </linearGradient>
-          <filter id="glow"><feGaussianBlur stdDeviation="3" result="blur" /><feMerge><feMergeNode in="blur" /><feMergeNode in="SourceGraphic" /></feMerge></filter>
+          <radialGradient id="ambientGlow" cx="50%" cy="50%" r="50%">
+            <stop offset="0%" stopColor={SRA_BLUE} stopOpacity="0.12" />
+            <stop offset="100%" stopColor={SRA_BLUE} stopOpacity="0" />
+          </radialGradient>
           <filter id="bulletGlow"><feGaussianBlur stdDeviation="2" result="blur" /><feMerge><feMergeNode in="blur" /><feMergeNode in="SourceGraphic" /></feMerge></filter>
+          <filter id="softShadow"><feDropShadow dx="0" dy="1" stdDeviation="3" floodColor="#000" floodOpacity="0.12" /></filter>
         </defs>
 
-        {/* Lignes verticales haut (modules → hub) + bullets */}
-        {topModules.map((m, i) => {
-          const mx = 80 + i * 105
-          const dur = (1.5 + i * 0.2).toFixed(1)
-          const delay = (i * 0.4).toFixed(1)
+        {/* Halo global */}
+        <circle cx={cx} cy={cy} r={240} fill="url(#ambientGlow)" />
+
+        {/* Mosaïque de fond — hexagones semi-transparents */}
+        {bgHexes.map((h, i) => {
+          const opacity = Math.max(0.02, 0.08 - h.dist * 0.0003)
           return (
-            <g key={m.id}>
-              <line x1={mx} y1={topY + moduleH} x2={mx} y2={hubY} stroke={m.color} strokeWidth="1.5" opacity="0.25" />
-              {/* Bullet descendante (module → hub) */}
-              <circle r="4" fill={m.color} filter="url(#bulletGlow)" opacity="0.9">
-                <animate attributeName="cy" values={`${topY + moduleH};${hubY}`} dur={dur + 's'} repeatCount="indefinite" begin={delay + 's'} />
-                <animate attributeName="cx" values={`${mx};${mx}`} dur={dur + 's'} repeatCount="indefinite" begin={delay + 's'} />
+            <polygon key={`bg-${i}`} points={hex(h.x, h.y, hexR - 1)} fill="none" stroke={SRA_BLUE} strokeWidth="0.6" opacity={opacity} />
+          )
+        })}
+
+        {/* Chemins de connexion (lignes sur la mosaïque) + bullets bleu SRA */}
+        {modulePositions.map((m, i) => {
+          const dur = (2 + (i % 4) * 0.3).toFixed(1)
+          const delay = (i * 0.25).toFixed(1)
+          const retDelay = (parseFloat(delay) + parseFloat(dur) * 0.45).toFixed(1)
+          return (
+            <g key={m.id + '-path'}>
+              {/* Chemin lumineux */}
+              <line x1={cx} y1={cy} x2={m.x} y2={m.y} stroke={SRA_BLUE} strokeWidth="1.5" opacity="0.12" />
+              <line x1={cx} y1={cy} x2={m.x} y2={m.y} stroke={SRA_BLUE} strokeWidth="0.6" opacity="0.3" strokeDasharray="4 6">
+                <animate attributeName="strokeDashoffset" values="0;-20" dur="3s" repeatCount="indefinite" />
+              </line>
+              {/* Bullet aller — bleu SRA */}
+              <circle r="4.5" fill={SRA_BLUE} filter="url(#bulletGlow)" opacity="0.9">
+                <animateMotion dur={dur + 's'} repeatCount="indefinite" begin={delay + 's'}>
+                  <mpath xlinkHref={`#mpath-${m.id}`} />
+                </animateMotion>
               </circle>
-              {/* Bullet montante (hub → module) */}
-              <circle r="3" fill="#1D9BF0" filter="url(#bulletGlow)" opacity="0.6">
-                <animate attributeName="cy" values={`${hubY};${topY + moduleH}`} dur={dur + 's'} repeatCount="indefinite" begin={(parseFloat(delay) + 0.7).toFixed(1) + 's'} />
-                <animate attributeName="cx" values={`${mx};${mx}`} dur={dur + 's'} repeatCount="indefinite" begin={(parseFloat(delay) + 0.7).toFixed(1) + 's'} />
+              {/* Bullet retour — bleu clair */}
+              <circle r="3" fill="#5B9BD5" filter="url(#bulletGlow)" opacity="0.7">
+                <animateMotion dur={dur + 's'} repeatCount="indefinite" begin={retDelay + 's'} keyPoints="1;0" keyTimes="0;1" calcMode="linear">
+                  <mpath xlinkHref={`#mpath-${m.id}`} />
+                </animateMotion>
               </circle>
+              <path id={`mpath-${m.id}`} d={`M${cx},${cy} L${m.x},${m.y}`} fill="none" stroke="none" />
             </g>
           )
         })}
 
-        {/* Lignes verticales bas (hub → modules) + bullets */}
-        {bottomModules.map((m, i) => {
-          const mx = 80 + i * 105
-          const dur = (1.5 + i * 0.2).toFixed(1)
-          const delay = (i * 0.3 + 0.2).toFixed(1)
-          return (
-            <g key={m.id}>
-              <line x1={mx} y1={hubY + hubH} x2={mx} y2={bottomY} stroke={m.color} strokeWidth="1.5" opacity="0.25" />
-              {/* Bullet descendante (hub → module) */}
-              <circle r="4" fill={m.color} filter="url(#bulletGlow)" opacity="0.9">
-                <animate attributeName="cy" values={`${hubY + hubH};${bottomY}`} dur={dur + 's'} repeatCount="indefinite" begin={delay + 's'} />
-                <animate attributeName="cx" values={`${mx};${mx}`} dur={dur + 's'} repeatCount="indefinite" begin={delay + 's'} />
-              </circle>
-              {/* Bullet montante (module → hub) */}
-              <circle r="3" fill="#1D9BF0" filter="url(#bulletGlow)" opacity="0.6">
-                <animate attributeName="cy" values={`${bottomY};${hubY + hubH}`} dur={dur + 's'} repeatCount="indefinite" begin={(parseFloat(delay) + 0.8).toFixed(1) + 's'} />
-                <animate attributeName="cx" values={`${mx};${mx}`} dur={dur + 's'} repeatCount="indefinite" begin={(parseFloat(delay) + 0.8).toFixed(1) + 's'} />
-              </circle>
-            </g>
-          )
-        })}
+        {/* HUB CENTRAL — Grand hexagone Agent IA */}
+        <polygon points={hex(cx, cy, hexR + 12)} fill="none" stroke={SRA_BLUE} strokeWidth="1" opacity="0.2">
+          <animate attributeName="opacity" values="0.2;0.06;0.2" dur="3s" repeatCount="indefinite" />
+        </polygon>
+        <polygon points={hex(cx, cy, hexR + 4)} fill="url(#hubGrad)" stroke="#5B9BD5" strokeWidth="2" filter="url(#softShadow)" />
+        <text x={cx} y={cy - 12} textAnchor="middle" fill="#fff" fontSize="8" fontWeight="800" letterSpacing="1">🤖 AGENT IA</text>
+        <text x={cx} y={cy + 2} textAnchor="middle" fill="#5B9BD5" fontSize="10" fontWeight="800" letterSpacing="0.5">TIMEBLAST</text>
+        <text x={cx} y={cy + 14} textAnchor="middle" fill="#7ec8a0" fontSize="8" fontWeight="700">.ai</text>
+        <text x={cx} y={cy + 27} textAnchor="middle" fill="#98c1d9" fontSize="5" fontWeight="500" opacity="0.8">Connecte · Synchronise · Automatise</text>
 
-        {/* Modules HAUT */}
-        {topModules.map((m, i) => {
-          const mx = 80 + i * 105
-          return (
-            <g key={m.id + '-top'}>
-              <rect x={mx - moduleW / 2} y={topY} width={moduleW} height={moduleH} rx={10} fill="#fff" stroke={m.color} strokeWidth="1.5" />
-              <text x={mx} y={topY + moduleH / 2 + 1} textAnchor="middle" dominantBaseline="central" fill="#1a2332" fontSize="10" fontWeight="700">{m.icon} {m.label}</text>
-            </g>
-          )
-        })}
+        {/* Modules — Hexagones de la mosaïque */}
+        {modulePositions.map(m => (
+          <g key={m.id}>
+            <polygon points={hex(m.x, m.y, hexR - 2)} fill="#fff" stroke={m.color} strokeWidth="1.5" filter="url(#softShadow)" opacity="0.95" />
+            <polygon points={hex(m.x, m.y, hexR - 2)} fill={m.color} opacity="0.05" />
+            <text x={m.x} y={m.y + 1} textAnchor="middle" dominantBaseline="central" fill="#1a2332" fontSize="7" fontWeight="700">{m.label}</text>
+          </g>
+        ))}
 
-        {/* HUB CENTRAL - Agent IA */}
-        <rect x={cx - hubW / 2} y={hubY} width={hubW} height={hubH} rx={16} fill="url(#hubGrad)" stroke="#1D9BF0" strokeWidth="2" />
-        {/* Halo pulsant */}
-        <rect x={cx - hubW / 2 - 4} y={hubY - 4} width={hubW + 8} height={hubH + 8} rx={20} fill="none" stroke="#1D9BF0" strokeWidth="1" opacity="0.3">
-          <animate attributeName="opacity" values="0.3;0.08;0.3" dur="2.5s" repeatCount="indefinite" />
-        </rect>
-        <text x={cx} y={hubY + 22} textAnchor="middle" fill="#fff" fontSize="14" fontWeight="800" letterSpacing="1">🤖 AGENT IA</text>
-        <text x={cx} y={hubY + 38} textAnchor="middle" fill="#1D9BF0" fontSize="11" fontWeight="700">TIMEBLAST.AI</text>
-        <text x={cx} y={hubY + 54} textAnchor="middle" fill="#98c1d9" fontSize="7" fontWeight="500" opacity="0.9">Lit · Connecte · Synchronise · Nettoie · Automatise</text>
-
-        {/* Flèches bidirectionnelles */}
-        <text x={cx - hubW / 2 - 14} y={hubY + hubH / 2 + 2} textAnchor="middle" fill="#1D9BF0" fontSize="12" fontWeight="700">←</text>
-        <text x={cx + hubW / 2 + 14} y={hubY + hubH / 2 + 2} textAnchor="middle" fill="#1D9BF0" fontSize="12" fontWeight="700">→</text>
-
-        {/* Modules BAS */}
-        {bottomModules.map((m, i) => {
-          const mx = 80 + i * 105
-          return (
-            <g key={m.id + '-bot'}>
-              <rect x={mx - moduleW / 2} y={bottomY} width={moduleW} height={moduleH} rx={10} fill="#fff" stroke={m.color} strokeWidth="1.5" />
-              <text x={mx} y={bottomY + moduleH / 2 + 1} textAnchor="middle" dominantBaseline="central" fill="#1a2332" fontSize="10" fontWeight="700">{m.icon} {m.label}</text>
-            </g>
-          )
-        })}
-
-        {/* Label Lecture / Écriture */}
-        <rect x={cx - 60} y={hubY + hubH + 8} width={120} height={18} rx={9} fill="#0f3d5c" opacity="0.6" />
-        <text x={cx} y={hubY + hubH + 20} textAnchor="middle" fill="#98c1d9" fontSize="7" fontWeight="600">↕ Lecture / Écriture</text>
+        {/* Label */}
+        <rect x={cx - 58} y={cy + 200} width={116} height={18} rx={9} fill="#163a5f" opacity="0.6" />
+        <text x={cx} y={cy + 212} textAnchor="middle" fill="#5B9BD5" fontSize="6.5" fontWeight="600">↕ Lecture / Écriture</text>
       </svg>
     </div>
   )
