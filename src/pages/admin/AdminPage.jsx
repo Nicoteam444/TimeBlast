@@ -44,6 +44,20 @@ const ADMIN_CARDS = [
     desc: 'Consulter l\'historique des actions et modifications',
   },
   {
+    to: '/admin/messages',
+    icon: '📬',
+    color: '#0ea5e9',
+    title: 'Messages contact',
+    desc: 'Consulter les messages envoyés depuis le formulaire de contact',
+  },
+  {
+    to: '/admin/historique',
+    icon: '👁',
+    color: '#8b5cf6',
+    title: 'Historique navigation',
+    desc: 'Voir toutes les pages consultées par chaque utilisateur',
+  },
+  {
     to: '/parametres',
     icon: '⚙️',
     color: '#64748b',
