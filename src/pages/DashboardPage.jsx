@@ -1432,7 +1432,7 @@ export default function DashboardPage() {
               onDrop={e => { e.preventDefault(); onDropWidget() }}
               className="dash-card" style={{
                 ...cardStyle, position: 'relative', cursor: 'default',
-                gridColumn: id === 'activity' ? '1 / -1' : undefined,
+                gridColumn: (id === 'activity' || id === 'feed') ? '1 / -1' : undefined,
               }}>
               {/* Grip visuel — visible uniquement au hover */}
               <div className="dash-grip" style={{
