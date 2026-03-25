@@ -399,36 +399,65 @@ export default function DocumentsArchivePage() {
                       position: 'relative', overflow: 'hidden', transition: 'all .15s',
                     }}
                   >
-                    {/* Document preview placeholder */}
-                    {doc.fichier_url ? (
-                      <img
-                        src={doc.fichier_url}
-                        alt={doc.nom}
-                        style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: 4 }}
-                        onError={e => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'flex' }}
-                      />
-                    ) : null}
+                      {/* Mini document réaliste */}
                     <div style={{
-                      display: doc.fichier_url ? 'none' : 'flex',
-                      flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
-                      width: '100%', height: '100%', gap: '.25rem',
+                      width: '100%', height: '100%', padding: '8px 10px',
+                      display: 'flex', flexDirection: 'column', background: '#fff',
+                      fontSize: '.48rem', color: '#334155', lineHeight: 1.4, overflow: 'hidden',
                     }}>
-                      {/* Fake document lines */}
-                      <div style={{ fontSize: '1.5rem', marginBottom: '.25rem' }}>
-                        {TYPE_ICONS[doc.type_document] || '📄'}
-                      </div>
-                      <div style={{ width: '70%', height: 3, background: '#cbd5e1', borderRadius: 2 }} />
-                      <div style={{ width: '55%', height: 3, background: '#e2e8f0', borderRadius: 2 }} />
-                      <div style={{ width: '65%', height: 3, background: '#e2e8f0', borderRadius: 2 }} />
-                      <div style={{ width: '45%', height: 3, background: '#e2e8f0', borderRadius: 2 }} />
-                      <div style={{ width: '60%', height: 3, background: '#e2e8f0', borderRadius: 2 }} />
-                      {doc.fournisseur && (
+                      {/* En-tête mini */}
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 4 }}>
+                        <div style={{ fontWeight: 800, fontSize: '.55rem', color: '#1e293b', maxWidth: '55%', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                          {doc.fournisseur || 'Document'}
+                        </div>
                         <div style={{
-                          position: 'absolute', top: 6, right: 6,
-                          fontSize: '.6rem', fontWeight: 700, color: TYPE_COLORS[doc.type_document] || '#64748b',
-                          background: '#fff', padding: '1px 5px', borderRadius: 3, border: '1px solid #e2e8f0',
-                          maxWidth: '80%', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
-                        }}>{doc.fournisseur}</div>
+                          background: '#1e293b', color: '#fff', borderRadius: 2, padding: '1px 4px',
+                          fontSize: '.38rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: .5,
+                        }}>
+                          {TYPE_OPTIONS.find(o => o.value === doc.type_document)?.label || 'DOC'}
+                        </div>
+                      </div>
+                      {/* Ref */}
+                      {doc.reference && <div style={{ fontSize: '.4rem', color: '#94a3b8', marginBottom: 2 }}>{doc.reference}</div>}
+                      {/* Lignes simulées */}
+                      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 2, marginTop: 3 }}>
+                        <div style={{ width: '100%', height: 1, background: '#1e293b' }} />
+                        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                          <div style={{ width: '60%', height: 2, background: '#e2e8f0', borderRadius: 1 }} />
+                          <div style={{ width: '25%', height: 2, background: '#e2e8f0', borderRadius: 1 }} />
+                        </div>
+                        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                          <div style={{ width: '50%', height: 2, background: '#f1f5f9', borderRadius: 1 }} />
+                          <div style={{ width: '20%', height: 2, background: '#f1f5f9', borderRadius: 1 }} />
+                        </div>
+                        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                          <div style={{ width: '70%', height: 2, background: '#f1f5f9', borderRadius: 1 }} />
+                          <div style={{ width: '15%', height: 2, background: '#f1f5f9', borderRadius: 1 }} />
+                        </div>
+                        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                          <div style={{ width: '45%', height: 2, background: '#f1f5f9', borderRadius: 1 }} />
+                          <div style={{ width: '22%', height: 2, background: '#f1f5f9', borderRadius: 1 }} />
+                        </div>
+                      </div>
+                      {/* Total en bas */}
+                      {doc.montant_ttc != null && (
+                        <div style={{
+                          marginTop: 'auto', paddingTop: 3,
+                          display: 'flex', justifyContent: 'flex-end',
+                        }}>
+                          <div style={{
+                            background: '#1e293b', color: '#fff', borderRadius: 2,
+                            padding: '1px 5px', fontSize: '.45rem', fontWeight: 800,
+                          }}>
+                            {fmtEUR(doc.montant_ttc)}
+                          </div>
+                        </div>
+                      )}
+                      {/* Date en bas à gauche */}
+                      {doc.date_document && (
+                        <div style={{ fontSize: '.38rem', color: '#94a3b8', marginTop: 2 }}>
+                          {fmtDate(doc.date_document)}
+                        </div>
                       )}
                     </div>
                     {/* OCR indicator */}
@@ -539,7 +568,7 @@ export default function DocumentsArchivePage() {
             {/* A4 Paper */}
             <div style={{
               background: '#fff', borderRadius: 4, boxShadow: '0 2px 12px rgba(0,0,0,.12)',
-              padding: '2.5rem 2rem', minHeight: 500, fontSize: '.82rem', color: '#1e293b',
+              padding: '1.5rem 1.25rem', minHeight: 500, fontSize: '.78rem', color: '#1e293b', overflow: 'hidden',
               lineHeight: 1.5, position: 'relative',
             }}>
               {/* En-tête : Fournisseur + Type badge */}
@@ -550,8 +579,8 @@ export default function DocumentsArchivePage() {
                   {previewDoc.numero_commande && <div style={{ fontSize: '.78rem', color: '#64748b' }}>Commande : {previewDoc.numero_commande}</div>}
                 </div>
                 <div style={{
-                  background: '#1e293b', color: '#fff', borderRadius: 8, padding: '.6rem 1rem',
-                  textAlign: 'center', minWidth: 140,
+                  background: '#1e293b', color: '#fff', borderRadius: 8, padding: '.5rem .75rem',
+                  textAlign: 'center', minWidth: 0, maxWidth: '55%', overflow: 'hidden',
                 }}>
                   <div style={{ fontSize: '.65rem', fontWeight: 600, textTransform: 'uppercase', letterSpacing: 1.5, opacity: .8 }}>
                     {TYPE_OPTIONS.find(o => o.value === previewDoc.type_document)?.label || 'DOCUMENT'}
@@ -580,44 +609,44 @@ export default function DocumentsArchivePage() {
                 {previewDoc.numero_commande && <div style={{ fontSize: '.78rem', color: '#64748b' }}>N° commande : {previewDoc.numero_commande}</div>}
               </div>
 
-              {/* Montants (style tableau facture) */}
+              {/* Montants */}
               {(previewDoc.montant_ht || previewDoc.montant_ttc) && (
                 <div style={{ marginBottom: '1.5rem' }}>
-                  <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '.8rem' }}>
+                  <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '.75rem', tableLayout: 'fixed' }}>
                     <thead>
                       <tr style={{ borderBottom: '2px solid #1e293b' }}>
-                        <th style={{ textAlign: 'left', padding: '.5rem .75rem', fontSize: '.7rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: .5, color: '#1e293b' }}>Description</th>
-                        <th style={{ textAlign: 'right', padding: '.5rem .75rem', fontSize: '.7rem', fontWeight: 700, textTransform: 'uppercase' }}>Montant HT</th>
-                        <th style={{ textAlign: 'right', padding: '.5rem .75rem', fontSize: '.7rem', fontWeight: 700, textTransform: 'uppercase' }}>TVA</th>
-                        <th style={{ textAlign: 'right', padding: '.5rem .75rem', fontSize: '.7rem', fontWeight: 700, textTransform: 'uppercase' }}>Total TTC</th>
+                        <th style={{ textAlign: 'left', padding: '.4rem .5rem', fontSize: '.65rem', fontWeight: 700, textTransform: 'uppercase', color: '#1e293b', width: '40%' }}>Description</th>
+                        <th style={{ textAlign: 'right', padding: '.4rem .5rem', fontSize: '.65rem', fontWeight: 700, textTransform: 'uppercase', width: '20%' }}>HT</th>
+                        <th style={{ textAlign: 'right', padding: '.4rem .5rem', fontSize: '.65rem', fontWeight: 700, textTransform: 'uppercase', width: '20%' }}>TVA</th>
+                        <th style={{ textAlign: 'right', padding: '.4rem .5rem', fontSize: '.65rem', fontWeight: 700, textTransform: 'uppercase', width: '20%' }}>TTC</th>
                       </tr>
                     </thead>
                     <tbody>
                       <tr style={{ borderBottom: '1px solid #e2e8f0' }}>
-                        <td style={{ padding: '.6rem .75rem' }}>{previewDoc.nom}</td>
-                        <td style={{ padding: '.6rem .75rem', textAlign: 'right' }}>{previewDoc.montant_ht ? fmtEUR(previewDoc.montant_ht) : '—'}</td>
-                        <td style={{ padding: '.6rem .75rem', textAlign: 'right' }}>{previewDoc.montant_tva ? fmtEUR(previewDoc.montant_tva) : '—'}</td>
-                        <td style={{ padding: '.6rem .75rem', textAlign: 'right', fontWeight: 700 }}>{previewDoc.montant_ttc ? fmtEUR(previewDoc.montant_ttc) : '—'}</td>
+                        <td style={{ padding: '.4rem .5rem', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{previewDoc.nom}</td>
+                        <td style={{ padding: '.4rem .5rem', textAlign: 'right' }}>{previewDoc.montant_ht ? fmtEUR(previewDoc.montant_ht) : '—'}</td>
+                        <td style={{ padding: '.4rem .5rem', textAlign: 'right' }}>{previewDoc.montant_tva ? fmtEUR(previewDoc.montant_tva) : '—'}</td>
+                        <td style={{ padding: '.4rem .5rem', textAlign: 'right', fontWeight: 700 }}>{previewDoc.montant_ttc ? fmtEUR(previewDoc.montant_ttc) : '—'}</td>
                       </tr>
                     </tbody>
                   </table>
                   {/* Totaux */}
-                  <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '.75rem' }}>
-                    <div style={{ minWidth: 200 }}>
+                  <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '.5rem' }}>
+                    <div style={{ width: '60%', maxWidth: 220 }}>
                       {previewDoc.montant_ht != null && (
-                        <div style={{ display: 'flex', justifyContent: 'space-between', padding: '.3rem .75rem', fontSize: '.8rem' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', padding: '.25rem .5rem', fontSize: '.75rem' }}>
                           <span>Total HT</span><span style={{ fontWeight: 600 }}>{fmtEUR(previewDoc.montant_ht)}</span>
                         </div>
                       )}
                       {previewDoc.montant_tva != null && (
-                        <div style={{ display: 'flex', justifyContent: 'space-between', padding: '.3rem .75rem', fontSize: '.8rem' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', padding: '.25rem .5rem', fontSize: '.75rem' }}>
                           <span>TVA</span><span style={{ fontWeight: 600 }}>{fmtEUR(previewDoc.montant_tva)}</span>
                         </div>
                       )}
                       {previewDoc.montant_ttc != null && (
                         <div style={{
-                          display: 'flex', justifyContent: 'space-between', padding: '.5rem .75rem',
-                          background: '#1e293b', color: '#fff', borderRadius: 4, fontWeight: 800, fontSize: '.9rem', marginTop: '.25rem',
+                          display: 'flex', justifyContent: 'space-between', padding: '.4rem .5rem',
+                          background: '#1e293b', color: '#fff', borderRadius: 4, fontWeight: 800, fontSize: '.8rem', marginTop: '.2rem',
                         }}>
                           <span>TOTAL TTC</span><span>{fmtEUR(previewDoc.montant_ttc)}</span>
                         </div>
