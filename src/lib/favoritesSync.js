@@ -150,8 +150,8 @@ export function subscribeToFavoritesChanges(userId, onAdd, onRemove) {
 
   try {
     const subscription = supabase
-      .from('user_favorites')
-      .on('*', payload => {
+      .channel(`favorites-${userId}`)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'user_favorites', filter: `user_id=eq.${userId}` }, payload => {
         if (payload.eventType === 'INSERT') {
           onAdd?.(payload.new.route_path)
         } else if (payload.eventType === 'DELETE') {
