@@ -510,25 +510,44 @@ export default function SaisiePage() {
     setLoading(true)
 
     if (!profile?.id || selectedCollabs.size === 0) { setEvents({}); setLoading(false); return }
-    const userIds = [...selectedCollabs]
     const startISO = toISO(weekStart)
     const endISO = toISO(addDays(weekStart, 6))
 
-    // Charger saisies de temps de tous les collaborateurs sélectionnés
+    // Charger les saisies de temps par profile.id (l'utilisateur connecté)
     const { data: saisiesData } = await supabase
       .from('saisies_temps')
       .select('id, date, heures, commentaire, user_id')
-      .in('user_id', userIds)
+      .eq('user_id', profile.id)
       .gte('date', startISO)
       .lte('date', endISO)
 
-    // Charger les événements calendrier
-    const { data: calData } = await supabase
+    // Charger TOUS les événements calendrier de la société (pas filtrés par user)
+    let calQuery = supabase
       .from('calendar_events')
       .select('*')
-      .in('user_id', userIds)
       .gte('start_time', startISO)
       .lt('start_time', toISO(addDays(weekStart, 7)))
+    if (selectedSociete?.id) calQuery = calQuery.eq('societe_id', selectedSociete.id)
+    const { data: calData } = await calQuery
+
+    // Mapper profiles.id → equipe.id pour la coloration
+    // Les events ont user_id = profiles.id, les collabs ont id = equipe.id
+    // On charge les profiles pour mapper
+    const profileIds = [...new Set((calData || []).map(e => e.user_id))]
+    let profileToCollab = {}
+    if (profileIds.length > 0) {
+      const { data: profilesData } = await supabase.from('profiles').select('id, full_name')
+        .in('id', profileIds)
+      for (const p of (profilesData || [])) {
+        // Trouver le collaborateur equipe par nom
+        const nameParts = (p.full_name || '').trim().split(/\s+/)
+        const match = collabs.find(c =>
+          (c.nom || '').toLowerCase() === (nameParts[nameParts.length - 1] || '').toLowerCase() ||
+          (c.prenom || '').toLowerCase() === (nameParts[0] || '').toLowerCase()
+        )
+        if (match) profileToCollab[p.id] = match.id
+      }
+    }
 
     const map = {}
 
@@ -551,13 +570,24 @@ export default function SaisiePage() {
       })
     }
 
-    // Événements calendrier (seulement ceux qui ne sont pas des saisies dupliquées)
+    // Événements calendrier — filtrer par collabs sélectionnés via mapping
+    const selectedEquipeIds = [...selectedCollabs]
     for (const ev of (calData || [])) {
+      // Mapper le profile user_id vers un equipe id
+      const equipeId = profileToCollab[ev.user_id]
+      // Afficher si: le collab equipe est sélectionné, OU si c'est le user connecté et sélectionné
+      const isSelected = (equipeId && selectedEquipeIds.includes(equipeId))
+        || (ev.user_id === profile?.id && selectedEquipeIds.some(id => {
+          const c = collabs.find(c2 => c2.id === id)
+          return c && (c.email === profile?.email || c.nom?.toLowerCase() === (profile?.full_name || '').split(' ').pop()?.toLowerCase())
+        }))
+        || selectedEquipeIds.length === collabs.length // "Tous" sélectionné
+      if (!isSelected) continue
+
       const start = new Date(ev.start_time)
       const end = new Date(ev.end_time)
       const dateKey = toISO(start)
       if (!map[dateKey]) map[dateKey] = []
-      // Eviter les doublons avec saisies
       const alreadyExists = map[dateKey].some(e => e._source === 'saisie' && Math.abs(e.startMin - (start.getHours() * 60 + start.getMinutes())) < 5 && e.user_id === ev.user_id)
       if (!alreadyExists) {
         map[dateKey].push({
@@ -568,7 +598,8 @@ export default function SaisiePage() {
           endMin: end.getHours() * 60 + end.getMinutes(),
           projets: { id: ev.projet_id, name: ev.title },
           noteText: ev.description,
-          user_id: ev.user_id,
+          user_id: equipeId || ev.user_id,
+          _profileId: ev.user_id,
           event_type: ev.event_type,
           location: ev.location,
           color: ev.color,
@@ -579,7 +610,7 @@ export default function SaisiePage() {
 
     setEvents(map)
     setLoading(false)
-  }, [profile?.id, weekStart, selectedCollabs])
+  }, [profile?.id, weekStart, selectedCollabs, selectedSociete?.id, collabs])
 
   useEffect(() => { fetchWeek() }, [fetchWeek])
 
