@@ -62,10 +62,13 @@ export default function TaskDetailPage() {
     setLoading(false)
 
     if (proj && setSegments) {
-      setSegments([
-        { id: projetId, label: proj.name },
-        ...(taskId ? [{ label: 'Taches' }] : []),
-      ])
+      const segs = [{ id: projetId, label: proj.name }]
+      if (taskId && taskId !== 'all') {
+        const selTask = (tks || []).find(t => t.id === taskId)
+        segs.push({ id: 'taches', label: 'Taches' })
+        if (selTask) segs.push({ id: taskId, label: selTask.title })
+      }
+      setSegments(segs)
     }
 
     // If a specific task is selected, load its form
