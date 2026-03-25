@@ -295,7 +295,7 @@ export default function DashboardPage() {
             return q
           }),
           // 8. Activite recente - tasks
-          safeQuery(() => supabase.from('kanban_tasks').select('id, title, created_at').order('created_at', { ascending: false }).limit(5)),
+          safeQuery(() => supabase.from('kanban_tasks').select('id, title, projet_id, created_at').order('created_at', { ascending: false }).limit(5)),
           // Activite recente - docs
           safeQuery(() => {
             let q = supabase.from('documents_archive').select('id, nom, created_at').order('created_at', { ascending: false }).limit(3)
@@ -442,7 +442,7 @@ export default function DashboardPage() {
     // Activity log (déplacements kanban etc.)
     for (const a of (raw.activityLog || [])) {
       const typeMap = { task: 'task', transaction: 'transaction' }
-      const link = a.entity_type === 'transaction' ? `/crm/leads` : a.entity_type === 'task' && a.projet_id ? `/activite/projets/${a.projet_id}` : null
+      const link = a.entity_type === 'transaction' ? `/crm/leads` : a.entity_type === 'task' ? `/activite/projets` : null
       items.push({
         type: typeMap[a.entity_type] || 'action',
         icon: a.icon || '🔀',
