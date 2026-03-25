@@ -118,93 +118,119 @@ const ADVANTAGES = [
   { icon: '🤖', title: 'IA agentique', desc: "L'IA ne suggère pas, elle agit. Relances, alertes, validation — en autonomie." },
 ]
 
-// ── Composant SVG Hub Étoile avec Bullets ────────────────────────────────────
+// ── Composant SVG Agent IA Flux Circulaire ───────────────────────────────────
 function MultipriseVisual() {
-  const displayed = CONNECTORS.slice(0, 16)
-  const cx = 250, cy = 250, r = 185
+  const topModules = [
+    { id: 'compta', label: 'Compta', icon: '📊', color: '#6366f1' },
+    { id: 'finance', label: 'Finance', icon: '💰', color: '#16a34a' },
+    { id: 'crm', label: 'CRM', icon: '🎯', color: '#0ea5e9' },
+    { id: 'rh', label: 'RH', icon: '👥', color: '#ec4899' },
+  ]
+  const bottomModules = [
+    { id: 'factures', label: 'Factures', icon: '🧾', color: '#f59e0b' },
+    { id: 'achats', label: 'Achats', icon: '🛒', color: '#8b5cf6' },
+    { id: 'projets', label: 'Projets', icon: '📁', color: '#14b8a6' },
+    { id: 'documents', label: 'Documents', icon: '📄', color: '#f97316' },
+  ]
+
+  const cx = 250, hubY = 220, hubW = 280, hubH = 80
+  const topY = 60, bottomY = 380, moduleW = 90, moduleH = 36
 
   return (
     <div className="multiprise-container">
-      <svg viewBox="0 0 500 500" className="multiprise-svg">
+      <svg viewBox="0 0 500 460" className="multiprise-svg">
         <defs>
-          <radialGradient id="hubGlow" cx="50%" cy="50%" r="50%">
-            <stop offset="0%" stopColor="#1D9BF0" stopOpacity="0.25" />
-            <stop offset="60%" stopColor="#1D9BF0" stopOpacity="0.08" />
-            <stop offset="100%" stopColor="#1D9BF0" stopOpacity="0" />
-          </radialGradient>
-          <radialGradient id="hubCore" cx="50%" cy="50%" r="50%">
-            <stop offset="0%" stopColor="#1a6fa8" />
-            <stop offset="100%" stopColor="#0f3d5c" />
-          </radialGradient>
+          <linearGradient id="hubGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="#0f3d5c" />
+            <stop offset="100%" stopColor="#1a6fa8" />
+          </linearGradient>
           <filter id="glow"><feGaussianBlur stdDeviation="3" result="blur" /><feMerge><feMergeNode in="blur" /><feMergeNode in="SourceGraphic" /></feMerge></filter>
           <filter id="bulletGlow"><feGaussianBlur stdDeviation="2" result="blur" /><feMerge><feMergeNode in="blur" /><feMergeNode in="SourceGraphic" /></feMerge></filter>
         </defs>
 
-        {/* Halo ambiant */}
-        <circle cx={cx} cy={cy} r={140} fill="url(#hubGlow)" />
-
-        {/* Orbite externe */}
-        <circle cx={cx} cy={cy} r={r} fill="none" stroke="#1D9BF0" strokeWidth="0.5" opacity="0.15" strokeDasharray="4 4" />
-
-        {/* Lignes de connexion + bullets animées */}
-        {displayed.map((c, i) => {
-          const angle = (i / displayed.length) * Math.PI * 2 - Math.PI / 2
-          const x = cx + Math.cos(angle) * r
-          const y = cy + Math.sin(angle) * r
-          const delay = (i * 0.3).toFixed(1)
-          const dur = (1.8 + (i % 3) * 0.4).toFixed(1)
+        {/* Lignes verticales haut (modules → hub) + bullets */}
+        {topModules.map((m, i) => {
+          const mx = 80 + i * 105
+          const dur = (1.5 + i * 0.2).toFixed(1)
+          const delay = (i * 0.4).toFixed(1)
           return (
-            <g key={c.id + '-conn'}>
-              {/* Ligne de connexion */}
-              <line x1={cx} y1={cy} x2={x} y2={y} stroke={c.color} strokeWidth="1" opacity="0.2" />
-              {/* Bullet aller (hub → outil) */}
-              <circle r="3.5" fill={c.color} filter="url(#bulletGlow)" opacity="0.9">
-                <animateMotion dur={dur + 's'} repeatCount="indefinite" begin={delay + 's'}>
-                  <mpath xlinkHref={`#path-${c.id}`} />
-                </animateMotion>
+            <g key={m.id}>
+              <line x1={mx} y1={topY + moduleH} x2={mx} y2={hubY} stroke={m.color} strokeWidth="1.5" opacity="0.25" />
+              {/* Bullet descendante (module → hub) */}
+              <circle r="4" fill={m.color} filter="url(#bulletGlow)" opacity="0.9">
+                <animate attributeName="cy" values={`${topY + moduleH};${hubY}`} dur={dur + 's'} repeatCount="indefinite" begin={delay + 's'} />
+                <animate attributeName="cx" values={`${mx};${mx}`} dur={dur + 's'} repeatCount="indefinite" begin={delay + 's'} />
               </circle>
-              {/* Bullet retour (outil → hub) */}
-              <circle r="2.5" fill="#1D9BF0" filter="url(#bulletGlow)" opacity="0.7">
-                <animateMotion dur={dur + 's'} repeatCount="indefinite" begin={(parseFloat(delay) + parseFloat(dur) / 2).toFixed(1) + 's'} keyPoints="1;0" keyTimes="0;1" calcMode="linear">
-                  <mpath xlinkHref={`#path-${c.id}`} />
-                </animateMotion>
+              {/* Bullet montante (hub → module) */}
+              <circle r="3" fill="#1D9BF0" filter="url(#bulletGlow)" opacity="0.6">
+                <animate attributeName="cy" values={`${hubY};${topY + moduleH}`} dur={dur + 's'} repeatCount="indefinite" begin={(parseFloat(delay) + 0.7).toFixed(1) + 's'} />
+                <animate attributeName="cx" values={`${mx};${mx}`} dur={dur + 's'} repeatCount="indefinite" begin={(parseFloat(delay) + 0.7).toFixed(1) + 's'} />
               </circle>
-              {/* Path invisible pour l'animation */}
-              <path id={`path-${c.id}`} d={`M${cx},${cy} L${x},${y}`} fill="none" stroke="none" />
             </g>
           )
         })}
 
-        {/* Hub central */}
-        <circle cx={cx} cy={cy} r={48} fill="url(#hubCore)" stroke="#1D9BF0" strokeWidth="2" className="multiprise-hub" />
-        <circle cx={cx} cy={cy} r={52} fill="none" stroke="#1D9BF0" strokeWidth="0.8" opacity="0.4">
-          <animate attributeName="r" values="52;58;52" dur="3s" repeatCount="indefinite" />
-          <animate attributeName="opacity" values="0.4;0.1;0.4" dur="3s" repeatCount="indefinite" />
-        </circle>
-        <text x={cx} y={cy - 10} textAnchor="middle" fill="#fff" fontSize="13" fontWeight="800" letterSpacing="1.5">TIME</text>
-        <text x={cx} y={cy + 6} textAnchor="middle" fill="#1D9BF0" fontSize="13" fontWeight="800" letterSpacing="1.5">BLAST</text>
-        <text x={cx} y={cy + 22} textAnchor="middle" fill="#60d394" fontSize="8" fontWeight="700">.ai</text>
-        <text x={cx} y={cy + 36} textAnchor="middle" fill="#98c1d9" fontSize="6.5" fontWeight="600" opacity="0.8">⚡ Agent IA</text>
-
-        {/* Noeuds outils */}
-        {displayed.map((c, i) => {
-          const angle = (i / displayed.length) * Math.PI * 2 - Math.PI / 2
-          const x = cx + Math.cos(angle) * r
-          const y = cy + Math.sin(angle) * r
+        {/* Lignes verticales bas (hub → modules) + bullets */}
+        {bottomModules.map((m, i) => {
+          const mx = 80 + i * 105
+          const dur = (1.5 + i * 0.2).toFixed(1)
+          const delay = (i * 0.3 + 0.2).toFixed(1)
           return (
-            <g key={c.id}>
-              <circle cx={x} cy={y} r={22} fill="#fff" stroke={c.color} strokeWidth="2" opacity="0.95" />
-              <circle cx={x} cy={y} r={22} fill={c.color} opacity="0.08" />
-              <text x={x} y={y + 1} textAnchor="middle" dominantBaseline="central" fill="#1a2332" fontSize="6.5" fontWeight="600">
-                {c.name.length > 10 ? c.name.slice(0, 9) + '…' : c.name}
-              </text>
+            <g key={m.id}>
+              <line x1={mx} y1={hubY + hubH} x2={mx} y2={bottomY} stroke={m.color} strokeWidth="1.5" opacity="0.25" />
+              {/* Bullet descendante (hub → module) */}
+              <circle r="4" fill={m.color} filter="url(#bulletGlow)" opacity="0.9">
+                <animate attributeName="cy" values={`${hubY + hubH};${bottomY}`} dur={dur + 's'} repeatCount="indefinite" begin={delay + 's'} />
+                <animate attributeName="cx" values={`${mx};${mx}`} dur={dur + 's'} repeatCount="indefinite" begin={delay + 's'} />
+              </circle>
+              {/* Bullet montante (module → hub) */}
+              <circle r="3" fill="#1D9BF0" filter="url(#bulletGlow)" opacity="0.6">
+                <animate attributeName="cy" values={`${bottomY};${hubY + hubH}`} dur={dur + 's'} repeatCount="indefinite" begin={(parseFloat(delay) + 0.8).toFixed(1) + 's'} />
+                <animate attributeName="cx" values={`${mx};${mx}`} dur={dur + 's'} repeatCount="indefinite" begin={(parseFloat(delay) + 0.8).toFixed(1) + 's'} />
+              </circle>
             </g>
           )
         })}
 
-        {/* Label lecture/écriture */}
-        <rect x={cx - 55} y={cy + 70} width={110} height={20} rx={10} fill="#0f3d5c" opacity="0.7" />
-        <text x={cx} y={cy + 83} textAnchor="middle" fill="#98c1d9" fontSize="7" fontWeight="600">↕ Lecture / Écriture</text>
+        {/* Modules HAUT */}
+        {topModules.map((m, i) => {
+          const mx = 80 + i * 105
+          return (
+            <g key={m.id + '-top'}>
+              <rect x={mx - moduleW / 2} y={topY} width={moduleW} height={moduleH} rx={10} fill="#fff" stroke={m.color} strokeWidth="1.5" />
+              <text x={mx} y={topY + moduleH / 2 + 1} textAnchor="middle" dominantBaseline="central" fill="#1a2332" fontSize="10" fontWeight="700">{m.icon} {m.label}</text>
+            </g>
+          )
+        })}
+
+        {/* HUB CENTRAL - Agent IA */}
+        <rect x={cx - hubW / 2} y={hubY} width={hubW} height={hubH} rx={16} fill="url(#hubGrad)" stroke="#1D9BF0" strokeWidth="2" />
+        {/* Halo pulsant */}
+        <rect x={cx - hubW / 2 - 4} y={hubY - 4} width={hubW + 8} height={hubH + 8} rx={20} fill="none" stroke="#1D9BF0" strokeWidth="1" opacity="0.3">
+          <animate attributeName="opacity" values="0.3;0.08;0.3" dur="2.5s" repeatCount="indefinite" />
+        </rect>
+        <text x={cx} y={hubY + 22} textAnchor="middle" fill="#fff" fontSize="14" fontWeight="800" letterSpacing="1">🤖 AGENT IA</text>
+        <text x={cx} y={hubY + 38} textAnchor="middle" fill="#1D9BF0" fontSize="11" fontWeight="700">TIMEBLAST.AI</text>
+        <text x={cx} y={hubY + 54} textAnchor="middle" fill="#98c1d9" fontSize="7" fontWeight="500" opacity="0.9">Lit · Connecte · Synchronise · Nettoie · Automatise</text>
+
+        {/* Flèches bidirectionnelles */}
+        <text x={cx - hubW / 2 - 14} y={hubY + hubH / 2 + 2} textAnchor="middle" fill="#1D9BF0" fontSize="12" fontWeight="700">←</text>
+        <text x={cx + hubW / 2 + 14} y={hubY + hubH / 2 + 2} textAnchor="middle" fill="#1D9BF0" fontSize="12" fontWeight="700">→</text>
+
+        {/* Modules BAS */}
+        {bottomModules.map((m, i) => {
+          const mx = 80 + i * 105
+          return (
+            <g key={m.id + '-bot'}>
+              <rect x={mx - moduleW / 2} y={bottomY} width={moduleW} height={moduleH} rx={10} fill="#fff" stroke={m.color} strokeWidth="1.5" />
+              <text x={mx} y={bottomY + moduleH / 2 + 1} textAnchor="middle" dominantBaseline="central" fill="#1a2332" fontSize="10" fontWeight="700">{m.icon} {m.label}</text>
+            </g>
+          )
+        })}
+
+        {/* Label Lecture / Écriture */}
+        <rect x={cx - 60} y={hubY + hubH + 8} width={120} height={18} rx={9} fill="#0f3d5c" opacity="0.6" />
+        <text x={cx} y={hubY + hubH + 20} textAnchor="middle" fill="#98c1d9" fontSize="7" fontWeight="600">↕ Lecture / Écriture</text>
       </svg>
     </div>
   )
