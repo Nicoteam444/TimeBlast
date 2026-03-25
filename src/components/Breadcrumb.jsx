@@ -31,7 +31,7 @@ const ROUTE_LABELS = {
   'devis':         'Devis',
 
   // Activité
-  'saisie':        'Saisie des temps',
+  'saisie':        'Calendrier',
   'planification': 'Planification',
   'projets':       'Gestion de projet',
   'validation':    'Validations',

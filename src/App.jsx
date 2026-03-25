@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, lazy, Suspense } from 'react'
 import { BrowserRouter, Routes, Route, Navigate, useNavigate } from 'react-router-dom'
 import { AuthProvider } from './contexts/AuthContext'
 import { DemoProvider } from './contexts/DemoContext'
@@ -9,70 +9,82 @@ import { FavoritesProvider } from './contexts/FavoritesContext'
 import ProtectedRoute from './components/ProtectedRoute'
 import Layout from './components/Layout'
 import LoginPage from './pages/LoginPage'
-import FactureElectroniquePage from './pages/FactureElectroniquePage'
 import DashboardPage from './pages/DashboardPage'
-import AdminPage from './pages/admin/AdminPage'
-import AdminUtilisateursPage from './pages/admin/AdminUtilisateursPage'
-import AdminAuditPage from './pages/admin/AdminAuditPage'
-import AdminMessagesPage from './pages/admin/AdminMessagesPage'
-import AdminPageViewsPage from './pages/admin/AdminPageViewsPage'
-import AdminSocietesPage from './pages/admin/AdminSocietesPage'
-import AdminSocieteDetailPage from './pages/admin/AdminSocieteDetailPage'
-import AdminGroupesPage from './pages/admin/AdminGroupesPage'
-import AdminOrganigrammePage from './pages/admin/AdminOrganigrammePage'
-import WorkflowsPage from './pages/admin/WorkflowsPage'
-import AnalyticsPage from './pages/admin/AnalyticsPage'
-import ParametresPage from './pages/parametres/ParametresPage'
-import ClientDetailPage from './pages/clients/ClientDetailPage'
-import ClientInvoicePortal from './pages/clients/ClientInvoicePortal'
-import ClientsPage from './pages/temps/ClientsPage'
-import TransactionsPage from './pages/commerce/TransactionsPage'
-import TransactionDetailPage from './pages/commerce/TransactionDetailPage'
-import ProjetsWrapper from './pages/commerce/ProjetsWrapper'
-import AchatsPage from './pages/commerce/AchatsPage'
-import StockPage from './pages/commerce/StockPage'
-import ProduitsPage from './pages/commerce/ProduitsPage'
-import AbonnementsPage from './pages/commerce/AbonnementsPage'
-import DevisPage from './pages/commerce/DevisPage'
-import ReportingPage from './pages/activite/ReportingPage'
-import RentabilitePage from './pages/activite/RentabilitePage'
-import SaisiePage from './pages/activite/SaisiePage'
-import CalendrierPage from './pages/CalendrierPage'
-import EquipePage from './pages/activite/EquipePage'
-import ValidationPage from './pages/manager/ValidationPage'
-import AbsencesPage from './pages/activite/AbsencesPage'
-import PlanificationPage from './pages/temps/PlanificationPage'
-import BusinessIntelligencePage from './pages/finance/BusinessIntelligencePage'
-import FacturationPage from './pages/facturation/FacturationPage'
-import FacturesFournisseursPage from './pages/facturation/FacturesFournisseursPage'
-import TransactionsBancairesPage from './pages/gestion/TransactionsBancairesPage'
-import TableauDeBordGestionPage from './pages/gestion/TableauDeBordGestionPage'
-import ComptaPage from './pages/compta/ComptaPage'
-import ComptaImportPage from './pages/compta/ComptaImportPage'
-import ComptaEcrituresPage from './pages/compta/ComptaEcrituresPage'
-import ComptaAnalysePage from './pages/compta/ComptaAnalysePage'
-import SaisieEcriturePage from './pages/compta/SaisieEcriturePage'
-import PrevisionnelPage from './pages/finance/PrevisionnelPage'
-import ImmobilisationsPage from './pages/finance/ImmobilisationsPage'
-import RapprochementPage from './pages/finance/RapprochementPage'
-import AutomationWorkflowsPage from './pages/finance/AutomationWorkflowsPage'
-import TrombinosccopePage from './pages/equipe/TrombinosccopePage'
-import CollaborateurPage from './pages/equipe/CollaborateurPage'
-import OrganigrammePage from './pages/equipe/OrganigrammePage'
-import NotesDeFraisPage from './pages/equipe/NotesDeFraisPage'
-import CompetencesPage from './pages/equipe/CompetencesPage'
-import SetPasswordPage from './pages/SetPasswordPage'
-import UnauthorizedPage from './pages/UnauthorizedPage'
-import SearchPage from './pages/SearchPage'
-import NotificationsPage from './pages/NotificationsPage'
-import CrmContactsPage from './pages/crm/ContactsPage'
-import CrmEntreprisesPage from './pages/crm/EntreprisesPage'
-import CrmLeadsPage from './pages/crm/LeadsPage'
-import CrmContactDetailPage from './pages/crm/ContactDetailPage'
-import CategoryLandingPage from './pages/CategoryLandingPage'
-import CampagnesPage from './pages/marketing/CampagnesPage'
-import DocumentsArchivePage from './pages/documents/DocumentsArchivePage'
-import TaskDetailPage from './pages/temps/TaskDetailPage'
+
+// Lazy loaded pages
+const FactureElectroniquePage = lazy(() => import('./pages/FactureElectroniquePage'))
+const AdminPage = lazy(() => import('./pages/admin/AdminPage'))
+const AdminUtilisateursPage = lazy(() => import('./pages/admin/AdminUtilisateursPage'))
+const AdminAuditPage = lazy(() => import('./pages/admin/AdminAuditPage'))
+const AdminMessagesPage = lazy(() => import('./pages/admin/AdminMessagesPage'))
+const AdminPageViewsPage = lazy(() => import('./pages/admin/AdminPageViewsPage'))
+const AdminSocietesPage = lazy(() => import('./pages/admin/AdminSocietesPage'))
+const AdminSocieteDetailPage = lazy(() => import('./pages/admin/AdminSocieteDetailPage'))
+const AdminGroupesPage = lazy(() => import('./pages/admin/AdminGroupesPage'))
+const AdminOrganigrammePage = lazy(() => import('./pages/admin/AdminOrganigrammePage'))
+const WorkflowsPage = lazy(() => import('./pages/admin/WorkflowsPage'))
+const AnalyticsPage = lazy(() => import('./pages/admin/AnalyticsPage'))
+const ParametresPage = lazy(() => import('./pages/parametres/ParametresPage'))
+const ClientDetailPage = lazy(() => import('./pages/clients/ClientDetailPage'))
+const ClientInvoicePortal = lazy(() => import('./pages/clients/ClientInvoicePortal'))
+const ClientsPage = lazy(() => import('./pages/temps/ClientsPage'))
+const TransactionsPage = lazy(() => import('./pages/commerce/TransactionsPage'))
+const TransactionDetailPage = lazy(() => import('./pages/commerce/TransactionDetailPage'))
+const ProjetsWrapper = lazy(() => import('./pages/commerce/ProjetsWrapper'))
+const AchatsPage = lazy(() => import('./pages/commerce/AchatsPage'))
+const StockPage = lazy(() => import('./pages/commerce/StockPage'))
+const ProduitsPage = lazy(() => import('./pages/commerce/ProduitsPage'))
+const AbonnementsPage = lazy(() => import('./pages/commerce/AbonnementsPage'))
+const DevisPage = lazy(() => import('./pages/commerce/DevisPage'))
+const ReportingPage = lazy(() => import('./pages/activite/ReportingPage'))
+const RentabilitePage = lazy(() => import('./pages/activite/RentabilitePage'))
+const SaisiePage = lazy(() => import('./pages/activite/SaisiePage'))
+const CalendrierPage = lazy(() => import('./pages/CalendrierPage'))
+const EquipePage = lazy(() => import('./pages/activite/EquipePage'))
+const ValidationPage = lazy(() => import('./pages/manager/ValidationPage'))
+const AbsencesPage = lazy(() => import('./pages/activite/AbsencesPage'))
+const PlanificationPage = lazy(() => import('./pages/temps/PlanificationPage'))
+const BusinessIntelligencePage = lazy(() => import('./pages/finance/BusinessIntelligencePage'))
+const FacturationPage = lazy(() => import('./pages/facturation/FacturationPage'))
+const FacturesFournisseursPage = lazy(() => import('./pages/facturation/FacturesFournisseursPage'))
+const TransactionsBancairesPage = lazy(() => import('./pages/gestion/TransactionsBancairesPage'))
+const TableauDeBordGestionPage = lazy(() => import('./pages/gestion/TableauDeBordGestionPage'))
+const ComptaPage = lazy(() => import('./pages/compta/ComptaPage'))
+const ComptaImportPage = lazy(() => import('./pages/compta/ComptaImportPage'))
+const ComptaEcrituresPage = lazy(() => import('./pages/compta/ComptaEcrituresPage'))
+const ComptaAnalysePage = lazy(() => import('./pages/compta/ComptaAnalysePage'))
+const SaisieEcriturePage = lazy(() => import('./pages/compta/SaisieEcriturePage'))
+const PrevisionnelPage = lazy(() => import('./pages/finance/PrevisionnelPage'))
+const ImmobilisationsPage = lazy(() => import('./pages/finance/ImmobilisationsPage'))
+const RapprochementPage = lazy(() => import('./pages/finance/RapprochementPage'))
+const AutomationWorkflowsPage = lazy(() => import('./pages/finance/AutomationWorkflowsPage'))
+const TrombinosccopePage = lazy(() => import('./pages/equipe/TrombinosccopePage'))
+const CollaborateurPage = lazy(() => import('./pages/equipe/CollaborateurPage'))
+const OrganigrammePage = lazy(() => import('./pages/equipe/OrganigrammePage'))
+const NotesDeFraisPage = lazy(() => import('./pages/equipe/NotesDeFraisPage'))
+const CompetencesPage = lazy(() => import('./pages/equipe/CompetencesPage'))
+const SetPasswordPage = lazy(() => import('./pages/SetPasswordPage'))
+const UnauthorizedPage = lazy(() => import('./pages/UnauthorizedPage'))
+const SearchPage = lazy(() => import('./pages/SearchPage'))
+const NotificationsPage = lazy(() => import('./pages/NotificationsPage'))
+const CrmContactsPage = lazy(() => import('./pages/crm/ContactsPage'))
+const CrmEntreprisesPage = lazy(() => import('./pages/crm/EntreprisesPage'))
+const CrmLeadsPage = lazy(() => import('./pages/crm/LeadsPage'))
+const CrmContactDetailPage = lazy(() => import('./pages/crm/ContactDetailPage'))
+const CategoryLandingPage = lazy(() => import('./pages/CategoryLandingPage'))
+const CampagnesPage = lazy(() => import('./pages/marketing/CampagnesPage'))
+const DocumentsArchivePage = lazy(() => import('./pages/documents/DocumentsArchivePage'))
+const TaskDetailPage = lazy(() => import('./pages/temps/TaskDetailPage'))
+
+// Spinner global pour lazy loading
+function LazySpinner() {
+  return (
+    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: 'calc(100vh - 120px)' }}>
+      <div style={{ width: 36, height: 36, border: '4px solid #e2e8f0', borderTopColor: '#2B4C7E', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
+      <style>{`@keyframes spin { to { transform: rotate(360deg) } }`}</style>
+    </div>
+  )
+}
 import './App.css'
 
 function InviteHandler() {
@@ -88,6 +100,7 @@ function InviteHandler() {
 
 function AppRoutes() {
   return (
+    <Suspense fallback={<LazySpinner />}>
     <Routes>
       <Route path="/login" element={<><InviteHandler /><LoginPage /></>} />
       <Route path="/facture-electronique" element={<FactureElectroniquePage />} />
@@ -328,6 +341,7 @@ function AppRoutes() {
 
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
+    </Suspense>
   )
 }
 

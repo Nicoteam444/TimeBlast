@@ -795,6 +795,21 @@ export default function SaisiePage() {
           })}
         </div>
 
+        {/* Spinner chargement */}
+        {loading && (
+          <div style={{
+            position: 'absolute', top: 0, left: 0, right: 0, bottom: 0,
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            background: 'rgba(255,255,255,0.7)', zIndex: 10
+          }}>
+            <div style={{
+              width: 36, height: 36, border: '4px solid #e2e8f0', borderTopColor: '#2B4C7E',
+              borderRadius: '50%', animation: 'spin 0.8s linear infinite'
+            }} />
+            <style>{`@keyframes spin { to { transform: rotate(360deg) } }`}</style>
+          </div>
+        )}
+
         {/* Corps scrollable */}
         <div className="cal-grid-body">
           {/* Gouttière heures */}
