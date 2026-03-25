@@ -515,157 +515,168 @@ export default function DocumentsArchivePage() {
           )}
         </div>
 
-        {/* ====== RIGHT PANEL: PREVIEW ====== */}
+        {/* ====== RIGHT PANEL: PREVIEW FORMAT A4 ====== */}
         {previewDoc && (
           <div style={{
-            background: 'var(--card-bg, #fff)',
+            background: '#e8ecf0',
             borderLeft: '1px solid var(--border, #e2e8f0)',
-            padding: '1.25rem',
+            padding: '.75rem',
             overflowY: 'auto',
             maxHeight: 'calc(100vh - 140px)',
             display: 'flex',
             flexDirection: 'column',
-            gap: '1rem',
+            gap: '.75rem',
           }}>
-            {/* Close button */}
+            {/* Header bar */}
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '.5rem', minWidth: 0 }}>
-                <span style={{ fontSize: '1.25rem', flexShrink: 0 }}>{TYPE_ICONS[previewDoc.type_document] || '📄'}</span>
-                <span style={{ fontWeight: 600, fontSize: '.95rem', color: 'var(--text, #1e293b)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                  {previewDoc.nom}
-                </span>
-                <span style={{
-                  flexShrink: 0, padding: '2px 8px', borderRadius: 4, fontSize: '.7rem', fontWeight: 600,
-                  color: TYPE_COLORS[previewDoc.type_document] || '#64748b',
-                  background: '#f1f5f9', border: '1px solid #e2e8f0',
-                }}>
-                  {TYPE_OPTIONS.find(o => o.value === previewDoc.type_document)?.label || previewDoc.type_document}
-                </span>
+              <span style={{ fontSize: '.8rem', fontWeight: 600, color: 'var(--text)' }}>Prévisualisation</span>
+              <div style={{ display: 'flex', gap: '.35rem' }}>
+                <button style={{ fontSize: '.75rem', padding: '.3rem .6rem', borderRadius: 6, border: '1px solid #e2e8f0', background: '#fff', cursor: 'pointer', fontWeight: 600 }}>📄 PDF</button>
+                <button onClick={() => setPreviewDoc(null)} style={{ fontSize: '.75rem', padding: '.3rem .6rem', borderRadius: 6, border: '1px solid #e2e8f0', background: '#fff', cursor: 'pointer' }}>✕</button>
               </div>
-              <button
-                onClick={() => setPreviewDoc(null)}
-                style={{
-                  background: 'none', border: 'none', cursor: 'pointer', fontSize: '1.1rem',
-                  color: 'var(--text-muted, #64748b)', padding: '.25rem .4rem', borderRadius: 4,
-                  lineHeight: 1, flexShrink: 0,
-                }}
-                title="Fermer"
-              >✕</button>
             </div>
 
-            {/* Large preview area */}
+            {/* A4 Paper */}
             <div style={{
-              flex: '0 0 70%',
-              background: '#f8fafc',
-              border: '1px solid var(--border, #e2e8f0)',
-              borderRadius: 8,
-              overflow: 'hidden',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              minHeight: 200,
+              background: '#fff', borderRadius: 4, boxShadow: '0 2px 12px rgba(0,0,0,.12)',
+              padding: '2.5rem 2rem', minHeight: 500, fontSize: '.82rem', color: '#1e293b',
+              lineHeight: 1.5, position: 'relative',
             }}>
-              {previewDoc.fichier_url ? (
-                previewDoc.fichier_url.toLowerCase().endsWith('.pdf') ? (
-                  <iframe
-                    src={previewDoc.fichier_url}
-                    title={previewDoc.nom}
-                    style={{ width: '100%', height: '100%', border: 'none', minHeight: 400 }}
-                  />
-                ) : (
-                  <img
-                    src={previewDoc.fichier_url}
-                    alt={previewDoc.nom}
-                    style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain' }}
-                  />
-                )
-              ) : (
+              {/* En-tête : Fournisseur + Type badge */}
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1.5rem' }}>
+                <div>
+                  <div style={{ fontSize: '1.1rem', fontWeight: 800, color: '#1e293b' }}>{previewDoc.fournisseur || 'Document'}</div>
+                  {previewDoc.reference && <div style={{ fontSize: '.78rem', color: '#64748b' }}>Réf : {previewDoc.reference}</div>}
+                  {previewDoc.numero_commande && <div style={{ fontSize: '.78rem', color: '#64748b' }}>Commande : {previewDoc.numero_commande}</div>}
+                </div>
                 <div style={{
-                  display: 'flex', flexDirection: 'column', alignItems: 'center',
-                  justifyContent: 'center', gap: '.5rem', padding: '2rem', width: '100%', height: '100%',
+                  background: '#1e293b', color: '#fff', borderRadius: 8, padding: '.6rem 1rem',
+                  textAlign: 'center', minWidth: 140,
                 }}>
-                  <div style={{ fontSize: '3.5rem', opacity: 0.5 }}>{TYPE_ICONS[previewDoc.type_document] || '📄'}</div>
-                  <div style={{ width: '60%', height: 4, background: '#cbd5e1', borderRadius: 2 }} />
-                  <div style={{ width: '75%', height: 4, background: '#e2e8f0', borderRadius: 2 }} />
-                  <div style={{ width: '50%', height: 4, background: '#e2e8f0', borderRadius: 2 }} />
-                  <div style={{ width: '65%', height: 4, background: '#e2e8f0', borderRadius: 2 }} />
-                  <div style={{ width: '40%', height: 4, background: '#e2e8f0', borderRadius: 2 }} />
-                  <div style={{ width: '70%', height: 4, background: '#e2e8f0', borderRadius: 2 }} />
-                  {previewDoc.fournisseur && (
-                    <div style={{
-                      marginTop: '.75rem', fontSize: '.8rem', fontWeight: 600,
-                      color: TYPE_COLORS[previewDoc.type_document] || '#64748b',
-                    }}>
-                      {previewDoc.fournisseur}
+                  <div style={{ fontSize: '.65rem', fontWeight: 600, textTransform: 'uppercase', letterSpacing: 1.5, opacity: .8 }}>
+                    {TYPE_OPTIONS.find(o => o.value === previewDoc.type_document)?.label || 'DOCUMENT'}
+                  </div>
+                  <div style={{ fontSize: '.95rem', fontWeight: 800, marginTop: 2 }}>{previewDoc.nom}</div>
+                  {previewDoc.date_document && (
+                    <div style={{ fontSize: '.7rem', marginTop: 4, opacity: .7 }}>
+                      {fmtDate(previewDoc.date_document)}
+                    </div>
+                  )}
+                  {previewDoc.date_echeance && (
+                    <div style={{ fontSize: '.65rem', opacity: .6 }}>
+                      Éch. {fmtDate(previewDoc.date_echeance)}
                     </div>
                   )}
                 </div>
+              </div>
+
+              {/* Destinataire */}
+              <div style={{
+                borderLeft: '3px solid #1e293b', paddingLeft: '1rem', marginBottom: '1.5rem',
+                background: '#f8fafc', padding: '.75rem 1rem', borderRadius: '0 8px 8px 0',
+              }}>
+                <div style={{ fontSize: '.65rem', fontWeight: 600, textTransform: 'uppercase', color: '#94a3b8', letterSpacing: 1 }}>Document de</div>
+                <div style={{ fontWeight: 700, fontSize: '.95rem' }}>{previewDoc.fournisseur || '—'}</div>
+                {previewDoc.numero_commande && <div style={{ fontSize: '.78rem', color: '#64748b' }}>N° commande : {previewDoc.numero_commande}</div>}
+              </div>
+
+              {/* Montants (style tableau facture) */}
+              {(previewDoc.montant_ht || previewDoc.montant_ttc) && (
+                <div style={{ marginBottom: '1.5rem' }}>
+                  <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '.8rem' }}>
+                    <thead>
+                      <tr style={{ borderBottom: '2px solid #1e293b' }}>
+                        <th style={{ textAlign: 'left', padding: '.5rem .75rem', fontSize: '.7rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: .5, color: '#1e293b' }}>Description</th>
+                        <th style={{ textAlign: 'right', padding: '.5rem .75rem', fontSize: '.7rem', fontWeight: 700, textTransform: 'uppercase' }}>Montant HT</th>
+                        <th style={{ textAlign: 'right', padding: '.5rem .75rem', fontSize: '.7rem', fontWeight: 700, textTransform: 'uppercase' }}>TVA</th>
+                        <th style={{ textAlign: 'right', padding: '.5rem .75rem', fontSize: '.7rem', fontWeight: 700, textTransform: 'uppercase' }}>Total TTC</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr style={{ borderBottom: '1px solid #e2e8f0' }}>
+                        <td style={{ padding: '.6rem .75rem' }}>{previewDoc.nom}</td>
+                        <td style={{ padding: '.6rem .75rem', textAlign: 'right' }}>{previewDoc.montant_ht ? fmtEUR(previewDoc.montant_ht) : '—'}</td>
+                        <td style={{ padding: '.6rem .75rem', textAlign: 'right' }}>{previewDoc.montant_tva ? fmtEUR(previewDoc.montant_tva) : '—'}</td>
+                        <td style={{ padding: '.6rem .75rem', textAlign: 'right', fontWeight: 700 }}>{previewDoc.montant_ttc ? fmtEUR(previewDoc.montant_ttc) : '—'}</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                  {/* Totaux */}
+                  <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '.75rem' }}>
+                    <div style={{ minWidth: 200 }}>
+                      {previewDoc.montant_ht != null && (
+                        <div style={{ display: 'flex', justifyContent: 'space-between', padding: '.3rem .75rem', fontSize: '.8rem' }}>
+                          <span>Total HT</span><span style={{ fontWeight: 600 }}>{fmtEUR(previewDoc.montant_ht)}</span>
+                        </div>
+                      )}
+                      {previewDoc.montant_tva != null && (
+                        <div style={{ display: 'flex', justifyContent: 'space-between', padding: '.3rem .75rem', fontSize: '.8rem' }}>
+                          <span>TVA</span><span style={{ fontWeight: 600 }}>{fmtEUR(previewDoc.montant_tva)}</span>
+                        </div>
+                      )}
+                      {previewDoc.montant_ttc != null && (
+                        <div style={{
+                          display: 'flex', justifyContent: 'space-between', padding: '.5rem .75rem',
+                          background: '#1e293b', color: '#fff', borderRadius: 4, fontWeight: 800, fontSize: '.9rem', marginTop: '.25rem',
+                        }}>
+                          <span>TOTAL TTC</span><span>{fmtEUR(previewDoc.montant_ttc)}</span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
               )}
-            </div>
 
-            {/* Info section */}
-            <div style={{
-              display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '.5rem .75rem',
-              fontSize: '.8rem', color: 'var(--text, #1e293b)',
-            }}>
-              <InfoRow label="Fournisseur" value={previewDoc.fournisseur} />
-              <InfoRow label="Référence" value={previewDoc.reference} />
-              <InfoRow label="N° commande" value={previewDoc.numero_commande} />
-              <InfoRow label="Date document" value={fmtDate(previewDoc.date_document)} />
-              <InfoRow label="Date échéance" value={fmtDate(previewDoc.date_echeance)} />
-              <InfoRow label="Montant HT" value={fmtEUR(previewDoc.montant_ht)} />
-              <InfoRow label="TVA" value={fmtEUR(previewDoc.montant_tva)} />
-              <InfoRow label="Montant TTC" value={fmtEUR(previewDoc.montant_ttc)} />
-              <InfoRow label="Début prestation" value={fmtDate(previewDoc.date_debut_prestation)} />
-              <InfoRow label="Fin prestation" value={fmtDate(previewDoc.date_fin_prestation)} />
-            </div>
+              {/* Dates prestation */}
+              {(previewDoc.date_debut_prestation || previewDoc.date_fin_prestation) && (
+                <div style={{ background: '#fffbeb', border: '1px solid #fde68a', borderRadius: 6, padding: '.6rem .85rem', marginBottom: '1rem', fontSize: '.78rem' }}>
+                  <span style={{ fontWeight: 600 }}>Période : </span>
+                  {previewDoc.date_debut_prestation && fmtDate(previewDoc.date_debut_prestation)}
+                  {previewDoc.date_debut_prestation && previewDoc.date_fin_prestation && ' → '}
+                  {previewDoc.date_fin_prestation && fmtDate(previewDoc.date_fin_prestation)}
+                </div>
+              )}
 
-            {/* Tags */}
-            {previewDoc.tags && previewDoc.tags.length > 0 && (
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '.35rem' }}>
-                {previewDoc.tags.map((tag, i) => (
-                  <span key={i} style={{
-                    padding: '2px 8px', borderRadius: 12, fontSize: '.7rem', fontWeight: 500,
-                    background: '#e0f2fe', color: '#0369a1', border: '1px solid #bae6fd',
-                  }}>{tag}</span>
-                ))}
+              {/* Tags */}
+              {previewDoc.tags && previewDoc.tags.length > 0 && (
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '.35rem', marginBottom: '1rem' }}>
+                  {previewDoc.tags.map((tag, i) => (
+                    <span key={i} style={{
+                      padding: '2px 8px', borderRadius: 12, fontSize: '.68rem', fontWeight: 500,
+                      background: '#e0f2fe', color: '#0369a1', border: '1px solid #bae6fd',
+                    }}>{tag}</span>
+                  ))}
+                </div>
+              )}
+
+              {/* OCR content */}
+              {previewDoc.ocr_contenu && (
+                <div style={{
+                  background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: 6,
+                  padding: '.75rem', fontSize: '.75rem', fontFamily: 'monospace',
+                  color: '#475569', lineHeight: 1.6, whiteSpace: 'pre-wrap',
+                  maxHeight: 200, overflowY: 'auto',
+                }}>
+                  {previewDoc.ocr_contenu}
+                </div>
+              )}
+
+              {/* Footer */}
+              <div style={{
+                position: 'absolute', bottom: '1.5rem', left: '2rem', right: '2rem',
+                borderTop: '1px solid #e2e8f0', paddingTop: '.5rem',
+                textAlign: 'center', fontSize: '.65rem', color: '#94a3b8',
+              }}>
+                {previewDoc.fournisseur || 'Document'} · {previewDoc.reference || 'Sans référence'}
+                {previewDoc.nb_pages && ` · ${previewDoc.nb_pages} page${previewDoc.nb_pages > 1 ? 's' : ''}`}
               </div>
-            )}
-
-            {/* OCR content */}
-            {previewDoc.ocr_contenu && (
-              <div>
-                <div style={{ fontSize: '.75rem', fontWeight: 600, color: 'var(--text-muted)', marginBottom: '.35rem' }}>Contenu OCR</div>
-                <textarea
-                  readOnly
-                  value={previewDoc.ocr_contenu}
-                  style={{
-                    width: '100%', minHeight: 120, maxHeight: 200, resize: 'vertical',
-                    padding: '.5rem', fontSize: '.75rem', fontFamily: 'monospace',
-                    border: '1px solid var(--border, #e2e8f0)', borderRadius: 6,
-                    background: '#f8fafc', color: 'var(--text, #1e293b)',
-                    outline: 'none',
-                  }}
-                />
-              </div>
-            )}
+            </div>
 
             {/* Action buttons */}
-            <div style={{ display: 'flex', gap: '.5rem', marginTop: 'auto', paddingTop: '.5rem', borderTop: '1px solid var(--border, #e2e8f0)' }}>
-              <button style={{
-                flex: 1, padding: '.45rem .5rem', fontSize: '.8rem', fontWeight: 600, cursor: 'pointer',
-                background: 'var(--primary, #3b82f6)', color: '#fff', border: 'none', borderRadius: 6,
-              }}>Télécharger</button>
-              <button style={{
-                flex: 1, padding: '.45rem .5rem', fontSize: '.8rem', fontWeight: 600, cursor: 'pointer',
-                background: 'var(--card-bg, #fff)', color: 'var(--text, #1e293b)',
-                border: '1px solid var(--border, #e2e8f0)', borderRadius: 6,
-              }}>Modifier</button>
-              <button style={{
-                flex: 1, padding: '.45rem .5rem', fontSize: '.8rem', fontWeight: 600, cursor: 'pointer',
-                background: '#fef2f2', color: '#dc2626',
-                border: '1px solid #fecaca', borderRadius: 6,
-              }}>Supprimer</button>
+            <div style={{ display: 'flex', gap: '.35rem' }}>
+              <button style={{ flex: 1, padding: '.45rem .5rem', fontSize: '.78rem', fontWeight: 600, cursor: 'pointer', background: 'var(--primary, #3b82f6)', color: '#fff', border: 'none', borderRadius: 6 }}>Télécharger</button>
+              <button style={{ flex: 1, padding: '.45rem .5rem', fontSize: '.78rem', fontWeight: 600, cursor: 'pointer', background: '#fff', color: 'var(--text)', border: '1px solid #e2e8f0', borderRadius: 6 }}>Modifier</button>
+              <button style={{ flex: 1, padding: '.45rem .5rem', fontSize: '.78rem', fontWeight: 600, cursor: 'pointer', background: '#fef2f2', color: '#dc2626', border: '1px solid #fecaca', borderRadius: 6 }}>Supprimer</button>
             </div>
           </div>
         )}

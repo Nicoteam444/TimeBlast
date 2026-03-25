@@ -99,6 +99,8 @@ export default function TopBar() {
     }
     if (quickAddType.key === 'projet') {
       payload.statut = payload.statut || 'actif'
+      payload.total_jours = payload.total_jours ? parseFloat(payload.total_jours) : null
+      delete payload.description
       if (selectedSociete?.id) payload.societe_id = selectedSociete.id
     }
     if (quickAddType.key === 'tache') {
@@ -331,7 +333,7 @@ export default function TopBar() {
                   </>}
                   {quickAddType.key === 'projet' && <>
                     <QuickField label="Nom" value={quickAddForm.name} onChange={v => setQuickAddForm(f => ({ ...f, name: v }))} required />
-                    <QuickField label="Description" value={quickAddForm.description} onChange={v => setQuickAddForm(f => ({ ...f, description: v }))} />
+                    <QuickField label="Budget (jours)" value={quickAddForm.total_jours} onChange={v => setQuickAddForm(f => ({ ...f, total_jours: v }))} type="number" />
                   </>}
                   {quickAddType.key === 'tache' && <>
                     <div>
