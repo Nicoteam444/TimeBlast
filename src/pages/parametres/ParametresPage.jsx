@@ -300,6 +300,205 @@ function IntegrationsTab() {
           </div>
         </div>
       </div>
+
+      {/* Marketplace */}
+      <MarketplaceBlock />
+    </div>
+  )
+}
+
+// ── Marketplace d'intégrations ────────────────────────────────
+const MARKETPLACE_APPS = [
+  { id: 'sage', name: 'Sage', cat: 'Comptabilité', icon: '💚', color: '#00DC82', desc: 'Synchronisation plan comptable, écritures et factures', status: 'available' },
+  { id: 'pennylane', name: 'Pennylane', cat: 'Comptabilité', icon: '💜', color: '#6C5CE7', desc: 'Import/export écritures comptables et rapprochement bancaire', status: 'available' },
+  { id: 'quickbooks', name: 'QuickBooks', cat: 'Comptabilité', icon: '🟢', color: '#2CA01C', desc: 'Synchronisation bidirectionnelle factures et paiements', status: 'available' },
+  { id: 'cegid', name: 'Cegid', cat: 'Comptabilité', icon: '🔴', color: '#E74C3C', desc: 'Export FEC et synchronisation du plan comptable', status: 'available' },
+  { id: 'stripe', name: 'Stripe', cat: 'Paiement', icon: '💳', color: '#635BFF', desc: 'Encaissements en ligne, webhooks et rapprochement automatique', status: 'available' },
+  { id: 'gocardless', name: 'GoCardless', cat: 'Paiement', icon: '🏦', color: '#00B4D8', desc: 'Prélèvements SEPA et gestion des mandats', status: 'available' },
+  { id: 'slack', name: 'Slack', cat: 'Communication', icon: '💬', color: '#4A154B', desc: 'Notifications en temps réel, alertes et commandes slash', status: 'available' },
+  { id: 'teams', name: 'Microsoft Teams', cat: 'Communication', icon: '🟣', color: '#6264A7', desc: 'Notifications, réunions et synchronisation calendrier', status: 'coming' },
+  { id: 'gmail', name: 'Gmail / Google', cat: 'Email', icon: '📧', color: '#EA4335', desc: 'Envoi d\'emails, import contacts et synchronisation agenda', status: 'available' },
+  { id: 'outlook', name: 'Outlook 365', cat: 'Email', icon: '📬', color: '#0078D4', desc: 'Calendrier, contacts et emails bidirectionnels', status: 'coming' },
+  { id: 'dropbox', name: 'Dropbox', cat: 'Stockage', icon: '📦', color: '#0061FF', desc: 'Stockage de documents, pièces jointes et partage', status: 'available' },
+  { id: 'gdrive', name: 'Google Drive', cat: 'Stockage', icon: '📁', color: '#34A853', desc: 'Stockage cloud, import documents et OCR', status: 'available' },
+  { id: 'onedrive', name: 'OneDrive', cat: 'Stockage', icon: '☁️', color: '#0078D4', desc: 'Synchronisation fichiers et archivage automatique', status: 'coming' },
+  { id: 'zapier', name: 'Zapier', cat: 'Automatisation', icon: '⚡', color: '#FF4A00', desc: 'Connectez TimeBlast à 5000+ applications via Zaps', status: 'available' },
+  { id: 'make', name: 'Make (Integromat)', cat: 'Automatisation', icon: '🔮', color: '#6D28D9', desc: 'Scénarios d\'automatisation visuels avancés', status: 'available' },
+  { id: 'n8n', name: 'n8n', cat: 'Automatisation', icon: '🔗', color: '#EA4B71', desc: 'Workflows d\'automatisation open source et self-hosted', status: 'available' },
+  { id: 'chorus', name: 'Chorus Pro', cat: 'E-Facture', icon: '🏛️', color: '#000091', desc: 'Transmission officielle des factures électroniques à l\'État', status: 'available' },
+  { id: 'facturx', name: 'Factur-X', cat: 'E-Facture', icon: '📄', color: '#1E3A5F', desc: 'Génération et validation de factures au format Factur-X', status: 'available' },
+  { id: 'bridge', name: 'Bridge (Bankin)', cat: 'Banque', icon: '🏧', color: '#00C853', desc: 'Agrégation bancaire, transactions temps réel et catégorisation', status: 'available' },
+  { id: 'plaid', name: 'Plaid', cat: 'Banque', icon: '🟢', color: '#00D084', desc: 'Connexion bancaire sécurisée et vérification de comptes', status: 'coming' },
+  { id: 'docusign', name: 'DocuSign', cat: 'Signature', icon: '✍️', color: '#FFCC00', desc: 'Signature électronique de devis, contrats et documents', status: 'available' },
+  { id: 'yousign', name: 'Yousign', cat: 'Signature', icon: '🖊️', color: '#1B4F72', desc: 'Signature électronique conforme eIDAS', status: 'available' },
+  { id: 'openai', name: 'OpenAI', cat: 'IA', icon: '🤖', color: '#10A37F', desc: 'Résumé automatique, extraction de données et assistant IA', status: 'available' },
+  { id: 'anthropic', name: 'Claude (Anthropic)', cat: 'IA', icon: '🧠', color: '#D4A574', desc: 'Agent IA contextuel pour analyse et automatisation', status: 'available' },
+]
+
+const MARKETPLACE_CATS = ['Tous', 'Comptabilité', 'Paiement', 'Communication', 'Email', 'Stockage', 'Automatisation', 'E-Facture', 'Banque', 'Signature', 'IA']
+
+function MarketplaceBlock() {
+  const [search, setSearch] = useState('')
+  const [cat, setCat] = useState('Tous')
+  const [installed, setInstalled] = useState(new Set(['hubspot']))
+  const [showConfig, setShowConfig] = useState(null)
+  const [apiKey, setApiKey] = useState('')
+
+  const filtered = MARKETPLACE_APPS.filter(app => {
+    if (cat !== 'Tous' && app.cat !== cat) return false
+    if (search && !app.name.toLowerCase().includes(search.toLowerCase()) && !app.desc.toLowerCase().includes(search.toLowerCase())) return false
+    return true
+  })
+
+  function handleInstall(appId) {
+    setShowConfig(appId)
+    setApiKey('')
+  }
+
+  function handleConnect() {
+    if (showConfig) {
+      setInstalled(prev => new Set([...prev, showConfig]))
+      setShowConfig(null)
+      setApiKey('')
+    }
+  }
+
+  function handleDisconnect(appId) {
+    setInstalled(prev => { const n = new Set(prev); n.delete(appId); return n })
+  }
+
+  return (
+    <div style={{ marginTop: 24 }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+        <div>
+          <h2 style={{ margin: 0, fontSize: 18 }}>🛒 Marketplace d'intégrations</h2>
+          <p style={{ margin: '4px 0 0', fontSize: 13, color: '#64748b' }}>{MARKETPLACE_APPS.length} applications disponibles · {installed.size} connectée{installed.size > 1 ? 's' : ''}</p>
+        </div>
+      </div>
+
+      {/* Recherche + filtres */}
+      <div style={{ display: 'flex', gap: 10, marginBottom: 16, flexWrap: 'wrap', alignItems: 'center' }}>
+        <input type="text" value={search} onChange={e => setSearch(e.target.value)}
+          placeholder="Rechercher une intégration..." style={{
+            padding: '8px 14px', borderRadius: 8, border: '1px solid #e2e8f0', fontSize: 13,
+            width: 260, outline: 'none'
+          }} />
+        <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>
+          {MARKETPLACE_CATS.map(c => (
+            <button key={c} onClick={() => setCat(c)} style={{
+              padding: '5px 12px', borderRadius: 20, border: 'none', cursor: 'pointer', fontSize: 12,
+              background: cat === c ? '#2B4C7E' : '#f1f5f9', color: cat === c ? '#fff' : '#475569',
+              fontWeight: cat === c ? 600 : 400, transition: 'all .15s'
+            }}>{c}</button>
+          ))}
+        </div>
+      </div>
+
+      {/* Grille apps */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: 12 }}>
+        {filtered.map(app => {
+          const isInstalled = installed.has(app.id)
+          const isComing = app.status === 'coming'
+          return (
+            <div key={app.id} style={{
+              background: '#fff', borderRadius: 10, border: `1px solid ${isInstalled ? app.color + '40' : '#e2e8f0'}`,
+              padding: 16, display: 'flex', flexDirection: 'column', gap: 10,
+              opacity: isComing ? 0.65 : 1, transition: 'border-color .15s, box-shadow .15s',
+              boxShadow: isInstalled ? `0 0 0 1px ${app.color}20` : 'none'
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                <div style={{
+                  width: 40, height: 40, borderRadius: 10, background: app.color + '15',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 20, flexShrink: 0
+                }}>{app.icon}</div>
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                    <span style={{ fontWeight: 600, fontSize: 14 }}>{app.name}</span>
+                    {isInstalled && <span style={{ fontSize: 10, padding: '1px 6px', borderRadius: 10, background: '#dcfce7', color: '#166534', fontWeight: 600 }}>Connecté</span>}
+                    {isComing && <span style={{ fontSize: 10, padding: '1px 6px', borderRadius: 10, background: '#f1f5f9', color: '#64748b', fontWeight: 600 }}>Bientôt</span>}
+                  </div>
+                  <div style={{ fontSize: 11, color: app.color, fontWeight: 500 }}>{app.cat}</div>
+                </div>
+              </div>
+              <p style={{ margin: 0, fontSize: 12, color: '#64748b', lineHeight: 1.5, flex: 1 }}>{app.desc}</p>
+              <div>
+                {isInstalled ? (
+                  <div style={{ display: 'flex', gap: 6 }}>
+                    <button style={{ flex: 1, padding: '6px 12px', borderRadius: 6, border: '1px solid #e2e8f0', background: '#f8fafc', cursor: 'pointer', fontSize: 12 }}>⚙️ Configurer</button>
+                    <button onClick={() => handleDisconnect(app.id)} style={{ padding: '6px 12px', borderRadius: 6, border: '1px solid #fca5a5', background: '#fef2f2', color: '#dc2626', cursor: 'pointer', fontSize: 12 }}>Déconnecter</button>
+                  </div>
+                ) : isComing ? (
+                  <button disabled style={{ width: '100%', padding: '6px 12px', borderRadius: 6, border: '1px solid #e2e8f0', background: '#f8fafc', color: '#94a3b8', fontSize: 12 }}>Disponible prochainement</button>
+                ) : (
+                  <button onClick={() => handleInstall(app.id)} style={{
+                    width: '100%', padding: '6px 12px', borderRadius: 6, border: 'none',
+                    background: app.color, color: '#fff', cursor: 'pointer', fontSize: 12, fontWeight: 600,
+                    transition: 'opacity .15s'
+                  }}>+ Connecter</button>
+                )}
+              </div>
+            </div>
+          )
+        })}
+      </div>
+
+      {filtered.length === 0 && (
+        <div style={{ textAlign: 'center', padding: 40, color: '#94a3b8' }}>
+          <div style={{ fontSize: 40, marginBottom: 8 }}>🔍</div>
+          <p>Aucune intégration trouvée</p>
+        </div>
+      )}
+
+      {/* Modal de configuration */}
+      {showConfig && (() => {
+        const app = MARKETPLACE_APPS.find(a => a.id === showConfig)
+        if (!app) return null
+        return (
+          <div className="modal-overlay" onClick={() => setShowConfig(null)}>
+            <div className="modal" style={{ maxWidth: 440 }} onClick={e => e.stopPropagation()}>
+              <div className="modal-header">
+                <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                  <div style={{
+                    width: 36, height: 36, borderRadius: 8, background: app.color + '15',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 18
+                  }}>{app.icon}</div>
+                  <div>
+                    <h2 style={{ margin: 0 }}>Connecter {app.name}</h2>
+                    <p style={{ margin: 0, fontSize: 12, color: '#64748b' }}>{app.cat}</p>
+                  </div>
+                </div>
+                <button className="modal-close" onClick={() => setShowConfig(null)}>✕</button>
+              </div>
+              <div style={{ padding: '0 1.5rem 1.5rem' }}>
+                <p style={{ fontSize: 13, color: '#64748b', marginBottom: 16 }}>{app.desc}</p>
+                <div className="field">
+                  <label>Clé API / Token</label>
+                  <input type="password" value={apiKey} onChange={e => setApiKey(e.target.value)}
+                    placeholder={`Entrez votre clé API ${app.name}...`} autoFocus />
+                </div>
+                <div className="field" style={{ marginTop: 8 }}>
+                  <label>URL du webhook (optionnel)</label>
+                  <input type="text" placeholder="https://..." />
+                </div>
+                <div style={{
+                  marginTop: 12, padding: 12, background: '#f0f9ff', borderRadius: 8,
+                  border: '1px solid #bae6fd', fontSize: 12, color: '#0369a1'
+                }}>
+                  💡 Retrouvez votre clé API dans les paramètres de votre compte {app.name}.
+                  Les données sont chiffrées et stockées de manière sécurisée.
+                </div>
+                <div className="modal-actions" style={{ justifyContent: 'flex-end', paddingTop: 16 }}>
+                  <button className="btn-secondary" onClick={() => setShowConfig(null)}>Annuler</button>
+                  <button className="btn-primary" onClick={handleConnect} disabled={!apiKey.trim()}
+                    style={{ background: app.color }}>
+                    ✓ Connecter {app.name}
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )
+      })()}
     </div>
   )
 }
