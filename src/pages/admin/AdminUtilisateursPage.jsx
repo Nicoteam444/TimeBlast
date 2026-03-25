@@ -826,8 +826,7 @@ function PermissionsMatrix() {
         }
       }
     }
-    await supabase.from('role_permissions').delete().neq('id', '00000000-0000-0000-0000-000000000000')
-    const { error } = await supabase.from('role_permissions').insert(rows)
+    const { error } = await supabase.from('role_permissions').upsert(rows, { onConflict: 'role,module,sub_module' })
     if (error) alert('Erreur: ' + error.message)
     else { alert('Permissions sauvegardées !'); setDirty(false) }
     setSaving(false)
