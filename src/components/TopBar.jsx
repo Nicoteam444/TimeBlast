@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react'
+import { useState, useRef, useEffect, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
 import { useDemo } from '../contexts/DemoContext'
@@ -44,6 +44,82 @@ export default function TopBar() {
   const [searchOpen, setSearchOpen]     = useState(false)
   const searchRef    = useRef(null)
   const searchDebounce = useRef(null)
+
+  // Command palette state
+  const [cmdIdx, setCmdIdx] = useState(0)
+
+  const CMD_PAGES = [
+    { label: 'Dashboard', icon: '🏠', path: '/' },
+    { label: 'Calendrier', icon: '📆', path: '/activite/saisie' },
+    { label: 'Contacts', icon: '👤', path: '/crm/contacts' },
+    { label: 'Leads', icon: '🚀', path: '/crm/leads' },
+    { label: 'Clients', icon: '👥', path: '/commerce/clients' },
+    { label: 'Opportunites', icon: '💼', path: '/commerce/transactions' },
+    { label: 'Devis', icon: '📝', path: '/commerce/devis' },
+    { label: 'Projets', icon: '📁', path: '/activite/projets' },
+    { label: 'Facturation', icon: '🧾', path: '/finance/facturation' },
+    { label: 'Achats', icon: '📥', path: '/gestion/achats' },
+    { label: 'Reporting', icon: '📊', path: '/activite/reporting' },
+    { label: 'Collaborateurs', icon: '📋', path: '/activite/equipe' },
+    { label: 'Absences', icon: '🏖️', path: '/activite/absences' },
+    { label: 'Campagnes', icon: '📣', path: '/marketing/campagnes' },
+    { label: 'Documents', icon: '🗄️', path: '/documents/archives' },
+    { label: 'Parametres', icon: '⚙️', path: '/parametres' },
+  ]
+  const CMD_ACTIONS = [
+    { label: 'Creer un contact', icon: '➕ 👤', path: '/crm/contacts' },
+    { label: 'Nouvelle opportunite', icon: '➕ 💼', path: '/commerce/transactions' },
+    { label: 'Nouveau projet', icon: '➕ 📁', path: '/activite/projets' },
+    { label: 'Saisir du temps', icon: '➕ ⏱️', path: '/activite/saisie' },
+  ]
+
+  const cmdSections = useMemo(() => {
+    const q = searchQuery.toLowerCase()
+    const sections = []
+    // Resultats Supabase
+    if (searchResults.length > 0) {
+      sections.push({ label: '🔍 Resultats', items: searchResults.map(r => ({ label: r.name, icon: r.icon || '📄', path: r.path || '/', sub: r.type })) })
+    }
+    // Pages filtrées
+    const pages = q ? CMD_PAGES.filter(p => p.label.toLowerCase().includes(q)) : CMD_PAGES.slice(0, 5)
+    if (pages.length > 0) sections.push({ label: '🧭 Navigation', items: pages.slice(0, 6) })
+    // Actions
+    const actions = q ? CMD_ACTIONS.filter(a => a.label.toLowerCase().includes(q)) : CMD_ACTIONS
+    if (actions.length > 0) sections.push({ label: '⚡ Actions rapides', items: actions })
+    return sections
+  }, [searchQuery, searchResults])
+
+  const cmdItems = useMemo(() => cmdSections.flatMap(s => s.items), [cmdSections])
+
+  useEffect(() => { setCmdIdx(0) }, [searchQuery])
+
+  function handleCmdSelect(item) {
+    if (item.path) navigate(item.path)
+    setSearchQuery('')
+    setSearchOpen(false)
+  }
+
+  // Cmd+K shortcut
+  useEffect(() => {
+    function handler(e) {
+      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+        e.preventDefault()
+        const input = searchRef.current?.querySelector('input')
+        if (input) { input.focus(); setSearchOpen(true) }
+      }
+    }
+    window.addEventListener('keydown', handler)
+    return () => window.removeEventListener('keydown', handler)
+  }, [])
+
+  // Fermer le dropdown quand on clique ailleurs
+  useEffect(() => {
+    function handleClickOutside(e) {
+      if (searchRef.current && !searchRef.current.contains(e.target)) setSearchOpen(false)
+    }
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [])
 
   // Quick Add state
   const [quickAddOpen, setQuickAddOpen] = useState(false)
@@ -199,15 +275,73 @@ export default function TopBar() {
       {/* Hamburger mobile */}
       <button className="sidebar-hamburger" onClick={toggleSidebar} aria-label="Menu">☰</button>
 
-      {/* Barre de recherche → ouvre Command Palette intégrée */}
-      <div className="topbar-search" ref={searchRef}>
-        <div className="topbar-search-wrap" onClick={() => window.dispatchEvent(new KeyboardEvent('keydown', { key: 'k', metaKey: true }))} style={{ cursor: 'pointer' }}>
+      {/* Barre de recherche avec Command Palette intégrée en dropdown */}
+      <div className="topbar-search" ref={searchRef} style={{ position: 'relative' }}>
+        <div className="topbar-search-wrap">
           <span className="topbar-search-icon">🔍</span>
-          <span className="topbar-search-input" style={{ opacity: 0.6, fontSize: '.9rem', userSelect: 'none' }}>
-            Rechercher, naviguer, agir...
-          </span>
-          <kbd style={{ padding: '2px 6px', borderRadius: 4, background: 'rgba(255,255,255,0.15)', border: '1px solid rgba(255,255,255,0.2)', fontSize: '.65rem', color: 'rgba(255,255,255,0.6)', fontFamily: 'monospace', whiteSpace: 'nowrap' }}>⌘K</kbd>
+          <input
+            type="text"
+            className="topbar-search-input"
+            placeholder="Rechercher, naviguer, agir..."
+            value={searchQuery}
+            onChange={handleSearchInput}
+            onFocus={() => setSearchOpen(true)}
+            onKeyDown={e => {
+              if (e.key === 'Escape') { setSearchOpen(false); e.target.blur() }
+              if (e.key === 'ArrowDown') { e.preventDefault(); setCmdIdx(i => Math.min(i + 1, (cmdItems || []).length - 1)) }
+              if (e.key === 'ArrowUp') { e.preventDefault(); setCmdIdx(i => Math.max(i - 1, 0)) }
+              if (e.key === 'Enter' && cmdItems?.[cmdIdx]) { handleCmdSelect(cmdItems[cmdIdx]); setSearchOpen(false); setSearchQuery('') }
+            }}
+          />
+          {searchQuery && (
+            <button className="topbar-search-clear" onClick={() => { setSearchQuery(''); setSearchResults([]); setSearchOpen(false) }}>✕</button>
+          )}
+          {!searchQuery && (
+            <kbd style={{ padding: '2px 6px', borderRadius: 4, background: 'rgba(255,255,255,0.15)', border: '1px solid rgba(255,255,255,0.2)', fontSize: '.65rem', color: 'rgba(255,255,255,0.6)', fontFamily: 'monospace', whiteSpace: 'nowrap' }}>⌘K</kbd>
+          )}
         </div>
+        {/* Dropdown collé sous la barre */}
+        {searchOpen && (
+          <div style={{
+            position: 'absolute', top: '100%', left: 0, right: 0, marginTop: 4,
+            background: '#fff', borderRadius: 12, boxShadow: '0 12px 40px rgba(0,0,0,0.18)',
+            maxHeight: 400, overflowY: 'auto', zIndex: 9999, border: '1px solid #e2e8f0',
+          }}>
+            {cmdSections.map((sec, si) => (
+              <div key={si}>
+                <div style={{ padding: '8px 16px 4px', fontSize: '.68rem', fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '.5px' }}>{sec.label}</div>
+                {sec.items.map((item, ii) => {
+                  const gIdx = cmdItems.indexOf(item)
+                  const active = gIdx === cmdIdx
+                  return (
+                    <div key={ii} onMouseDown={() => { handleCmdSelect(item); setSearchOpen(false); setSearchQuery('') }}
+                      onMouseEnter={() => setCmdIdx(gIdx)}
+                      style={{
+                        display: 'flex', alignItems: 'center', gap: 10, padding: '8px 16px', cursor: 'pointer',
+                        background: active ? '#2B4C7E0F' : 'transparent',
+                        borderLeft: active ? '3px solid #2B4C7E' : '3px solid transparent',
+                      }}>
+                      <span style={{ fontSize: 14 }}>{item.icon}</span>
+                      <div style={{ flex: 1 }}>
+                        <div style={{ fontSize: '.85rem', fontWeight: 600, color: '#1a2332' }}>{item.label}</div>
+                        {item.sub && <div style={{ fontSize: '.7rem', color: '#94a3b8' }}>{item.sub}</div>}
+                      </div>
+                      {active && <span style={{ fontSize: '.65rem', color: '#94a3b8' }}>↵</span>}
+                    </div>
+                  )
+                })}
+              </div>
+            ))}
+            {cmdItems.length === 0 && searchQuery && (
+              <div style={{ textAlign: 'center', padding: '20px', color: '#94a3b8', fontSize: '.85rem' }}>Aucun resultat pour "{searchQuery}"</div>
+            )}
+            <div style={{ padding: '6px 16px', borderTop: '1px solid #f1f5f9', background: '#fafbfc', display: 'flex', gap: 10, fontSize: '.65rem', color: '#94a3b8' }}>
+              <span><kbd style={{ padding: '1px 3px', borderRadius: 2, background: '#e2e8f0' }}>↑↓</kbd> naviguer</span>
+              <span><kbd style={{ padding: '1px 3px', borderRadius: 2, background: '#e2e8f0' }}>↵</kbd> ouvrir</span>
+              <span><kbd style={{ padding: '1px 3px', borderRadius: 2, background: '#e2e8f0' }}>esc</kbd> fermer</span>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Quick Add Button ⊕ */}
