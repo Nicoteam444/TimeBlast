@@ -442,6 +442,7 @@ export default function DashboardPage() {
     // Activity log (déplacements kanban etc.)
     for (const a of (raw.activityLog || [])) {
       const typeMap = { task: 'task', transaction: 'transaction' }
+      const link = a.entity_type === 'transaction' ? `/crm/leads` : a.entity_type === 'task' && a.projet_id ? `/activite/projets/${a.projet_id}` : null
       items.push({
         type: typeMap[a.entity_type] || 'action',
         icon: a.icon || '🔀',
@@ -449,16 +450,17 @@ export default function DashboardPage() {
           ? `${a.entity_type === 'transaction' ? 'Opportunite' : 'Tache'} "${a.entity_name}" deplacee : ${a.details}`
           : `${a.entity_name} : ${a.details || a.action}`,
         date: a.created_at,
+        link,
       })
     }
     for (const t of (raw.recentTasks || [])) {
-      items.push({ type: 'task', icon: '✅', label: `Tache creee : ${t.title}`, date: t.created_at })
+      items.push({ type: 'task', icon: '✅', label: `Tache creee : ${t.title}`, date: t.created_at, link: t.projet_id ? `/activite/projets/${t.projet_id}/taches/${t.id}` : null })
     }
     for (const d of (raw.recentDocs || [])) {
-      items.push({ type: 'doc', icon: '📄', label: `Document ajoute : ${d.nom || 'Sans nom'}`, date: d.created_at })
+      items.push({ type: 'doc', icon: '📄', label: `Document ajoute : ${d.nom || 'Sans nom'}`, date: d.created_at, link: '/documents/archives' })
     }
     for (const c of (raw.recentContacts || [])) {
-      items.push({ type: 'contact', icon: '👤', label: `Contact cree : ${[c.prenom, c.nom].filter(Boolean).join(' ') || 'Inconnu'}`, date: c.created_at })
+      items.push({ type: 'contact', icon: '👤', label: `Contact cree : ${[c.prenom, c.nom].filter(Boolean).join(' ') || 'Inconnu'}`, date: c.created_at, link: `/crm/contacts/${c.id}` })
     }
     // Dédupliquer par date+label et trier
     const seen = new Set()
@@ -543,13 +545,14 @@ export default function DashboardPage() {
             {myTasks.map(t => {
               const overdue = t.due_date && t.due_date < todayStr && t.status !== 'done' && t.status !== 'termine'
               return (
-                <div key={t.id} style={{
+                <div key={t.id} onClick={() => navigate(`/activite/projets/${t.projet_id}/taches/${t.id}`)} style={{
                   display: 'flex', alignItems: 'center', gap: '.5rem',
                   padding: '.5rem .75rem', borderRadius: 8,
                   background: overdue ? '#fef2f2' : 'var(--surface, #f8fafc)',
                   border: overdue ? '1px solid #fecaca' : '1px solid transparent',
-                  fontSize: '.85rem',
-                }}>
+                  fontSize: '.85rem', cursor: 'pointer', transition: 'background .15s',
+                }} onMouseEnter={e => e.currentTarget.style.background = '#e0f2fe'}
+                   onMouseLeave={e => e.currentTarget.style.background = overdue ? '#fef2f2' : 'var(--surface, #f8fafc)'}>
                   <span>{priorityIcon(t.priority)}</span>
                   <span style={{ flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', color: overdue ? '#dc2626' : 'var(--text)' }}>
                     {t.title}
@@ -648,7 +651,8 @@ export default function DashboardPage() {
               const pct = tc.total > 0 ? Math.round((tc.done / tc.total) * 100) : 0
               const barColor = pct > 90 ? '#ef4444' : pct > 60 ? '#f59e0b' : '#16a34a'
               return (
-                <div key={p.id}>
+                <div key={p.id} onClick={() => navigate(`/activite/projets/${p.id}`)} style={{ cursor: 'pointer', padding: '.4rem .5rem', borderRadius: 8, transition: 'background .15s' }}
+                  onMouseEnter={e => e.currentTarget.style.background = '#f0f9ff'} onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '.3rem' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '.4rem' }}>
                       <span style={{ fontSize: '.85rem', fontWeight: 600, color: 'var(--text)' }}>{p.nom || p.name}</span>
@@ -810,13 +814,13 @@ export default function DashboardPage() {
               const typeColors = { facture: '#ef4444', devis: '#f59e0b', contrat: '#8b5cf6', autre: '#64748b' }
               const tColor = typeColors[d.type] || '#64748b'
               return (
-                <div key={d.id} style={{
+                <div key={d.id} onClick={() => navigate('/documents/archives')} style={{
                   display: 'flex', alignItems: 'center', gap: '.6rem',
                   padding: '.5rem .75rem', borderRadius: 8,
                   background: 'var(--surface, #f8fafc)',
                   fontSize: '.85rem',
                   transition: 'background .15s, transform .15s',
-                  cursor: 'default',
+                  cursor: 'pointer',
                 }}
                 onMouseEnter={e => { e.currentTarget.style.background = tColor + '10'; e.currentTarget.style.transform = 'translateX(3px)' }}
                 onMouseLeave={e => { e.currentTarget.style.background = 'var(--surface, #f8fafc)'; e.currentTarget.style.transform = 'translateX(0)' }}
@@ -857,12 +861,16 @@ export default function DashboardPage() {
                 const dotColors = { task: '#16a34a', doc: '#2d8bc9', contact: '#8b5cf6' }
                 const dotColor = dotColors[item.type] || '#94a3b8'
                 return (
-                  <div key={i} style={{
+                  <div key={i} onClick={() => item.link && navigate(item.link)} style={{
                     display: 'flex', alignItems: 'center', gap: '.75rem',
                     padding: '.5rem .75rem', borderRadius: 8,
                     background: 'var(--surface, #f8fafc)',
                     fontSize: '.85rem', position: 'relative',
-                  }}>
+                    cursor: item.link ? 'pointer' : 'default',
+                    transition: 'background .15s',
+                  }}
+                  onMouseEnter={e => { if (item.link) e.currentTarget.style.background = '#e0f2fe' }}
+                  onMouseLeave={e => e.currentTarget.style.background = 'var(--surface, #f8fafc)'}>
                     <div style={{
                       position: 'absolute', left: -23, top: '50%', transform: 'translateY(-50%)',
                       width: 10, height: 10, borderRadius: '50%', background: dotColor,
