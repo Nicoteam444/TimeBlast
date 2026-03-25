@@ -118,66 +118,93 @@ const ADVANTAGES = [
   { icon: '🤖', title: 'IA agentique', desc: "L'IA ne suggère pas, elle agit. Relances, alertes, validation — en autonomie." },
 ]
 
-// ── Composant SVG Multiprise ─────────────────────────────────────────────────
+// ── Composant SVG Hub Étoile avec Bullets ────────────────────────────────────
 function MultipriseVisual() {
-  const [activeIdx, setActiveIdx] = useState(0)
   const displayed = CONNECTORS.slice(0, 16)
+  const cx = 250, cy = 250, r = 185
 
-  useEffect(() => {
-    const timer = setInterval(() => setActiveIdx(i => (i + 1) % displayed.length), 800)
-    return () => clearInterval(timer)
-  }, [])
-
-  const cx = 250, cy = 250, r = 180
   return (
     <div className="multiprise-container">
       <svg viewBox="0 0 500 500" className="multiprise-svg">
         <defs>
           <radialGradient id="hubGlow" cx="50%" cy="50%" r="50%">
-            <stop offset="0%" stopColor="#1D9BF0" stopOpacity="0.3" />
+            <stop offset="0%" stopColor="#1D9BF0" stopOpacity="0.25" />
+            <stop offset="60%" stopColor="#1D9BF0" stopOpacity="0.08" />
             <stop offset="100%" stopColor="#1D9BF0" stopOpacity="0" />
           </radialGradient>
-          <filter id="glow">
-            <feGaussianBlur stdDeviation="3" result="blur" />
-            <feMerge><feMergeNode in="blur" /><feMergeNode in="SourceGraphic" /></feMerge>
-          </filter>
+          <radialGradient id="hubCore" cx="50%" cy="50%" r="50%">
+            <stop offset="0%" stopColor="#1a6fa8" />
+            <stop offset="100%" stopColor="#0f3d5c" />
+          </radialGradient>
+          <filter id="glow"><feGaussianBlur stdDeviation="3" result="blur" /><feMerge><feMergeNode in="blur" /><feMergeNode in="SourceGraphic" /></feMerge></filter>
+          <filter id="bulletGlow"><feGaussianBlur stdDeviation="2" result="blur" /><feMerge><feMergeNode in="blur" /><feMergeNode in="SourceGraphic" /></feMerge></filter>
         </defs>
-        <circle cx={cx} cy={cy} r={120} fill="url(#hubGlow)" className="multiprise-ambient" />
+
+        {/* Halo ambiant */}
+        <circle cx={cx} cy={cy} r={140} fill="url(#hubGlow)" />
+
+        {/* Orbite externe */}
+        <circle cx={cx} cy={cy} r={r} fill="none" stroke="#1D9BF0" strokeWidth="0.5" opacity="0.15" strokeDasharray="4 4" />
+
+        {/* Lignes de connexion + bullets animées */}
         {displayed.map((c, i) => {
           const angle = (i / displayed.length) * Math.PI * 2 - Math.PI / 2
           const x = cx + Math.cos(angle) * r
           const y = cy + Math.sin(angle) * r
-          const isActive = i === activeIdx
+          const delay = (i * 0.3).toFixed(1)
+          const dur = (1.8 + (i % 3) * 0.4).toFixed(1)
           return (
-            <line key={c.id + '-line'} x1={cx} y1={cy} x2={x} y2={y}
-              stroke={isActive ? c.color : 'rgba(15,76,117,0.15)'}
-              strokeWidth={isActive ? 2.5 : 1}
-              className={isActive ? 'multiprise-line--active' : ''}
-              filter={isActive ? 'url(#glow)' : undefined} />
+            <g key={c.id + '-conn'}>
+              {/* Ligne de connexion */}
+              <line x1={cx} y1={cy} x2={x} y2={y} stroke={c.color} strokeWidth="1" opacity="0.2" />
+              {/* Bullet aller (hub → outil) */}
+              <circle r="3.5" fill={c.color} filter="url(#bulletGlow)" opacity="0.9">
+                <animateMotion dur={dur + 's'} repeatCount="indefinite" begin={delay + 's'}>
+                  <mpath xlinkHref={`#path-${c.id}`} />
+                </animateMotion>
+              </circle>
+              {/* Bullet retour (outil → hub) */}
+              <circle r="2.5" fill="#1D9BF0" filter="url(#bulletGlow)" opacity="0.7">
+                <animateMotion dur={dur + 's'} repeatCount="indefinite" begin={(parseFloat(delay) + parseFloat(dur) / 2).toFixed(1) + 's'} keyPoints="1;0" keyTimes="0;1" calcMode="linear">
+                  <mpath xlinkHref={`#path-${c.id}`} />
+                </animateMotion>
+              </circle>
+              {/* Path invisible pour l'animation */}
+              <path id={`path-${c.id}`} d={`M${cx},${cy} L${x},${y}`} fill="none" stroke="none" />
+            </g>
           )
         })}
-        <circle cx={cx} cy={cy} r={44} fill="#195C82" stroke="#1D9BF0" strokeWidth="2.5" className="multiprise-hub" />
-        <text x={cx} y={cy - 6} textAnchor="middle" fill="#fff" fontSize="11" fontWeight="800" letterSpacing="1">TIME</text>
-        <text x={cx} y={cy + 10} textAnchor="middle" fill="#1D9BF0" fontSize="11" fontWeight="800" letterSpacing="1">BLAST</text>
-        <text x={cx} y={cy + 26} textAnchor="middle" fill="#98BA9C" fontSize="8" fontWeight="600" opacity="0.9">⚡ Connect All</text>
+
+        {/* Hub central */}
+        <circle cx={cx} cy={cy} r={48} fill="url(#hubCore)" stroke="#1D9BF0" strokeWidth="2" className="multiprise-hub" />
+        <circle cx={cx} cy={cy} r={52} fill="none" stroke="#1D9BF0" strokeWidth="0.8" opacity="0.4">
+          <animate attributeName="r" values="52;58;52" dur="3s" repeatCount="indefinite" />
+          <animate attributeName="opacity" values="0.4;0.1;0.4" dur="3s" repeatCount="indefinite" />
+        </circle>
+        <text x={cx} y={cy - 10} textAnchor="middle" fill="#fff" fontSize="13" fontWeight="800" letterSpacing="1.5">TIME</text>
+        <text x={cx} y={cy + 6} textAnchor="middle" fill="#1D9BF0" fontSize="13" fontWeight="800" letterSpacing="1.5">BLAST</text>
+        <text x={cx} y={cy + 22} textAnchor="middle" fill="#60d394" fontSize="8" fontWeight="700">.ai</text>
+        <text x={cx} y={cy + 36} textAnchor="middle" fill="#98c1d9" fontSize="6.5" fontWeight="600" opacity="0.8">⚡ Agent IA</text>
+
+        {/* Noeuds outils */}
         {displayed.map((c, i) => {
           const angle = (i / displayed.length) * Math.PI * 2 - Math.PI / 2
           const x = cx + Math.cos(angle) * r
           const y = cy + Math.sin(angle) * r
-          const isActive = i === activeIdx
           return (
-            <g key={c.id} className={`multiprise-node ${isActive ? 'multiprise-node--active' : ''}`}>
-              <circle cx={x} cy={y} r={isActive ? 26 : 22} fill={isActive ? c.color : '#fff'} stroke={isActive ? c.color : '#d1d5db'} strokeWidth={isActive ? 2 : 1.5} opacity={isActive ? 1 : 0.85} />
-              <text x={x} y={y + 1} textAnchor="middle" dominantBaseline="central" fill={isActive ? '#fff' : '#1a2332'} fontSize={isActive ? '7.5' : '6.5'} fontWeight="600">
+            <g key={c.id}>
+              <circle cx={x} cy={y} r={22} fill="#fff" stroke={c.color} strokeWidth="2" opacity="0.95" />
+              <circle cx={x} cy={y} r={22} fill={c.color} opacity="0.08" />
+              <text x={x} y={y + 1} textAnchor="middle" dominantBaseline="central" fill="#1a2332" fontSize="6.5" fontWeight="600">
                 {c.name.length > 10 ? c.name.slice(0, 9) + '…' : c.name}
               </text>
             </g>
           )
         })}
-        <circle cx={100} cy={80} r="2" fill="#1D9BF0" opacity="0.3" className="multiprise-particle p1" />
-        <circle cx={400} cy={120} r="1.5" fill="#98BA9C" opacity="0.3" className="multiprise-particle p2" />
-        <circle cx={80} cy={400} r="1.5" fill="#F8B35A" opacity="0.3" className="multiprise-particle p3" />
-        <circle cx={420} cy={380} r="2" fill="#991567" opacity="0.25" className="multiprise-particle p4" />
+
+        {/* Label lecture/écriture */}
+        <rect x={cx - 55} y={cy + 70} width={110} height={20} rx={10} fill="#0f3d5c" opacity="0.7" />
+        <text x={cx} y={cy + 83} textAnchor="middle" fill="#98c1d9" fontSize="7" fontWeight="600">↕ Lecture / Écriture</text>
       </svg>
     </div>
   )
