@@ -464,10 +464,10 @@ export default function SaisiePage() {
   useEffect(() => {
     async function loadCollabs() {
       // Charger les deux : equipe (pour la sidebar) et profiles (pour mapper les events)
+      let equipeQuery = supabase.from('equipe').select('id, prenom, nom, email, poste').order('nom')
+      if (selectedSociete?.id) equipeQuery = equipeQuery.eq('societe_id', selectedSociete.id)
       const [equipeRes, profilesRes] = await Promise.all([
-        selectedSociete?.id
-          ? supabase.from('equipe').select('id, prenom, nom, email, poste').eq('societe_id', selectedSociete.id).order('nom')
-          : Promise.resolve({ data: [] }),
+        equipeQuery,
         supabase.from('profiles').select('id, full_name, role')
       ])
 
