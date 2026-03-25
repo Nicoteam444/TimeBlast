@@ -111,7 +111,7 @@ function WorkflowVisualEditor({ workflow, onSave, onCancel, societeId }) {
   const canvasH = Math.max(600, (nodes[nodes.length - 1]?.y || 400) + 200)
 
   return (
-    <div style={{ position: 'fixed', inset: 0, zIndex: 1000, display: 'flex', flexDirection: 'column', background: '#f1f5f9' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', background: '#f1f5f9', height: 'calc(100vh - 60px)', margin: '-1.5rem', overflow: 'hidden' }}>
       {/* Toolbar */}
       <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', padding: '.6rem 1.25rem', borderBottom: '1px solid #e2e8f0', background: '#fff', zIndex: 10 }}>
         <button onClick={onCancel} style={{ background: 'none', border: 'none', fontSize: '1.1rem', cursor: 'pointer' }}>← Retour</button>
@@ -266,7 +266,7 @@ export default function AutomationWorkflowsPage() {
   const [workflows, setWorkflows] = useState([])
   const [loading, setLoading] = useState(true)
   const [tableError, setTableError] = useState(false)
-  const [viewMode, setViewMode] = useState('list') // 'list' | 'visual'
+  const [viewMode, setViewMode] = useState('visual') // 'list' | 'visual'
   const [visualWorkflow, setVisualWorkflow] = useState(null) // workflow being edited visually
   const [showForm, setShowForm] = useState(false)
   const [editItem, setEditItem] = useState(null)
@@ -369,7 +369,7 @@ export default function AutomationWorkflowsPage() {
             <button onClick={() => { setViewMode('list') }} style={{ padding: '.4rem .75rem', border: 'none', background: viewMode === 'list' ? 'var(--primary)' : '#fff', color: viewMode === 'list' ? '#fff' : '#64748b', cursor: 'pointer', fontSize: '.8rem', fontWeight: 600 }}>≡ Liste</button>
             <button onClick={() => { setViewMode('visual') }} style={{ padding: '.4rem .75rem', border: 'none', background: viewMode === 'visual' ? 'var(--primary)' : '#fff', color: viewMode === 'visual' ? '#fff' : '#64748b', cursor: 'pointer', fontSize: '.8rem', fontWeight: 600 }}>◎ Visuel</button>
           </div>
-          <button className="btn-primary" onClick={() => viewMode === 'visual' ? setVisualWorkflow('new') : openCreate()}>+ Nouveau workflow</button>
+          <button className="btn-primary" onClick={() => setVisualWorkflow('new')}>+ Nouveau workflow</button>
         </div>
       </div>
 
@@ -533,8 +533,7 @@ export default function AutomationWorkflowsPage() {
                     <td style={{ whiteSpace: 'nowrap', color: 'var(--text-muted)' }}>{fmtDate(w.created_at)}</td>
                     <td>
                       <div style={{ display: 'flex', gap: '.35rem' }}>
-                        <button className="btn-icon" title="Visuel" onClick={() => setVisualWorkflow(w)}>◎</button>
-                        <button className="btn-icon" title="Modifier" onClick={() => openEdit(w)}>✏️</button>
+                        <button className="btn-icon" title="Modifier" onClick={() => setVisualWorkflow(w)}>✏️</button>
                         <button className="btn-icon btn-icon--danger" title="Supprimer" onClick={() => setDeleteTarget(w)}>🗑</button>
                       </div>
                     </td>
