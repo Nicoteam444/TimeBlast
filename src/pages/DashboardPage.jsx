@@ -163,7 +163,21 @@ export default function DashboardPage() {
   }, [])
 
   const [widgetOrder, setWidgetOrder] = useState(() => {
-    try { const s = localStorage.getItem(STORAGE_KEY); return s ? JSON.parse(s) : DEFAULT_ORDER } catch { return DEFAULT_ORDER }
+    try {
+      const s = localStorage.getItem(STORAGE_KEY)
+      if (s) {
+        const saved = JSON.parse(s)
+        // Ajouter les nouveaux widgets manquants
+        const missing = DEFAULT_ORDER.filter(id => !saved.includes(id))
+        if (missing.length > 0) {
+          const updated = [...missing, ...saved]
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(updated))
+          return updated
+        }
+        return saved
+      }
+      return DEFAULT_ORDER
+    } catch { return DEFAULT_ORDER }
   })
   const dragWidgetRef = useRef(null)
   const dragOverRef = useRef(null)
