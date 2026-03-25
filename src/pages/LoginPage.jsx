@@ -118,139 +118,142 @@ const ADVANTAGES = [
   { icon: '🤖', title: 'IA agentique', desc: "L'IA ne suggère pas, elle agit. Relances, alertes, validation — en autonomie." },
 ]
 
-// ── Composant SVG Futuriste — Orbites + Particules ───────────────────────────
+// ── Composant SVG — Schéma SI Pragmatique ────────────────────────────────────
 function MultipriseVisual() {
-  const apps = [
-    { label: 'Sage', a: 0 }, { label: 'HubSpot', a: 60 }, { label: 'Stripe', a: 120 },
-    { label: 'Slack', a: 180 }, { label: 'Google', a: 240 }, { label: 'Chorus', a: 300 },
+  const B = '#2B4C7E'
+  const leftApps = [
+    { label: 'Sage', cat: 'Compta' },
+    { label: 'Pennylane', cat: 'Compta' },
+    { label: 'QuickBooks', cat: 'Compta' },
+    { label: 'Chorus Pro', cat: 'Factures' },
   ]
-  const apps2 = [
-    { label: 'Pennylane', a: 30 }, { label: 'Salesforce', a: 90 }, { label: 'Teams', a: 150 },
-    { label: 'Qonto', a: 210 }, { label: 'Notion', a: 270 }, { label: 'Zapier', a: 330 },
+  const rightApps = [
+    { label: 'Salesforce', cat: 'CRM' },
+    { label: 'HubSpot', cat: 'CRM' },
+    { label: 'Stripe', cat: 'Paiement' },
+    { label: 'Qonto', cat: 'Banque' },
   ]
-  const cx = 250, cy = 250, r1 = 130, r2 = 195
-  const B = '#2B4C7E' // bleu SRA
+  const bottomApps = [
+    { label: 'Slack', cat: 'Comm.' },
+    { label: 'Teams', cat: 'Comm.' },
+    { label: 'Google', cat: 'Suite' },
+    { label: 'Notion', cat: 'Docs' },
+  ]
+
+  const hubX = 250, hubY = 200, hubW = 160, hubH = 70
+  const cardW = 82, cardH = 38, gap = 6
+
+  function AppCard({ x, y, label, cat }) {
+    return (
+      <g>
+        <rect x={x} y={y} width={cardW} height={cardH} rx={6} fill="#fff" stroke="#d1d5db" strokeWidth="1" />
+        <text x={x + cardW / 2} y={y + 14} textAnchor="middle" fill="#1a2332" fontSize="7.5" fontWeight="700">{label}</text>
+        <text x={x + cardW / 2} y={y + 26} textAnchor="middle" fill="#94a3b8" fontSize="6" fontWeight="500">{cat}</text>
+      </g>
+    )
+  }
+
+  // Positions
+  const lx = 20
+  const rx = 398
+  const bStartX = 74
 
   return (
     <div className="multiprise-container">
-      <svg viewBox="0 0 500 500" className="multiprise-svg">
+      <svg viewBox="0 0 500  420" className="multiprise-svg">
         <defs>
-          <radialGradient id="coreGlow" cx="50%" cy="50%" r="50%">
-            <stop offset="0%" stopColor={B} stopOpacity="0.35" />
-            <stop offset="40%" stopColor={B} stopOpacity="0.08" />
-            <stop offset="100%" stopColor={B} stopOpacity="0" />
-          </radialGradient>
-          <linearGradient id="coreGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="#142d4c" />
+          <linearGradient id="hubGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="#1a3a5c" />
             <stop offset="100%" stopColor="#2B4C7E" />
           </linearGradient>
-          <filter id="bGlow"><feGaussianBlur stdDeviation="3" /><feMerge><feMergeNode /><feMergeNode in="SourceGraphic" /></feMerge></filter>
-          <filter id="sGlow"><feGaussianBlur stdDeviation="1.5" /><feMerge><feMergeNode /><feMergeNode in="SourceGraphic" /></feMerge></filter>
+          <filter id="bGlow"><feGaussianBlur stdDeviation="2" /><feMerge><feMergeNode /><feMergeNode in="SourceGraphic" /></feMerge></filter>
         </defs>
 
-        {/* Fond radial */}
-        <circle cx={cx} cy={cy} r={240} fill="url(#coreGlow)" />
-
-        {/* Grille fine radiale */}
-        {[80, 130, 195, 230].map(r => (
-          <circle key={r} cx={cx} cy={cy} r={r} fill="none" stroke={B} strokeWidth="0.3" opacity="0.08" />
-        ))}
-        {[0, 30, 60, 90, 120, 150].map(a => {
-          const rad = a * Math.PI / 180
-          return <line key={a} x1={cx} y1={cy} x2={cx + 230 * Math.cos(rad)} y2={cy + 230 * Math.sin(rad)} stroke={B} strokeWidth="0.2" opacity="0.06" />
-        })}
-
-        {/* Orbite 1 — anneau intérieur */}
-        <circle cx={cx} cy={cy} r={r1} fill="none" stroke={B} strokeWidth="1" opacity="0.15" />
-        <circle cx={cx} cy={cy} r={r1} fill="none" stroke={B} strokeWidth="0.5" opacity="0.3" strokeDasharray="2 8">
-          <animateTransform attributeName="transform" type="rotate" from={`0 ${cx} ${cy}`} to={`360 ${cx} ${cy}`} dur="40s" repeatCount="indefinite" />
-        </circle>
-
-        {/* Orbite 2 — anneau extérieur */}
-        <circle cx={cx} cy={cy} r={r2} fill="none" stroke={B} strokeWidth="0.8" opacity="0.1" />
-        <circle cx={cx} cy={cy} r={r2} fill="none" stroke={B} strokeWidth="0.4" opacity="0.25" strokeDasharray="3 10">
-          <animateTransform attributeName="transform" type="rotate" from={`360 ${cx} ${cy}`} to={`0 ${cx} ${cy}`} dur="60s" repeatCount="indefinite" />
-        </circle>
-
-        {/* Connexions hub → apps (lignes fines) */}
-        {[...apps.map(a => ({ ...a, r: r1 })), ...apps2.map(a => ({ ...a, r: r2 }))].map((app, i) => {
-          const rad = app.a * Math.PI / 180
-          const ax = cx + app.r * Math.cos(rad)
-          const ay = cy + app.r * Math.sin(rad)
-          return <line key={`conn-${i}`} x1={cx} y1={cy} x2={ax} y2={ay} stroke={B} strokeWidth="0.4" opacity="0.1" />
-        })}
-
-        {/* Particules orbitales — orbite 1 */}
-        {[0, 1, 2, 3, 4, 5, 6, 7].map(i => (
-          <circle key={`p1-${i}`} r="3" fill={B} filter="url(#bGlow)" opacity="0.8">
-            <animateMotion dur={`${6 + i * 0.5}s`} repeatCount="indefinite" begin={`${i * 0.8}s`}
-              path={`M${cx + r1},${cy} A${r1},${r1} 0 1,1 ${cx + r1 - 0.01},${cy}`} />
-          </circle>
-        ))}
-
-        {/* Particules orbitales — orbite 2 (sens inverse) */}
-        {[0, 1, 2, 3, 4, 5, 6, 7, 8, 9].map(i => (
-          <circle key={`p2-${i}`} r="2.5" fill="#5B9BD5" filter="url(#sGlow)" opacity="0.6">
-            <animateMotion dur={`${10 + i * 0.6}s`} repeatCount="indefinite" begin={`${i * 1}s`}
-              path={`M${cx + r2},${cy} A${r2},${r2} 0 1,0 ${cx + r2 - 0.01},${cy}`} />
-          </circle>
-        ))}
-
-        {/* Particules radiales — hub vers extérieur */}
-        {[0, 1, 2, 3, 4, 5].map(i => {
-          const angle = i * 60
-          const rad = angle * Math.PI / 180
-          const ex = cx + 210 * Math.cos(rad)
-          const ey = cy + 210 * Math.sin(rad)
+        {/* ── GAUCHE : Outils comptables ── */}
+        <text x={lx + cardW / 2} y={32} textAnchor="middle" fill="#64748b" fontSize="7" fontWeight="600" letterSpacing="0.5">COMPTABILITE</text>
+        <line x1={lx + 5} y1={38} x2={lx + cardW - 5} y2={38} stroke="#e2e8f0" strokeWidth="1" />
+        {leftApps.map((app, i) => {
+          const ay = 46 + i * (cardH + gap)
           return (
-            <g key={`rad-${i}`}>
-              <circle r="2" fill={B} opacity="0.5">
-                <animate attributeName="cx" values={`${cx};${ex}`} dur={`${3 + i * 0.4}s`} repeatCount="indefinite" begin={`${i * 0.5}s`} />
-                <animate attributeName="cy" values={`${cy};${ey}`} dur={`${3 + i * 0.4}s`} repeatCount="indefinite" begin={`${i * 0.5}s`} />
-                <animate attributeName="opacity" values="0.7;0" dur={`${3 + i * 0.4}s`} repeatCount="indefinite" begin={`${i * 0.5}s`} />
+            <g key={app.label}>
+              <AppCard x={lx} y={ay} label={app.label} cat={app.cat} />
+              {/* Flèche → hub */}
+              <line x1={lx + cardW} y1={ay + cardH / 2} x2={hubX - hubW / 2} y2={hubY + hubH / 2} stroke={B} strokeWidth="0.8" opacity="0.2" />
+              {/* Bille aller */}
+              <circle r="3" fill={B} filter="url(#bGlow)" opacity="0.85">
+                <animate attributeName="cx" values={`${lx + cardW};${hubX - hubW / 2}`} dur={`${2 + i * 0.3}s`} repeatCount="indefinite" begin={`${i * 0.4}s`} />
+                <animate attributeName="cy" values={`${ay + cardH / 2};${hubY + hubH / 2}`} dur={`${2 + i * 0.3}s`} repeatCount="indefinite" begin={`${i * 0.4}s`} />
+              </circle>
+              {/* Bille retour */}
+              <circle r="2" fill="#5B9BD5" opacity="0.5">
+                <animate attributeName="cx" values={`${hubX - hubW / 2};${lx + cardW}`} dur={`${2 + i * 0.3}s`} repeatCount="indefinite" begin={`${i * 0.4 + 1}s`} />
+                <animate attributeName="cy" values={`${hubY + hubH / 2};${ay + cardH / 2}`} dur={`${2 + i * 0.3}s`} repeatCount="indefinite" begin={`${i * 0.4 + 1}s`} />
               </circle>
             </g>
           )
         })}
 
-        {/* Apps — Orbite 1 */}
-        {apps.map(app => {
-          const rad = app.a * Math.PI / 180
-          const ax = cx + r1 * Math.cos(rad)
-          const ay = cy + r1 * Math.sin(rad)
+        {/* ── DROITE : Outils CRM/Paiement ── */}
+        <text x={rx + cardW / 2} y={32} textAnchor="middle" fill="#64748b" fontSize="7" fontWeight="600" letterSpacing="0.5">CRM / PAIEMENT</text>
+        <line x1={rx + 5} y1={38} x2={rx + cardW - 5} y2={38} stroke="#e2e8f0" strokeWidth="1" />
+        {rightApps.map((app, i) => {
+          const ay = 46 + i * (cardH + gap)
           return (
             <g key={app.label}>
-              <circle cx={ax} cy={ay} r={20} fill="#fff" stroke={B} strokeWidth="1.2" opacity="0.95" />
-              <text x={ax} y={ay + 1} textAnchor="middle" dominantBaseline="central" fill="#1a2332" fontSize="7" fontWeight="700">{app.label}</text>
+              <AppCard x={rx} y={ay} label={app.label} cat={app.cat} />
+              {/* Flèche hub → */}
+              <line x1={hubX + hubW / 2} y1={hubY + hubH / 2} x2={rx} y2={ay + cardH / 2} stroke={B} strokeWidth="0.8" opacity="0.2" />
+              {/* Bille aller */}
+              <circle r="3" fill={B} filter="url(#bGlow)" opacity="0.85">
+                <animate attributeName="cx" values={`${hubX + hubW / 2};${rx}`} dur={`${2 + i * 0.3}s`} repeatCount="indefinite" begin={`${i * 0.5}s`} />
+                <animate attributeName="cy" values={`${hubY + hubH / 2};${ay + cardH / 2}`} dur={`${2 + i * 0.3}s`} repeatCount="indefinite" begin={`${i * 0.5}s`} />
+              </circle>
+              {/* Bille retour */}
+              <circle r="2" fill="#5B9BD5" opacity="0.5">
+                <animate attributeName="cx" values={`${rx};${hubX + hubW / 2}`} dur={`${2 + i * 0.3}s`} repeatCount="indefinite" begin={`${i * 0.5 + 1.2}s`} />
+                <animate attributeName="cy" values={`${ay + cardH / 2};${hubY + hubH / 2}`} dur={`${2 + i * 0.3}s`} repeatCount="indefinite" begin={`${i * 0.5 + 1.2}s`} />
+              </circle>
             </g>
           )
         })}
 
-        {/* Apps — Orbite 2 */}
-        {apps2.map(app => {
-          const rad = app.a * Math.PI / 180
-          const ax = cx + r2 * Math.cos(rad)
-          const ay = cy + r2 * Math.sin(rad)
+        {/* ── BAS : Communication ── */}
+        <text x={hubX} y={320} textAnchor="middle" fill="#64748b" fontSize="7" fontWeight="600" letterSpacing="0.5">COMMUNICATION / PRODUCTIVITE</text>
+        <line x1={hubX - 80} y1={326} x2={hubX + 80} y2={326} stroke="#e2e8f0" strokeWidth="1" />
+        {bottomApps.map((app, i) => {
+          const ax = bStartX + i * (cardW + gap)
+          const ay = 334
           return (
             <g key={app.label}>
-              <circle cx={ax} cy={ay} r={18} fill="#fff" stroke={B} strokeWidth="1" opacity="0.9" />
-              <text x={ax} y={ay + 1} textAnchor="middle" dominantBaseline="central" fill="#374151" fontSize="6.5" fontWeight="600">{app.label}</text>
+              <AppCard x={ax} y={ay} label={app.label} cat={app.cat} />
+              {/* Flèche hub ↓ */}
+              <line x1={ax + cardW / 2} y1={ay} x2={hubX + (i - 1.5) * 30} y2={hubY + hubH} stroke={B} strokeWidth="0.8" opacity="0.2" />
+              {/* Bille */}
+              <circle r="3" fill={B} filter="url(#bGlow)" opacity="0.85">
+                <animate attributeName="cx" values={`${hubX + (i - 1.5) * 30};${ax + cardW / 2}`} dur={`${2.5 + i * 0.2}s`} repeatCount="indefinite" begin={`${i * 0.6}s`} />
+                <animate attributeName="cy" values={`${hubY + hubH};${ay}`} dur={`${2.5 + i * 0.2}s`} repeatCount="indefinite" begin={`${i * 0.6}s`} />
+              </circle>
             </g>
           )
         })}
 
-        {/* HUB CENTRAL */}
-        {/* Halo externe pulsant */}
-        <circle cx={cx} cy={cy} r={48} fill="none" stroke={B} strokeWidth="1" opacity="0.15">
-          <animate attributeName="r" values="48;56;48" dur="4s" repeatCount="indefinite" />
-          <animate attributeName="opacity" values="0.15;0.04;0.15" dur="4s" repeatCount="indefinite" />
-        </circle>
-        {/* Cercle principal */}
-        <circle cx={cx} cy={cy} r={42} fill="url(#coreGrad)" stroke="#5B9BD5" strokeWidth="1.5" />
-        {/* Texte */}
-        <text x={cx} y={cy - 10} textAnchor="middle" fill="#fff" fontSize="7.5" fontWeight="700" letterSpacing="0.8">AGENT IA</text>
-        <text x={cx} y={cy + 4} textAnchor="middle" fill="#5B9BD5" fontSize="9" fontWeight="800" letterSpacing="0.5">TIMEBLAST</text>
-        <text x={cx} y={cy + 15} textAnchor="middle" fill="#7ec8a0" fontSize="7" fontWeight="700">.ai</text>
+        {/* ── HUB CENTRAL — TimeBlast.ai ── */}
+        <rect x={hubX - hubW / 2} y={hubY} width={hubW} height={hubH} rx={10} fill="url(#hubGrad)" stroke="#5B9BD5" strokeWidth="1.5" />
+        {/* Flèches bidirectionnelles */}
+        <text x={hubX - hubW / 2 - 10} y={hubY + hubH / 2 + 2} textAnchor="middle" fill={B} fontSize="10" fontWeight="700">‹</text>
+        <text x={hubX + hubW / 2 + 10} y={hubY + hubH / 2 + 2} textAnchor="middle" fill={B} fontSize="10" fontWeight="700">›</text>
+        <text x={hubX} y={hubY + 20} textAnchor="middle" fill="#fff" fontSize="8" fontWeight="700" letterSpacing="0.5">🤖 Agent IA</text>
+        <text x={hubX} y={hubY + 34} textAnchor="middle" fill="#5B9BD5" fontSize="10" fontWeight="800">TimeBlast.ai</text>
+        <text x={hubX} y={hubY + 48} textAnchor="middle" fill="#98c1d9" fontSize="5.5" fontWeight="500">Lecture · Écriture · Sync</text>
+
+        {/* Labels flèches */}
+        <text x={hubX - hubW / 2 - 20} y={hubY - 4} textAnchor="end" fill="#94a3b8" fontSize="5.5" fontWeight="500">← Import</text>
+        <text x={hubX + hubW / 2 + 20} y={hubY - 4} textAnchor="start" fill="#94a3b8" fontSize="5.5" fontWeight="500">Export →</text>
+        <text x={hubX} y={hubY + hubH + 14} textAnchor="middle" fill="#94a3b8" fontSize="5.5" fontWeight="500">↓ Notifications</text>
+
+        {/* Badge API */}
+        <rect x={hubX - 22} y={hubY - 14} width={44} height={14} rx={7} fill="#16a34a" opacity="0.9" />
+        <text x={hubX} y={hubY - 5} textAnchor="middle" fill="#fff" fontSize="6" fontWeight="700">API REST</text>
       </svg>
     </div>
   )
