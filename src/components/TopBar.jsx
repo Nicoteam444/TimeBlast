@@ -238,7 +238,7 @@ export default function TopBar() {
       </div>
 
       {/* Quick Add Button ⊕ */}
-      <div ref={quickAddRef} style={{ position: 'relative', marginLeft: '.5rem' }}>
+      <div ref={quickAddRef} style={{ position: 'relative', marginLeft: '.5rem', zIndex: 99999 }}>
         <button
           onClick={() => { setQuickAddOpen(v => !v); setQuickAddType(null) }}
           title="Création rapide"
@@ -255,10 +255,10 @@ export default function TopBar() {
 
         {quickAddOpen && (
           <div style={{
-            position: 'absolute', top: '100%', left: '50%', transform: 'translateX(-50%)',
+            position: 'absolute', top: '100%', right: 0,
             marginTop: 8, background: 'var(--card-bg, #fff)', border: '1px solid var(--border, #e2e8f0)',
-            borderRadius: 12, boxShadow: '0 8px 30px rgba(0,0,0,.15)', zIndex: 999,
-            width: quickAddType ? 360 : 240, overflow: 'hidden',
+            borderRadius: 12, boxShadow: '0 8px 30px rgba(0,0,0,.15)', zIndex: 99999,
+            width: quickAddType ? 360 : 240,
           }}>
             {!quickAddType ? (
               /* Type selection */
