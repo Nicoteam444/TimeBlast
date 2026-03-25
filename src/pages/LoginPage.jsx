@@ -118,157 +118,139 @@ const ADVANTAGES = [
   { icon: '🤖', title: 'IA agentique', desc: "L'IA ne suggère pas, elle agit. Relances, alertes, validation — en autonomie." },
 ]
 
-// ── Composant SVG Mosaïque Hexagonale Agent IA ───────────────────────────────
+// ── Composant SVG Futuriste — Orbites + Particules ───────────────────────────
 function MultipriseVisual() {
-  const modules = [
-    { id: 'sage', label: 'Sage', color: '#00DC82' },
-    { id: 'pennylane', label: 'Pennylane', color: '#6C5CE7' },
-    { id: 'salesforce', label: 'Salesforce', color: '#00A1E0' },
-    { id: 'hubspot', label: 'HubSpot', color: '#FF7A59' },
-    { id: 'stripe', label: 'Stripe', color: '#635BFF' },
-    { id: 'slack', label: 'Slack', color: '#E01E5A' },
-    { id: 'teams', label: 'Teams', color: '#5059C9' },
-    { id: 'google', label: 'Google', color: '#4285F4' },
-    { id: 'chorus', label: 'Chorus Pro', color: '#1D4ED8' },
-    { id: 'qonto', label: 'Qonto', color: '#1A1A2E' },
-    { id: 'notion', label: 'Notion', color: '#000000' },
-    { id: 'zapier', label: 'Zapier', color: '#FF4A00' },
+  const apps = [
+    { label: 'Sage', a: 0 }, { label: 'HubSpot', a: 60 }, { label: 'Stripe', a: 120 },
+    { label: 'Slack', a: 180 }, { label: 'Google', a: 240 }, { label: 'Chorus', a: 300 },
   ]
-
-  const cx = 260, cy = 250
-  const hexR = 38 // rayon de chaque hexagone
-  const SRA_BLUE = '#2B4C7E'
-
-  // Hexagone pointy-top
-  function hex(x, y, r) {
-    return Array.from({ length: 6 }, (_, i) => {
-      const a = (Math.PI / 180) * (60 * i - 30)
-      return `${x + r * Math.cos(a)},${y + r * Math.sin(a)}`
-    }).join(' ')
-  }
-
-  // Grille honeycomb : positions relatives au centre (col, row) → pixel
-  // Le hub est au centre (0,0), les modules autour en 2 couronnes
-  const w = hexR * Math.sqrt(3)
-  const h = hexR * 2
-  // Couronne 1 (6 hexagones adjacents)
-  const ring1 = [
-    { dc: 0, dr: -1 },   // haut
-    { dc: 1, dr: -0.5 },  // haut-droite
-    { dc: 1, dr: 0.5 },   // bas-droite
-    { dc: 0, dr: 1 },     // bas
-    { dc: -1, dr: 0.5 },  // bas-gauche
-    { dc: -1, dr: -0.5 }, // haut-gauche
+  const apps2 = [
+    { label: 'Pennylane', a: 30 }, { label: 'Salesforce', a: 90 }, { label: 'Teams', a: 150 },
+    { label: 'Qonto', a: 210 }, { label: 'Notion', a: 270 }, { label: 'Zapier', a: 330 },
   ]
-  // Couronne 2 (6 hexagones en diagonale)
-  const ring2 = [
-    { dc: 0, dr: -2 },    // très haut
-    { dc: 2, dr: 0 },     // très droite
-    { dc: 1, dr: 1.5 },   // bas-droite loin
-    { dc: -1, dr: 1.5 },  // bas-gauche loin
-    { dc: -2, dr: 0 },    // très gauche
-    { dc: -1, dr: -1.5 }, // haut-gauche loin
-  ]
-
-  function toXY(dc, dr) {
-    return { x: cx + dc * w, y: cy + dr * h * 0.75 }
-  }
-
-  // Hexagones de fond (mosaïque décorative)
-  const bgHexes = []
-  for (let r = -3; r <= 3; r++) {
-    for (let c = -3; c <= 3; c++) {
-      const offset = r % 2 !== 0 ? 0.5 : 0
-      const px = cx + (c + offset) * w
-      const py = cy + r * h * 0.75
-      const dist = Math.sqrt((px - cx) ** 2 + (py - cy) ** 2)
-      if (dist > 40 && dist < 280) bgHexes.push({ x: px, y: py, dist })
-    }
-  }
-
-  const modulePositions = [...ring1, ...ring2].map((pos, i) => {
-    if (i >= modules.length) return null
-    return { ...modules[i], ...toXY(pos.dc, pos.dr) }
-  }).filter(Boolean)
+  const cx = 250, cy = 250, r1 = 130, r2 = 195
+  const B = '#2B4C7E' // bleu SRA
 
   return (
     <div className="multiprise-container">
-      <svg viewBox="0 0 520 500" className="multiprise-svg">
+      <svg viewBox="0 0 500 500" className="multiprise-svg">
         <defs>
-          <linearGradient id="hubGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="#163a5f" />
+          <radialGradient id="coreGlow" cx="50%" cy="50%" r="50%">
+            <stop offset="0%" stopColor={B} stopOpacity="0.35" />
+            <stop offset="40%" stopColor={B} stopOpacity="0.08" />
+            <stop offset="100%" stopColor={B} stopOpacity="0" />
+          </radialGradient>
+          <linearGradient id="coreGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="#142d4c" />
             <stop offset="100%" stopColor="#2B4C7E" />
           </linearGradient>
-          <radialGradient id="ambientGlow" cx="50%" cy="50%" r="50%">
-            <stop offset="0%" stopColor={SRA_BLUE} stopOpacity="0.12" />
-            <stop offset="100%" stopColor={SRA_BLUE} stopOpacity="0" />
-          </radialGradient>
-          <filter id="bulletGlow"><feGaussianBlur stdDeviation="2" result="blur" /><feMerge><feMergeNode in="blur" /><feMergeNode in="SourceGraphic" /></feMerge></filter>
-          <filter id="softShadow"><feDropShadow dx="0" dy="1" stdDeviation="3" floodColor="#000" floodOpacity="0.12" /></filter>
+          <filter id="bGlow"><feGaussianBlur stdDeviation="3" /><feMerge><feMergeNode /><feMergeNode in="SourceGraphic" /></feMerge></filter>
+          <filter id="sGlow"><feGaussianBlur stdDeviation="1.5" /><feMerge><feMergeNode /><feMergeNode in="SourceGraphic" /></feMerge></filter>
         </defs>
 
-        {/* Halo global */}
-        <circle cx={cx} cy={cy} r={240} fill="url(#ambientGlow)" />
+        {/* Fond radial */}
+        <circle cx={cx} cy={cy} r={240} fill="url(#coreGlow)" />
 
-        {/* Mosaïque de fond — hexagones semi-transparents */}
-        {bgHexes.map((h, i) => {
-          const opacity = Math.max(0.02, 0.08 - h.dist * 0.0003)
-          return (
-            <polygon key={`bg-${i}`} points={hex(h.x, h.y, hexR - 1)} fill="none" stroke={SRA_BLUE} strokeWidth="0.6" opacity={opacity} />
-          )
+        {/* Grille fine radiale */}
+        {[80, 130, 195, 230].map(r => (
+          <circle key={r} cx={cx} cy={cy} r={r} fill="none" stroke={B} strokeWidth="0.3" opacity="0.08" />
+        ))}
+        {[0, 30, 60, 90, 120, 150].map(a => {
+          const rad = a * Math.PI / 180
+          return <line key={a} x1={cx} y1={cy} x2={cx + 230 * Math.cos(rad)} y2={cy + 230 * Math.sin(rad)} stroke={B} strokeWidth="0.2" opacity="0.06" />
         })}
 
-        {/* Chemins de connexion (lignes sur la mosaïque) + bullets bleu SRA */}
-        {modulePositions.map((m, i) => {
-          const dur = (2 + (i % 4) * 0.3).toFixed(1)
-          const delay = (i * 0.25).toFixed(1)
-          const retDelay = (parseFloat(delay) + parseFloat(dur) * 0.45).toFixed(1)
+        {/* Orbite 1 — anneau intérieur */}
+        <circle cx={cx} cy={cy} r={r1} fill="none" stroke={B} strokeWidth="1" opacity="0.15" />
+        <circle cx={cx} cy={cy} r={r1} fill="none" stroke={B} strokeWidth="0.5" opacity="0.3" strokeDasharray="2 8">
+          <animateTransform attributeName="transform" type="rotate" from={`0 ${cx} ${cy}`} to={`360 ${cx} ${cy}`} dur="40s" repeatCount="indefinite" />
+        </circle>
+
+        {/* Orbite 2 — anneau extérieur */}
+        <circle cx={cx} cy={cy} r={r2} fill="none" stroke={B} strokeWidth="0.8" opacity="0.1" />
+        <circle cx={cx} cy={cy} r={r2} fill="none" stroke={B} strokeWidth="0.4" opacity="0.25" strokeDasharray="3 10">
+          <animateTransform attributeName="transform" type="rotate" from={`360 ${cx} ${cy}`} to={`0 ${cx} ${cy}`} dur="60s" repeatCount="indefinite" />
+        </circle>
+
+        {/* Connexions hub → apps (lignes fines) */}
+        {[...apps.map(a => ({ ...a, r: r1 })), ...apps2.map(a => ({ ...a, r: r2 }))].map((app, i) => {
+          const rad = app.a * Math.PI / 180
+          const ax = cx + app.r * Math.cos(rad)
+          const ay = cy + app.r * Math.sin(rad)
+          return <line key={`conn-${i}`} x1={cx} y1={cy} x2={ax} y2={ay} stroke={B} strokeWidth="0.4" opacity="0.1" />
+        })}
+
+        {/* Particules orbitales — orbite 1 */}
+        {[0, 1, 2, 3, 4, 5, 6, 7].map(i => (
+          <circle key={`p1-${i}`} r="3" fill={B} filter="url(#bGlow)" opacity="0.8">
+            <animateMotion dur={`${6 + i * 0.5}s`} repeatCount="indefinite" begin={`${i * 0.8}s`}
+              path={`M${cx + r1},${cy} A${r1},${r1} 0 1,1 ${cx + r1 - 0.01},${cy}`} />
+          </circle>
+        ))}
+
+        {/* Particules orbitales — orbite 2 (sens inverse) */}
+        {[0, 1, 2, 3, 4, 5, 6, 7, 8, 9].map(i => (
+          <circle key={`p2-${i}`} r="2.5" fill="#5B9BD5" filter="url(#sGlow)" opacity="0.6">
+            <animateMotion dur={`${10 + i * 0.6}s`} repeatCount="indefinite" begin={`${i * 1}s`}
+              path={`M${cx + r2},${cy} A${r2},${r2} 0 1,0 ${cx + r2 - 0.01},${cy}`} />
+          </circle>
+        ))}
+
+        {/* Particules radiales — hub vers extérieur */}
+        {[0, 1, 2, 3, 4, 5].map(i => {
+          const angle = i * 60
+          const rad = angle * Math.PI / 180
+          const ex = cx + 210 * Math.cos(rad)
+          const ey = cy + 210 * Math.sin(rad)
           return (
-            <g key={m.id + '-path'}>
-              {/* Chemin lumineux */}
-              <line x1={cx} y1={cy} x2={m.x} y2={m.y} stroke={SRA_BLUE} strokeWidth="1.5" opacity="0.12" />
-              <line x1={cx} y1={cy} x2={m.x} y2={m.y} stroke={SRA_BLUE} strokeWidth="0.6" opacity="0.3" strokeDasharray="4 6">
-                <animate attributeName="strokeDashoffset" values="0;-20" dur="3s" repeatCount="indefinite" />
-              </line>
-              {/* Bullet aller — bleu SRA */}
-              <circle r="4.5" fill={SRA_BLUE} filter="url(#bulletGlow)" opacity="0.9">
-                <animateMotion dur={dur + 's'} repeatCount="indefinite" begin={delay + 's'}>
-                  <mpath xlinkHref={`#mpath-${m.id}`} />
-                </animateMotion>
+            <g key={`rad-${i}`}>
+              <circle r="2" fill={B} opacity="0.5">
+                <animate attributeName="cx" values={`${cx};${ex}`} dur={`${3 + i * 0.4}s`} repeatCount="indefinite" begin={`${i * 0.5}s`} />
+                <animate attributeName="cy" values={`${cy};${ey}`} dur={`${3 + i * 0.4}s`} repeatCount="indefinite" begin={`${i * 0.5}s`} />
+                <animate attributeName="opacity" values="0.7;0" dur={`${3 + i * 0.4}s`} repeatCount="indefinite" begin={`${i * 0.5}s`} />
               </circle>
-              {/* Bullet retour — bleu clair */}
-              <circle r="3" fill="#5B9BD5" filter="url(#bulletGlow)" opacity="0.7">
-                <animateMotion dur={dur + 's'} repeatCount="indefinite" begin={retDelay + 's'} keyPoints="1;0" keyTimes="0;1" calcMode="linear">
-                  <mpath xlinkHref={`#mpath-${m.id}`} />
-                </animateMotion>
-              </circle>
-              <path id={`mpath-${m.id}`} d={`M${cx},${cy} L${m.x},${m.y}`} fill="none" stroke="none" />
             </g>
           )
         })}
 
-        {/* HUB CENTRAL — Grand hexagone Agent IA */}
-        <polygon points={hex(cx, cy, hexR + 12)} fill="none" stroke={SRA_BLUE} strokeWidth="1" opacity="0.2">
-          <animate attributeName="opacity" values="0.2;0.06;0.2" dur="3s" repeatCount="indefinite" />
-        </polygon>
-        <polygon points={hex(cx, cy, hexR + 4)} fill="url(#hubGrad)" stroke="#5B9BD5" strokeWidth="2" filter="url(#softShadow)" />
-        <text x={cx} y={cy - 12} textAnchor="middle" fill="#fff" fontSize="8" fontWeight="800" letterSpacing="1">🤖 AGENT IA</text>
-        <text x={cx} y={cy + 2} textAnchor="middle" fill="#5B9BD5" fontSize="10" fontWeight="800" letterSpacing="0.5">TIMEBLAST</text>
-        <text x={cx} y={cy + 14} textAnchor="middle" fill="#7ec8a0" fontSize="8" fontWeight="700">.ai</text>
-        <text x={cx} y={cy + 27} textAnchor="middle" fill="#98c1d9" fontSize="5" fontWeight="500" opacity="0.8">Connecte · Synchronise · Automatise</text>
+        {/* Apps — Orbite 1 */}
+        {apps.map(app => {
+          const rad = app.a * Math.PI / 180
+          const ax = cx + r1 * Math.cos(rad)
+          const ay = cy + r1 * Math.sin(rad)
+          return (
+            <g key={app.label}>
+              <circle cx={ax} cy={ay} r={20} fill="#fff" stroke={B} strokeWidth="1.2" opacity="0.95" />
+              <text x={ax} y={ay + 1} textAnchor="middle" dominantBaseline="central" fill="#1a2332" fontSize="7" fontWeight="700">{app.label}</text>
+            </g>
+          )
+        })}
 
-        {/* Modules — Hexagones de la mosaïque */}
-        {modulePositions.map(m => (
-          <g key={m.id}>
-            <polygon points={hex(m.x, m.y, hexR - 2)} fill="#fff" stroke={m.color} strokeWidth="1.5" filter="url(#softShadow)" opacity="0.95" />
-            <polygon points={hex(m.x, m.y, hexR - 2)} fill={m.color} opacity="0.05" />
-            <text x={m.x} y={m.y + 1} textAnchor="middle" dominantBaseline="central" fill="#1a2332" fontSize="7" fontWeight="700">{m.label}</text>
-          </g>
-        ))}
+        {/* Apps — Orbite 2 */}
+        {apps2.map(app => {
+          const rad = app.a * Math.PI / 180
+          const ax = cx + r2 * Math.cos(rad)
+          const ay = cy + r2 * Math.sin(rad)
+          return (
+            <g key={app.label}>
+              <circle cx={ax} cy={ay} r={18} fill="#fff" stroke={B} strokeWidth="1" opacity="0.9" />
+              <text x={ax} y={ay + 1} textAnchor="middle" dominantBaseline="central" fill="#374151" fontSize="6.5" fontWeight="600">{app.label}</text>
+            </g>
+          )
+        })}
 
-        {/* Label */}
-        <rect x={cx - 58} y={cy + 200} width={116} height={18} rx={9} fill="#163a5f" opacity="0.6" />
-        <text x={cx} y={cy + 212} textAnchor="middle" fill="#5B9BD5" fontSize="6.5" fontWeight="600">↕ Lecture / Écriture</text>
+        {/* HUB CENTRAL */}
+        {/* Halo externe pulsant */}
+        <circle cx={cx} cy={cy} r={48} fill="none" stroke={B} strokeWidth="1" opacity="0.15">
+          <animate attributeName="r" values="48;56;48" dur="4s" repeatCount="indefinite" />
+          <animate attributeName="opacity" values="0.15;0.04;0.15" dur="4s" repeatCount="indefinite" />
+        </circle>
+        {/* Cercle principal */}
+        <circle cx={cx} cy={cy} r={42} fill="url(#coreGrad)" stroke="#5B9BD5" strokeWidth="1.5" />
+        {/* Texte */}
+        <text x={cx} y={cy - 10} textAnchor="middle" fill="#fff" fontSize="7.5" fontWeight="700" letterSpacing="0.8">AGENT IA</text>
+        <text x={cx} y={cy + 4} textAnchor="middle" fill="#5B9BD5" fontSize="9" fontWeight="800" letterSpacing="0.5">TIMEBLAST</text>
+        <text x={cx} y={cy + 15} textAnchor="middle" fill="#7ec8a0" fontSize="7" fontWeight="700">.ai</text>
       </svg>
     </div>
   )
