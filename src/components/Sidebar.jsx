@@ -196,7 +196,7 @@ export default function Sidebar() {
   }
 
   const visibleSections = SECTIONS.filter(s =>
-    s.roles.includes(userRole) && filterItems(s.items).length > 0
+    s.roles.includes(userRole) && (s.directLink || s.directTo || filterItems(s.items).length > 0)
   )
 
   function showFlyout(id, e) {
