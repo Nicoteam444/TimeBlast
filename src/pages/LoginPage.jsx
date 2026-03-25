@@ -118,142 +118,106 @@ const ADVANTAGES = [
   { icon: '🤖', title: 'IA agentique', desc: "L'IA ne suggère pas, elle agit. Relances, alertes, validation — en autonomie." },
 ]
 
-// ── Composant SVG — Schéma SI Pragmatique ────────────────────────────────────
+// ── Composant SVG — Octogone 8 apps + Agent IA centre ────────────────────────
 function MultipriseVisual() {
   const B = '#2B4C7E'
-  const leftApps = [
-    { label: 'Sage', cat: 'Compta' },
-    { label: 'Pennylane', cat: 'Compta' },
-    { label: 'QuickBooks', cat: 'Compta' },
-    { label: 'Chorus Pro', cat: 'Factures' },
-  ]
-  const rightApps = [
-    { label: 'Salesforce', cat: 'CRM' },
-    { label: 'HubSpot', cat: 'CRM' },
-    { label: 'Stripe', cat: 'Paiement' },
-    { label: 'Qonto', cat: 'Banque' },
-  ]
-  const bottomApps = [
-    { label: 'Slack', cat: 'Comm.' },
-    { label: 'Teams', cat: 'Comm.' },
-    { label: 'Google', cat: 'Suite' },
-    { label: 'Notion', cat: 'Docs' },
+  const apps = [
+    { label: 'Sage', cat: 'Compta', color: '#00DC82' },
+    { label: 'Salesforce', cat: 'CRM', color: '#00A1E0' },
+    { label: 'Stripe', cat: 'Paiement', color: '#635BFF' },
+    { label: 'Slack', cat: 'Comm.', color: '#E01E5A' },
+    { label: 'Pennylane', cat: 'Compta', color: '#6C5CE7' },
+    { label: 'HubSpot', cat: 'CRM', color: '#FF7A59' },
+    { label: 'Qonto', cat: 'Banque', color: '#1A1A2E' },
+    { label: 'Google', cat: 'Suite', color: '#4285F4' },
   ]
 
-  const hubX = 250, hubY = 200, hubW = 160, hubH = 70
-  const cardW = 82, cardH = 38, gap = 6
-
-  function AppCard({ x, y, label, cat }) {
-    return (
-      <g>
-        <rect x={x} y={y} width={cardW} height={cardH} rx={6} fill="#fff" stroke="#d1d5db" strokeWidth="1" />
-        <text x={x + cardW / 2} y={y + 14} textAnchor="middle" fill="#1a2332" fontSize="7.5" fontWeight="700">{label}</text>
-        <text x={x + cardW / 2} y={y + 26} textAnchor="middle" fill="#94a3b8" fontSize="6" fontWeight="500">{cat}</text>
-      </g>
-    )
-  }
-
-  // Positions
-  const lx = 20
-  const rx = 398
-  const bStartX = 74
+  const cx = 250, cy = 240, R = 170
 
   return (
     <div className="multiprise-container">
-      <svg viewBox="0 0 500  420" className="multiprise-svg">
+      <svg viewBox="0 0 500 480" className="multiprise-svg">
         <defs>
           <linearGradient id="hubGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="#1a3a5c" />
+            <stop offset="0%" stopColor="#142d4c" />
             <stop offset="100%" stopColor="#2B4C7E" />
           </linearGradient>
           <filter id="bGlow"><feGaussianBlur stdDeviation="2" /><feMerge><feMergeNode /><feMergeNode in="SourceGraphic" /></feMerge></filter>
         </defs>
 
-        {/* ── GAUCHE : Outils comptables ── */}
-        <text x={lx + cardW / 2} y={32} textAnchor="middle" fill="#64748b" fontSize="7" fontWeight="600" letterSpacing="0.5">COMPTABILITE</text>
-        <line x1={lx + 5} y1={38} x2={lx + cardW - 5} y2={38} stroke="#e2e8f0" strokeWidth="1" />
-        {leftApps.map((app, i) => {
-          const ay = 46 + i * (cardH + gap)
+        {/* Octogone de fond */}
+        <polygon
+          points={apps.map((_, i) => {
+            const a = (i / 8) * Math.PI * 2 - Math.PI / 2
+            return `${cx + (R + 30) * Math.cos(a)},${cy + (R + 30) * Math.sin(a)}`
+          }).join(' ')}
+          fill="none" stroke={B} strokeWidth="0.5" opacity="0.08"
+        />
+
+        {/* Lignes entre apps adjacentes (réseau maillé) */}
+        {apps.map((_, i) => {
+          const a1 = (i / 8) * Math.PI * 2 - Math.PI / 2
+          const a2 = ((i + 1) / 8) * Math.PI * 2 - Math.PI / 2
+          const x1 = cx + R * Math.cos(a1), y1 = cy + R * Math.sin(a1)
+          const x2 = cx + R * Math.cos(a2), y2 = cy + R * Math.sin(a2)
+          return <line key={`edge-${i}`} x1={x1} y1={y1} x2={x2} y2={y2} stroke={B} strokeWidth="0.6" opacity="0.1" />
+        })}
+
+        {/* Connexions apps → hub + billes */}
+        {apps.map((app, i) => {
+          const a = (i / 8) * Math.PI * 2 - Math.PI / 2
+          const ax = cx + R * Math.cos(a)
+          const ay = cy + R * Math.sin(a)
+          const dur = (2.2 + (i % 3) * 0.3).toFixed(1)
+          const delay = (i * 0.3).toFixed(1)
+          const retDelay = (parseFloat(delay) + parseFloat(dur) * 0.5).toFixed(1)
           return (
-            <g key={app.label}>
-              <AppCard x={lx} y={ay} label={app.label} cat={app.cat} />
-              {/* Flèche → hub */}
-              <line x1={lx + cardW} y1={ay + cardH / 2} x2={hubX - hubW / 2} y2={hubY + hubH / 2} stroke={B} strokeWidth="0.8" opacity="0.2" />
-              {/* Bille aller */}
-              <circle r="3" fill={B} filter="url(#bGlow)" opacity="0.85">
-                <animate attributeName="cx" values={`${lx + cardW};${hubX - hubW / 2}`} dur={`${2 + i * 0.3}s`} repeatCount="indefinite" begin={`${i * 0.4}s`} />
-                <animate attributeName="cy" values={`${ay + cardH / 2};${hubY + hubH / 2}`} dur={`${2 + i * 0.3}s`} repeatCount="indefinite" begin={`${i * 0.4}s`} />
+            <g key={app.label + '-conn'}>
+              <line x1={cx} y1={cy} x2={ax} y2={ay} stroke={B} strokeWidth="1" opacity="0.12" />
+              <line x1={cx} y1={cy} x2={ax} y2={ay} stroke={B} strokeWidth="0.5" opacity="0.25" strokeDasharray="4 6">
+                <animate attributeName="strokeDashoffset" values="0;-20" dur="3s" repeatCount="indefinite" />
+              </line>
+              {/* Bille aller bleu SRA */}
+              <circle r="4" fill={B} filter="url(#bGlow)" opacity="0.9">
+                <animateMotion dur={dur + 's'} repeatCount="indefinite" begin={delay + 's'}>
+                  <mpath xlinkHref={`#oct-${i}`} />
+                </animateMotion>
               </circle>
-              {/* Bille retour */}
-              <circle r="2" fill="#5B9BD5" opacity="0.5">
-                <animate attributeName="cx" values={`${hubX - hubW / 2};${lx + cardW}`} dur={`${2 + i * 0.3}s`} repeatCount="indefinite" begin={`${i * 0.4 + 1}s`} />
-                <animate attributeName="cy" values={`${hubY + hubH / 2};${ay + cardH / 2}`} dur={`${2 + i * 0.3}s`} repeatCount="indefinite" begin={`${i * 0.4 + 1}s`} />
+              {/* Bille retour bleu clair */}
+              <circle r="2.5" fill="#5B9BD5" filter="url(#bGlow)" opacity="0.6">
+                <animateMotion dur={dur + 's'} repeatCount="indefinite" begin={retDelay + 's'} keyPoints="1;0" keyTimes="0;1" calcMode="linear">
+                  <mpath xlinkHref={`#oct-${i}`} />
+                </animateMotion>
               </circle>
+              <path id={`oct-${i}`} d={`M${cx},${cy} L${ax},${ay}`} fill="none" stroke="none" />
             </g>
           )
         })}
 
-        {/* ── DROITE : Outils CRM/Paiement ── */}
-        <text x={rx + cardW / 2} y={32} textAnchor="middle" fill="#64748b" fontSize="7" fontWeight="600" letterSpacing="0.5">CRM / PAIEMENT</text>
-        <line x1={rx + 5} y1={38} x2={rx + cardW - 5} y2={38} stroke="#e2e8f0" strokeWidth="1" />
-        {rightApps.map((app, i) => {
-          const ay = 46 + i * (cardH + gap)
+        {/* Apps en octogone */}
+        {apps.map((app, i) => {
+          const a = (i / 8) * Math.PI * 2 - Math.PI / 2
+          const ax = cx + R * Math.cos(a)
+          const ay = cy + R * Math.sin(a)
           return (
             <g key={app.label}>
-              <AppCard x={rx} y={ay} label={app.label} cat={app.cat} />
-              {/* Flèche hub → */}
-              <line x1={hubX + hubW / 2} y1={hubY + hubH / 2} x2={rx} y2={ay + cardH / 2} stroke={B} strokeWidth="0.8" opacity="0.2" />
-              {/* Bille aller */}
-              <circle r="3" fill={B} filter="url(#bGlow)" opacity="0.85">
-                <animate attributeName="cx" values={`${hubX + hubW / 2};${rx}`} dur={`${2 + i * 0.3}s`} repeatCount="indefinite" begin={`${i * 0.5}s`} />
-                <animate attributeName="cy" values={`${hubY + hubH / 2};${ay + cardH / 2}`} dur={`${2 + i * 0.3}s`} repeatCount="indefinite" begin={`${i * 0.5}s`} />
-              </circle>
-              {/* Bille retour */}
-              <circle r="2" fill="#5B9BD5" opacity="0.5">
-                <animate attributeName="cx" values={`${rx};${hubX + hubW / 2}`} dur={`${2 + i * 0.3}s`} repeatCount="indefinite" begin={`${i * 0.5 + 1.2}s`} />
-                <animate attributeName="cy" values={`${ay + cardH / 2};${hubY + hubH / 2}`} dur={`${2 + i * 0.3}s`} repeatCount="indefinite" begin={`${i * 0.5 + 1.2}s`} />
-              </circle>
+              <circle cx={ax} cy={ay} r={32} fill="#fff" stroke={app.color} strokeWidth="2" />
+              <text x={ax} y={ay - 4} textAnchor="middle" dominantBaseline="central" fill="#1a2332" fontSize="8" fontWeight="700">{app.label}</text>
+              <text x={ax} y={ay + 10} textAnchor="middle" fill="#94a3b8" fontSize="6" fontWeight="500">{app.cat}</text>
             </g>
           )
         })}
 
-        {/* ── BAS : Communication ── */}
-        <text x={hubX} y={320} textAnchor="middle" fill="#64748b" fontSize="7" fontWeight="600" letterSpacing="0.5">COMMUNICATION / PRODUCTIVITE</text>
-        <line x1={hubX - 80} y1={326} x2={hubX + 80} y2={326} stroke="#e2e8f0" strokeWidth="1" />
-        {bottomApps.map((app, i) => {
-          const ax = bStartX + i * (cardW + gap)
-          const ay = 334
-          return (
-            <g key={app.label}>
-              <AppCard x={ax} y={ay} label={app.label} cat={app.cat} />
-              {/* Flèche hub ↓ */}
-              <line x1={ax + cardW / 2} y1={ay} x2={hubX + (i - 1.5) * 30} y2={hubY + hubH} stroke={B} strokeWidth="0.8" opacity="0.2" />
-              {/* Bille */}
-              <circle r="3" fill={B} filter="url(#bGlow)" opacity="0.85">
-                <animate attributeName="cx" values={`${hubX + (i - 1.5) * 30};${ax + cardW / 2}`} dur={`${2.5 + i * 0.2}s`} repeatCount="indefinite" begin={`${i * 0.6}s`} />
-                <animate attributeName="cy" values={`${hubY + hubH};${ay}`} dur={`${2.5 + i * 0.2}s`} repeatCount="indefinite" begin={`${i * 0.6}s`} />
-              </circle>
-            </g>
-          )
-        })}
-
-        {/* ── HUB CENTRAL — TimeBlast.ai ── */}
-        <rect x={hubX - hubW / 2} y={hubY} width={hubW} height={hubH} rx={10} fill="url(#hubGrad)" stroke="#5B9BD5" strokeWidth="1.5" />
-        {/* Flèches bidirectionnelles */}
-        <text x={hubX - hubW / 2 - 10} y={hubY + hubH / 2 + 2} textAnchor="middle" fill={B} fontSize="10" fontWeight="700">‹</text>
-        <text x={hubX + hubW / 2 + 10} y={hubY + hubH / 2 + 2} textAnchor="middle" fill={B} fontSize="10" fontWeight="700">›</text>
-        <text x={hubX} y={hubY + 20} textAnchor="middle" fill="#fff" fontSize="8" fontWeight="700" letterSpacing="0.5">🤖 Agent IA</text>
-        <text x={hubX} y={hubY + 34} textAnchor="middle" fill="#5B9BD5" fontSize="10" fontWeight="800">TimeBlast.ai</text>
-        <text x={hubX} y={hubY + 48} textAnchor="middle" fill="#98c1d9" fontSize="5.5" fontWeight="500">Lecture · Écriture · Sync</text>
-
-        {/* Labels flèches */}
-        <text x={hubX - hubW / 2 - 20} y={hubY - 4} textAnchor="end" fill="#94a3b8" fontSize="5.5" fontWeight="500">← Import</text>
-        <text x={hubX + hubW / 2 + 20} y={hubY - 4} textAnchor="start" fill="#94a3b8" fontSize="5.5" fontWeight="500">Export →</text>
-        <text x={hubX} y={hubY + hubH + 14} textAnchor="middle" fill="#94a3b8" fontSize="5.5" fontWeight="500">↓ Notifications</text>
-
-        {/* Badge API */}
-        <rect x={hubX - 22} y={hubY - 14} width={44} height={14} rx={7} fill="#16a34a" opacity="0.9" />
-        <text x={hubX} y={hubY - 5} textAnchor="middle" fill="#fff" fontSize="6" fontWeight="700">API REST</text>
+        {/* HUB CENTRAL */}
+        <circle cx={cx} cy={cy} r={50} fill="none" stroke={B} strokeWidth="0.8" opacity="0.15">
+          <animate attributeName="r" values="50;56;50" dur="3s" repeatCount="indefinite" />
+          <animate attributeName="opacity" values="0.15;0.05;0.15" dur="3s" repeatCount="indefinite" />
+        </circle>
+        <circle cx={cx} cy={cy} r={44} fill="url(#hubGrad)" stroke="#5B9BD5" strokeWidth="1.5" />
+        <text x={cx} y={cy - 12} textAnchor="middle" fill="#fff" fontSize="7" fontWeight="700">🤖 Agent IA</text>
+        <text x={cx} y={cy + 2} textAnchor="middle" fill="#5B9BD5" fontSize="9" fontWeight="800">TimeBlast</text>
+        <text x={cx} y={cy + 14} textAnchor="middle" fill="#7ec8a0" fontSize="7" fontWeight="700">.ai</text>
+        <text x={cx} y={cy + 28} textAnchor="middle" fill="#98c1d9" fontSize="5" fontWeight="500">Lecture · Écriture</text>
       </svg>
     </div>
   )
