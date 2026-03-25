@@ -125,7 +125,7 @@ export default function DashboardPage() {
   const uid = user?.id || 'anon'
   const STORAGE_KEY = `timeblast_dashboard_order_${uid}`
   const MOOD_KEY = `timeblast_mood_${uid}`
-  const DEFAULT_ORDER = ['score', 'tasks', 'time', 'alerts', 'projects', 'treasury', 'mood', 'marketing', 'documents', 'shortcuts', 'activity']
+  const DEFAULT_ORDER = ['score', 'feed', 'tasks', 'time', 'alerts', 'goals', 'projects', 'treasury', 'mood', 'marketing', 'documents', 'shortcuts', 'presence', 'activity']
   const MOODS = [
     { emoji: '😄', label: 'Super', color: '#16a34a' },
     { emoji: '🙂', label: 'Bien', color: '#3b82f6' },
@@ -137,6 +137,29 @@ export default function DashboardPage() {
     try { return JSON.parse(localStorage.getItem(MOOD_KEY) || 'null') } catch { return null }
   })
   const [teamMoods, setTeamMoods] = useState([])
+
+  // ── Feed reactions state ──
+  const FEED_REACTIONS_KEY = `tb_feed_reactions_${user?.id}`
+  const [feedReactions, setFeedReactions] = useState(() => {
+    try { return JSON.parse(localStorage.getItem(FEED_REACTIONS_KEY) || '{}') } catch { return {} }
+  })
+  const FEED_EMOJIS = ['👏', '🎉', '💪', '🔥']
+  function toggleFeedReaction(activityKey, emoji) {
+    setFeedReactions(prev => {
+      const next = { ...prev }
+      if (!next[activityKey]) next[activityKey] = {}
+      const current = next[activityKey][emoji] || 0
+      if (current > 0) {
+        next[activityKey] = { ...next[activityKey], [emoji]: current - 1 }
+        if (next[activityKey][emoji] <= 0) delete next[activityKey][emoji]
+        if (Object.keys(next[activityKey]).length === 0) delete next[activityKey]
+      } else {
+        next[activityKey] = { ...next[activityKey], [emoji]: 1 }
+      }
+      localStorage.setItem(FEED_REACTIONS_KEY, JSON.stringify(next))
+      return next
+    })
+  }
 
   function submitMood(mood) {
     const entry = { ...mood, user: profile?.full_name || 'Moi', date: new Date().toISOString() }
@@ -161,6 +184,70 @@ export default function DashboardPage() {
       setTeamMoods(fakeTeam)
     }
   }, [])
+
+  // ── Presence: qui est en ligne ──
+  const PATH_LABELS = {
+    '/': 'Dashboard',
+    '/crm/contacts': 'Contacts CRM',
+    '/crm/leads': 'Leads',
+    '/activite/projets': 'Projets',
+    '/finance/facturation': 'Facturation',
+    '/activite/saisie': 'Calendrier',
+    '/commerce/transactions': 'Opportunites',
+    '/documents/archives': 'Documents',
+    '/rh/absences': 'Absences',
+    '/rh/notes-de-frais': 'Notes de frais',
+    '/admin/societes': 'Societes',
+    '/admin/utilisateurs': 'Utilisateurs',
+    '/activite/kanban': 'Kanban',
+    '/finance/achats': 'Achats',
+    '/marketing/campagnes': 'Campagnes',
+  }
+  const [presenceData, setPresenceData] = useState([])
+  const [allProfiles, setAllProfiles] = useState([])
+
+  useEffect(() => {
+    if (!user) return
+    async function loadPresence() {
+      try {
+        const fiveMinAgo = new Date(Date.now() - 5 * 60 * 1000).toISOString()
+        const [viewsRes, profilesRes] = await Promise.all([
+          supabase.from('page_views').select('user_id, page_path, created_at').gt('created_at', fiveMinAgo).order('created_at', { ascending: false }),
+          supabase.from('profiles').select('id, full_name'),
+        ])
+        const views = viewsRes?.data || []
+        const profiles = profilesRes?.data || []
+        setAllProfiles(profiles)
+
+        // Group by user_id, keep latest page_path per user
+        const latestByUser = {}
+        for (const v of views) {
+          if (!latestByUser[v.user_id]) {
+            latestByUser[v.user_id] = v
+          }
+        }
+
+        const presenceList = Object.values(latestByUser).map(v => {
+          const prof = profiles.find(p => p.id === v.user_id)
+          return {
+            user_id: v.user_id,
+            full_name: prof?.full_name || 'Inconnu',
+            page_path: v.page_path,
+            page_label: PATH_LABELS[v.page_path] || v.page_path,
+            last_seen: v.created_at,
+            active: true,
+          }
+        })
+
+        setPresenceData(presenceList)
+      } catch (err) {
+        console.error('Presence fetch error:', err)
+      }
+    }
+    loadPresence()
+    const interval = setInterval(loadPresence, 30000)
+    return () => clearInterval(interval)
+  }, [user?.id])
 
   const [widgetOrder, setWidgetOrder] = useState(() => {
     try {
@@ -1074,6 +1161,84 @@ export default function DashboardPage() {
         </div>
       </>
     ),
+
+    goals: (() => {
+      const goalsData = [
+        {
+          icon: '💰',
+          label: 'CA facture ce mois',
+          current: encaissements30,
+          target: 100000,
+          format: v => fmtE(v),
+          unit: '',
+        },
+        {
+          icon: '👥',
+          label: 'Nouveaux contacts CRM',
+          current: raw.leadsCount || 0,
+          target: 50,
+          format: v => `${v}`,
+          unit: '/50',
+        },
+        {
+          icon: '⏱️',
+          label: 'Heures saisies equipe',
+          current: Math.round(totalHeures * 4),
+          target: 800,
+          format: v => `${v}h`,
+          unit: '/800h',
+        },
+      ]
+      return (
+        <>
+          <SectionHeader icon="🎯" title="Objectifs d'equipe" />
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '.75rem' }}>
+            {goalsData.map((g, i) => {
+              const pct = Math.min(100, Math.round((g.current / g.target) * 100))
+              const barColor = pct > 75 ? '#16a34a' : pct > 50 ? '#eab308' : '#3b82f6'
+              const msg = pct > 80 ? 'Presque ! 💪' : pct > 50 ? 'Bien parti ! 🚀' : null
+              return (
+                <div key={i} style={{
+                  padding: '.75rem', borderRadius: 10,
+                  background: 'var(--surface, #f8fafc)',
+                  border: '1px solid var(--border, #e2e8f0)',
+                }}>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '.4rem' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '.4rem', fontWeight: 600, fontSize: '.85rem' }}>
+                      <span>{g.icon}</span>
+                      <span>{g.label}</span>
+                    </div>
+                    <div style={{ fontSize: '.8rem', fontWeight: 700, color: barColor }}>
+                      {pct}%
+                    </div>
+                  </div>
+                  <div style={{
+                    width: '100%', height: 10, borderRadius: 5,
+                    background: '#e5e7eb', overflow: 'hidden', marginBottom: '.35rem',
+                  }}>
+                    <div style={{
+                      width: `${pct}%`, height: '100%', borderRadius: 5,
+                      background: barColor,
+                      transition: 'width .6s ease',
+                    }} />
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                    <span style={{ fontSize: '.78rem', color: 'var(--text-muted)' }}>
+                      {g.format(g.current)}{g.unit} — reste {g.format(Math.max(0, g.target - g.current))}
+                    </span>
+                    {msg && (
+                      <span style={{ fontSize: '.75rem', fontWeight: 600, color: barColor }}>
+                        {msg}
+                      </span>
+                    )}
+                  </div>
+                </div>
+              )
+            })}
+          </div>
+        </>
+      )
+    })(),
   }
 
   return (
