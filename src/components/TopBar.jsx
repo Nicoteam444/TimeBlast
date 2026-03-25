@@ -491,12 +491,6 @@ export default function TopBar() {
                   {selectedSociete?.name || 'Changer de société'}
                 </button>
               )}
-              <button className="topbar-dropdown-item" onClick={() => {
-                localStorage.setItem('tb_switch_account', 'true')
-                handleSignOut()
-              }}>
-                🔄 Changer de compte
-              </button>
               <hr className="topbar-dropdown-divider" />
               <button className="topbar-dropdown-item topbar-dropdown-item--danger" onClick={handleSignOut}>
                 Déconnexion
