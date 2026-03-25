@@ -253,7 +253,6 @@ export default function RapprochementPage() {
 
   const { sortedData: sortedBank, sortKey: bankSortKey, sortDir: bankSortDir, requestSort: bankRequestSort } = useSortableTable(filteredBank)
   const { sortedData: sortedAcct, sortKey: acctSortKey, sortDir: acctSortDir, requestSort: acctRequestSort } = useSortableTable(filteredAcct)
-  const { sortedData: sortedPairs, sortKey: pairsSortKey, sortDir: pairsSortDir, requestSort: pairsRequestSort } = useSortableTable(matchedPairs)
 
   // KPIs
   const totalBank = bankTransactions.reduce((s, bt) => s + bt.montant, 0)
@@ -263,7 +262,7 @@ export default function RapprochementPage() {
   const matchPct = totalItems > 0 ? Math.round((matchedCount * 2 / totalItems) * 100) : 0
   const ecart = totalBank - totalAcct
 
-  // Matched pairs table data
+  // Matched pairs table data (MUST be defined before useSortableTable)
   const matchedPairs = useMemo(() => {
     return matches.map(m => {
       const bt = bankTransactions.find(b => b.id === m.bankId)
@@ -271,6 +270,8 @@ export default function RapprochementPage() {
       return { ...m, bank: bt, acct: ae }
     }).filter(p => p.bank && p.acct)
   }, [matches, bankTransactions, accountingEntries])
+
+  const { sortedData: sortedPairs, sortKey: pairsSortKey, sortDir: pairsSortDir, requestSort: pairsRequestSort } = useSortableTable(matchedPairs)
 
   return (
     <div className="admin-page">
