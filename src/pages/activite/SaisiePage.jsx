@@ -472,25 +472,24 @@ export default function SaisiePage() {
       ])
 
       const equipeData = equipeRes.data || []
+      const equipeError = equipeRes.error
       const profilesData = profilesRes.data || []
       setProfilesList(profilesData)
 
+      console.log('[Calendrier] equipe:', equipeData.length, 'profiles:', profilesData.length, 'equipeError:', equipeError?.message)
+
       if (equipeData.length > 0) {
         setCollabs(equipeData)
-        // Par défaut : seulement l'utilisateur connecté (matcher par email/nom)
         const me = equipeData.find(c =>
           (c.email && c.email.toLowerCase() === (profile?.email || user?.email || '').toLowerCase()) ||
           (c.nom && profile?.full_name && c.nom.toLowerCase() === profile.full_name.split(' ').pop()?.toLowerCase())
         )
         setSelectedCollabs(new Set(me ? [me.id] : [equipeData[0]?.id]))
       } else {
-        // Fallback profiles
-        const mapped = profilesData.map(p => {
-          const parts = (p.full_name || '').trim().split(/\s+/)
-          return { id: p.id, prenom: parts[0] || '', nom: parts.slice(1).join(' ') || '', email: '', poste: p.role }
-        })
-        setCollabs(mapped)
-        setSelectedCollabs(new Set(mapped.map(c => c.id)))
+        // Equipe vide (RLS ou pas de données) — afficher message
+        console.warn('[Calendrier] Table equipe vide ou bloquée par RLS, fallback vide')
+        setCollabs([])
+        setSelectedCollabs(new Set())
       }
     }
     loadCollabs()
