@@ -880,7 +880,9 @@ export default function SaisiePage() {
                     return (
                       <div key={ev.id} className="cal-event"
                         style={{
-                          top, height, background: color + '22', borderLeftColor: color,
+                          top, height, borderLeftColor: color,
+                          background: `linear-gradient(135deg, ${color}30, ${color}15)`,
+                          backgroundColor: '#fff',
                           opacity: isMoving ? 0.3 : isOther ? 0.85 : 1,
                           cursor: isOther ? 'default' : 'grab',
                           left: `${colLeft}%`, right: 'auto', width: `${colWidth - 1}%`,
