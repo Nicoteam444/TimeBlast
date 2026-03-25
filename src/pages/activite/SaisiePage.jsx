@@ -660,79 +660,21 @@ export default function SaisiePage() {
 
   const totalWeek = Object.values(events).flat().reduce((s, e) => s + (e.heures || 0), 0)
 
+  const filteredCollabs = collabs.filter(c => {
+    if (!collabSearch) return true
+    return `${c.prenom} ${c.nom} ${c.email}`.toLowerCase().includes(collabSearch.toLowerCase())
+  })
+
   return (
-    <div className="admin-page cal-page">
+    <div className="admin-page cal-page" style={{ display: 'flex', flexDirection: 'column', height: 'calc(100vh - 80px)', overflow: 'hidden' }}>
       {/* Header */}
-      <div className="admin-page-header">
+      <div className="admin-page-header" style={{ flexShrink: 0 }}>
         <div>
           <h1>📅 Calendrier</h1>
           <p style={{ textTransform: 'capitalize' }}>{fmtMonthYear(weekStart)} · {totalWeek > 0 ? `${totalWeek}h cette semaine` : 'Aucune saisie'}</p>
         </div>
         <div style={{ display: 'flex', gap: '.5rem', alignItems: 'center', flexWrap: 'wrap' }}>
           <WeekStatusBar userId={profile?.id || 'unknown'} mondayISO={toISO(weekStart)} userRole={profile?.role} />
-
-          {/* Sélecteur collaborateurs */}
-          <div style={{ position: 'relative' }}>
-            <button className="btn-secondary" onClick={() => setShowCollabPanel(!showCollabPanel)}
-              style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-              👥 {selectedCollabs.size} collaborateur{selectedCollabs.size > 1 ? 's' : ''}
-              <span style={{ fontSize: 10 }}>▼</span>
-            </button>
-            {showCollabPanel && (
-              <div style={{
-                position: 'absolute', top: '100%', right: 0, marginTop: 6, width: 280,
-                background: '#fff', borderRadius: 10, boxShadow: '0 8px 30px rgba(0,0,0,.18)',
-                border: '1px solid #e2e8f0', zIndex: 100, overflow: 'hidden'
-              }}>
-                <div style={{ padding: '10px 12px', borderBottom: '1px solid #f1f5f9' }}>
-                  <input type="text" value={collabSearch} onChange={e => setCollabSearch(e.target.value)}
-                    placeholder="Rechercher..." style={{
-                      width: '100%', padding: '6px 10px', borderRadius: 6, border: '1px solid #e2e8f0',
-                      fontSize: 12, outline: 'none', boxSizing: 'border-box'
-                    }} />
-                  <div style={{ display: 'flex', gap: 6, marginTop: 6 }}>
-                    <button onClick={() => setSelectedCollabs(new Set(collabs.map(c => c.id)))}
-                      style={{ fontSize: 11, padding: '2px 8px', borderRadius: 4, border: '1px solid #e2e8f0', background: '#f8fafc', cursor: 'pointer' }}>Tous</button>
-                    <button onClick={() => setSelectedCollabs(new Set([profile?.id]))}
-                      style={{ fontSize: 11, padding: '2px 8px', borderRadius: 4, border: '1px solid #e2e8f0', background: '#f8fafc', cursor: 'pointer' }}>Moi seul</button>
-                    <button onClick={() => setSelectedCollabs(new Set())}
-                      style={{ fontSize: 11, padding: '2px 8px', borderRadius: 4, border: '1px solid #e2e8f0', background: '#f8fafc', cursor: 'pointer' }}>Aucun</button>
-                  </div>
-                </div>
-                <div style={{ maxHeight: 250, overflowY: 'auto', padding: '4px 6px' }}>
-                  {collabs.filter(c => {
-                    if (!collabSearch) return true
-                    return `${c.prenom} ${c.nom} ${c.email}`.toLowerCase().includes(collabSearch.toLowerCase())
-                  }).map((c, i) => {
-                    const color = collabColor(collabs.indexOf(c))
-                    const checked = selectedCollabs.has(c.id)
-                    const isMe = c.id === profile?.id
-                    return (
-                      <label key={c.id} style={{
-                        display: 'flex', alignItems: 'center', gap: 8, padding: '5px 8px',
-                        borderRadius: 6, cursor: 'pointer', fontSize: 13,
-                        background: checked ? color + '10' : 'transparent'
-                      }}>
-                        <input type="checkbox" checked={checked} onChange={() => toggleCollab(c.id)}
-                          style={{ accentColor: color }} />
-                        <div style={{
-                          width: 24, height: 24, borderRadius: '50%', background: color,
-                          color: '#fff', fontSize: 10, fontWeight: 700, display: 'flex',
-                          alignItems: 'center', justifyContent: 'center', flexShrink: 0
-                        }}>
-                          {`${(c.prenom || '')[0] || ''}${(c.nom || '')[0] || ''}`.toUpperCase()}
-                        </div>
-                        <span style={{ fontWeight: isMe ? 600 : 400 }}>
-                          {c.prenom} {c.nom} {isMe && <span style={{ color: '#94a3b8', fontSize: 10 }}>(moi)</span>}
-                        </span>
-                      </label>
-                    )
-                  })}
-                </div>
-              </div>
-            )}
-          </div>
-
           <button className="btn-secondary" onClick={() => setWeekStart(w => addDays(w, -7))}>← Préc.</button>
           <button className="btn-secondary" onClick={() => setWeekStart(getMonday(new Date()))}>Aujourd'hui</button>
           <button className="btn-secondary" onClick={() => setWeekStart(w => addDays(w, 7))}>Suiv. →</button>
@@ -740,8 +682,65 @@ export default function SaisiePage() {
         </div>
       </div>
 
-      {/* Calendrier */}
-      <div className="cal-grid-wrap">
+      {/* Corps : sidebar collabs + calendrier + panel détail */}
+      <div style={{ display: 'flex', flex: 1, minHeight: 0, overflow: 'hidden' }}>
+
+        {/* ── Sidebar collaborateurs ── */}
+        <div style={{
+          width: 220, flexShrink: 0, background: '#fff', borderRight: '1px solid #e2e8f0',
+          display: 'flex', flexDirection: 'column', overflow: 'hidden'
+        }}>
+          <div style={{ padding: '12px 10px 8px', borderBottom: '1px solid #f1f5f9' }}>
+            <div style={{ fontSize: 13, fontWeight: 600, color: '#1e293b', marginBottom: 8 }}>👥 Collaborateurs</div>
+            <input type="text" value={collabSearch} onChange={e => setCollabSearch(e.target.value)}
+              placeholder="Rechercher..." style={{
+                width: '100%', padding: '5px 8px', borderRadius: 6, border: '1px solid #e2e8f0',
+                fontSize: 12, outline: 'none', boxSizing: 'border-box'
+              }} />
+            <div style={{ display: 'flex', gap: 4, marginTop: 6 }}>
+              <button onClick={() => setSelectedCollabs(new Set(collabs.map(c => c.id)))}
+                style={{ fontSize: 10, padding: '2px 6px', borderRadius: 4, border: '1px solid #e2e8f0', background: '#f8fafc', cursor: 'pointer' }}>Tous</button>
+              <button onClick={() => setSelectedCollabs(new Set([profile?.id]))}
+                style={{ fontSize: 10, padding: '2px 6px', borderRadius: 4, border: '1px solid #e2e8f0', background: '#f8fafc', cursor: 'pointer' }}>Moi</button>
+              <button onClick={() => setSelectedCollabs(new Set())}
+                style={{ fontSize: 10, padding: '2px 6px', borderRadius: 4, border: '1px solid #e2e8f0', background: '#f8fafc', cursor: 'pointer' }}>Aucun</button>
+            </div>
+          </div>
+          <div style={{ flex: 1, overflowY: 'auto', padding: '4px 6px' }}>
+            {filteredCollabs.map(c => {
+              const color = collabColor(collabs.indexOf(c))
+              const checked = selectedCollabs.has(c.id)
+              const isMe = c.id === profile?.id
+              return (
+                <label key={c.id} style={{
+                  display: 'flex', alignItems: 'center', gap: 6, padding: '5px 6px',
+                  borderRadius: 6, cursor: 'pointer', fontSize: 12,
+                  background: checked ? color + '10' : 'transparent'
+                }}>
+                  <input type="checkbox" checked={checked} onChange={() => toggleCollab(c.id)}
+                    style={{ accentColor: color, width: 14, height: 14 }} />
+                  <div style={{
+                    width: 22, height: 22, borderRadius: '50%', background: color,
+                    color: '#fff', fontSize: 9, fontWeight: 700, display: 'flex',
+                    alignItems: 'center', justifyContent: 'center', flexShrink: 0
+                  }}>
+                    {`${(c.prenom || '')[0] || ''}${(c.nom || '')[0] || ''}`.toUpperCase()}
+                  </div>
+                  <span style={{ fontWeight: isMe ? 600 : 400, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                    {c.prenom} {c.nom} {isMe && <span style={{ color: '#94a3b8', fontSize: 9 }}>(moi)</span>}
+                  </span>
+                </label>
+              )
+            })}
+          </div>
+          <div style={{ padding: '6px 10px', borderTop: '1px solid #f1f5f9', fontSize: 11, color: '#94a3b8', textAlign: 'center' }}>
+            {selectedCollabs.size} sélectionné{selectedCollabs.size > 1 ? 's' : ''}
+          </div>
+        </div>
+
+        {/* ── Zone calendrier ── */}
+        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', minWidth: 0 }}>
+      <div className="cal-grid-wrap" style={{ flex: 1 }}>
         {/* En-tête jours */}
         <div className="cal-grid-header">
           <div className="cal-gutter" />
@@ -867,6 +866,134 @@ export default function SaisiePage() {
 
       {/* Totals Bar */}
       <TotalsBar weekDates={weekDates} events={events} />
+        </div>{/* fin zone calendrier */}
+
+        {/* ── Panel détail événement à droite ── */}
+        {selectedEvent && (
+          <div style={{
+            width: 320, flexShrink: 0, background: '#fff', borderLeft: '1px solid #e2e8f0',
+            display: 'flex', flexDirection: 'column', overflow: 'hidden'
+          }}>
+            <div style={{
+              padding: '14px 16px', borderBottom: '1px solid #f1f5f9',
+              display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start'
+            }}>
+              <div style={{ flex: 1 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
+                  <span style={{
+                    width: 12, height: 12, borderRadius: '50%', flexShrink: 0,
+                    background: selectedEvent.color || collabColorForId(selectedEvent.user_id) || colorFor(selectedEvent.projets?.id)
+                  }} />
+                  <h3 style={{ margin: 0, fontSize: 16, fontWeight: 600 }}>
+                    {selectedEvent.projets?.name || selectedEvent.title || '—'}
+                  </h3>
+                </div>
+                <div style={{ fontSize: 12, color: '#64748b' }}>
+                  {new Date(selectedEvent.date + 'T12:00').toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' })}
+                </div>
+              </div>
+              <button onClick={() => setSelectedEvent(null)} style={{
+                background: 'none', border: 'none', cursor: 'pointer', fontSize: 18, color: '#94a3b8', padding: 0
+              }}>✕</button>
+            </div>
+
+            <div style={{ flex: 1, overflowY: 'auto', padding: 16, display: 'flex', flexDirection: 'column', gap: 14 }}>
+              {/* Horaires */}
+              <div style={{
+                display: 'flex', alignItems: 'center', gap: 10, padding: '10px 14px',
+                background: '#f8fafc', borderRadius: 8
+              }}>
+                <span style={{ fontSize: 20 }}>🕐</span>
+                <div>
+                  <div style={{ fontWeight: 600, fontSize: 15 }}>
+                    {fmtTime(selectedEvent.startMin)} – {fmtTime(selectedEvent.endMin)}
+                  </div>
+                  <div style={{ fontSize: 12, color: '#64748b' }}>
+                    {Math.round((selectedEvent.endMin - selectedEvent.startMin) / 60 * 10) / 10}h
+                  </div>
+                </div>
+              </div>
+
+              {/* Collaborateur */}
+              {(() => {
+                const info = collabInfo(selectedEvent.user_id)
+                const color = collabColorForId(selectedEvent.user_id)
+                return (
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 14px', background: '#f8fafc', borderRadius: 8 }}>
+                    <div style={{
+                      width: 32, height: 32, borderRadius: '50%', background: color,
+                      color: '#fff', fontSize: 12, fontWeight: 700, display: 'flex',
+                      alignItems: 'center', justifyContent: 'center', flexShrink: 0
+                    }}>{info.initials}</div>
+                    <div>
+                      <div style={{ fontWeight: 600, fontSize: 14 }}>{info.name}</div>
+                      <div style={{ fontSize: 11, color: '#64748b' }}>
+                        {selectedEvent.user_id === profile?.id ? 'Vous' : 'Collaborateur'}
+                      </div>
+                    </div>
+                  </div>
+                )
+              })()}
+
+              {/* Type */}
+              {selectedEvent.event_type && selectedEvent.event_type !== 'time_entry' && (
+                <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 14px', background: '#f8fafc', borderRadius: 8 }}>
+                  <span style={{ fontSize: 20 }}>
+                    {selectedEvent.event_type === 'meeting' ? '📅' : selectedEvent.event_type === 'call' ? '📞' : selectedEvent.event_type === 'task' ? '✅' : selectedEvent.event_type === 'break' ? '☕' : selectedEvent.event_type === 'travel' ? '🚗' : '📌'}
+                  </span>
+                  <div style={{ fontWeight: 500, fontSize: 13, textTransform: 'capitalize' }}>
+                    {selectedEvent.event_type === 'meeting' ? 'Réunion' : selectedEvent.event_type === 'call' ? 'Appel' : selectedEvent.event_type === 'task' ? 'Tâche' : selectedEvent.event_type === 'break' ? 'Pause' : selectedEvent.event_type === 'travel' ? 'Déplacement' : selectedEvent.event_type}
+                  </div>
+                </div>
+              )}
+
+              {/* Lieu */}
+              {selectedEvent.location && (
+                <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 14px', background: '#f8fafc', borderRadius: 8 }}>
+                  <span style={{ fontSize: 20 }}>📍</span>
+                  <div style={{ fontSize: 13 }}>{selectedEvent.location}</div>
+                </div>
+              )}
+
+              {/* Description / Note */}
+              {(selectedEvent.noteText || selectedEvent.description) && (
+                <div style={{ padding: '10px 14px', background: '#f8fafc', borderRadius: 8 }}>
+                  <div style={{ fontSize: 11, fontWeight: 600, color: '#64748b', marginBottom: 4 }}>DESCRIPTION</div>
+                  <div style={{ fontSize: 13, lineHeight: 1.5 }}>
+                    {selectedEvent.noteText || selectedEvent.description}
+                  </div>
+                </div>
+              )}
+
+              {/* Heures */}
+              {selectedEvent.heures > 0 && (
+                <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 14px', background: '#f0fdf4', borderRadius: 8, border: '1px solid #bbf7d0' }}>
+                  <span style={{ fontSize: 20 }}>⏱</span>
+                  <div>
+                    <div style={{ fontWeight: 600, color: '#166534' }}>{selectedEvent.heures}h saisies</div>
+                    <div style={{ fontSize: 11, color: '#16a34a' }}>Temps facturable</div>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Actions */}
+            {selectedEvent.user_id === profile?.id && (
+              <div style={{ padding: '10px 16px', borderTop: '1px solid #f1f5f9', display: 'flex', gap: 8 }}>
+                <button className="btn-primary" style={{ flex: 1, fontSize: 12 }}
+                  onClick={() => { const ev = selectedEvent; setSelectedEvent(null); setSelectedEvent(ev) }}>
+                  ✏️ Modifier
+                </button>
+                <button className="btn-danger" style={{ fontSize: 12 }}
+                  onClick={() => { handleDeleteEvent(selectedEvent.id); setSelectedEvent(null) }}>
+                  🗑️
+                </button>
+              </div>
+            )}
+          </div>
+        )}
+
+      </div>{/* fin corps flex */}
 
       {/* Modal création */}
       {newEvent && (
@@ -876,15 +1003,6 @@ export default function SaisiePage() {
           societeId={selectedSociete?.id || null}
           onClose={() => setNewEvent(null)}
           onSaved={fetchWeek}
-        />
-      )}
-
-      {selectedEvent && (
-        <EventDetailModal
-          ev={selectedEvent}
-          onClose={() => setSelectedEvent(null)}
-          onDelete={fetchWeek}
-          onRefresh={() => { fetchWeek(); setSelectedEvent(null) }}
         />
       )}
     </div>
