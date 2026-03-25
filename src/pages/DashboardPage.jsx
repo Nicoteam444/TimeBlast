@@ -125,7 +125,7 @@ export default function DashboardPage() {
   const uid = user?.id || 'anon'
   const STORAGE_KEY = `timeblast_dashboard_order_${uid}`
   const MOOD_KEY = `timeblast_mood_${uid}`
-  const DEFAULT_ORDER = ['score', 'feed', 'tasks', 'time', 'alerts', 'goals', 'projects', 'treasury', 'mood', 'marketing', 'documents', 'shortcuts', 'presence', 'activity']
+  const DEFAULT_ORDER = ['aitodo', 'score', 'feed', 'tasks', 'time', 'alerts', 'goals', 'projects', 'treasury', 'mood', 'marketing', 'documents', 'shortcuts', 'presence', 'activity']
   const MOODS = [
     { emoji: '😄', label: 'Super', color: '#16a34a' },
     { emoji: '🙂', label: 'Bien', color: '#3b82f6' },
@@ -684,7 +684,85 @@ export default function DashboardPage() {
   }
 
   // ── Widget map ──
+  // IA Todo — 3 conseils dynamiques basés sur les données
+  const aiTodos = useMemo(() => {
+    const todos = []
+    const overdueCount = raw.facturesOverdueCount || 0
+    const heures = (raw.temps || []).reduce((s, t) => s + (t.duree || t.heures || 0), 0)
+    const tasksCount = (raw.tasks || []).length
+    const urgentTasks = (raw.tasks || []).filter(t => t.priority === 'haute').length
+
+    if (overdueCount > 0) todos.push({ text: `Relancer ${overdueCount} facture${overdueCount > 1 ? 's' : ''} en retard de paiement`, icon: '🧾', link: '/finance/facturation', priority: 'high' })
+    if (heures < 7) todos.push({ text: 'Saisir vos heures de la journee', icon: '⏱', link: '/activite/saisie', priority: 'medium' })
+    if (urgentTasks > 0) todos.push({ text: `Traiter ${urgentTasks} tache${urgentTasks > 1 ? 's' : ''} prioritaire${urgentTasks > 1 ? 's' : ''}`, icon: '🔴', link: '/activite/projets', priority: 'high' })
+    if (raw.absencesPendingCount > 0) todos.push({ text: `Valider ${raw.absencesPendingCount} demande${raw.absencesPendingCount > 1 ? 's' : ''} d\'absence`, icon: '🏖️', link: '/activite/absences', priority: 'medium' })
+    if (raw.notesFraisPendingCount > 0) todos.push({ text: `Approuver ${raw.notesFraisPendingCount} note${raw.notesFraisPendingCount > 1 ? 's' : ''} de frais`, icon: '💳', link: '/equipe/notes-de-frais', priority: 'medium' })
+    if ((raw.leadsCount || 0) > 0) todos.push({ text: 'Qualifier les nouveaux leads du mois', icon: '🚀', link: '/crm/leads', priority: 'low' })
+    if (todos.length < 3) todos.push({ text: 'Mettre a jour votre pipeline commercial', icon: '🎯', link: '/commerce/transactions', priority: 'low' })
+    if (todos.length < 3) todos.push({ text: 'Archiver vos documents recents', icon: '📄', link: '/documents/archives', priority: 'low' })
+
+    return todos.slice(0, 3)
+  }, [raw])
+
+  const [aiChecked, setAiChecked] = useState(() => {
+    try {
+      const key = `tb_aitodo_${new Date().toISOString().slice(0, 10)}_${user?.id || 'anon'}`
+      return JSON.parse(localStorage.getItem(key) || '[]')
+    } catch { return [] }
+  })
+  function toggleAiCheck(idx) {
+    setAiChecked(prev => {
+      const updated = prev.includes(idx) ? prev.filter(i => i !== idx) : [...prev, idx]
+      const key = `tb_aitodo_${new Date().toISOString().slice(0, 10)}_${user?.id || 'anon'}`
+      localStorage.setItem(key, JSON.stringify(updated))
+      return updated
+    })
+  }
+
   const widgetMap = {
+    aitodo: (
+      <>
+        <SectionHeader icon="🤖" title="Conseils IA du jour" />
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '.5rem' }}>
+          {aiTodos.map((todo, i) => {
+            const done = aiChecked.includes(i)
+            return (
+              <div key={i} style={{
+                display: 'flex', alignItems: 'center', gap: '.6rem',
+                padding: '.6rem .75rem', borderRadius: 8,
+                background: done ? '#f0fdf4' : 'var(--surface, #f8fafc)',
+                border: done ? '1px solid #bbf7d0' : '1px solid var(--border, #e2e8f0)',
+                opacity: done ? 0.7 : 1, transition: 'all .2s',
+              }}>
+                <div onClick={() => toggleAiCheck(i)} style={{
+                  width: 20, height: 20, borderRadius: 6, cursor: 'pointer', flexShrink: 0,
+                  border: done ? 'none' : '2px solid #cbd5e1',
+                  background: done ? '#16a34a' : '#fff',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  transition: 'all .15s',
+                }}>
+                  {done && <span style={{ color: '#fff', fontSize: 12, fontWeight: 700 }}>✓</span>}
+                </div>
+                <span style={{ fontSize: 14 }}>{todo.icon}</span>
+                <span onClick={() => !done && navigate(todo.link)} style={{
+                  flex: 1, fontSize: '.85rem', fontWeight: 500,
+                  color: done ? '#94a3b8' : 'var(--text)',
+                  textDecoration: done ? 'line-through' : 'none',
+                  cursor: done ? 'default' : 'pointer',
+                }}>{todo.text}</span>
+                {todo.priority === 'high' && !done && (
+                  <span style={{ fontSize: '.6rem', padding: '1px 6px', borderRadius: 8, background: '#fef2f2', color: '#dc2626', fontWeight: 700 }}>Urgent</span>
+                )}
+              </div>
+            )
+          })}
+        </div>
+        <div style={{ marginTop: '.5rem', fontSize: '.7rem', color: 'var(--text-muted)', textAlign: 'center' }}>
+          Genere automatiquement selon vos donnees · Reinitialise chaque jour
+        </div>
+      </>
+    ),
+
     score: (
       <>
         <SectionHeader icon="🏅" title="Top utilisateurs cette semaine" />
