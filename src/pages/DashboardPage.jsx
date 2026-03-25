@@ -1413,43 +1413,56 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      {/* ═══ Reset button ═══ */}
-      <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '.5rem' }}>
-        <button onClick={resetLayout} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '.75rem', color: 'var(--text-muted)' }}>
-          🔄 Reinitialiser
-        </button>
+      {/* ═══ SECTION 1 — ACTIVITE ═══ */}
+      <div style={{ marginBottom: '1.5rem' }}>
+        <h2 style={{ fontSize: '1rem', fontWeight: 700, color: 'var(--text)', margin: '0 0 .75rem', display: 'flex', alignItems: 'center', gap: '.5rem' }}>
+          <span style={{ width: 4, height: 20, borderRadius: 2, background: '#2B4C7E', display: 'inline-block' }} />
+          Mon activite
+        </h2>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1rem' }}>
+          {['tasks', 'time', 'alerts'].map(id => widgetMap[id] ? (
+            <div key={id} className="dash-card" style={cardStyle}>{widgetMap[id]}</div>
+          ) : null)}
+        </div>
       </div>
 
-      {/* ═══ DRAGGABLE WIDGETS GRID ═══ */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1rem' }}>
-        {widgetOrder.map(id => {
-          const content = widgetMap[id]
-          if (!content) return null
-          return (
-            <div key={id} draggable
-              onDragStart={() => onDragStart(id)}
-              onDragOver={e => { e.preventDefault(); onDragOverWidget(e, id) }}
-              onDrop={e => { e.preventDefault(); onDropWidget() }}
-              className="dash-card" style={{
-                ...cardStyle, position: 'relative', cursor: 'default',
-                gridColumn: (id === 'activity' || id === 'feed') ? '1 / -1' : undefined,
-              }}>
-              {/* Grip visuel — visible uniquement au hover */}
-              <div className="dash-grip" style={{
-                position: 'absolute', top: 6, left: 8, zIndex: 2,
-                display: 'grid', gridTemplateColumns: '5px 5px', gap: 3,
-                cursor: 'grab', padding: 2, borderRadius: 4,
-                opacity: 0, transition: 'opacity .2s',
-              }}>
-                <span style={{ width: 5, height: 5, borderRadius: '50%', background: '#94a3b8' }} />
-                <span style={{ width: 5, height: 5, borderRadius: '50%', background: '#94a3b8' }} />
-                <span style={{ width: 5, height: 5, borderRadius: '50%', background: '#94a3b8' }} />
-                <span style={{ width: 5, height: 5, borderRadius: '50%', background: '#94a3b8' }} />
-              </div>
-              {content}
-            </div>
-          )
-        })}
+      {/* ═══ SECTION 2 — EQUIPE ═══ */}
+      <div style={{ marginBottom: '1.5rem' }}>
+        <h2 style={{ fontSize: '1rem', fontWeight: 700, color: 'var(--text)', margin: '0 0 .75rem', display: 'flex', alignItems: 'center', gap: '.5rem' }}>
+          <span style={{ width: 4, height: 20, borderRadius: 2, background: '#16a34a', display: 'inline-block' }} />
+          Mon equipe
+        </h2>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1rem' }}>
+          {['score', 'mood', 'presence', 'goals'].map(id => widgetMap[id] ? (
+            <div key={id} className="dash-card" style={cardStyle}>{widgetMap[id]}</div>
+          ) : null)}
+        </div>
+      </div>
+
+      {/* ═══ SECTION 3 — PROJETS & BUSINESS ═══ */}
+      <div style={{ marginBottom: '1.5rem' }}>
+        <h2 style={{ fontSize: '1rem', fontWeight: 700, color: 'var(--text)', margin: '0 0 .75rem', display: 'flex', alignItems: 'center', gap: '.5rem' }}>
+          <span style={{ width: 4, height: 20, borderRadius: 2, background: '#8b5cf6', display: 'inline-block' }} />
+          Projets & Business
+        </h2>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1rem' }}>
+          {['projects', 'treasury', 'marketing', 'documents', 'shortcuts'].map(id => widgetMap[id] ? (
+            <div key={id} className="dash-card" style={cardStyle}>{widgetMap[id]}</div>
+          ) : null)}
+        </div>
+      </div>
+
+      {/* ═══ SECTION 4 — HISTORIQUE ═══ */}
+      <div style={{ marginBottom: '1rem' }}>
+        <h2 style={{ fontSize: '1rem', fontWeight: 700, color: 'var(--text)', margin: '0 0 .75rem', display: 'flex', alignItems: 'center', gap: '.5rem' }}>
+          <span style={{ width: 4, height: 20, borderRadius: 2, background: '#f59e0b', display: 'inline-block' }} />
+          Historique des activites
+        </h2>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+          {['feed', 'activity'].map(id => widgetMap[id] ? (
+            <div key={id} className="dash-card" style={cardStyle}>{widgetMap[id]}</div>
+          ) : null)}
+        </div>
       </div>
     </div>
   )
