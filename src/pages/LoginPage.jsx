@@ -194,9 +194,34 @@ export default function LoginPage() {
   const [showLogin, setShowLogin] = useState(false)
   const [activeCat, setActiveCat] = useState('all')
 
+  // Comptes récents
+  const [recentAccounts, setRecentAccounts] = useState([])
+  const isSwitching = localStorage.getItem('tb_switch_account') === 'true'
+
+  useEffect(() => {
+    try {
+      const stored = JSON.parse(localStorage.getItem('tb_recent_accounts') || '[]')
+      setRecentAccounts(stored)
+      if (isSwitching) {
+        setShowLogin(true)
+        localStorage.removeItem('tb_switch_account')
+      }
+    } catch {}
+  }, [])
+
   // Contact form state
   const [contactForm, setContactForm] = useState({ name: '', email: '', company: '', phone: '', message: '' })
   const [contactSent, setContactSent] = useState(false)
+
+  function saveRecentAccount(email) {
+    try {
+      let accounts = JSON.parse(localStorage.getItem('tb_recent_accounts') || '[]')
+      accounts = accounts.filter(a => a.email !== email)
+      accounts.unshift({ email, lastLogin: new Date().toISOString() })
+      accounts = accounts.slice(0, 5) // Garder les 5 derniers
+      localStorage.setItem('tb_recent_accounts', JSON.stringify(accounts))
+    } catch {}
+  }
 
   async function handleSubmit(e) {
     e.preventDefault()
@@ -205,7 +230,15 @@ export default function LoginPage() {
     const { error } = await signIn(email, password)
     setLoading(false)
     if (error) setError(error.message)
-    else navigate('/')
+    else {
+      saveRecentAccount(email)
+      navigate('/')
+    }
+  }
+
+  function selectRecentAccount(accountEmail) {
+    setEmail(accountEmail)
+    setShowLogin(true)
   }
 
   async function handleContactSubmit(e) {
@@ -548,10 +581,49 @@ export default function LoginPage() {
                 Accédez à votre espace TimeBlast.ai
               </p>
             </div>
+            {/* Comptes récents */}
+            {recentAccounts.length > 0 && !email && (
+              <div style={{ marginBottom: 16 }}>
+                <div style={{ fontSize: 12, color: '#64748b', fontWeight: 500, marginBottom: 8 }}>Comptes récents</div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                  {recentAccounts.map(acc => (
+                    <button key={acc.email} onClick={() => selectRecentAccount(acc.email)}
+                      style={{
+                        display: 'flex', alignItems: 'center', gap: 10, padding: '8px 12px',
+                        borderRadius: 8, border: '1px solid #e2e8f0', background: '#f8fafc',
+                        cursor: 'pointer', textAlign: 'left', width: '100%', transition: 'background .15s'
+                      }}
+                      onMouseEnter={e => e.currentTarget.style.background = '#f0f9ff'}
+                      onMouseLeave={e => e.currentTarget.style.background = '#f8fafc'}>
+                      <div style={{
+                        width: 32, height: 32, borderRadius: '50%', background: '#2B4C7E',
+                        color: '#fff', fontSize: 12, fontWeight: 700, display: 'flex',
+                        alignItems: 'center', justifyContent: 'center', flexShrink: 0
+                      }}>
+                        {acc.email.slice(0, 2).toUpperCase()}
+                      </div>
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        <div style={{ fontSize: 13, fontWeight: 500, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{acc.email}</div>
+                        <div style={{ fontSize: 11, color: '#94a3b8' }}>
+                          {new Date(acc.lastLogin).toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' })}
+                        </div>
+                      </div>
+                      <span style={{ fontSize: 14, color: '#94a3b8' }}>→</span>
+                    </button>
+                  ))}
+                </div>
+                <div style={{ textAlign: 'center', margin: '10px 0 0' }}>
+                  <button onClick={() => setEmail(' ')} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 12, color: '#2B4C7E', fontWeight: 500 }}>
+                    + Utiliser un autre compte
+                  </button>
+                </div>
+              </div>
+            )}
+
             <form onSubmit={handleSubmit}>
               <div className="field">
                 <label htmlFor="email">Email</label>
-                <input id="email" type="email" value={email}
+                <input id="email" type="email" value={email.trim()}
                   onChange={e => setEmail(e.target.value)} required autoComplete="email" autoFocus
                   placeholder="nom@entreprise.com" />
               </div>
