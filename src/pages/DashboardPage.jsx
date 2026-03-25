@@ -479,8 +479,15 @@ export default function DashboardPage() {
   // ── Loading state ──
   if (loading) {
     return (
-      <div className="admin-page admin-page--full" style={{ padding: '2rem', textAlign: 'center', color: 'var(--text-muted)' }}>
-        <div style={{ fontSize: '1.25rem', marginBottom: '.5rem' }}>Chargement du tableau de bord...</div>
+      <div className="admin-page admin-page--full" style={{
+        display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+        minHeight: 'calc(100vh - 120px)', color: 'var(--text-muted)'
+      }}>
+        <div style={{
+          width: 40, height: 40, border: '4px solid #e2e8f0', borderTopColor: '#2d6a4f',
+          borderRadius: '50%', animation: 'spin 0.8s linear infinite', marginBottom: 16
+        }} />
+        <style>{`@keyframes spin { to { transform: rotate(360deg) } }`}</style>
       </div>
     )
   }
