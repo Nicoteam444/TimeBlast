@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { supabase } from '../../lib/supabase'
 import ClientAutocomplete from '../../components/ClientAutocomplete'
 import { useSociete } from '../../contexts/SocieteContext'
+import { useAuth } from '../../contexts/AuthContext'
 import useSortableTable from '../../hooks/useSortableTable'
 import SortableHeader from '../../components/SortableHeader'
 
@@ -98,6 +99,7 @@ function KanbanColumn({ phase, cards, onDragStart, onDrop, onClick }) {
 // ── Main Page ─────────────────────────────────────────────────────────────────
 export default function TransactionsPage() {
   const navigate = useNavigate()
+  const { user } = useAuth()
   const { selectedSociete, societes } = useSociete()
   const [transactions, setTransactions] = useState([])
   const [loading, setLoading] = useState(true)
@@ -145,9 +147,23 @@ export default function TransactionsPage() {
   async function handleDrop(targetPhase) {
     const card = dragCard.current
     if (!card || card.phase === targetPhase) return
+    const oldPhase = card.phase
     const { error } = await supabase.from('transactions').update({ phase: targetPhase }).eq('id', card.id)
     if (!error) {
       setTransactions(prev => prev.map(t => t.id === card.id ? { ...t, phase: targetPhase } : t))
+      // Log activité
+      const oldLabel = PHASES.find(p => p.id === oldPhase)?.label || oldPhase
+      const newLabel = PHASES.find(p => p.id === targetPhase)?.label || targetPhase
+      supabase.from('activity_log').insert({
+        user_id: user?.id || null,
+        societe_id: card.societe_id || selectedSociete?.id || null,
+        action: 'move',
+        entity_type: 'transaction',
+        entity_id: card.id,
+        entity_name: card.name,
+        details: `${oldLabel} → ${newLabel}`,
+        icon: '💼',
+      }).then(() => {})
     }
     dragCard.current = null
   }

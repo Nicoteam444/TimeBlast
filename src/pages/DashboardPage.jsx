@@ -219,6 +219,7 @@ export default function DashboardPage() {
           recentTasksRes,
           recentDocsRes,
           recentContactsRes,
+          activityLogRes,
           projetsActifsCountRes,
         ] = await Promise.all([
           // 1. Mes taches
@@ -307,6 +308,12 @@ export default function DashboardPage() {
             if (socId) q = q.eq('societe_id', socId)
             return q
           }),
+          // Activity log (déplacements kanban)
+          safeQuery(() => {
+            let q = supabase.from('activity_log').select('*').order('created_at', { ascending: false }).limit(10)
+            if (socId) q = q.eq('societe_id', socId)
+            return q
+          }),
           // Projets actifs count for KPI
           safeQuery(() => {
             let q = supabase.from('projets').select('id', { count: 'exact', head: true }).eq('statut', 'actif')
@@ -350,6 +357,7 @@ export default function DashboardPage() {
           recentTasks: recentTasksRes?.data || [],
           recentDocs: recentDocsRes?.data || [],
           recentContacts: recentContactsRes?.data || [],
+          activityLog: activityLogRes?.data || [],
           projetsActifsCount: projetsActifsCountRes?.count || 0,
         })
       } catch (err) {
@@ -431,6 +439,18 @@ export default function DashboardPage() {
   // Activity timeline
   const activityTimeline = useMemo(() => {
     const items = []
+    // Activity log (déplacements kanban etc.)
+    for (const a of (raw.activityLog || [])) {
+      const typeMap = { task: 'task', transaction: 'transaction' }
+      items.push({
+        type: typeMap[a.entity_type] || 'action',
+        icon: a.icon || '🔀',
+        label: a.action === 'move'
+          ? `${a.entity_type === 'transaction' ? 'Opportunite' : 'Tache'} "${a.entity_name}" deplacee : ${a.details}`
+          : `${a.entity_name} : ${a.details || a.action}`,
+        date: a.created_at,
+      })
+    }
     for (const t of (raw.recentTasks || [])) {
       items.push({ type: 'task', icon: '✅', label: `Tache creee : ${t.title}`, date: t.created_at })
     }
@@ -440,8 +460,11 @@ export default function DashboardPage() {
     for (const c of (raw.recentContacts || [])) {
       items.push({ type: 'contact', icon: '👤', label: `Contact cree : ${[c.prenom, c.nom].filter(Boolean).join(' ') || 'Inconnu'}`, date: c.created_at })
     }
-    return items.sort((a, b) => (b.date || '') > (a.date || '') ? 1 : -1).slice(0, 8)
-  }, [raw.recentTasks, raw.recentDocs, raw.recentContacts])
+    // Dédupliquer par date+label et trier
+    const seen = new Set()
+    const unique = items.filter(i => { const k = `${i.date}-${i.label}`; if (seen.has(k)) return false; seen.add(k); return true })
+    return unique.sort((a, b) => (b.date || '') > (a.date || '') ? 1 : -1).slice(0, 10)
+  }, [raw.recentTasks, raw.recentDocs, raw.recentContacts, raw.activityLog])
 
   // Header subtitle
   const headerSubtitle = useMemo(() => {

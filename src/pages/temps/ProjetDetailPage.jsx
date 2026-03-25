@@ -154,8 +154,24 @@ export default function ProjetDetailPage({ projet, onBack }) {
   }
 
   async function handleMoveTask(taskId, newColumnId) {
+    const task = tasks.find(t => t.id === taskId)
+    const oldCol = columns.find(c => c.id === task?.column_id)
+    const newCol = columns.find(c => c.id === newColumnId)
     await supabase.from('kanban_tasks').update({ column_id: newColumnId }).eq('id', taskId)
     setTasks(prev => prev.map(t => t.id === taskId ? { ...t, column_id: newColumnId } : t))
+    // Log activité
+    if (task && oldCol && newCol) {
+      supabase.from('activity_log').insert({
+        user_id: user?.id || null,
+        societe_id: projet?.societe_id || null,
+        action: 'move',
+        entity_type: 'task',
+        entity_id: taskId,
+        entity_name: task.title,
+        details: `${oldCol.name} → ${newCol.name}`,
+        icon: '🔀',
+      }).then(() => {})
+    }
   }
 
   async function handleDeleteTask(taskId) {
