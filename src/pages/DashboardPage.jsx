@@ -125,7 +125,7 @@ export default function DashboardPage() {
   const uid = user?.id || 'anon'
   const STORAGE_KEY = `timeblast_dashboard_order_${uid}`
   const MOOD_KEY = `timeblast_mood_${uid}`
-  const DEFAULT_ORDER = ['tasks', 'time', 'alerts', 'projects', 'treasury', 'mood', 'marketing', 'documents', 'shortcuts', 'activity']
+  const DEFAULT_ORDER = ['score', 'tasks', 'time', 'alerts', 'projects', 'treasury', 'mood', 'marketing', 'documents', 'shortcuts', 'activity']
   const MOODS = [
     { emoji: '😄', label: 'Super', color: '#16a34a' },
     { emoji: '🙂', label: 'Bien', color: '#3b82f6' },
@@ -495,6 +495,50 @@ export default function DashboardPage() {
     return unique.sort((a, b) => (b.date || '') > (a.date || '') ? 1 : -1).slice(0, 10)
   }, [raw.recentTasks, raw.recentDocs, raw.recentContacts, raw.activityLog])
 
+  // Score de santé entreprise
+  const healthScore = useMemo(() => {
+    let score = 0
+    const details = []
+    // Temps saisi cette semaine (max 25pts)
+    const heuresSemaine = (raw.temps || []).reduce((s, t) => s + (t.duree || t.heures || 0), 0)
+    const tempsPct = Math.min(1, heuresSemaine / 35)
+    const tempsPts = Math.round(tempsPct * 25)
+    score += tempsPts
+    details.push({ label: 'Temps saisi', pts: tempsPts, max: 25, pct: Math.round(tempsPct * 100), icon: '⏱' })
+    // Factures sans retard (max 20pts)
+    const overdueCount = raw.facturesOverdueCount || 0
+    const facturePts = overdueCount === 0 ? 20 : Math.max(0, 20 - overdueCount * 5)
+    score += facturePts
+    details.push({ label: 'Factures a jour', pts: facturePts, max: 20, pct: Math.round(facturePts / 20 * 100), icon: '🧾' })
+    // Projets actifs avec taches (max 20pts)
+    const projets = raw.projets || []
+    const projetsAvecTaches = projets.filter(p => (raw.projetTaskCounts?.[p.id]?.total || 0) > 0).length
+    const projetPts = projets.length > 0 ? Math.round((projetsAvecTaches / projets.length) * 20) : 10
+    score += projetPts
+    details.push({ label: 'Projets structures', pts: projetPts, max: 20, pct: Math.round(projetPts / 20 * 100), icon: '📁' })
+    // Pipeline commercial rempli (max 15pts)
+    const pipeline = (raw.leadsPipeline || []).reduce((s, l) => s + (l.montant || 0), 0)
+    const pipelinePts = pipeline > 0 ? Math.min(15, Math.round(Math.log10(pipeline + 1) * 3)) : 0
+    score += pipelinePts
+    details.push({ label: 'Pipeline commercial', pts: pipelinePts, max: 15, pct: Math.round(pipelinePts / 15 * 100), icon: '🎯' })
+    // Documents archives (max 10pts)
+    const docsCount = (raw.documents || []).length
+    const docsPts = Math.min(10, docsCount * 2)
+    score += docsPts
+    details.push({ label: 'Documents archives', pts: docsPts, max: 10, pct: Math.round(docsPts / 10 * 100), icon: '📄' })
+    // Contacts CRM (max 10pts)
+    const contactsPts = (raw.recentContacts || []).length > 0 ? 10 : 0
+    score += contactsPts
+    details.push({ label: 'CRM actif', pts: contactsPts, max: 10, pct: Math.round(contactsPts / 10 * 100), icon: '👤' })
+
+    const grade = score >= 85 ? { label: 'Excellent', color: '#16a34a', emoji: '🏆' }
+      : score >= 65 ? { label: 'Bon', color: '#3b82f6', emoji: '👍' }
+      : score >= 40 ? { label: 'A ameliorer', color: '#f59e0b', emoji: '⚠️' }
+      : { label: 'Critique', color: '#dc2626', emoji: '🚨' }
+
+    return { score: Math.min(100, score), details, grade }
+  }, [raw])
+
   // Header subtitle
   const headerSubtitle = useMemo(() => {
     const parts = []
@@ -550,6 +594,34 @@ export default function DashboardPage() {
 
   // ── Widget map ──
   const widgetMap = {
+    score: (
+      <>
+        <SectionHeader icon={healthScore.grade.emoji} title="Score de sante" />
+        <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem' }}>
+          <DonutChart size={80} stroke={7} pct={healthScore.score} color={healthScore.grade.color} label={`${healthScore.score}`} />
+          <div style={{ flex: 1 }}>
+            <div style={{ fontSize: '1rem', fontWeight: 800, color: healthScore.grade.color, marginBottom: '.25rem' }}>
+              {healthScore.grade.label}
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '.35rem' }}>
+              {healthScore.details.map(d => (
+                <div key={d.label} style={{ display: 'flex', alignItems: 'center', gap: '.5rem' }}>
+                  <span style={{ fontSize: 12, width: 18 }}>{d.icon}</span>
+                  <div style={{ flex: 1, display: 'flex', alignItems: 'center', gap: '.4rem' }}>
+                    <span style={{ fontSize: '.72rem', color: 'var(--text-muted)', minWidth: 100 }}>{d.label}</span>
+                    <div style={{ flex: 1, height: 5, borderRadius: 3, background: 'var(--border, #e2e8f0)', overflow: 'hidden' }}>
+                      <div style={{ height: '100%', borderRadius: 3, width: `${d.pct}%`, background: d.pct >= 80 ? '#16a34a' : d.pct >= 50 ? '#f59e0b' : '#dc2626', transition: 'width .6s ease' }} />
+                    </div>
+                    <span style={{ fontSize: '.65rem', fontWeight: 700, color: d.pct >= 80 ? '#16a34a' : d.pct >= 50 ? '#f59e0b' : '#dc2626', minWidth: 28, textAlign: 'right' }}>{d.pts}/{d.max}</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </>
+    ),
+
     tasks: (
       <>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
