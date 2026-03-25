@@ -8,6 +8,7 @@ import { supabase } from '../lib/supabase'
 import Sidebar from './Sidebar'
 import TopBar from './TopBar'
 import ChatWidget from './ChatWidget'
+import CommandPalette from './CommandPalette'
 import Breadcrumb from './Breadcrumb'
 
 function FavoriteButton() {
@@ -97,6 +98,7 @@ function LayoutInner({ children }) {
         </main>
       </div>
       <ChatWidget />
+      <CommandPalette />
     </div>
   )
 }

@@ -215,6 +215,10 @@ export default function TopBar() {
           {searchQuery && (
             <button className="topbar-search-clear" onClick={() => { setSearchQuery(''); setSearchResults([]); setSearchOpen(false) }}>✕</button>
           )}
+          {!searchQuery && (
+            <kbd style={{ padding: '2px 6px', borderRadius: 4, background: 'rgba(255,255,255,0.15)', border: '1px solid rgba(255,255,255,0.2)', fontSize: '.65rem', color: 'rgba(255,255,255,0.6)', fontFamily: 'monospace', cursor: 'pointer', whiteSpace: 'nowrap' }}
+              onClick={() => window.dispatchEvent(new KeyboardEvent('keydown', { key: 'k', metaKey: true }))}>⌘K</kbd>
+          )}
         </div>
         {searchOpen && searchResults.length > 0 && (
           <ul className="topbar-search-dropdown">
