@@ -33,22 +33,31 @@ export default function TaskDetailPage() {
 
   async function loadAll() {
     setLoading(true)
-    const [{ data: proj }, { data: tks }, { data: cols }, { data: mems }, { data: times }] = await Promise.all([
-      supabase.from('projets').select('*').eq('id', projetId).single(),
-      supabase.from('kanban_tasks').select('*, profiles:assigned_to(full_name)').eq('projet_id', projetId).order('created_at', { ascending: false }),
-      supabase.from('kanban_columns').select('*').eq('projet_id', projetId).order('"order"'),
-      supabase.from('profiles').select('id, full_name'),
-      supabase.from('kanban_time_entries').select('*').in('task_id', (tks?.data || []).map(t => t.id)),
-    ])
-    setProjet(proj)
-    setTasks(tks || [])
-    setColumns(cols || [])
-    setMembers(mems || [])
-    // Time entries - fetch separately since we need task ids
-    const taskIds = (tks || []).map(t => t.id)
-    if (taskIds.length > 0) {
-      const { data: te } = await supabase.from('kanban_time_entries').select('*').in('task_id', taskIds)
-      setTimeEntries(te || [])
+    try {
+      const [projRes, tksRes, colsRes, memsRes] = await Promise.all([
+        supabase.from('projets').select('*').eq('id', projetId).single(),
+        supabase.from('kanban_tasks').select('*, profiles:assigned_to(full_name)').eq('projet_id', projetId).order('created_at', { ascending: false }),
+        supabase.from('kanban_columns').select('*').eq('projet_id', projetId).order('"order"'),
+        supabase.from('profiles').select('id, full_name'),
+      ])
+      const proj = projRes?.data
+      const tks = tksRes?.data || []
+      const cols = colsRes?.data || []
+      const mems = memsRes?.data || []
+      setProjet(proj)
+      setTasks(tks)
+      setColumns(cols)
+      setMembers(mems)
+      // Time entries
+      try {
+        const taskIds = tks.map(t => t.id)
+        if (taskIds.length > 0) {
+          const { data: te } = await supabase.from('kanban_time_entries').select('*').in('task_id', taskIds)
+          setTimeEntries(te || [])
+        }
+      } catch (e) { /* table might not exist */ }
+    } catch (err) {
+      console.error('TaskDetailPage loadAll error:', err)
     }
     setLoading(false)
 
