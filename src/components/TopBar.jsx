@@ -481,39 +481,26 @@ export default function TopBar() {
 
       <div className="topbar-spacer" />
 
-      {/* Favoris */}
-      <div ref={favRef} style={{ position: 'relative' }}>
-        <button className="topbar-btn" onClick={() => setFavOpen(v => !v)} title="Favoris" style={{ position: 'relative' }}>
-          <span>⭐</span>
-          {favorites.length > 0 && <span style={{ position: 'absolute', top: 2, right: 2, width: 14, height: 14, borderRadius: '50%', background: '#f59e0b', color: '#fff', fontSize: '.6rem', fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>{favorites.length}</span>}
-        </button>
-        {favOpen && (
-          <div style={{
-            position: 'absolute', top: '100%', right: 0, marginTop: 6, width: 260,
-            background: '#fff', borderRadius: 12, boxShadow: '0 10px 30px rgba(0,0,0,0.15)',
-            border: '1px solid #e2e8f0', zIndex: 9999, overflow: 'hidden',
-          }}>
-            <div style={{ padding: '10px 14px', borderBottom: '1px solid #f1f5f9', fontSize: '.8rem', fontWeight: 700, color: '#1a2332' }}>⭐ Mes favoris</div>
-            {favorites.length === 0 ? (
-              <div style={{ padding: '20px 14px', textAlign: 'center', color: '#94a3b8', fontSize: '.85rem' }}>Aucun favori</div>
-            ) : (
-              <div style={{ maxHeight: 250, overflowY: 'auto' }}>
-                {favorites.map(path => (
-                  <div key={path} onMouseDown={() => { navigate(path); setFavOpen(false) }}
-                    style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '8px 14px', cursor: 'pointer', fontSize: '.82rem', borderBottom: '1px solid #f8fafc', transition: 'background .1s' }}
-                    onMouseEnter={e => e.currentTarget.style.background = '#f0f9ff'}
-                    onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>
-                    <span style={{ fontSize: 12 }}>📌</span>
-                    <span style={{ flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', color: '#1a2332', fontWeight: 500 }}>
-                      {favLabels?.[path] || path.split('/').pop() || 'Page'}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-        )}
-      </div>
+      {/* Barre de favoris — style Chrome */}
+      {favorites.length > 0 && (
+        <div style={{ display: 'flex', alignItems: 'center', gap: 2, marginLeft: 8, marginRight: 4, overflow: 'hidden', maxWidth: 400 }}>
+          <span style={{ fontSize: '.6rem', color: 'rgba(255,255,255,0.4)', marginRight: 4, flexShrink: 0 }}>|</span>
+          {favorites.slice(0, 6).map(path => (
+            <button key={path} onClick={() => navigate(path)} title={favLabels?.[path] || path}
+              style={{
+                display: 'flex', alignItems: 'center', gap: 4, padding: '3px 10px',
+                borderRadius: 4, border: 'none', cursor: 'pointer',
+                background: 'rgba(255,255,255,0.1)', color: 'rgba(255,255,255,0.85)',
+                fontSize: '.72rem', fontWeight: 500, whiteSpace: 'nowrap',
+                transition: 'background .15s', flexShrink: 0,
+              }}
+              onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.2)'}
+              onMouseLeave={e => e.currentTarget.style.background = 'rgba(255,255,255,0.1)'}>
+              {favLabels?.[path]?.slice(0, 15) || path.split('/').pop() || 'Page'}
+            </button>
+          ))}
+        </div>
+      )}
 
       {/* Paramètres */}
       <button className="topbar-btn" onClick={() => navigate('/parametres')} title="Paramètres">
