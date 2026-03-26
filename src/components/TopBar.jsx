@@ -33,7 +33,7 @@ export default function TopBar() {
   const { notifications, unreadCount, markRead, markAllRead } = useNotifications()
   const { toggleSidebar } = useLayout()
   const { societes, selectedSociete, setSelectedSociete } = useSociete()
-  const { favorites, favLabels } = useFavorites()
+  const { favorites, favLabels, updateFavLabel } = useFavorites()
   const [favOpen, setFavOpen] = useState(false)
   const favRef = useRef(null)
   const navigate = useNavigate()
@@ -481,12 +481,17 @@ export default function TopBar() {
 
       <div className="topbar-spacer" />
 
-      {/* Barre de favoris — style Chrome */}
+      {/* Barre de favoris — style Chrome (masquée sur petit écran) */}
       {favorites.length > 0 && (
-        <div style={{ display: 'flex', alignItems: 'center', gap: 2, marginLeft: 8, marginRight: 4, overflow: 'hidden', maxWidth: 400 }}>
-          <span style={{ fontSize: '.6rem', color: 'rgba(255,255,255,0.4)', marginRight: 4, flexShrink: 0 }}>|</span>
+        <div className="topbar-favbar" style={{ display: 'flex', alignItems: 'center', gap: 3, marginLeft: 8, marginRight: 4 }}>
           {favorites.slice(0, 6).map(path => (
-            <button key={path} onClick={() => navigate(path)} title={favLabels?.[path] || path}
+            <button key={path} onClick={() => navigate(path)}
+              onContextMenu={e => {
+                e.preventDefault()
+                const newName = prompt('Renommer ce favori :', favLabels?.[path] || path.split('/').pop() || 'Page')
+                if (newName && newName.trim()) updateFavLabel(path, newName.trim())
+              }}
+              title={`${favLabels?.[path] || path}\nClic droit pour renommer`}
               style={{
                 display: 'flex', alignItems: 'center', gap: 4, padding: '3px 10px',
                 borderRadius: 4, border: 'none', cursor: 'pointer',
@@ -501,6 +506,7 @@ export default function TopBar() {
           ))}
         </div>
       )}
+      <style>{`@media (max-width: 900px) { .topbar-favbar { display: none !important; } }`}</style>
 
       {/* Paramètres */}
       <button className="topbar-btn" onClick={() => navigate('/parametres')} title="Paramètres">
