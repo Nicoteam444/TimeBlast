@@ -76,6 +76,8 @@ const CategoryLandingPage = lazy(() => import('./pages/CategoryLandingPage'))
 const CampagnesPage = lazy(() => import('./pages/marketing/CampagnesPage'))
 const DocumentsArchivePage = lazy(() => import('./pages/documents/DocumentsArchivePage'))
 const TaskDetailPage = lazy(() => import('./pages/temps/TaskDetailPage'))
+const TimelineHistoryPage = lazy(() => import('./pages/TimelineHistoryPage'))
+const RoadmapPage = lazy(() => import('./pages/RoadmapPage'))
 
 // Spinner global pour lazy loading
 function LazySpinner() {
@@ -321,6 +323,12 @@ function AppRoutes() {
       } />
       <Route path="/parametres" element={
         <ProtectedRoute roles={['admin']}><Layout><ParametresPage /></Layout></ProtectedRoute>
+      } />
+      <Route path="/histoire" element={
+        <ProtectedRoute><Layout><TimelineHistoryPage /></Layout></ProtectedRoute>
+      } />
+      <Route path="/roadmap" element={
+        <ProtectedRoute><Layout><RoadmapPage /></Layout></ProtectedRoute>
       } />
 
       {/* Fiche client */}

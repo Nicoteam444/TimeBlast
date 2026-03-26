@@ -1259,8 +1259,8 @@ export default function DashboardPage() {
             { icon: '⏱', label: 'Saisir du temps', path: '/activite/saisie' },
             { icon: '🧾', label: 'Nouvelle facture', path: '/finance/facturation' },
             { icon: '👤', label: 'Nouveau contact', path: '/crm/contacts' },
-            { icon: '📁', label: 'Nouveau projet', path: '/activite/projets' },
-            { icon: '📄', label: 'Importer document', path: '/documents/archives' },
+            { icon: '📜', label: 'Histoire TimeBlast', path: '/histoire' },
+            { icon: '🗺️', label: 'Roadmap', path: '/roadmap' },
           ].map((s, i) => (
             <button key={i} onClick={() => navigate(s.path)} style={{
               display: 'flex', alignItems: 'center', gap: '.5rem',
