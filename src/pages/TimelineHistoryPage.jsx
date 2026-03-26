@@ -139,7 +139,7 @@ export default function TimelineHistoryPage() {
           L'histoire de TimeBlast.ai
         </h1>
         <p style={{ color: 'rgba(255,255,255,0.7)', fontSize: '1.1rem', margin: 0 }}>
-          De l'idee a la plateforme — construite en 5 jours avec l'IA
+          De l'idee a la plateforme — le parcours de creation
         </p>
       </div>
 

@@ -121,6 +121,16 @@ const SECTIONS = [
   },
 ]
 
+const INFO_SECTION = {
+  id: 'info',
+  icon: 'ℹ️',
+  label: 'Information',
+  items: [
+    { to: '/histoire',  icon: '📜', label: 'Histoire TimeBlast' },
+    { to: '/roadmap',   icon: '🗺️', label: 'Avancement projet' },
+  ],
+}
+
 const ADMIN_SECTION = {
   id: 'admin',
   icon: '⚙️',
@@ -172,7 +182,7 @@ export default function Sidebar() {
   }
 
   // Build favorites items from all sections + dynamic pages
-  const allItems = [...SECTIONS.flatMap(s => s.items), ...ADMIN_SECTION.items]
+  const allItems = [...SECTIONS.flatMap(s => s.items), ...INFO_SECTION.items, ...ADMIN_SECTION.items]
   const ROUTE_LABELS = {
     crm: 'CRM', commerce: 'Commerce', activite: 'Activité', finance: 'Finance',
     gestion: 'Gestion', equipe: 'Équipe', admin: 'Admin',
@@ -236,6 +246,7 @@ export default function Sidebar() {
   const flyoutSection = hoveredId === '_favs'
     ? { id: '_favs', icon: '🔖', label: 'Favoris', items: favItems }
     : visibleSections.find(s => s.id === hoveredId)
+      || (hoveredId === 'info' ? INFO_SECTION : null)
       || (hoveredId === 'admin' && userRole === 'admin' ? ADMIN_SECTION : null)
   const railW = sidebarOpen ? 180 : 52
 
@@ -296,12 +307,29 @@ export default function Sidebar() {
           })}
         </nav>
 
-        {/* ── Admin en bas ── */}
-        {userRole === 'admin' && (() => {
-          const adminPaths = ADMIN_SECTION.items.map(i => i.to)
-          const isAdminActive = adminPaths.some(p => location.pathname.startsWith(p))
-          return (
-            <div className="sidebar-bottom">
+        {/* ── Info + Admin en bas ── */}
+        <div className="sidebar-bottom">
+          {/* Information — visible par tous */}
+          {(() => {
+            const infoPaths = INFO_SECTION.items.map(i => i.to)
+            const isInfoActive = infoPaths.some(p => location.pathname.startsWith(p))
+            return (
+              <div
+                className={`rail-item ${isInfoActive ? 'rail-item--active' : ''} ${hoveredId === 'info' ? 'rail-item--hover' : ''}`}
+                onMouseEnter={e => showFlyout('info', e)}
+                onMouseLeave={scheduleHide}
+              >
+                <span className="rail-item-icon">{INFO_SECTION.icon}</span>
+                {sidebarOpen && <span className="rail-item-label">{INFO_SECTION.label}</span>}
+                {isInfoActive && <span className="rail-item-dot" />}
+              </div>
+            )
+          })()}
+          {/* Administration — admin seulement */}
+          {userRole === 'admin' && (() => {
+            const adminPaths = ADMIN_SECTION.items.map(i => i.to)
+            const isAdminActive = adminPaths.some(p => location.pathname.startsWith(p))
+            return (
               <div
                 className={`rail-item ${isAdminActive ? 'rail-item--active' : ''} ${hoveredId === 'admin' ? 'rail-item--hover' : ''}`}
                 onMouseEnter={e => showFlyout('admin', e)}
@@ -311,9 +339,9 @@ export default function Sidebar() {
                 {sidebarOpen && <span className="rail-item-label">{ADMIN_SECTION.label}</span>}
                 {isAdminActive && <span className="rail-item-dot" />}
               </div>
-            </div>
-          )
-        })()}
+            )
+          })()}
+        </div>
       </aside>
 
       {/* ── Flyout panel — position fixed, hors du aside ── */}
