@@ -9,7 +9,6 @@ const STATS = [
   { value: '221', label: 'Commits', icon: '📦' },
   { value: '76', label: 'Pages', icon: '📄' },
   { value: '25', label: 'Tables BD', icon: '🗄️' },
-  { value: '112', label: 'Fichiers', icon: '🚀' },
   { value: '252 Mo', label: 'Taille projet', icon: '💾' },
 ]
 
