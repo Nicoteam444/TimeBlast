@@ -21,18 +21,7 @@ function FavoriteButton() {
 
   const isFav = favorites.includes(path)
 
-  // Auto-update label when visiting a favorited page
-  if (isFav) {
-    setTimeout(() => {
-      const el = document.querySelector('.app-content h1')
-        || document.querySelector('.app-content .collab-header-name')
-        || document.querySelector('.app-content [class*="header-name"]')
-        || document.querySelector('.app-content [class*="page-title"]')
-      let label = el ? el.textContent.trim() : null
-      if (label) label = label.replace(/^[\p{Emoji}\p{Emoji_Presentation}\s]+/u, '').trim()
-      if (label && updateFavLabel) updateFavLabel(path, label)
-    }, 500)
-  }
+  // Auto-update désactivé — l'utilisateur renomme manuellement via double-clic
 
   function handleToggle() {
     // Capture page title: try h1, then common name elements, then document title
