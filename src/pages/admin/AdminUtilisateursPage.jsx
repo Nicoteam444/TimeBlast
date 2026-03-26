@@ -342,11 +342,6 @@ export default function AdminUtilisateursPage() {
                   </select>
                 </div>
                 <div className="field">
-                  <label>Date d'embauche</label>
-                  <input type="date" value={form.date_embauche}
-                    onChange={e => setForm(f => ({ ...f, date_embauche: e.target.value }))} />
-                </div>
-                <div className="field">
                   <label>Date de naissance</label>
                   <input type="date" value={form.date_naissance || ''}
                     onChange={e => setForm(f => ({ ...f, date_naissance: e.target.value }))} />
@@ -462,10 +457,6 @@ export default function AdminUtilisateursPage() {
                     placeholder="06 00 00 00 00" />
                 </div>
                 <div className="field">
-                  <label>Date d'embauche</label>
-                  <input type="date" value={editForm.date_embauche}
-                    onChange={e => setEditForm(f => ({ ...f, date_embauche: e.target.value }))} />
-                </div>
                 <div className="field">
                   <label>Rôle</label>
                   <select value={editForm.role} onChange={e => setEditForm(f => ({ ...f, role: e.target.value }))}>
@@ -646,11 +637,6 @@ export default function AdminUtilisateursPage() {
                     <td className="date-cell">{formatDateTime(user.last_sign_in_at)}</td>
                     <td className="date-cell">
                       <span>{formatDate(user.created_at)}</span>
-                      {user.date_embauche && (
-                        <span style={{ display: 'block', fontSize: '.75rem', color: 'var(--text-muted)' }}>
-                          📅 Embauche : {formatDate(user.date_embauche)}
-                        </span>
-                      )}
                     </td>
                   </tr>
                 )
