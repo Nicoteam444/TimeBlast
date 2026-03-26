@@ -9,6 +9,7 @@ export function EnvProvider({ children }) {
   const [environments, setEnvironments] = useState([])
   const [currentEnv, setCurrentEnv] = useState(null)
   const [loading, setLoading] = useState(true)
+  const [clientReady, setClientReady] = useState(false)
 
   useEffect(() => {
     if (!user) { setLoading(false); return }
@@ -26,10 +27,19 @@ export function EnvProvider({ children }) {
 
       setEnvironments(envs)
 
-      // Détecter l'env actuel à partir de l'URL Supabase
-      const currentUrl = import.meta.env.VITE_SUPABASE_URL
-      const match = envs.find(e => e.supabase_url === currentUrl)
-      setCurrentEnv(match || envs[0] || null)
+      // Détecter l'env actuel à partir de l'envId dans l'URL
+      const pathSegments = window.location.pathname.split('/').filter(Boolean)
+      const urlEnvCode = pathSegments.length > 0 && /^\d{7}$/.test(pathSegments[0]) ? pathSegments[0] : null
+      const match = urlEnvCode ? envs.find(e => e.env_code === urlEnvCode) : null
+      const selectedEnv = match || envs.find(e => e.is_production) || envs[0] || null
+
+      setCurrentEnv(selectedEnv)
+
+      // Switcher le client Supabase vers la bonne base
+      if (selectedEnv?.supabase_url && selectedEnv?.supabase_anon_key) {
+        switchSupabaseClient(selectedEnv.supabase_url, selectedEnv.supabase_anon_key)
+      }
+      setClientReady(true)
     } catch (err) {
       console.error('Erreur chargement environnements:', err)
     } finally {
@@ -64,7 +74,7 @@ export function EnvProvider({ children }) {
   }
 
   return (
-    <EnvContext.Provider value={{ environments, currentEnv, setCurrentEnvByCode, switchEnvironment, loading }}>
+    <EnvContext.Provider value={{ environments, currentEnv, setCurrentEnvByCode, switchEnvironment, loading, clientReady }}>
       {children}
     </EnvContext.Provider>
   )

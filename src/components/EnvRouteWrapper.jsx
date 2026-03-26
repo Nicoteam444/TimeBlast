@@ -6,7 +6,7 @@ import Spinner from './Spinner'
 
 export default function EnvRouteWrapper() {
   const { envId } = useParams()
-  const { environments, currentEnv, setCurrentEnvByCode, loading: envLoading } = useEnv() || {}
+  const { environments, currentEnv, setCurrentEnvByCode, loading: envLoading, clientReady } = useEnv() || {}
   const { user, loading: authLoading } = useAuth()
   const navigate = useNavigate()
 
@@ -32,8 +32,8 @@ export default function EnvRouteWrapper() {
     }
   }, [envId, environments, authLoading, envLoading, user])
 
-  // Afficher spinner tant que pas prêt
-  if (authLoading || envLoading || !environments || environments.length === 0) return <Spinner />
+  // Afficher spinner tant que le client n'est pas prêt
+  if (authLoading || envLoading || !clientReady || !environments || environments.length === 0) return <Spinner />
 
   // Si l'envId ne matche aucun env accessible, spinner (le useEffect redirigera)
   const env = environments?.find(e => e.env_code === envId)
