@@ -1,10 +1,15 @@
 import { useState, useRef, useEffect } from 'react'
-import { NavLink, useNavigate, useLocation } from 'react-router-dom'
+import { NavLink, useNavigate, useLocation, useParams } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
 import { useLayout } from '../contexts/LayoutContext'
 import { useAppearance } from '../contexts/AppearanceContext'
 import { isModuleEnabled } from '../config/modules'
 import { useFavorites } from '../contexts/FavoritesContext'
+
+function useEnvPrefix() {
+  const { envId } = useParams()
+  return envId ? `/${envId}` : ''
+}
 
 const SECTIONS = [
   {
@@ -138,6 +143,7 @@ export default function Sidebar() {
   const { sidebarOpen, toggleSidebar } = useLayout()
   const { settings } = useAppearance()
   const { favorites, favLabels, toggleFavorite, syncing } = useFavorites()
+  const envPrefix = useEnvPrefix()
   const navigate = useNavigate()
   const location = useLocation()
   const [hoveredId, setHoveredId] = useState(null)
@@ -235,7 +241,7 @@ export default function Sidebar() {
       <aside className={`sidebar ${sidebarOpen ? 'sidebar--open' : 'sidebar--closed'}`}>
 
         {/* Logo */}
-        <div className="sidebar-logo" onClick={() => navigate('/')}>
+        <div className="sidebar-logo" onClick={() => navigate(envPrefix + '/')}>
           {settings.logoUrl ? (
             sidebarOpen
               ? <span style={{ display: 'flex', alignItems: 'center', gap: '.5rem' }}>
@@ -273,10 +279,10 @@ export default function Sidebar() {
                 onMouseEnter={e => (section.directTo || section.directLink || items.length <= 1) ? null : showFlyout(section.id, e)}
                 onMouseLeave={scheduleHide}
                 onClick={() => {
-                  if (section.directTo) { navigate(section.directTo); setHoveredId(null); }
-                  else if (section.directLink && section.landingTo) { navigate(section.landingTo); setHoveredId(null); }
-                  else if (items.length === 1) { navigate(items[0].to); setHoveredId(null); }
-                  else if (section.landingTo) navigate(section.landingTo)
+                  if (section.directTo) { navigate(envPrefix + section.directTo); setHoveredId(null); }
+                  else if (section.directLink && section.landingTo) { navigate(envPrefix + section.landingTo); setHoveredId(null); }
+                  else if (items.length === 1) { navigate(envPrefix + items[0].to); setHoveredId(null); }
+                  else if (section.landingTo) navigate(envPrefix + section.landingTo)
                 }}
                 style={{ cursor: (section.directTo || section.landingTo) ? 'pointer' : undefined }}
               >
@@ -309,7 +315,7 @@ export default function Sidebar() {
           {/* À propos — visible par tous, sous Administration */}
           <div
             className={`rail-item ${location.pathname.startsWith('/infos') ? 'rail-item--active' : ''}`}
-            onClick={() => navigate('/infos')}
+            onClick={() => navigate(envPrefix + '/infos')}
             style={{ cursor: 'pointer' }}
           >
             <span className="rail-item-icon">💡</span>
@@ -342,7 +348,7 @@ export default function Sidebar() {
           {filterItems(flyoutSection.items).map(item => (
             <div key={item.to} className="rail-flyout-link-wrap">
               <NavLink
-                to={item.to}
+                to={envPrefix + item.to}
                 className={({ isActive }) => `rail-flyout-link ${isActive ? 'rail-flyout-link--active' : ''}`}
                 onClick={() => {
                   setHoveredId(null)

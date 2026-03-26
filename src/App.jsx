@@ -9,7 +9,9 @@ import { FavoritesProvider } from './contexts/FavoritesContext'
 import ProtectedRoute from './components/ProtectedRoute'
 import Layout from './components/Layout'
 import OnboardingTour from './components/OnboardingTour'
-import { EnvProvider } from './contexts/EnvContext'
+import EnvRouteWrapper from './components/EnvRouteWrapper'
+import { EnvProvider, useEnv } from './contexts/EnvContext'
+import { useAuth } from './contexts/AuthContext'
 import LoginPage from './pages/LoginPage'
 import DashboardPage from './pages/DashboardPage'
 
@@ -102,6 +104,23 @@ function InviteHandler() {
   return null
 }
 
+function EnvDefaultRedirect() {
+  const { environments, loading } = useEnv() || {}
+  const { user, loading: authLoading } = useAuth()
+  const navigate = useNavigate()
+
+  useEffect(() => {
+    if (authLoading || loading) return
+    if (!user) { navigate('/login', { replace: true }); return }
+    if (environments?.length > 0) {
+      const defaultEnv = environments.find(e => e.is_production) || environments[0]
+      navigate(`/${defaultEnv.env_code}`, { replace: true })
+    }
+  }, [environments, loading, authLoading, user])
+
+  return <LazySpinner />
+}
+
 function AppRoutes() {
   return (
     <Suspense fallback={<LazySpinner />}>
@@ -112,242 +131,250 @@ function AppRoutes() {
       <Route path="/set-password" element={<SetPasswordPage />} />
       <Route path="/unauthorized" element={<UnauthorizedPage />} />
 
-      <Route path="/" element={
+      {/* Redirect racine vers le premier env */}
+      <Route path="/" element={<EnvDefaultRedirect />} />
+
+      {/* Toutes les routes protégées sous /:envId */}
+      <Route path="/:envId" element={<EnvRouteWrapper />}>
+
+      <Route index element={
         <ProtectedRoute><Layout><DashboardPage /></Layout></ProtectedRoute>
       } />
 
       {/* Category Landing Pages */}
-      <Route path="/crm" element={
+      <Route path="crm" element={
         <ProtectedRoute roles={['admin','manager','collaborateur']}><Layout><CategoryLandingPage categoryId="crm" /></Layout></ProtectedRoute>
       } />
-      <Route path="/activite" element={
+      <Route path="activite" element={
         <ProtectedRoute roles={['admin','manager','collaborateur']}><Layout><CategoryLandingPage categoryId="activite" /></Layout></ProtectedRoute>
       } />
-      <Route path="/equipe" element={
+      <Route path="equipe" element={
         <ProtectedRoute roles={['admin','manager','collaborateur']}><Layout><CategoryLandingPage categoryId="equipe" /></Layout></ProtectedRoute>
       } />
-      <Route path="/gestion" element={
+      <Route path="gestion" element={
         <ProtectedRoute roles={['admin','comptable','manager']}><Layout><CategoryLandingPage categoryId="gestion" /></Layout></ProtectedRoute>
       } />
-      <Route path="/finance" element={
+      <Route path="finance" element={
         <ProtectedRoute roles={['admin','comptable']}><Layout><CategoryLandingPage categoryId="finance" /></Layout></ProtectedRoute>
       } />
-      <Route path="/automatisation" element={
+      <Route path="automatisation" element={
         <ProtectedRoute roles={['admin','manager']}><Layout><CategoryLandingPage categoryId="automatisation" /></Layout></ProtectedRoute>
       } />
 
       {/* CRM */}
-      <Route path="/crm/contacts" element={
+      <Route path="crm/contacts" element={
         <ProtectedRoute roles={['admin','manager','collaborateur']}><Layout><CrmContactsPage /></Layout></ProtectedRoute>
       } />
-      <Route path="/crm/contacts/:id" element={
+      <Route path="crm/contacts/:id" element={
         <ProtectedRoute roles={['admin','manager','collaborateur']}><Layout><CrmContactDetailPage /></Layout></ProtectedRoute>
       } />
-      <Route path="/crm/entreprises" element={
+      <Route path="crm/entreprises" element={
         <ProtectedRoute roles={['admin','manager','collaborateur']}><Layout><CrmEntreprisesPage /></Layout></ProtectedRoute>
       } />
-      <Route path="/crm/leads" element={
+      <Route path="crm/leads" element={
         <ProtectedRoute roles={['admin','manager']}><Layout><CrmLeadsPage /></Layout></ProtectedRoute>
       } />
 
       {/* Marketing */}
-      <Route path="/marketing" element={
+      <Route path="marketing" element={
         <ProtectedRoute roles={['admin','manager']}><Layout><CategoryLandingPage categoryId="marketing" /></Layout></ProtectedRoute>
       } />
-      <Route path="/marketing/campagnes" element={
+      <Route path="marketing/campagnes" element={
         <ProtectedRoute roles={['admin','manager']}><Layout><CampagnesPage /></Layout></ProtectedRoute>
       } />
-      <Route path="/marketing/leads" element={
+      <Route path="marketing/leads" element={
         <ProtectedRoute roles={['admin','manager']}><Layout><CrmLeadsPage /></Layout></ProtectedRoute>
       } />
 
       {/* Documents */}
-      <Route path="/documents" element={
+      <Route path="documents" element={
         <ProtectedRoute><Layout><CategoryLandingPage categoryId="documents" /></Layout></ProtectedRoute>
       } />
-      <Route path="/documents/archives" element={
+      <Route path="documents/archives" element={
         <ProtectedRoute><Layout><DocumentsArchivePage /></Layout></ProtectedRoute>
       } />
 
       {/* Commerce */}
-      <Route path="/commerce/clients" element={
+      <Route path="commerce/clients" element={
         <ProtectedRoute roles={['admin','manager','collaborateur']}><Layout><ClientsPage /></Layout></ProtectedRoute>
       } />
-      <Route path="/commerce/transactions" element={
+      <Route path="commerce/transactions" element={
         <ProtectedRoute roles={['admin','manager']}><Layout><TransactionsPage /></Layout></ProtectedRoute>
       } />
-      <Route path="/commerce/transactions/:id" element={
+      <Route path="commerce/transactions/:id" element={
         <ProtectedRoute roles={['admin','manager']}><Layout><TransactionDetailPage /></Layout></ProtectedRoute>
       } />
-      <Route path="/commerce/achats" element={
+      <Route path="commerce/achats" element={
         <ProtectedRoute roles={['admin','manager','comptable']}><Layout><AchatsPage /></Layout></ProtectedRoute>
       } />
-      <Route path="/commerce/stock" element={
+      <Route path="commerce/stock" element={
         <ProtectedRoute roles={['admin','manager','comptable']}><Layout><StockPage /></Layout></ProtectedRoute>
       } />
-      <Route path="/commerce/produits" element={
+      <Route path="commerce/produits" element={
         <ProtectedRoute roles={['admin','manager','comptable']}><Layout><ProduitsPage /></Layout></ProtectedRoute>
       } />
-      <Route path="/commerce/abonnements" element={
+      <Route path="commerce/abonnements" element={
         <ProtectedRoute roles={['admin','manager','comptable']}><Layout><AbonnementsPage /></Layout></ProtectedRoute>
       } />
-      <Route path="/commerce/devis" element={
+      <Route path="commerce/devis" element={
         <ProtectedRoute roles={['admin','manager','comptable']}><Layout><DevisPage /></Layout></ProtectedRoute>
       } />
 
       {/* Calendrier */}
-      <Route path="/calendrier" element={
+      <Route path="calendrier" element={
         <ProtectedRoute roles={['admin','manager','collaborateur']}><Layout><CalendrierPage /></Layout></ProtectedRoute>
       } />
 
       {/* Activité */}
-      <Route path="/activite/saisie" element={
+      <Route path="activite/saisie" element={
         <ProtectedRoute roles={['admin','manager','collaborateur']}><Layout><SaisiePage /></Layout></ProtectedRoute>
       } />
-      <Route path="/activite/planification" element={
+      <Route path="activite/planification" element={
         <ProtectedRoute roles={['admin','manager']}><Layout><PlanificationPage /></Layout></ProtectedRoute>
       } />
-      <Route path="/activite/projets" element={
+      <Route path="activite/projets" element={
         <ProtectedRoute roles={['admin','manager','collaborateur']}><Layout><ProjetsWrapper /></Layout></ProtectedRoute>
       } />
-      <Route path="/activite/projets/:projetId" element={
+      <Route path="activite/projets/:projetId" element={
         <ProtectedRoute roles={['admin','manager','collaborateur']}><Layout><ProjetsWrapper /></Layout></ProtectedRoute>
       } />
-      <Route path="/activite/projets/:projetId/taches/:taskId" element={
+      <Route path="activite/projets/:projetId/taches/:taskId" element={
         <ProtectedRoute roles={['admin','manager','collaborateur']}><Layout><TaskDetailPage /></Layout></ProtectedRoute>
       } />
-      <Route path="/activite/validation" element={
+      <Route path="activite/validation" element={
         <ProtectedRoute roles={['admin','manager']}><Layout><ValidationPage /></Layout></ProtectedRoute>
       } />
-      <Route path="/activite/absences" element={
+      <Route path="activite/absences" element={
         <ProtectedRoute roles={['admin','manager','collaborateur']}><Layout><AbsencesPage /></Layout></ProtectedRoute>
       } />
-      <Route path="/activite/equipe" element={
+      <Route path="activite/equipe" element={
         <ProtectedRoute roles={['admin','manager']}><Layout><EquipePage /></Layout></ProtectedRoute>
       } />
-      <Route path="/activite/reporting" element={
+      <Route path="activite/reporting" element={
         <ProtectedRoute roles={['admin','manager']}><Layout><ReportingPage /></Layout></ProtectedRoute>
       } />
-      <Route path="/activite/rentabilite" element={
+      <Route path="activite/rentabilite" element={
         <ProtectedRoute roles={['admin','manager']}><Layout><RentabilitePage /></Layout></ProtectedRoute>
       } />
 
       {/* Finance */}
-      <Route path="/finance/business-intelligence" element={
+      <Route path="finance/business-intelligence" element={
         <ProtectedRoute roles={['admin','comptable']}><Layout><BusinessIntelligencePage /></Layout></ProtectedRoute>
       } />
-      <Route path="/finance/comptabilite" element={<Navigate to="/finance/business-intelligence" replace />} />
-      <Route path="/finance/ecritures" element={<Navigate to="/finance/business-intelligence" replace />} />
-      <Route path="/finance/comptabilite/import" element={
+      <Route path="finance/comptabilite" element={<Navigate to="/finance/business-intelligence" replace />} />
+      <Route path="finance/ecritures" element={<Navigate to="/finance/business-intelligence" replace />} />
+      <Route path="finance/comptabilite/import" element={
         <ProtectedRoute roles={['admin','comptable']}><Layout><ComptaImportPage /></Layout></ProtectedRoute>
       } />
-      <Route path="/finance/comptabilite/ecritures" element={<Navigate to="/finance/business-intelligence" replace />} />
-      <Route path="/finance/saisie-ecriture" element={
+      <Route path="finance/comptabilite/ecritures" element={<Navigate to="/finance/business-intelligence" replace />} />
+      <Route path="finance/saisie-ecriture" element={
         <ProtectedRoute roles={['admin','comptable']}><Layout><SaisieEcriturePage /></Layout></ProtectedRoute>
       } />
-      <Route path="/finance/comptabilite/analyse" element={<Navigate to="/finance/business-intelligence" replace />} />
-      <Route path="/gestion/tableau-de-bord" element={
+      <Route path="finance/comptabilite/analyse" element={<Navigate to="/finance/business-intelligence" replace />} />
+      <Route path="gestion/tableau-de-bord" element={
         <ProtectedRoute roles={['admin','comptable','manager']}><Layout><TableauDeBordGestionPage /></Layout></ProtectedRoute>
       } />
-      <Route path="/gestion/transactions" element={
+      <Route path="gestion/transactions" element={
         <ProtectedRoute roles={['admin','comptable','manager']}><Layout><TransactionsBancairesPage /></Layout></ProtectedRoute>
       } />
-      <Route path="/finance/facturation" element={
+      <Route path="finance/facturation" element={
         <ProtectedRoute roles={['admin','comptable']}><Layout><FacturationPage /></Layout></ProtectedRoute>
       } />
-      <Route path="/gestion/achats" element={
+      <Route path="gestion/achats" element={
         <ProtectedRoute roles={['admin','comptable']}><Layout><FacturesFournisseursPage /></Layout></ProtectedRoute>
       } />
-      <Route path="/finance/previsionnel" element={
+      <Route path="finance/previsionnel" element={
         <ProtectedRoute roles={['admin','comptable']}><Layout><PrevisionnelPage /></Layout></ProtectedRoute>
       } />
-      <Route path="/finance/immobilisations" element={
+      <Route path="finance/immobilisations" element={
         <ProtectedRoute roles={['admin','comptable']}><Layout><ImmobilisationsPage /></Layout></ProtectedRoute>
       } />
-      <Route path="/finance/rapprochement" element={
+      <Route path="finance/rapprochement" element={
         <ProtectedRoute roles={['admin','comptable']}><Layout><RapprochementPage /></Layout></ProtectedRoute>
       } />
-      <Route path="/automatisation/workflows" element={
+      <Route path="automatisation/workflows" element={
         <ProtectedRoute roles={['admin','manager']}><Layout><AutomationWorkflowsPage /></Layout></ProtectedRoute>
       } />
 
       {/* Équipe */}
-      <Route path="/equipe/trombinoscope" element={
+      <Route path="equipe/trombinoscope" element={
         <ProtectedRoute roles={['admin','manager']}><Layout><TrombinosccopePage /></Layout></ProtectedRoute>
       } />
-      <Route path="/equipe/collaborateurs/:id" element={
+      <Route path="equipe/collaborateurs/:id" element={
         <ProtectedRoute roles={['admin','manager']}><Layout><CollaborateurPage /></Layout></ProtectedRoute>
       } />
-      <Route path="/equipe/organigramme" element={
+      <Route path="equipe/organigramme" element={
         <ProtectedRoute roles={['admin','manager']}><Layout><OrganigrammePage /></Layout></ProtectedRoute>
       } />
-      <Route path="/equipe/notes-de-frais" element={
+      <Route path="equipe/notes-de-frais" element={
         <ProtectedRoute roles={['admin','manager','collaborateur']}><Layout><NotesDeFraisPage /></Layout></ProtectedRoute>
       } />
-      <Route path="/equipe/competences" element={
+      <Route path="equipe/competences" element={
         <ProtectedRoute roles={['admin','manager']}><Layout><CompetencesPage /></Layout></ProtectedRoute>
       } />
 
       {/* Admin */}
-      <Route path="/admin" element={
+      <Route path="admin" element={
         <ProtectedRoute roles={['admin']}><Layout><AdminPage /></Layout></ProtectedRoute>
       } />
-      <Route path="/admin/utilisateurs" element={
+      <Route path="admin/utilisateurs" element={
         <ProtectedRoute roles={['admin']} superAdminOnly><Layout><AdminUtilisateursPage /></Layout></ProtectedRoute>
       } />
-      <Route path="/admin/audit" element={
+      <Route path="admin/audit" element={
         <ProtectedRoute roles={['admin']}><Layout><AdminAuditPage /></Layout></ProtectedRoute>
       } />
-      <Route path="/admin/messages" element={
+      <Route path="admin/messages" element={
         <ProtectedRoute roles={['admin']} superAdminOnly><Layout><AdminMessagesPage /></Layout></ProtectedRoute>
       } />
-      <Route path="/admin/historique" element={
+      <Route path="admin/historique" element={
         <ProtectedRoute roles={['admin']} superAdminOnly><Layout><AdminPageViewsPage /></Layout></ProtectedRoute>
       } />
-      <Route path="/admin/societes" element={
+      <Route path="admin/societes" element={
         <ProtectedRoute roles={['admin']} superAdminOnly><Layout><AdminSocietesPage /></Layout></ProtectedRoute>
       } />
-      <Route path="/admin/societes/:id" element={
+      <Route path="admin/societes/:id" element={
         <ProtectedRoute roles={['admin']}><Layout><AdminSocieteDetailPage /></Layout></ProtectedRoute>
       } />
-      <Route path="/admin/groupes" element={
+      <Route path="admin/groupes" element={
         <ProtectedRoute roles={['admin']}><Layout><AdminGroupesPage /></Layout></ProtectedRoute>
       } />
-      <Route path="/admin/organigramme" element={
+      <Route path="admin/organigramme" element={
         <ProtectedRoute roles={['admin']}><Layout><AdminOrganigrammePage /></Layout></ProtectedRoute>
       } />
-      <Route path="/admin/workflows" element={
+      <Route path="admin/workflows" element={
         <ProtectedRoute roles={['admin','manager']}><Layout><WorkflowsPage /></Layout></ProtectedRoute>
       } />
-      <Route path="/admin/analytics" element={
+      <Route path="admin/analytics" element={
         <ProtectedRoute roles={['admin','manager']}><Layout><AnalyticsPage /></Layout></ProtectedRoute>
       } />
-      <Route path="/parametres" element={
+      <Route path="parametres" element={
         <ProtectedRoute roles={['admin']}><Layout><ParametresPage /></Layout></ProtectedRoute>
       } />
-      <Route path="/infos" element={
+      <Route path="infos" element={
         <ProtectedRoute><Layout><InfoPage /></Layout></ProtectedRoute>
       } />
-      <Route path="/profil" element={
+      <Route path="profil" element={
         <ProtectedRoute><Layout><ProfilePage /></Layout></ProtectedRoute>
       } />
 
       {/* Fiche client */}
-      <Route path="/clients/:id" element={
+      <Route path="clients/:id" element={
         <ProtectedRoute><Layout><ClientDetailPage /></Layout></ProtectedRoute>
       } />
 
       {/* Anciens liens → redirect */}
-      <Route path="/compta/*" element={<Navigate to="/finance/comptabilite" replace />} />
-      <Route path="/commerce/projets" element={<Navigate to="/activite/projets" replace />} />
+      <Route path="compta/*" element={<Navigate to="/finance/comptabilite" replace />} />
+      <Route path="commerce/projets" element={<Navigate to="/activite/projets" replace />} />
 
-      <Route path="/notifications" element={
+      <Route path="notifications" element={
         <ProtectedRoute><Layout><NotificationsPage /></Layout></ProtectedRoute>
       } />
 
-      <Route path="/recherche" element={
+      <Route path="recherche" element={
         <ProtectedRoute><Layout><SearchPage /></Layout></ProtectedRoute>
       } />
+
+      </Route>{/* Fin /:envId */}
 
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>

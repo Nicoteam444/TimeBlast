@@ -37,22 +37,21 @@ export function EnvProvider({ children }) {
     }
   }
 
+  function setCurrentEnvByCode(code) {
+    const env = environments.find(e => e.env_code === code)
+    if (env) setCurrentEnv(env)
+  }
+
   function switchEnvironment(env) {
     if (!env || env.id === currentEnv?.id) return
-
-    // Construire l'URL de l'autre environnement
-    // Prod = timeblast.ai, Test = timeblast-prod.vercel.app
+    // Naviguer vers le même path mais avec le nouveau code env
     const currentPath = window.location.pathname
-
-    if (env.is_production) {
-      window.location.href = `https://timeblast.ai${currentPath}`
-    } else {
-      window.location.href = `https://timeblast-prod.vercel.app${currentPath}`
-    }
+    const pathWithoutEnv = currentPath.replace(/^\/\d{7}/, '') || '/'
+    window.location.href = `/${env.env_code}${pathWithoutEnv}`
   }
 
   return (
-    <EnvContext.Provider value={{ environments, currentEnv, switchEnvironment, loading }}>
+    <EnvContext.Provider value={{ environments, currentEnv, setCurrentEnvByCode, switchEnvironment, loading }}>
       {children}
     </EnvContext.Provider>
   )

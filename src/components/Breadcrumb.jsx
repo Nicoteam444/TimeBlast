@@ -101,15 +101,19 @@ export default function Breadcrumb() {
   // Ne rien afficher sur l'accueil
   if (location.pathname === '/') return null
 
-  const segments = location.pathname.split('/').filter(Boolean)
+  let segments = location.pathname.split('/').filter(Boolean)
+
+  // Ignorer le segment envId (7 chiffres) au début
+  const envPrefix = segments.length > 0 && /^\d{7}$/.test(segments[0]) ? `/${segments[0]}` : ''
+  if (envPrefix) segments = segments.slice(1)
 
   // Construire les breadcrumbs depuis l'URL
   const crumbs = []
 
   // Toujours commencer par Accueil
-  crumbs.push({ label: 'Accueil', path: '/' })
+  crumbs.push({ label: 'Accueil', path: envPrefix + '/' })
 
-  let currentPath = ''
+  let currentPath = envPrefix
   for (let i = 0; i < segments.length; i++) {
     const seg = segments[i]
     currentPath += '/' + seg

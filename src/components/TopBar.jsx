@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect, useMemo } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
 import { useDemo } from '../contexts/DemoContext'
 import { useNotifications } from '../contexts/NotificationsContext'
@@ -36,6 +36,8 @@ export default function TopBar() {
   const [editingFav, setEditingFav] = useState(null)
   const favClickTimer = useRef(null)
   const navigate = useNavigate()
+  const { envId } = useParams()
+  const envPrefix = envId ? `/${envId}` : ''
   const [userMenuOpen, setUserMenuOpen]   = useState(false)
   const [showSocietes, setShowSocietes]  = useState(false)
   const [notifOpen, setNotifOpen]         = useState(false)
@@ -507,7 +509,7 @@ export default function TopBar() {
       <style>{`@media (max-width: 900px) { .topbar-favbar { display: none !important; } }`}</style>
 
       {/* Paramètres */}
-      <button className="topbar-btn" onClick={() => navigate('/parametres')} title="Paramètres">
+      <button className="topbar-btn" onClick={() => navigate(envPrefix + '/parametres')} title="Paramètres">
         <span>⚙</span>
       </button>
 
@@ -545,7 +547,7 @@ export default function TopBar() {
               <button style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '.8rem', color: 'var(--text-muted)' }}
                 onClick={() => setNotifOpen(false)}>Fermer</button>
               <button style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '.8rem', color: 'var(--primary)', fontWeight: 600 }}
-                onClick={() => { setNotifOpen(false); navigate('/notifications') }}>Voir toutes →</button>
+                onClick={() => { setNotifOpen(false); navigate(envPrefix + '/notifications') }}>Voir toutes →</button>
             </div>
           </div>
         )}
@@ -573,7 +575,7 @@ export default function TopBar() {
                 </div>
               </div>
               <hr className="topbar-dropdown-divider" />
-              <button className="topbar-dropdown-item" onClick={() => { navigate('/profil'); setUserMenuOpen(false) }}>
+              <button className="topbar-dropdown-item" onClick={() => { navigate(envPrefix + '/profil'); setUserMenuOpen(false) }}>
                 👤 Mon profil
               </button>
               <EnvSwitcher />
