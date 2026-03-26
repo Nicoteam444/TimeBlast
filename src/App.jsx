@@ -8,6 +8,7 @@ import { SocieteProvider } from './contexts/SocieteContext'
 import { FavoritesProvider } from './contexts/FavoritesContext'
 import ProtectedRoute from './components/ProtectedRoute'
 import Layout from './components/Layout'
+import OnboardingTour from './components/OnboardingTour'
 import LoginPage from './pages/LoginPage'
 import DashboardPage from './pages/DashboardPage'
 
@@ -354,6 +355,7 @@ export default function App() {
             <DemoProvider>
               <NotificationsProvider>
                 <BrowserRouter>
+                  <OnboardingTour />
                   <AppRoutes />
                 </BrowserRouter>
               </NotificationsProvider>
