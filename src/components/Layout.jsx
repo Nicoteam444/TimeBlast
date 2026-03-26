@@ -84,16 +84,12 @@ function LayoutInner({ children }) {
           <FavoriteButton />
           <Breadcrumb />
           {children}
+          <div style={{ textAlign: 'right', padding: '2rem 1.5rem .5rem', fontSize: '.65rem', color: '#b0b8c4', fontWeight: 500, letterSpacing: '.5px' }}>
+            Powered by <span style={{ fontWeight: 700, color: '#94a3b8' }}>Nicoteam</span>
+          </div>
         </main>
       </div>
       <ChatWidget />
-      <div style={{
-        position: 'fixed', bottom: 8, right: 16, zIndex: 5,
-        fontSize: '.65rem', color: '#b0b8c4', fontWeight: 500, letterSpacing: '.5px',
-        opacity: 0.6,
-      }}>
-        Powered by <span style={{ fontWeight: 700, color: '#94a3b8' }}>Nicoteam</span>
-      </div>
     </div>
   )
 }

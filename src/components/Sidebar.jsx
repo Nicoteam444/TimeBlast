@@ -126,8 +126,7 @@ const INFO_SECTION = {
   icon: 'ℹ️',
   label: 'Information',
   items: [
-    { to: '/histoire',  icon: '📜', label: 'Histoire TimeBlast' },
-    { to: '/roadmap',   icon: '🗺️', label: 'Avancement projet' },
+    { to: '/info',  icon: '📜', label: 'TimeBlast.ai' },
   ],
 }
 
