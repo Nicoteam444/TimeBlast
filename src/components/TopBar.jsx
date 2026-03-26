@@ -583,37 +583,14 @@ export default function TopBar() {
         <button className="topbar-user-btn" onClick={() => { setUserMenuOpen(v => !v); setShowSocietes(false) }}>
           <span className="topbar-avatar">{initials}</span>
           <div className="topbar-user-info">
-            <span className="topbar-user-name">{selectedSociete?.name || profile?.full_name || 'Utilisateur'}</span>
+            <span className="topbar-user-name">{profile?.full_name || 'Utilisateur'}</span>
             <span className="topbar-user-role">{profile?.role}</span>
           </div>
           <span className="topbar-chevron">{userMenuOpen ? '▲' : '▼'}</span>
         </button>
 
         {userMenuOpen && (
-          <div className={`topbar-dropdown ${showSocietes ? 'topbar-dropdown--duo' : ''}`}>
-            {/* Colonne gauche : sociétés (visible au hover du bouton) */}
-            {showSocietes && canSwitch && societes.length > 1 && (
-              <div className="topbar-dropdown-societes" onMouseLeave={() => setShowSocietes(false)}>
-                <div className="topbar-dropdown-section-label">Société</div>
-                <div className="topbar-dropdown-societes-list">
-                  {societes.map(s => (
-                    <button
-                      key={s.id}
-                      className={`topbar-dropdown-societe-btn ${s.id === selectedSociete?.id ? 'topbar-dropdown-societe-btn--active' : ''}`}
-                      onClick={() => { setSelectedSociete(s); setUserMenuOpen(false); setShowSocietes(false) }}
-                    >
-                      <span className="topbar-societe-initial" style={{ background: s.id === selectedSociete?.id ? 'var(--primary)' : '#94a3b8' }}>
-                        {s.name.split(/\s+/).map(w => w[0]).join('').toUpperCase().slice(0, 2)}
-                      </span>
-                      <span className="topbar-societe-name">{s.name}</span>
-                      {s.id === selectedSociete?.id && <span style={{ color: 'var(--primary)', fontSize: '.75rem', marginLeft: 'auto' }}>✓</span>}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* Colonne droite : compte */}
+          <div className="topbar-dropdown">
             <div className="topbar-dropdown-account">
               <div className="topbar-dropdown-header">
                 <span className="topbar-avatar topbar-avatar--lg">{initials}</span>
@@ -626,14 +603,6 @@ export default function TopBar() {
               <button className="topbar-dropdown-item" onClick={() => { navigate('/parametres'); setUserMenuOpen(false) }}>
                 Mon profil
               </button>
-              {canSwitch && societes.length > 1 && (
-                <button
-                  className="topbar-dropdown-item"
-                  onMouseEnter={() => setShowSocietes(true)}
-                >
-                  🏢 {selectedSociete?.name || 'Changer de société'}
-                </button>
-              )}
               <EnvSwitcher />
               <hr className="topbar-dropdown-divider" />
               <button className="topbar-dropdown-item topbar-dropdown-item--danger" onClick={handleSignOut}>
