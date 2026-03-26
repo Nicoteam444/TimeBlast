@@ -457,7 +457,6 @@ export default function AdminUtilisateursPage() {
                     placeholder="06 00 00 00 00" />
                 </div>
                 <div className="field">
-                <div className="field">
                   <label>Rôle</label>
                   <select value={editForm.role} onChange={e => setEditForm(f => ({ ...f, role: e.target.value }))}>
                     {ROLES.map(r => <option key={r} value={r}>{ROLE_LABELS[r]}</option>)}
