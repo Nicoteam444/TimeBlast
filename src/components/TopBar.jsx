@@ -5,6 +5,7 @@ import { useDemo } from '../contexts/DemoContext'
 import { useNotifications } from '../contexts/NotificationsContext'
 import { useLayout } from '../contexts/LayoutContext'
 import { useSociete } from '../contexts/SocieteContext'
+import { useEnv } from '../contexts/EnvContext'
 import { supabase } from '../lib/supabase'
 import { useFavorites } from '../contexts/FavoritesContext'
 
@@ -630,9 +631,10 @@ export default function TopBar() {
                   className="topbar-dropdown-item"
                   onMouseEnter={() => setShowSocietes(true)}
                 >
-                  {selectedSociete?.name || 'Changer de société'}
+                  🏢 {selectedSociete?.name || 'Changer de société'}
                 </button>
               )}
+              <EnvSwitcher />
               <hr className="topbar-dropdown-divider" />
               <button className="topbar-dropdown-item topbar-dropdown-item--danger" onClick={handleSignOut}>
                 Déconnexion
@@ -642,6 +644,42 @@ export default function TopBar() {
         )}
       </div>
     </header>
+  )
+}
+
+/* Environnement Switcher */
+function EnvSwitcher() {
+  const { environments, currentEnv, switchEnvironment } = useEnv() || {}
+  if (!environments || environments.length <= 1) return null
+
+  return (
+    <>
+      <hr className="topbar-dropdown-divider" />
+      <div style={{ padding: '4px 8px' }}>
+        <div style={{ fontSize: '.7rem', fontWeight: 600, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '.5px', marginBottom: 4 }}>
+          Environnement
+        </div>
+        {environments.map(env => (
+          <button key={env.id}
+            className="topbar-dropdown-item"
+            onClick={() => switchEnvironment(env)}
+            style={{
+              display: 'flex', alignItems: 'center', gap: 8,
+              fontWeight: env.id === currentEnv?.id ? 700 : 400,
+              color: env.id === currentEnv?.id ? 'var(--primary)' : undefined,
+            }}>
+            <span style={{
+              width: 8, height: 8, borderRadius: '50%',
+              background: env.is_production ? '#16a34a' : '#f59e0b',
+              flexShrink: 0,
+            }} />
+            <span>{env.name}</span>
+            <span style={{ fontSize: '.65rem', color: '#94a3b8', marginLeft: 'auto' }}>#{env.env_code}</span>
+            {env.id === currentEnv?.id && <span style={{ color: 'var(--primary)', fontSize: '.75rem' }}>✓</span>}
+          </button>
+        ))}
+      </div>
+    </>
   )
 }
 

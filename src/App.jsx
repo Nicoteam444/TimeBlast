@@ -9,6 +9,7 @@ import { FavoritesProvider } from './contexts/FavoritesContext'
 import ProtectedRoute from './components/ProtectedRoute'
 import Layout from './components/Layout'
 import OnboardingTour from './components/OnboardingTour'
+import { EnvProvider } from './contexts/EnvContext'
 import LoginPage from './pages/LoginPage'
 import DashboardPage from './pages/DashboardPage'
 
@@ -359,8 +360,10 @@ export default function App() {
             <DemoProvider>
               <NotificationsProvider>
                 <BrowserRouter>
-                  <OnboardingTour />
-                  <AppRoutes />
+                  <EnvProvider>
+                    {/* <OnboardingTour /> — désactivé temporairement */}
+                    <AppRoutes />
+                  </EnvProvider>
                 </BrowserRouter>
               </NotificationsProvider>
             </DemoProvider>
