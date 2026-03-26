@@ -11,43 +11,13 @@ const STATIC_STATS = [
   { key: 'tables', value: '25', label: 'Tables BD', icon: '🗄️' },
 ]
 
-// Stats injectées au build par le script pre-push
-const BUILD_STATS = {
-  commits: __APP_COMMIT_COUNT__ || '232',
-  pages: __APP_PAGE_COUNT__ || '77',
-}
-
-function useAppStats() {
-  const [stats, setStats] = useState(STATIC_STATS)
-
-  useEffect(() => {
-    async function fetchStats() {
-      try {
-        const firstCommitDate = new Date('2026-03-21')
-        const now = new Date()
-        const days = String(Math.ceil((now - firstCommitDate) / 86400000))
-
-        // Tables via Supabase RPC
-        let tables = '25'
-        try {
-          const { supabase } = await import('../lib/supabase')
-          const { data } = await supabase.rpc('get_table_count')
-          if (data) tables = String(data)
-        } catch {}
-
-        setStats([
-          { key: 'days', value: days, label: 'Jours de dev', icon: '⚡' },
-          { key: 'commits', value: String(BUILD_STATS.commits), label: 'Commits', icon: '📦' },
-          { key: 'pages', value: String(BUILD_STATS.pages), label: 'Pages', icon: '📄' },
-          { key: 'tables', value: tables, label: 'Tables BD', icon: '🗄️' },
-        ])
-      } catch {}
-    }
-    fetchStats()
-  }, [])
-
-  return stats
-}
+// Stats mises à jour manuellement à chaque push
+const STATS = [
+  { value: '6', label: 'Jours de dev', icon: '⚡' },
+  { value: '235', label: 'Commits', icon: '📦' },
+  { value: '77', label: 'Pages', icon: '📄' },
+  { value: '25', label: 'Tables BD', icon: '🗄️' },
+]
 
 const TIMELINE = [
   {
@@ -126,7 +96,7 @@ const TIMELINE = [
 ]
 
 function HistoryTab() {
-  const STATS = useAppStats()
+  // STATS est défini en haut du fichier
   const [expanded, setExpanded] = useState(new Set([0]))
   const refs = useRef([])
 
