@@ -245,7 +245,6 @@ export default function Sidebar() {
   const flyoutSection = hoveredId === '_favs'
     ? { id: '_favs', icon: '🔖', label: 'Favoris', items: favItems }
     : visibleSections.find(s => s.id === hoveredId)
-      || (hoveredId === 'info' ? INFO_SECTION : null)
       || (hoveredId === 'admin' && userRole === 'admin' ? ADMIN_SECTION : null)
   const railW = sidebarOpen ? 180 : 52
 
@@ -289,11 +288,12 @@ export default function Sidebar() {
               <div
                 key={section.id}
                 className={`rail-item ${isActive ? 'rail-item--active' : ''} ${hoveredId === section.id ? 'rail-item--hover' : ''}`}
-                onMouseEnter={e => (section.directTo || section.directLink) ? null : showFlyout(section.id, e)}
+                onMouseEnter={e => (section.directTo || section.directLink || items.length <= 1) ? null : showFlyout(section.id, e)}
                 onMouseLeave={scheduleHide}
                 onClick={() => {
                   if (section.directTo) { navigate(section.directTo); setHoveredId(null); }
                   else if (section.directLink && section.landingTo) { navigate(section.landingTo); setHoveredId(null); }
+                  else if (items.length === 1) { navigate(items[0].to); setHoveredId(null); }
                   else if (section.landingTo) navigate(section.landingTo)
                 }}
                 style={{ cursor: (section.directTo || section.landingTo) ? 'pointer' : undefined }}
@@ -308,15 +308,14 @@ export default function Sidebar() {
 
         {/* ── Info + Admin en bas ── */}
         <div className="sidebar-bottom">
-          {/* Information — visible par tous */}
+          {/* Information — navigation directe (1 seul item) */}
           {(() => {
-            const infoPaths = INFO_SECTION.items.map(i => i.to)
-            const isInfoActive = infoPaths.some(p => location.pathname.startsWith(p))
+            const isInfoActive = location.pathname.startsWith('/info')
             return (
               <div
-                className={`rail-item ${isInfoActive ? 'rail-item--active' : ''} ${hoveredId === 'info' ? 'rail-item--hover' : ''}`}
-                onMouseEnter={e => showFlyout('info', e)}
-                onMouseLeave={scheduleHide}
+                className={`rail-item ${isInfoActive ? 'rail-item--active' : ''}`}
+                onClick={() => navigate('/info')}
+                style={{ cursor: 'pointer' }}
               >
                 <span className="rail-item-icon">{INFO_SECTION.icon}</span>
                 {sidebarOpen && <span className="rail-item-label">{INFO_SECTION.label}</span>}
