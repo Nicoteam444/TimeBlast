@@ -100,12 +100,7 @@ export default function OnboardingTour() {
 
   function nextStep() {
     if (currentStep < STEPS.length - 1) {
-      const nextIdx = currentStep + 1
-      setCurrentStep(nextIdx)
-      // Navigate to the route if specified
-      if (STEPS[nextIdx].route) {
-        navigate(STEPS[nextIdx].route)
-      }
+      setCurrentStep(currentStep + 1)
     } else {
       finish()
     }
@@ -113,11 +108,7 @@ export default function OnboardingTour() {
 
   function prevStep() {
     if (currentStep > 0) {
-      const prevIdx = currentStep - 1
-      setCurrentStep(prevIdx)
-      if (STEPS[prevIdx].route) {
-        navigate(STEPS[prevIdx].route)
-      }
+      setCurrentStep(currentStep - 1)
     }
   }
 
@@ -128,7 +119,10 @@ export default function OnboardingTour() {
     if (user?.id) {
       supabase.from('profiles').update({ onboarding_done: true }).eq('id', user.id).then(() => {})
     }
-    setTimeout(() => setVisible(false), 400)
+    setTimeout(() => {
+      setVisible(false)
+      navigate('/')
+    }, 400)
   }
 
   function skip() {
