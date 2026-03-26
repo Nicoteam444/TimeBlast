@@ -707,10 +707,22 @@ const MODULES = [
   { id: 'documents', label: 'Documents', icon: '📁', subs: [
     { id: 'archives', label: 'Archives' },
   ]},
+  { id: 'workflows', label: 'Workflows', icon: '🔀', subs: [
+    { id: 'automatisation', label: 'Automatisation' },
+  ]},
+  { id: 'documentation', label: 'Documentation', icon: '📚', subs: [
+    { id: 'histoire', label: 'Histoire TimeBlast' },
+    { id: 'roadmap', label: 'Avancement projet' },
+  ]},
   { id: 'administration', label: 'Administration', icon: '⚙️', subs: [
     { id: 'utilisateurs', label: 'Utilisateurs' },
     { id: 'societes', label: 'Sociétés' },
+    { id: 'groupes', label: 'Groupes' },
+    { id: 'organigramme-admin', label: 'Organigramme' },
     { id: 'audit', label: 'Journal d\'audit' },
+    { id: 'messages', label: 'Messages contact' },
+    { id: 'historique', label: 'Historique navigation' },
+    { id: 'analytics', label: 'Analytics' },
     { id: 'parametres', label: 'Paramètres' },
   ]},
 ]

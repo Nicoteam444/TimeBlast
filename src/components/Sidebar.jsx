@@ -123,10 +123,10 @@ const SECTIONS = [
 
 const INFO_SECTION = {
   id: 'info',
-  icon: 'ℹ️',
-  label: 'Information',
+  icon: '📚',
+  label: 'Documentation',
   items: [
-    { to: '/info',  icon: '📜', label: 'TimeBlast.ai' },
+    { to: '/info',  icon: '📚', label: 'Documentation' },
   ],
 }
 
