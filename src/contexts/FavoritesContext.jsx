@@ -20,6 +20,9 @@ export function FavoritesProvider({ children }) {
   const [favLabels, setFavLabels] = useState(() => {
     try { return JSON.parse(localStorage.getItem('tb_fav_labels') || '{}') } catch { return {} }
   })
+  const [customLabels, setCustomLabels] = useState(() => {
+    try { return JSON.parse(localStorage.getItem('tb_fav_custom') || '[]') } catch { return [] }
+  })
   const [loading, setLoading] = useState(false)
   const [syncing, setSyncing] = useState(false)
 
@@ -131,14 +134,23 @@ export function FavoritesProvider({ children }) {
   )
 
   // Update label for an existing favorite (auto-refresh)
-  const updateFavLabel = useCallback((routePath, label) => {
+  const updateFavLabel = useCallback((routePath, label, isManual = false) => {
     if (!routePath || !label) return
+    // Si ce favori a un label custom, ne pas écraser par l'auto-update
+    if (!isManual && customLabels.includes(routePath)) return
     setFavLabels(prev => {
       const updated = { ...prev, [routePath]: label }
       localStorage.setItem('tb_fav_labels', JSON.stringify(updated))
       return updated
     })
-  }, [])
+    if (isManual) {
+      setCustomLabels(prev => {
+        const updated = prev.includes(routePath) ? prev : [...prev, routePath]
+        localStorage.setItem('tb_fav_custom', JSON.stringify(updated))
+        return updated
+      })
+    }
+  }, [customLabels])
 
   // Check if a route is favorited
   const isFavorite = useCallback(

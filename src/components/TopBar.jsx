@@ -490,14 +490,14 @@ export default function TopBar() {
                       e.preventDefault()
                       e.stopPropagation()
                       const val = e.target.value.trim()
-                      if (val) { updateFavLabel(path, val); console.log('FAV RENAMED:', path, val) }
+                      if (val) updateFavLabel(path, val, true)
                       setEditingFav(null)
                     }
                     if (e.key === 'Escape') { e.preventDefault(); setEditingFav(null) }
                   }}
                   onBlur={e => {
                     const val = e.target.value.trim()
-                    if (val && val !== (favLabels?.[path] || path.split('/').pop() || '')) updateFavLabel(path, val)
+                    if (val && val !== (favLabels?.[path] || path.split('/').pop() || '')) updateFavLabel(path, val, true)
                     setEditingFav(null)
                   }}
                   onClick={e => e.stopPropagation()}
