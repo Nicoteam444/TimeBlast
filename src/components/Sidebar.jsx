@@ -130,7 +130,6 @@ const ADMIN_SECTION = {
     { to: '/admin/historique',   icon: '👁', label: 'Historique',            roles: ['admin'], superAdminOnly: true },
     { to: '/admin/analytics',    icon: '📊', label: 'Analytics',         roles: ['admin', 'manager'] },
     { to: '/parametres',         icon: '🔧', label: 'Paramètres',        roles: ['admin'] },
-    { to: '/infos',              icon: '💡', label: 'À propos' },
   ]}
 
 export default function Sidebar() {
@@ -307,6 +306,16 @@ export default function Sidebar() {
               </div>
             )
           })()}
+          {/* À propos — visible par tous, sous Administration */}
+          <div
+            className={`rail-item ${location.pathname.startsWith('/infos') ? 'rail-item--active' : ''}`}
+            onClick={() => navigate('/infos')}
+            style={{ cursor: 'pointer' }}
+          >
+            <span className="rail-item-icon">💡</span>
+            {sidebarOpen && <span className="rail-item-label">À propos</span>}
+            {location.pathname.startsWith('/infos') && <span className="rail-item-dot" />}
+          </div>
         </div>
       </aside>
 
