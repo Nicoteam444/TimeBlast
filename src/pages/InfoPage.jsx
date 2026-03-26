@@ -4,13 +4,47 @@ import { useState, useEffect, useRef, useLayoutEffect } from 'react'
 // ONGLET 1 — HISTOIRE
 // ══════════════════════════════════════════════════════════════════════════════
 
-const STATS = [
-  { value: '6', label: 'Jours de dev', icon: '⚡' },
-  { value: '229', label: 'Commits', icon: '📦' },
-  { value: '77', label: 'Pages', icon: '📄' },
-  { value: '25', label: 'Tables BD', icon: '🗄️' },
-  { value: '252 Mo', label: 'Taille projet', icon: '💾' },
+const STATIC_STATS = [
+  { key: 'days', value: '6', label: 'Jours de dev', icon: '⚡' },
+  { key: 'commits', value: '...', label: 'Commits', icon: '📦' },
+  { key: 'pages', value: '77', label: 'Pages', icon: '📄' },
+  { key: 'tables', value: '25', label: 'Tables BD', icon: '🗄️' },
 ]
+
+function useGitHubStats() {
+  const [stats, setStats] = useState(STATIC_STATS)
+
+  useEffect(() => {
+    async function fetchStats() {
+      try {
+        // Nombre de commits via GitHub API
+        const res = await fetch('https://api.github.com/repos/Nicoteam444/TimeBlast/commits?per_page=1')
+        if (res.ok) {
+          const link = res.headers.get('link') || ''
+          const match = link.match(/page=(\d+)>; rel="last"/)
+          const commitCount = match ? match[1] : null
+
+          // Nombre de jours depuis le premier commit
+          const firstCommitDate = new Date('2026-03-21')
+          const now = new Date()
+          const days = Math.ceil((now - firstCommitDate) / 86400000)
+
+          setStats([
+            { key: 'days', value: String(days), label: 'Jours de dev', icon: '⚡' },
+            { key: 'commits', value: commitCount || '230+', label: 'Commits', icon: '📦' },
+            { key: 'pages', value: '77', label: 'Pages', icon: '📄' },
+            { key: 'tables', value: '25', label: 'Tables BD', icon: '🗄️' },
+          ])
+        }
+      } catch {
+        // Silently fail — keep static stats
+      }
+    }
+    fetchStats()
+  }, [])
+
+  return stats
+}
 
 const TIMELINE = [
   {
@@ -89,6 +123,7 @@ const TIMELINE = [
 ]
 
 function HistoryTab() {
+  const STATS = useGitHubStats()
   const [expanded, setExpanded] = useState(new Set([0]))
   const refs = useRef([])
 
