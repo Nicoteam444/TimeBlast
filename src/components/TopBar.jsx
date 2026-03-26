@@ -6,6 +6,7 @@ import { useNotifications } from '../contexts/NotificationsContext'
 import { useLayout } from '../contexts/LayoutContext'
 import { useSociete } from '../contexts/SocieteContext'
 import { supabase } from '../lib/supabase'
+import { useFavorites } from '../contexts/FavoritesContext'
 
 function fmtNotifDate(iso) {
   const d = new Date(iso)
@@ -32,6 +33,9 @@ export default function TopBar() {
   const { notifications, unreadCount, markRead, markAllRead } = useNotifications()
   const { toggleSidebar } = useLayout()
   const { societes, selectedSociete, setSelectedSociete } = useSociete()
+  const { favorites, favLabels } = useFavorites()
+  const [favOpen, setFavOpen] = useState(false)
+  const favRef = useRef(null)
   const navigate = useNavigate()
   const [userMenuOpen, setUserMenuOpen]   = useState(false)
   const [showSocietes, setShowSocietes]  = useState(false)
@@ -109,6 +113,13 @@ export default function TopBar() {
     }
     document.addEventListener('mousedown', handleClickOutside)
     return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [])
+
+  // Close favs on click outside
+  useEffect(() => {
+    function h(e) { if (favRef.current && !favRef.current.contains(e.target)) setFavOpen(false) }
+    document.addEventListener('mousedown', h)
+    return () => document.removeEventListener('mousedown', h)
   }, [])
 
   // Quick Add state
@@ -469,6 +480,40 @@ export default function TopBar() {
       </div>
 
       <div className="topbar-spacer" />
+
+      {/* Favoris */}
+      <div ref={favRef} style={{ position: 'relative' }}>
+        <button className="topbar-btn" onClick={() => setFavOpen(v => !v)} title="Favoris" style={{ position: 'relative' }}>
+          <span>⭐</span>
+          {favorites.length > 0 && <span style={{ position: 'absolute', top: 2, right: 2, width: 14, height: 14, borderRadius: '50%', background: '#f59e0b', color: '#fff', fontSize: '.6rem', fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>{favorites.length}</span>}
+        </button>
+        {favOpen && (
+          <div style={{
+            position: 'absolute', top: '100%', right: 0, marginTop: 6, width: 260,
+            background: '#fff', borderRadius: 12, boxShadow: '0 10px 30px rgba(0,0,0,0.15)',
+            border: '1px solid #e2e8f0', zIndex: 9999, overflow: 'hidden',
+          }}>
+            <div style={{ padding: '10px 14px', borderBottom: '1px solid #f1f5f9', fontSize: '.8rem', fontWeight: 700, color: '#1a2332' }}>⭐ Mes favoris</div>
+            {favorites.length === 0 ? (
+              <div style={{ padding: '20px 14px', textAlign: 'center', color: '#94a3b8', fontSize: '.85rem' }}>Aucun favori</div>
+            ) : (
+              <div style={{ maxHeight: 250, overflowY: 'auto' }}>
+                {favorites.map(path => (
+                  <div key={path} onMouseDown={() => { navigate(path); setFavOpen(false) }}
+                    style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '8px 14px', cursor: 'pointer', fontSize: '.82rem', borderBottom: '1px solid #f8fafc', transition: 'background .1s' }}
+                    onMouseEnter={e => e.currentTarget.style.background = '#f0f9ff'}
+                    onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>
+                    <span style={{ fontSize: 12 }}>📌</span>
+                    <span style={{ flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', color: '#1a2332', fontWeight: 500 }}>
+                      {favLabels?.[path] || path.split('/').pop() || 'Page'}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+      </div>
 
       {/* Paramètres */}
       <button className="topbar-btn" onClick={() => navigate('/parametres')} title="Paramètres">
