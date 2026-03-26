@@ -80,11 +80,11 @@ function LayoutInner({ children }) {
       <Sidebar />
       <div className="app-main">
         <TopBar />
-        <main className="app-content" style={{ position: 'relative' }}>
+        <main className="app-content" style={{ position: 'relative', display: 'flex', flexDirection: 'column', minHeight: '100%' }}>
           <FavoriteButton />
           <Breadcrumb />
-          {children}
-          <div style={{ textAlign: 'right', padding: '2rem 1.5rem .5rem', fontSize: '.65rem', color: '#b0b8c4', fontWeight: 500, letterSpacing: '.5px' }}>
+          <div style={{ flex: 1 }}>{children}</div>
+          <div style={{ textAlign: 'right', padding: '.5rem 1.5rem', fontSize: '.65rem', color: '#b0b8c4', fontWeight: 500, letterSpacing: '.5px', flexShrink: 0 }}>
             Powered by <span style={{ fontWeight: 700, color: '#94a3b8' }}>Nicoteam</span>
           </div>
         </main>
