@@ -242,10 +242,6 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false)
   const [showLogin, setShowLogin] = useState(false)
   const [activeCat, setActiveCat] = useState('all')
-  const [loginTab, setLoginTab] = useState('magic')
-  const [magicEmail, setMagicEmail] = useState('')
-  const [magicStatus, setMagicStatus] = useState('idle') // idle, loading, sent, error
-  const [magicMsg, setMagicMsg] = useState('')
 
   // Comptes récents
   const [recentAccounts, setRecentAccounts] = useState([])
@@ -694,79 +690,23 @@ export default function LoginPage() {
               </div>
             )}
 
-            {/* Onglets */}
-            <div style={{ display: 'flex', marginBottom: '1rem', borderBottom: '2px solid #e2e8f0' }}>
-              <button type="button" onClick={() => setLoginTab('magic')}
-                style={{ flex: 1, padding: '.6rem', background: 'none', border: 'none', cursor: 'pointer', fontWeight: 600, fontSize: '.85rem', color: loginTab === 'magic' ? '#2B4C7E' : '#94a3b8', borderBottom: loginTab === 'magic' ? '2px solid #2B4C7E' : '2px solid transparent', marginBottom: -2 }}>
-                ✉️ Magic Link
+            <form onSubmit={handleSubmit}>
+              <div className="field">
+                <label htmlFor="email">Email</label>
+                <input id="email" type="email" value={email.trim()}
+                  onChange={e => setEmail(e.target.value)} required autoComplete="email" autoFocus
+                  placeholder="nom@entreprise.com" />
+              </div>
+              <div className="field">
+                <label htmlFor="password">Mot de passe</label>
+                <input id="password" type="password" value={password}
+                  onChange={e => setPassword(e.target.value)} required autoComplete="current-password"
+                  placeholder="••••••••" />
+              </div>
+              {error && <p className="error">{error}</p>}
+              <button type="submit" className="landing-btn-primary" style={{ width: '100%', marginTop: '.75rem' }} disabled={loading}>
+                {loading ? 'Connexion...' : 'Se connecter →'}
               </button>
-              <button type="button" onClick={() => setLoginTab('password')}
-                style={{ flex: 1, padding: '.6rem', background: 'none', border: 'none', cursor: 'pointer', fontWeight: 600, fontSize: '.85rem', color: loginTab === 'password' ? '#2B4C7E' : '#94a3b8', borderBottom: loginTab === 'password' ? '2px solid #2B4C7E' : '2px solid transparent', marginBottom: -2 }}>
-                🔑 Mot de passe
-              </button>
-            </div>
-
-            {loginTab === 'magic' ? (
-              <form onSubmit={async (e) => {
-                e.preventDefault()
-                if (!magicEmail.endsWith('@groupe-sra.fr')) {
-                  setMagicStatus('error')
-                  setMagicMsg('Seuls les emails @groupe-sra.fr sont autorises.')
-                  return
-                }
-                setMagicStatus('loading')
-                const { error: err } = await supabase.auth.signInWithOtp({
-                  email: magicEmail,
-                  options: { emailRedirectTo: window.location.origin + '/' }
-                })
-                if (err) {
-                  setMagicStatus('error')
-                  setMagicMsg(err.message)
-                } else {
-                  setMagicStatus('sent')
-                  setMagicMsg('Lien de connexion envoye ! Verifiez votre boite mail.')
-                }
-              }}>
-                <p style={{ fontSize: '.85rem', color: '#64748b', marginBottom: '1rem', lineHeight: 1.5 }}>
-                  Entrez votre email @groupe-sra.fr et recevez un lien de connexion instantane — aucun mot de passe necessaire.
-                </p>
-                <div className="field">
-                  <label htmlFor="magic-email">Email professionnel</label>
-                  <input id="magic-email" type="email" value={magicEmail}
-                    onChange={e => setMagicEmail(e.target.value)} required autoComplete="email" autoFocus
-                    placeholder="prenom.nom@groupe-sra.fr" />
-                </div>
-                {magicStatus === 'error' && <p className="error">{magicMsg}</p>}
-                {magicStatus === 'sent' && (
-                  <div style={{ padding: '.75rem 1rem', borderRadius: 8, background: '#f0fdf4', border: '1px solid #bbf7d0', color: '#166534', fontSize: '.9rem', marginBottom: '.75rem', textAlign: 'center' }}>
-                    ✅ {magicMsg}
-                  </div>
-                )}
-                <button type="submit" className="landing-btn-primary" style={{ width: '100%', marginTop: '.75rem' }}
-                  disabled={magicStatus === 'loading' || magicStatus === 'sent'}>
-                  {magicStatus === 'loading' ? 'Envoi...' : magicStatus === 'sent' ? 'Email envoye ✓' : 'Recevoir le lien de connexion →'}
-                </button>
-              </form>
-            ) : (
-              <form onSubmit={handleSubmit}>
-                <div className="field">
-                  <label htmlFor="email">Email</label>
-                  <input id="email" type="email" value={email.trim()}
-                    onChange={e => setEmail(e.target.value)} required autoComplete="email" autoFocus
-                    placeholder="nom@groupe-sra.fr" />
-                </div>
-                <div className="field">
-                  <label htmlFor="password">Mot de passe</label>
-                  <input id="password" type="password" value={password}
-                    onChange={e => setPassword(e.target.value)} required autoComplete="current-password"
-                    placeholder="••••••••" />
-                </div>
-                {error && <p className="error">{error}</p>}
-                <button type="submit" className="landing-btn-primary" style={{ width: '100%', marginTop: '.75rem' }} disabled={loading}>
-                  {loading ? 'Connexion...' : 'Se connecter →'}
-                </button>
-              </form>
-            )}
 
               {/* Bouton Microsoft SSO — affiché uniquement si Azure est configuré dans Supabase */}
               {import.meta.env.VITE_ENABLE_MICROSOFT_SSO === 'true' && (
