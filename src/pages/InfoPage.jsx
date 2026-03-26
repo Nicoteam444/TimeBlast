@@ -11,58 +11,37 @@ const STATIC_STATS = [
   { key: 'tables', value: '25', label: 'Tables BD', icon: '🗄️' },
 ]
 
-function useGitHubStats() {
+// Stats injectées au build par le script pre-push
+const BUILD_STATS = {
+  commits: __APP_COMMIT_COUNT__ || '232',
+  pages: __APP_PAGE_COUNT__ || '77',
+}
+
+function useAppStats() {
   const [stats, setStats] = useState(STATIC_STATS)
 
   useEffect(() => {
     async function fetchStats() {
       try {
-        const results = { days: '6', commits: '...', pages: '...', tables: '...' }
-
-        // Jours depuis le premier commit
         const firstCommitDate = new Date('2026-03-21')
         const now = new Date()
-        results.days = String(Math.ceil((now - firstCommitDate) / 86400000))
+        const days = String(Math.ceil((now - firstCommitDate) / 86400000))
 
-        // Commits via GitHub API
-        const commitRes = await fetch('https://api.github.com/repos/Nicoteam444/TimeBlast/commits?per_page=1')
-        if (commitRes.ok) {
-          const link = commitRes.headers.get('link') || ''
-          const match = link.match(/page=(\d+)>; rel="last"/)
-          if (match) results.commits = match[1]
-        }
-
-        // Pages JSX via GitHub API (tree recursive)
-        const treeRes = await fetch('https://api.github.com/repos/Nicoteam444/TimeBlast/git/trees/main?recursive=1')
-        if (treeRes.ok) {
-          const tree = await treeRes.json()
-          const pages = (tree.tree || []).filter(f => f.path.startsWith('src/pages/') && f.path.endsWith('.jsx'))
-          results.pages = String(pages.length)
-        }
-
-        // Tables via Supabase
-        const { supabase } = await import('../lib/supabase')
-        const { data: tables } = await supabase.rpc('get_table_count').catch(() => ({ data: null }))
-        if (tables) {
-          results.tables = String(tables)
-        } else {
-          // Fallback: count tables from information_schema
-          const { data: tableList } = await supabase
-            .from('pg_tables_public')
-            .select('tablename')
-            .catch(() => ({ data: null }))
-          if (tableList) results.tables = String(tableList.length)
-        }
+        // Tables via Supabase RPC
+        let tables = '25'
+        try {
+          const { supabase } = await import('../lib/supabase')
+          const { data } = await supabase.rpc('get_table_count')
+          if (data) tables = String(data)
+        } catch {}
 
         setStats([
-          { key: 'days', value: results.days, label: 'Jours de dev', icon: '⚡' },
-          { key: 'commits', value: results.commits, label: 'Commits', icon: '📦' },
-          { key: 'pages', value: results.pages, label: 'Pages', icon: '📄' },
-          { key: 'tables', value: results.tables, label: 'Tables BD', icon: '🗄️' },
+          { key: 'days', value: days, label: 'Jours de dev', icon: '⚡' },
+          { key: 'commits', value: String(BUILD_STATS.commits), label: 'Commits', icon: '📦' },
+          { key: 'pages', value: String(BUILD_STATS.pages), label: 'Pages', icon: '📄' },
+          { key: 'tables', value: tables, label: 'Tables BD', icon: '🗄️' },
         ])
-      } catch {
-        // Silently fail — keep static stats
-      }
+      } catch {}
     }
     fetchStats()
   }, [])
@@ -147,7 +126,7 @@ const TIMELINE = [
 ]
 
 function HistoryTab() {
-  const STATS = useGitHubStats()
+  const STATS = useAppStats()
   const [expanded, setExpanded] = useState(new Set([0]))
   const refs = useRef([])
 
