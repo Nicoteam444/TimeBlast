@@ -102,11 +102,6 @@ export default function OrganigrammePage() {
           <h1>Organigramme</h1>
           <p>
             {equipe.length} collaborateur{equipe.length > 1 ? 's' : ''}
-            {selectedSociete && (
-              <span style={{ marginLeft: '.5rem', padding: '.1rem .5rem', background: 'var(--primary-light)', color: 'var(--primary)', borderRadius: 4, fontSize: '.8rem', fontWeight: 500 }}>
-                {selectedSociete.name}
-              </span>
-            )}
           </p>
         </div>
       </div>

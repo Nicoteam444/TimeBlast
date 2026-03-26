@@ -127,7 +127,7 @@ export default function EntreprisesPage() {
       <div className="admin-page-header">
         <div>
           <h1>🏢 Entreprises</h1>
-          <p>{entreprises.length} entreprise{entreprises.length !== 1 ? 's' : ''}{selectedSociete ? ` · ${selectedSociete.name}` : ''}</p>
+          <p>{entreprises.length} entreprise{entreprises.length !== 1 ? 's' : ''}</p>
         </div>
         <div style={{ display: 'flex', gap: '.5rem' }}>
           <button className="btn-primary" onClick={() => setModal({})}>+ Nouvelle entreprise</button>

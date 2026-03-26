@@ -125,7 +125,7 @@ export default function RentabilitePage() {
 
   async function loadAll() {
     setLoading(true)
-    const sid = selectedSociete.id
+    const sid = null
 
     const [
       { data: projetsData },
@@ -381,9 +381,7 @@ export default function RentabilitePage() {
   }
 
   // ── Render ────────────────────────────────────────────────
-  if (!selectedSociete) {
-    return <div className="page-empty">Sélectionnez une société.</div>
-  }
+  
 
   return (
     <div className="rent-page">

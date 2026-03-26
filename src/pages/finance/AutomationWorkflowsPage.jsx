@@ -356,7 +356,7 @@ export default function AutomationWorkflowsPage() {
       <div className="admin-page-header">
         <div>
           <h1>Workflows</h1>
-          <p>{filtered.length} workflow{filtered.length > 1 ? 's' : ''}{selectedSociete && <span style={{ marginLeft: '.5rem', padding: '.1rem .5rem', background: 'var(--primary-light)', color: 'var(--primary)', borderRadius: 4, fontSize: '.8rem', fontWeight: 500 }}>{selectedSociete.name}</span>}</p>
+          <p>{filtered.length} workflow{filtered.length > 1 ? 's' : ''}{null && <span style={{ marginLeft: '.5rem', padding: '.1rem .5rem', background: 'var(--primary-light)', color: 'var(--primary)', borderRadius: 4, fontSize: '.8rem', fontWeight: 500 }}>{''}</span>}</p>
         </div>
         <div style={{ display: 'flex', gap: '.5rem', alignItems: 'center' }}>
           {/* View mode toggle */}

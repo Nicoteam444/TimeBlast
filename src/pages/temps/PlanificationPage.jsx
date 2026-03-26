@@ -224,7 +224,7 @@ export default function PlanificationPage() {
     } else {
       await supabase.from('plannings').insert({
         user_key: task.user_key, user_label: task.user_label,
-        societe_id: selectedSociete.id,
+        societe_id: null,
         label: task.label, color: task.color,
         date_debut: task.date_debut, date_fin: task.date_fin})
     }

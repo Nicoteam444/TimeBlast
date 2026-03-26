@@ -136,7 +136,7 @@ export default function AnalyticsPage() {
       <div className="admin-page-header">
         <div>
           <h1>📊 Tableau de bord analytique</h1>
-          <p>Vue d'ensemble de l'activité{selectedSociete ? ` · ${selectedSociete.name}` : ''}</p>
+          <p>Vue d'ensemble de l'activité</p>
         </div>
       </div>
 

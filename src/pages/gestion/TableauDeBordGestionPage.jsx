@@ -74,7 +74,7 @@ export default function TableauDeBordGestionPage() {
       <div className="admin-page-header" style={{ marginBottom: '1rem' }}>
         <div>
           <h1>📊 Tableau de bord</h1>
-          <p>Comparaison {currentYear} vs {currentYear - 1}{selectedSociete ? ` · ${selectedSociete.name}` : ''}</p>
+          <p>Comparaison {currentYear} vs {currentYear - 1}</p>
         </div>
         <div style={{ display: 'flex', gap: '.5rem' }}>
           {[

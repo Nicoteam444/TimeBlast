@@ -286,7 +286,7 @@ function WorkflowConfigPanel() {
 
 // ── Tab: Notes de frais ─────────────────────────────────────────
 
-function NotesDeFraisTab({ isDemoMode, selectedSociete, profile }) {
+function NotesDeFraisTab({ isDemoMode, profile }) {
   const [notes, setNotes] = useState([])
   const [loading, setLoading] = useState(true)
   const [selected, setSelected] = useState([])
@@ -1037,11 +1037,6 @@ export default function WorkflowsPage() {
           <h1>Workflows d'approbation</h1>
           <p style={{ color: 'var(--text-muted)', fontSize: '.9rem', marginTop: '.25rem' }}>
             Gestion des circuits de validation
-            {selectedSociete && (
-              <span style={{ marginLeft: '.5rem', padding: '.1rem .5rem', background: 'var(--primary-light)', color: 'var(--primary)', borderRadius: 4, fontSize: '.8rem', fontWeight: 500 }}>
-                {selectedSociete.name}
-              </span>
-            )}
           </p>
         </div>
         <button
@@ -1095,7 +1090,7 @@ export default function WorkflowsPage() {
 
       {/* Tab Content */}
       {activeTab === 'notes_de_frais' && (
-        <NotesDeFraisTab isDemoMode={isDemoMode} selectedSociete={selectedSociete} profile={profile} />
+        <NotesDeFraisTab isDemoMode={isDemoMode} profile={profile} />
       )}
       {activeTab === 'conges' && (
         <CongesTab isDemoMode={isDemoMode} profile={profile} />

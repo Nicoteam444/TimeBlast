@@ -150,7 +150,7 @@ export default function SaisieEcriturePage() {
     // Créer l'en-tête
     const { data: entry, error: entryErr } = await supabase
       .from('journal_entries').insert({
-        societe_id: selectedSociete.id,
+        societe_id: null,
         date,
         piece_ref: pieceRef || null,
         journal_code: journal,

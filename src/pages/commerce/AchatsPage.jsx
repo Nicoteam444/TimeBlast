@@ -188,11 +188,6 @@ export default function AchatsPage() {
           <h1>Achats</h1>
           <p>
             {filtered.length} commande{filtered.length > 1 ? 's' : ''}
-            {selectedSociete && (
-              <span style={{ marginLeft: '.5rem', padding: '.1rem .5rem', background: 'var(--primary-light)', color: 'var(--primary)', borderRadius: 4, fontSize: '.8rem', fontWeight: 500 }}>
-                {selectedSociete.name}
-              </span>
-            )}
           </p>
         </div>
         <button className="btn-primary" onClick={openCreate}>+ Nouvel achat</button>

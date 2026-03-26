@@ -179,7 +179,7 @@ export default function FacturesFournisseursPage() {
       <div className="admin-page-header" style={{ marginBottom: '1rem', flexShrink: 0 }}>
         <div>
           <h1>Achats</h1>
-          <p>{factures.length} facture{factures.length !== 1 ? 's' : ''}{selectedSociete ? ` · ${selectedSociete.name}` : ''}</p>
+          <p>{factures.length} facture{factures.length !== 1 ? 's' : ''}</p>
         </div>
         <button className="btn-primary">+ Importer une facture</button>
       </div>

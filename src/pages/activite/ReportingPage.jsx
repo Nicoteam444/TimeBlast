@@ -170,7 +170,7 @@ export default function ReportingPage() {
 
   async function loadAll() {
     setLoading(true)
-    const sid = selectedSociete.id
+    const sid = null
 
     const [
       { data: saisiesData },
@@ -399,13 +399,7 @@ export default function ReportingPage() {
   }
 
   // ── Render ────────────────────────────────────────────────────
-  if (!selectedSociete) {
-    return (
-      <div className="page-content">
-        <div className="empty-state">Sélectionnez une société pour afficher le reporting.</div>
-      </div>
-    )
-  }
+  
 
   if (loading) {
     return (
@@ -429,11 +423,6 @@ export default function ReportingPage() {
       {/* Header */}
       <div className="page-header">
         <h1>Reporting</h1>
-        {selectedSociete && (
-          <span style={{ fontSize: '.85rem', color: 'var(--text-muted)', marginLeft: '.5rem' }}>
-            — {selectedSociete.name}
-          </span>
-        )}
       </div>
 
       {noData && (

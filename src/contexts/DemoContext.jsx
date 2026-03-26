@@ -10,8 +10,6 @@ export function DemoProvider({ children }) {
   )
 }
 
-// isDemoMode est vrai quand la société sélectionnée est "SRA TEST"
 export function useDemo() {
-  const isDemoMode = selectedSociete?.name === 'SRA TEST'
-  return { isDemoMode, setIsDemoMode: () => {} }
+  return { isDemoMode: false, setIsDemoMode: () => {} }
 }

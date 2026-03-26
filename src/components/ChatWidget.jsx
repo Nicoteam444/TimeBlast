@@ -181,7 +181,7 @@ export default function ChatWidget() {
     setHistory(prev => {
       const existing = prev.filter(c => c.id !== convId)
       const updated = [
-        { id: convId, title, messages, date: new Date().toISOString(), societe: selectedSociete?.name },
+        { id: convId, title, messages, date: new Date().toISOString() },
         ...existing,
       ].slice(0, 20)
       saveHistory(updated, profile?.id)
@@ -281,7 +281,7 @@ export default function ChatWidget() {
 
     try {
       const systemPrompt = ctx
-        ? buildSystemPrompt(selectedSociete, ctx)
+        ? buildSystemPrompt(null, ctx)
         : `Tu es un assistant TimeBlast. Réponds en français.`
 
       abortRef.current = new AbortController()
@@ -387,9 +387,6 @@ export default function ChatWidget() {
               <span className="chat-panel-icon">👾</span>
               <div>
                 <span className="chat-panel-name">Assistant IA</span>
-                {selectedSociete && (
-                  <span className="chat-panel-societe">{selectedSociete.name}</span>
-                )}
               </div>
             </div>
             <div className="chat-panel-actions">
@@ -450,7 +447,7 @@ export default function ChatWidget() {
             {!ctxLoading && messages.length === 0 && (
               <div className="chat-welcome">
                 <p>Bonjour{profile?.full_name ? ` ${profile.full_name.split(' ')[0]}` : ''} 👋</p>
-                <p>Je suis votre assistant IA. Posez-moi des questions sur vos données{selectedSociete ? ` pour ${selectedSociete.name}` : ''} !</p>
+                <p>Je suis votre assistant IA. Posez-moi des questions sur vos données !</p>
                 <div className="chat-suggestions">
                   {[
                     'Combien de clients ?',

@@ -208,11 +208,6 @@ CREATE POLICY "eval_all" ON competence_evaluations FOR ALL
           <h1>Compétences</h1>
           <p style={{ color: 'var(--text-muted)', fontSize: '.875rem' }}>
             Matrice de compétences de l'équipe
-            {selectedSociete && (
-              <span style={{ marginLeft: '.5rem', padding: '.1rem .5rem', background: 'var(--primary-light)', color: 'var(--primary)', borderRadius: 4, fontSize: '.8rem', fontWeight: 500 }}>
-                {selectedSociete.name}
-              </span>
-            )}
           </p>
         </div>
         <button className="btn-primary" onClick={() => { setEditingComp(null); setCompForm({ nom: '', categorie: 'Technique' }); setShowCompModal(true) }}>

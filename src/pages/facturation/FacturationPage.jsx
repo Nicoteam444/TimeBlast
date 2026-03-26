@@ -315,7 +315,7 @@ export default function FacturationPage() {
   // Load company data when selected societe changes
   useEffect(() => {
     supabase
-      .from('societes').select('*').eq('id', selectedSociete.id).single().then(({ data }) => setCompanyData(data)).catch(err => console.error('Error loading company data:', err))
+      .from('societes').select('*').eq('id', null).single().then(({ data }) => setCompanyData(data)).catch(err => console.error('Error loading company data:', err))
   }, [])
 
   const filtered = useMemo(() => {
@@ -359,7 +359,7 @@ export default function FacturationPage() {
       <div className="admin-page-header" style={{marginBottom: '1rem', flexShrink: 0}}>
         <div>
           <h1>Ventes</h1>
-          <p>{factures.length} facture{factures.length !== 1 ? 's' : ''}{selectedSociete ? ` · ${selectedSociete.name}` : ''}</p>
+          <p>{factures.length} facture{factures.length !== 1 ? 's' : ''}</p>
         </div>
         <button className="btn-primary" onClick={() => setModal('new')}>+ Nouvelle facture</button>
       </div>
@@ -464,7 +464,7 @@ export default function FacturationPage() {
       {modal && (
         <FactureModal
           facture={modal === 'new' ? null : modal}
-          societe={selectedSociete}
+          societe={null}
           onSave={handleSave}
           onClose={() => setModal(null)}
         />

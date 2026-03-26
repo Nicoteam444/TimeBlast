@@ -1403,7 +1403,7 @@ export default function DashboardPage() {
             Bonjour, {prenom} 👋
           </h1>
           <p style={{ margin: '.25rem 0 0', color: 'rgba(255,255,255,.8)', fontSize: '.9rem' }}>
-            {todayLabel}{selectedSociete ? ` · ${selectedSociete.name}` : ''}
+            {todayLabel}
           </p>
           <p style={{ margin: '.35rem 0 0', fontSize: '.85rem', color: 'rgba(255,255,255,.7)' }}>
             {headerSubtitle}

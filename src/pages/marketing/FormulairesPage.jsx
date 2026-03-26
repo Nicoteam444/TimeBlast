@@ -129,7 +129,7 @@ CREATE POLICY "formulaires_all" ON formulaires FOR ALL
       <div className="admin-page-header">
         <div>
           <h1>📝 Formulaires</h1>
-          <p>{formulaires.length} formulaire{formulaires.length !== 1 ? 's' : ''}{selectedSociete ? ` · ${selectedSociete.name}` : ''}</p>
+          <p>{formulaires.length} formulaire{formulaires.length !== 1 ? 's' : ''}</p>
         </div>
         <button className="btn-primary" onClick={() => setModal({ champs: [{ id: Date.now(), label: 'Nom', type: 'text', required: true }, { id: Date.now() + 1, label: 'Email', type: 'email', required: true }, { id: Date.now() + 2, label: 'Téléphone', type: 'tel', required: false }, { id: Date.now() + 3, label: 'Message', type: 'textarea', required: false }] })}>+ Nouveau formulaire</button>
       </div>

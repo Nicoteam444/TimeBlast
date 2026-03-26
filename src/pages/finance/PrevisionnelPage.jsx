@@ -259,11 +259,6 @@ export default function PrevisionnelPage() {
           <h1>Trésorerie & Prévisionnel</h1>
           <p style={{ color: 'var(--text-muted)', fontSize: '.875rem' }}>
             Projection de trésorerie sur {period} mois
-            {selectedSociete && (
-              <span style={{ marginLeft: '.5rem', padding: '.1rem .5rem', background: 'var(--primary-light)', color: 'var(--primary)', borderRadius: 4, fontSize: '.8rem', fontWeight: 500 }}>
-                {selectedSociete.name}
-              </span>
-            )}
           </p>
         </div>
       </div>

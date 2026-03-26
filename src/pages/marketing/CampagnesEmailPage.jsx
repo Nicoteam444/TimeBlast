@@ -503,7 +503,7 @@ CREATE POLICY "Users can manage campagnes_email"
       <div className="admin-page-header" style={{ marginBottom: '1rem', flexShrink: 0 }}>
         <div>
           <h1>Campagnes Email</h1>
-          <p>{campagnes.length} campagne{campagnes.length !== 1 ? 's' : ''}{selectedSociete ? ` \u00b7 ${selectedSociete.name}` : ''}</p>
+          <p>{campagnes.length} campagne{campagnes.length !== 1 ? 's' : ''}</p>
         </div>
         <button className="btn-primary" onClick={() => setModal('new')}>+ Nouvelle campagne</button>
       </div>
@@ -621,7 +621,7 @@ CREATE POLICY "Users can manage campagnes_email"
       {modal && (
         <CampagneModal
           campagne={modal === 'new' ? null : modal}
-          societe={selectedSociete}
+          societe={null}
           contacts={contacts}
           onSave={handleSave}
           onClose={() => setModal(null)}

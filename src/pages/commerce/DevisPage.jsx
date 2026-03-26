@@ -445,7 +445,7 @@ CREATE POLICY "Users can manage devis"
       <div className="admin-page-header" style={{ marginBottom: '1rem', flexShrink: 0 }}>
         <div>
           <h1>Devis</h1>
-          <p>{devisList.length} devis{devisList.length !== 1 ? '' : ''}{selectedSociete ? ` \u00b7 ${selectedSociete.name}` : ''}</p>
+          <p>{devisList.length} devis{devisList.length !== 1 ? '' : ''}</p>
         </div>
         <button className="btn-primary" onClick={() => setModal('new')}>+ Nouveau devis</button>
       </div>
@@ -559,7 +559,7 @@ CREATE POLICY "Users can manage devis"
       {modal && (
         <DevisModal
           devis={modal === 'new' ? null : modal}
-          societe={selectedSociete}
+          societe={null}
           clients={clients}
           transactions={transactions}
           onSave={handleSave}

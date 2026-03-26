@@ -253,10 +253,7 @@ export default function TopBar() {
     ? profile.full_name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2)
     : '?'
 
-  // Initiales de la société (2 premières lettres des mots)
-  const societeInitials = selectedSociete?.name
-    ? selectedSociete.name.split(/\s+/).map(w => w[0]).join('').toUpperCase().slice(0, 2)
-    : '?'
+  const societeInitials = ''
 
   return (
     <header className="topbar">
@@ -339,11 +336,6 @@ export default function TopBar() {
               <div>
                 <div style={{ padding: '.75rem 1rem', borderBottom: '1px solid var(--border, #e2e8f0)', fontWeight: 700, fontSize: '.85rem', color: 'var(--text)' }}>
                   Création rapide
-                  {selectedSociete && (
-                    <span style={{ display: 'block', fontSize: '.7rem', fontWeight: 400, color: 'var(--text-muted)', marginTop: 2 }}>
-                      dans {selectedSociete.name}
-                    </span>
-                  )}
                 </div>
                 {QUICK_ADD_ITEMS.map(item => (
                   <button

@@ -151,11 +151,6 @@ export default function ContactsPage() {
           <p>
             {sortedData.length} contact{sortedData.length > 1 ? 's' : ''}
             {search || filterEntreprise || filterStatut ? ` sur ${contacts.length}` : ''}
-            {selectedSociete && (
-              <span style={{ marginLeft: '.5rem', padding: '.1rem .5rem', background: 'var(--primary-light, #eef2ff)', color: 'var(--primary)', borderRadius: 4, fontSize: '.8rem', fontWeight: 500 }}>
-                {selectedSociete.name}
-              </span>
-            )}
           </p>
         </div>
         <button className="btn-primary" onClick={openCreate}>+ Nouveau contact</button>
