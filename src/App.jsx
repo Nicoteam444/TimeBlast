@@ -78,6 +78,7 @@ const CampagnesPage = lazy(() => import('./pages/marketing/CampagnesPage'))
 const DocumentsArchivePage = lazy(() => import('./pages/documents/DocumentsArchivePage'))
 const TaskDetailPage = lazy(() => import('./pages/temps/TaskDetailPage'))
 const InfoPage = lazy(() => import('./pages/InfoPage'))
+const ProfilePage = lazy(() => import('./pages/ProfilePage'))
 
 // Spinner global pour lazy loading
 function LazySpinner() {
@@ -324,8 +325,11 @@ function AppRoutes() {
       <Route path="/parametres" element={
         <ProtectedRoute roles={['admin']}><Layout><ParametresPage /></Layout></ProtectedRoute>
       } />
-      <Route path="/info" element={
+      <Route path="/infos" element={
         <ProtectedRoute><Layout><InfoPage /></Layout></ProtectedRoute>
+      } />
+      <Route path="/profil" element={
+        <ProtectedRoute><Layout><ProfilePage /></Layout></ProtectedRoute>
       } />
 
       {/* Fiche client */}

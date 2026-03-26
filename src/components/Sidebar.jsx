@@ -112,13 +112,7 @@ const SECTIONS = [
     items: []},
 ]
 
-const INFO_SECTION = {
-  id: 'info',
-  icon: '💡',
-  label: 'À propos',
-  items: [
-    { to: '/info',  icon: '💡', label: 'À propos' },
-  ]}
+// INFO_SECTION supprimé — À propos est maintenant sous Administration
 
 const ADMIN_SECTION = {
   id: 'admin',
@@ -136,6 +130,7 @@ const ADMIN_SECTION = {
     { to: '/admin/historique',   icon: '👁', label: 'Historique',            roles: ['admin'], superAdminOnly: true },
     { to: '/admin/analytics',    icon: '📊', label: 'Analytics',         roles: ['admin', 'manager'] },
     { to: '/parametres',         icon: '🔧', label: 'Paramètres',        roles: ['admin'] },
+    { to: '/infos',              icon: '💡', label: 'À propos' },
   ]}
 
 export default function Sidebar() {
@@ -170,7 +165,7 @@ export default function Sidebar() {
   }
 
   // Build favorites items from all sections + dynamic pages
-  const allItems = [...SECTIONS.flatMap(s => s.items), ...INFO_SECTION.items, ...ADMIN_SECTION.items]
+  const allItems = [...SECTIONS.flatMap(s => s.items), ...ADMIN_SECTION.items]
   const ROUTE_LABELS = {
     crm: 'CRM', commerce: 'Commerce', activite: 'Activité', finance: 'Finance',
     gestion: 'Gestion', equipe: 'Équipe', admin: 'Admin',
@@ -296,21 +291,6 @@ export default function Sidebar() {
 
         {/* ── Info + Admin en bas ── */}
         <div className="sidebar-bottom">
-          {/* Information — navigation directe (1 seul item) */}
-          {(() => {
-            const isInfoActive = location.pathname.startsWith('/info')
-            return (
-              <div
-                className={`rail-item ${isInfoActive ? 'rail-item--active' : ''}`}
-                onClick={() => navigate('/info')}
-                style={{ cursor: 'pointer' }}
-              >
-                <span className="rail-item-icon">{INFO_SECTION.icon}</span>
-                {sidebarOpen && <span className="rail-item-label">{INFO_SECTION.label}</span>}
-                {isInfoActive && <span className="rail-item-dot" />}
-              </div>
-            )
-          })()}
           {/* Administration — admin seulement */}
           {userRole === 'admin' && (() => {
             const adminPaths = ADMIN_SECTION.items.map(i => i.to)

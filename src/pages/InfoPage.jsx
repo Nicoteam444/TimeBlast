@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useLayoutEffect } from 'react'
 
 // ══════════════════════════════════════════════════════════════════════════════
 // ONGLET 1 — HISTOIRE
@@ -344,6 +344,11 @@ function RoadmapTab() {
 
 export default function InfoPage() {
   const [tab, setTab] = useState('histoire')
+
+  useLayoutEffect(() => {
+    window.scrollTo(0, 0)
+    document.querySelector('.app-content')?.scrollTo(0, 0)
+  }, [])
 
   return (
     <div className="admin-page">

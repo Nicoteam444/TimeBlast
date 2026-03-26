@@ -581,8 +581,8 @@ export default function TopBar() {
                 </div>
               </div>
               <hr className="topbar-dropdown-divider" />
-              <button className="topbar-dropdown-item" onClick={() => { navigate('/parametres'); setUserMenuOpen(false) }}>
-                Mon profil
+              <button className="topbar-dropdown-item" onClick={() => { navigate('/profil'); setUserMenuOpen(false) }}>
+                👤 Mon profil
               </button>
               <EnvSwitcher />
               <hr className="topbar-dropdown-divider" />

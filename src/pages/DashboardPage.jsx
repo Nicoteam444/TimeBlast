@@ -1202,7 +1202,7 @@ export default function DashboardPage() {
             { icon: '🧾', label: 'Nouvelle facture', path: '/finance/facturation' },
             { icon: '👤', label: 'Nouveau contact', path: '/crm/contacts' },
             { icon: '📁', label: 'Nouveau projet', path: '/activite/projets' },
-            { icon: 'ℹ️', label: 'Info TimeBlast', path: '/info' },
+            { icon: 'ℹ️', label: 'A propos', path: '/infos' },
           ].map((s, i) => (
             <button key={i} onClick={() => navigate(s.path)} style={{
               display: 'flex', alignItems: 'center', gap: '.5rem',
