@@ -35,7 +35,7 @@ export default function TopBar() {
   const { societes, selectedSociete, setSelectedSociete } = useSociete()
   const { favorites, favLabels, updateFavLabel } = useFavorites()
   const [editingFav, setEditingFav] = useState(null)
-  const [editFavVal, setEditFavVal] = useState('')
+  const favClickTimer = useRef(null)
   const navigate = useNavigate()
   const [userMenuOpen, setUserMenuOpen]   = useState(false)
   const [showSocietes, setShowSocietes]  = useState(false)
@@ -509,8 +509,11 @@ export default function TopBar() {
               )
             }
             return (
-              <button key={path} onClick={() => navigate(path)}
-                onDoubleClick={e => { e.preventDefault(); setEditingFav(path); setEditFavVal(favLabels?.[path] || path.split('/').pop() || '') }}
+              <button key={path}
+                onClick={() => {
+                  if (favClickTimer.current) { clearTimeout(favClickTimer.current); favClickTimer.current = null; setEditingFav(path); return }
+                  favClickTimer.current = setTimeout(() => { favClickTimer.current = null; navigate(path) }, 250)
+                }}
                 title={`${favLabels?.[path] || path}\nDouble-clic pour renommer`}
                 style={{
                   display: 'flex', alignItems: 'center', gap: 4, padding: '3px 10px',
