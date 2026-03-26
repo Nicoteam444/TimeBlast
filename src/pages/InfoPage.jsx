@@ -17,25 +17,49 @@ function useGitHubStats() {
   useEffect(() => {
     async function fetchStats() {
       try {
-        // Nombre de commits via GitHub API
-        const res = await fetch('https://api.github.com/repos/Nicoteam444/TimeBlast/commits?per_page=1')
-        if (res.ok) {
-          const link = res.headers.get('link') || ''
+        const results = { days: '6', commits: '...', pages: '...', tables: '...' }
+
+        // Jours depuis le premier commit
+        const firstCommitDate = new Date('2026-03-21')
+        const now = new Date()
+        results.days = String(Math.ceil((now - firstCommitDate) / 86400000))
+
+        // Commits via GitHub API
+        const commitRes = await fetch('https://api.github.com/repos/Nicoteam444/TimeBlast/commits?per_page=1')
+        if (commitRes.ok) {
+          const link = commitRes.headers.get('link') || ''
           const match = link.match(/page=(\d+)>; rel="last"/)
-          const commitCount = match ? match[1] : null
-
-          // Nombre de jours depuis le premier commit
-          const firstCommitDate = new Date('2026-03-21')
-          const now = new Date()
-          const days = Math.ceil((now - firstCommitDate) / 86400000)
-
-          setStats([
-            { key: 'days', value: String(days), label: 'Jours de dev', icon: '⚡' },
-            { key: 'commits', value: commitCount || '230+', label: 'Commits', icon: '📦' },
-            { key: 'pages', value: '77', label: 'Pages', icon: '📄' },
-            { key: 'tables', value: '25', label: 'Tables BD', icon: '🗄️' },
-          ])
+          if (match) results.commits = match[1]
         }
+
+        // Pages JSX via GitHub API (tree recursive)
+        const treeRes = await fetch('https://api.github.com/repos/Nicoteam444/TimeBlast/git/trees/main?recursive=1')
+        if (treeRes.ok) {
+          const tree = await treeRes.json()
+          const pages = (tree.tree || []).filter(f => f.path.startsWith('src/pages/') && f.path.endsWith('.jsx'))
+          results.pages = String(pages.length)
+        }
+
+        // Tables via Supabase
+        const { supabase } = await import('../lib/supabase')
+        const { data: tables } = await supabase.rpc('get_table_count').catch(() => ({ data: null }))
+        if (tables) {
+          results.tables = String(tables)
+        } else {
+          // Fallback: count tables from information_schema
+          const { data: tableList } = await supabase
+            .from('pg_tables_public')
+            .select('tablename')
+            .catch(() => ({ data: null }))
+          if (tableList) results.tables = String(tableList.length)
+        }
+
+        setStats([
+          { key: 'days', value: results.days, label: 'Jours de dev', icon: '⚡' },
+          { key: 'commits', value: results.commits, label: 'Commits', icon: '📦' },
+          { key: 'pages', value: results.pages, label: 'Pages', icon: '📄' },
+          { key: 'tables', value: results.tables, label: 'Tables BD', icon: '🗄️' },
+        ])
       } catch {
         // Silently fail — keep static stats
       }
