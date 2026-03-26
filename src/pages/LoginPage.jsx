@@ -234,7 +234,7 @@ function MultipriseVisual() {
 
 // ── Page principale ──────────────────────────────────────────────────────────
 export default function LoginPage() {
-  const { signIn } = useAuth()
+  const { signIn, signInWithMicrosoft } = useAuth()
   const navigate = useNavigate()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -283,6 +283,17 @@ export default function LoginPage() {
       saveRecentAccount(email)
       navigate('/')
     }
+  }
+
+  async function handleMicrosoftLogin() {
+    setError(null)
+    setLoading(true)
+    const { error } = await signInWithMicrosoft()
+    if (error) {
+      setError(error.message)
+      setLoading(false)
+    }
+    // Si pas d'erreur, Supabase redirige vers Microsoft
   }
 
   function selectRecentAccount(accountEmail) {
@@ -695,6 +706,31 @@ export default function LoginPage() {
               {error && <p className="error">{error}</p>}
               <button type="submit" className="landing-btn-primary" style={{ width: '100%', marginTop: '.75rem' }} disabled={loading}>
                 {loading ? 'Connexion...' : 'Se connecter →'}
+              </button>
+
+              <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', margin: '1rem 0' }}>
+                <div style={{ flex: 1, height: 1, background: '#e2e8f0' }} />
+                <span style={{ color: '#94a3b8', fontSize: '.8rem' }}>ou</span>
+                <div style={{ flex: 1, height: 1, background: '#e2e8f0' }} />
+              </div>
+
+              <button type="button" onClick={handleMicrosoftLogin} disabled={loading}
+                style={{
+                  width: '100%', padding: '.75rem', borderRadius: 8, cursor: 'pointer',
+                  border: '1px solid #e2e8f0', background: '#fff', fontSize: '.9rem',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '.5rem',
+                  color: '#1e293b', fontWeight: 600, transition: 'all .2s',
+                }}
+                onMouseEnter={e => { e.target.style.background = '#f1f5f9'; e.target.style.borderColor = '#0078d4' }}
+                onMouseLeave={e => { e.target.style.background = '#fff'; e.target.style.borderColor = '#e2e8f0' }}
+              >
+                <svg width="20" height="20" viewBox="0 0 21 21">
+                  <rect x="1" y="1" width="9" height="9" fill="#f25022"/>
+                  <rect x="11" y="1" width="9" height="9" fill="#7fba00"/>
+                  <rect x="1" y="11" width="9" height="9" fill="#00a4ef"/>
+                  <rect x="11" y="11" width="9" height="9" fill="#ffb900"/>
+                </svg>
+                Se connecter avec Microsoft
               </button>
             </form>
           </div>
