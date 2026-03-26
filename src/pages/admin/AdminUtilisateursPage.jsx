@@ -583,9 +583,11 @@ export default function AdminUtilisateursPage() {
                 <SortableHeader label="Prénom" field="_prenom" sortKey={sortKey} sortDir={sortDir} onSort={requestSort} />
                 <SortableHeader label="Nom" field="_nom" sortKey={sortKey} sortDir={sortDir} onSort={requestSort} />
                 <SortableHeader label="Email" field="email" sortKey={sortKey} sortDir={sortDir} onSort={requestSort} />
+                <SortableHeader label="Poste" field="poste" sortKey={sortKey} sortDir={sortDir} onSort={requestSort} />
                 <SortableHeader label="Société / Groupe" field="societe_id" sortKey={sortKey} sortDir={sortDir} onSort={requestSort} />
                 <SortableHeader label="Rôle / Statut" field="role" sortKey={sortKey} sortDir={sortDir} onSort={requestSort} />
                 <SortableHeader label="Dernière connexion" field="last_sign_in_at" sortKey={sortKey} sortDir={sortDir} onSort={requestSort} />
+                <SortableHeader label="Inscription" field="created_at" sortKey={sortKey} sortDir={sortDir} onSort={requestSort} />
               </tr>
             </thead>
             <tbody>
@@ -611,7 +613,9 @@ export default function AdminUtilisateursPage() {
                     </td>
                     <td>
                       <span style={{ fontSize: '.85rem', color: '#2563eb' }}>{user.email || '—'}</span>
-                      {user.poste && <div style={{ fontSize: '.75rem', color: '#6366f1' }}>💼 {user.poste}</div>}
+                    </td>
+                    <td>
+                      <span style={{ fontSize: '.82rem', color: '#475569' }}>{user.poste || '—'}</span>
                     </td>
                     <td>
                       <div style={{ display: 'flex', flexDirection: 'column', gap: '.2rem' }}>
