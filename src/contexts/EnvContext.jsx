@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, useState } from 'react'
 import { useAuth } from './AuthContext'
-import { supabase } from '../lib/supabase'
+import { supabase, switchSupabaseClient } from '../lib/supabase'
 
 const EnvContext = createContext(null)
 
@@ -18,7 +18,7 @@ export function EnvProvider({ children }) {
   async function loadEnvironments() {
     try {
       const { data, error } = await supabase
-        .from('user_environments').select('role, environments(id, env_code, name, description, supabase_url, is_production, is_active)').eq('user_id', user.id)
+        .from('user_environments').select('role, environments(id, env_code, name, description, supabase_url, supabase_anon_key, is_production, is_active)').eq('user_id', user.id)
 
       if (error) throw error
 
@@ -39,29 +39,28 @@ export function EnvProvider({ children }) {
 
   function setCurrentEnvByCode(code) {
     const env = environments.find(e => e.env_code === code)
-    if (env) setCurrentEnv(env)
+    if (env) {
+      setCurrentEnv(env)
+      // Switcher le client Supabase vers la bonne base
+      if (env.supabase_url && env.supabase_anon_key) {
+        switchSupabaseClient(env.supabase_url, env.supabase_anon_key)
+      }
+    }
   }
 
   function switchEnvironment(env) {
     if (!env || env.id === currentEnv?.id) return
     const currentPath = window.location.pathname
     const pathWithoutEnv = currentPath.replace(/^\/\d{7}/, '') || '/'
-    const newPath = `/${env.env_code}${pathWithoutEnv}`
 
-    // Si même base Supabase → navigation locale
-    if (env.supabase_url === currentEnv?.supabase_url) {
-      window.location.href = newPath
-      return
+    // Switcher le client Supabase
+    if (env.supabase_url && env.supabase_anon_key) {
+      switchSupabaseClient(env.supabase_url, env.supabase_anon_key)
     }
 
-    // Si base différente → redirection vers l'autre domaine Vercel
-    // Mapper supabase_url → domaine Vercel
-    const ENV_DOMAINS = {
-      'https://ldeoqrafauwdgrpbyfyx.supabase.co': 'https://timeblast.ai',
-      'https://cozqovnmqvttmymozwto.supabase.co': 'https://timeblast-prod.vercel.app',
-    }
-    const targetDomain = ENV_DOMAINS[env.supabase_url] || window.location.origin
-    window.location.href = `${targetDomain}${newPath}`
+    setCurrentEnv(env)
+    // Changer l'URL (reload pour réinitialiser tous les états)
+    window.location.href = `/${env.env_code}${pathWithoutEnv}`
   }
 
   return (
