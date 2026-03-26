@@ -483,15 +483,18 @@ export default function TopBar() {
             const label = favLabels?.[path]?.slice(0, 15) || path.split('/').pop() || 'Page'
             if (editingFav === path) {
               return (
-                <input key={path} autoFocus value={editFavVal}
-                  onChange={e => setEditFavVal(e.target.value)}
-                  onBlur={() => { if (editFavVal.trim()) updateFavLabel(path, editFavVal.trim()); setEditingFav(null) }}
-                  onKeyDown={e => { if (e.key === 'Enter') { if (editFavVal.trim()) updateFavLabel(path, editFavVal.trim()); setEditingFav(null) }; if (e.key === 'Escape') setEditingFav(null) }}
-                  style={{
-                    width: 90, padding: '2px 6px', borderRadius: 4, border: '1px solid rgba(255,255,255,0.5)',
-                    background: 'rgba(255,255,255,0.2)', color: '#fff', fontSize: '.72rem', fontWeight: 500, outline: 'none',
-                  }}
-                />
+                <form key={path} onSubmit={e => { e.preventDefault(); if (editFavVal.trim()) updateFavLabel(path, editFavVal.trim()); setEditingFav(null) }}
+                  style={{ display: 'inline-flex' }}>
+                  <input autoFocus value={editFavVal}
+                    onChange={e => setEditFavVal(e.target.value)}
+                    onBlur={() => { setTimeout(() => { if (editFavVal.trim()) updateFavLabel(path, editFavVal.trim()); setEditingFav(null) }, 100) }}
+                    onKeyDown={e => { if (e.key === 'Escape') { e.preventDefault(); setEditingFav(null) } }}
+                    style={{
+                      width: 100, padding: '2px 8px', borderRadius: 4, border: '1px solid rgba(255,255,255,0.5)',
+                      background: 'rgba(255,255,255,0.25)', color: '#fff', fontSize: '.72rem', fontWeight: 500, outline: 'none',
+                    }}
+                  />
+                </form>
               )
             }
             return (
