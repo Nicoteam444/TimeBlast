@@ -135,6 +135,7 @@ const ADMIN_SECTION = {
     { to: '/admin/historique',   icon: '👁', label: 'Historique',            roles: ['admin'], superAdminOnly: true },
     { to: '/admin/analytics',    icon: '📊', label: 'Analytics',         roles: ['admin', 'manager'] },
     { to: '/parametres',         icon: '🔧', label: 'Paramètres',        roles: ['admin'] },
+    { to: '/admin/backoffice',   icon: '🛡', label: 'Backoffice',        roles: ['admin'], superAdminOnly: true },
   ]}
 
 export default function Sidebar() {

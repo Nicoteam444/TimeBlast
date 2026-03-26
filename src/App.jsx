@@ -79,6 +79,7 @@ const CategoryLandingPage = lazy(() => import('./pages/CategoryLandingPage'))
 const CampagnesPage = lazy(() => import('./pages/marketing/CampagnesPage'))
 const DocumentsArchivePage = lazy(() => import('./pages/documents/DocumentsArchivePage'))
 const TaskDetailPage = lazy(() => import('./pages/temps/TaskDetailPage'))
+const BackofficePage = lazy(() => import('./pages/admin/BackofficePage'))
 const InfoPage = lazy(() => import('./pages/InfoPage'))
 const ProfilePage = lazy(() => import('./pages/ProfilePage'))
 
@@ -346,6 +347,9 @@ function AppRoutes() {
       } />
       <Route path="admin/analytics" element={
         <ProtectedRoute roles={['admin','manager']}><Layout><AnalyticsPage /></Layout></ProtectedRoute>
+      } />
+      <Route path="admin/backoffice" element={
+        <ProtectedRoute roles={['admin']} superAdminOnly><Layout><BackofficePage /></Layout></ProtectedRoute>
       } />
       <Route path="parametres" element={
         <ProtectedRoute roles={['admin']}><Layout><ParametresPage /></Layout></ProtectedRoute>
