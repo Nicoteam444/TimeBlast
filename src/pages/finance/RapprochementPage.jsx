@@ -80,8 +80,7 @@ function parseCSV(text) {
       date,
       libelle,
       montant,
-      matchId: null,
-    })
+      matchId: null})
   }
   return rows
 }
@@ -327,8 +326,7 @@ export default function RapprochementPage() {
           border: '2px dashed var(--border)',
           borderRadius: 12,
           padding: '2.5rem',
-          textAlign: 'center',
-        }}>
+          textAlign: 'center'}}>
           <div style={{ fontSize: '2.5rem', marginBottom: '.75rem' }}>🏦</div>
           <h3 style={{ marginBottom: '.5rem', fontWeight: 600 }}>Importer un releve bancaire</h3>
           <p style={{ color: 'var(--text-muted)', fontSize: '.875rem', marginBottom: '1.25rem' }}>
@@ -362,8 +360,7 @@ export default function RapprochementPage() {
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'space-between',
-                gap: '.5rem',
-              }}>
+                gap: '.5rem'}}>
                 <strong style={{ fontSize: '.9rem' }}>Releve bancaire ({bankTransactions.length})</strong>
                 <label className="btn-secondary" style={{ cursor: 'pointer', padding: '.2rem .6rem', fontSize: '.75rem' }}>
                   Re-importer
@@ -400,8 +397,7 @@ export default function RapprochementPage() {
                           style={{
                             cursor: isMatched ? 'default' : 'pointer',
                             background: isMatched ? '#dcfce7' : isSelected ? '#dbeafe' : 'transparent',
-                            opacity: isMatched ? 0.7 : 1,
-                          }}
+                            opacity: isMatched ? 0.7 : 1}}
                         >
                           <td style={{ fontSize: '.8rem', whiteSpace: 'nowrap' }}>{fmtDate(bt.date)}</td>
                           <td style={{ fontSize: '.8rem', maxWidth: 200, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{bt.libelle}</td>
@@ -410,8 +406,7 @@ export default function RapprochementPage() {
                             fontVariantNumeric: 'tabular-nums',
                             fontSize: '.8rem',
                             fontWeight: 600,
-                            color: bt.montant >= 0 ? '#16a34a' : '#dc2626',
-                          }}>{fmt(bt.montant)}</td>
+                            color: bt.montant >= 0 ? '#16a34a' : '#dc2626'}}>{fmt(bt.montant)}</td>
                         </tr>
                       )
                     })}
@@ -431,8 +426,7 @@ export default function RapprochementPage() {
                 borderBottom: '1px solid var(--border)',
                 display: 'flex',
                 alignItems: 'center',
-                justifyContent: 'space-between',
-              }}>
+                justifyContent: 'space-between'}}>
                 <strong style={{ fontSize: '.9rem' }}>Ecritures comptables ({accountingEntries.length})</strong>
               </div>
               <div style={{ padding: '.5rem .75rem', borderBottom: '1px solid var(--border)' }}>
@@ -466,8 +460,7 @@ export default function RapprochementPage() {
                           style={{
                             cursor: isMatched ? 'default' : 'pointer',
                             background: isMatched ? '#dcfce7' : isSelected ? '#dbeafe' : 'transparent',
-                            opacity: isMatched ? 0.7 : 1,
-                          }}
+                            opacity: isMatched ? 0.7 : 1}}
                         >
                           <td style={{ fontSize: '.8rem', whiteSpace: 'nowrap' }}>{fmtDate(ae.ecriture_date)}</td>
                           <td style={{ fontSize: '.8rem', maxWidth: 180, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{ae.libelle}</td>
@@ -477,8 +470,7 @@ export default function RapprochementPage() {
                             fontVariantNumeric: 'tabular-nums',
                             fontSize: '.8rem',
                             fontWeight: 600,
-                            color: ae.montant >= 0 ? '#16a34a' : '#dc2626',
-                          }}>{fmt(ae.montant)}</td>
+                            color: ae.montant >= 0 ? '#16a34a' : '#dc2626'}}>{fmt(ae.montant)}</td>
                         </tr>
                       )
                     })}
@@ -528,8 +520,7 @@ export default function RapprochementPage() {
                             <span style={{
                               padding: '.15rem .55rem', borderRadius: 12, fontSize: '.75rem', fontWeight: 600,
                               color: diff < 0.01 ? '#16a34a' : '#f59e0b',
-                              background: diff < 0.01 ? '#dcfce7' : '#fef3c7',
-                            }}>
+                              background: diff < 0.01 ? '#dcfce7' : '#fef3c7'}}>
                               {diff < 0.01 ? 'OK' : `Ecart ${fmt(diff)}`}
                             </span>
                           </td>
@@ -556,15 +547,13 @@ export default function RapprochementPage() {
             <div style={{
               display: 'grid',
               gridTemplateColumns: '1fr 1fr',
-              gap: '1rem',
-            }}>
+              gap: '1rem'}}>
               <div style={{
                 padding: '1rem',
                 background: bankTransactions.filter(bt => !matchedBankIds.has(bt.id)).length > 0 ? '#fff7ed' : '#f0fdf4',
                 border: '1px solid',
                 borderColor: bankTransactions.filter(bt => !matchedBankIds.has(bt.id)).length > 0 ? '#fed7aa' : '#bbf7d0',
-                borderRadius: 8,
-              }}>
+                borderRadius: 8}}>
                 <strong style={{ fontSize: '.85rem' }}>
                   Operations bancaires non rapprochees : {bankTransactions.filter(bt => !matchedBankIds.has(bt.id)).length}
                 </strong>
@@ -574,8 +563,7 @@ export default function RapprochementPage() {
                 background: accountingEntries.filter(ae => !matchedAcctIds.has(ae.id)).length > 0 ? '#fff7ed' : '#f0fdf4',
                 border: '1px solid',
                 borderColor: accountingEntries.filter(ae => !matchedAcctIds.has(ae.id)).length > 0 ? '#fed7aa' : '#bbf7d0',
-                borderRadius: 8,
-              }}>
+                borderRadius: 8}}>
                 <strong style={{ fontSize: '.85rem' }}>
                   Ecritures comptables non rapprochees : {accountingEntries.filter(ae => !matchedAcctIds.has(ae.id)).length}
                 </strong>

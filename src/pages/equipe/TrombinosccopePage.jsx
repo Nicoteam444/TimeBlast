@@ -1,7 +1,6 @@
 import { useState, useEffect, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { supabase } from '../../lib/supabase'
-import { useSociete } from '../../contexts/SocieteContext'
 import Spinner from '../../components/Spinner'
 
 function calcAnciennete(dateEmbauche) {
@@ -33,8 +32,7 @@ const POSTE_COLOR = {
   'Analyste':            '#f59e0b',
   'Commercial':          '#0ea5e9',
   'Comptable':           '#8b5cf6',
-  'Contrôleur':          '#8b5cf6',
-}
+  'Contrôleur':          '#8b5cf6'}
 
 function getColor(poste) {
   if (!poste) return '#64748b'
@@ -45,7 +43,6 @@ function getColor(poste) {
 }
 
 export default function TrombinosccopePage() {
-  const { selectedSociete } = useSociete()
   const navigate = useNavigate()
   const [equipe, setEquipe] = useState([])
   const [loading, setLoading] = useState(true)
@@ -55,12 +52,11 @@ export default function TrombinosccopePage() {
 
   useEffect(() => {
     fetchEquipe()
-  }, [selectedSociete?.id])
+  }, [])
 
   async function fetchEquipe() {
     setLoading(true)
     let q = supabase.from('equipe').select('*').order('nom')
-    if (selectedSociete?.id) q = q.eq('societe_id', selectedSociete.id)
     const { data } = await q
     setEquipe(data || [])
     setLoading(false)

@@ -1,7 +1,6 @@
 import { useState, useEffect, useMemo } from 'react'
 import { useAuth } from '../../contexts/AuthContext'
 import { useDemo } from '../../contexts/DemoContext'
-import { useSociete } from '../../contexts/SocieteContext'
 import { DEMO_NOTES_DE_FRAIS, DEMO_USERS } from '../../data/demoData'
 import { supabase } from '../../lib/supabase'
 import useSortableTable from '../../hooks/useSortableTable'
@@ -13,8 +12,7 @@ import Spinner from '../../components/Spinner'
 const WORKFLOW_TYPES = {
   notes_de_frais: { label: 'Notes de frais', icon: '💰', color: '#f59e0b' },
   conges:         { label: 'Conges / Absences', icon: '🏖', color: '#6366f1' },
-  temps:          { label: 'Saisie des temps', icon: '⏱', color: '#0ea5e9' },
-}
+  temps:          { label: 'Saisie des temps', icon: '⏱', color: '#0ea5e9' }}
 
 const WORKFLOW_STEPS = [
   { key: 'soumis',     label: 'Collaborateur',     desc: 'Soumission de la demande', icon: '👤', color: '#64748b' },
@@ -27,15 +25,13 @@ const STATUT_NDF = {
   soumis:    { label: 'Soumis',     color: '#f59e0b', bg: '#fffbeb' },
   valide:    { label: 'Valide',     color: '#22c55e', bg: '#f0fdf4' },
   refuse:    { label: 'Refuse',     color: '#ef4444', bg: '#fef2f2' },
-  rembourse: { label: 'Rembourse',  color: '#6366f1', bg: '#eef2ff' },
-}
+  rembourse: { label: 'Rembourse',  color: '#6366f1', bg: '#eef2ff' }}
 
 const ABSENCE_TYPES = {
   conge:   { label: 'Conge',   color: '#6366f1', bg: '#eef2ff' },
   RTT:     { label: 'RTT',     color: '#0ea5e9', bg: '#e0f2fe' },
   maladie: { label: 'Maladie', color: '#dc2626', bg: '#fef2f2' },
-  ferie:   { label: 'Ferie',   color: '#f59e0b', bg: '#fffbeb' },
-}
+  ferie:   { label: 'Ferie',   color: '#f59e0b', bg: '#fffbeb' }}
 
 const CATEGORIE_META = {
   transport:   { label: 'Transport',    icon: '🚗' },
@@ -43,8 +39,7 @@ const CATEGORIE_META = {
   repas:       { label: 'Repas',        icon: '🍽' },
   materiel:    { label: 'Materiel',     icon: '💻' },
   formation:   { label: 'Formation',    icon: '📚' },
-  autre:       { label: 'Autre',        icon: '📎' },
-}
+  autre:       { label: 'Autre',        icon: '📎' }}
 
 const STORAGE_KEY_WORKFLOWS = 'workflows_config'
 const STORAGE_KEY_ABSENCES = 'absences_data'
@@ -128,8 +123,7 @@ function StatusBadge({ statut, meta }) {
     <span style={{
       display: 'inline-flex', alignItems: 'center', padding: '.2rem .65rem', borderRadius: 20,
       fontSize: '.78rem', fontWeight: 700, background: cfg.bg, color: cfg.color,
-      border: `1px solid ${cfg.color}33`,
-    }}>
+      border: `1px solid ${cfg.color}33`}}>
       {cfg.label}
     </span>
   )
@@ -141,8 +135,7 @@ function UserCell({ name }) {
       <span style={{
         width: 30, height: 30, borderRadius: '50%', background: 'var(--primary)', color: 'white',
         display: 'flex', alignItems: 'center', justifyContent: 'center',
-        fontSize: '.65rem', fontWeight: 700, flexShrink: 0,
-      }}>
+        fontSize: '.65rem', fontWeight: 700, flexShrink: 0}}>
         {getInitials(name)}
       </span>
       <span style={{ fontWeight: 600, fontSize: '.85rem' }}>{name || '—'}</span>
@@ -154,8 +147,7 @@ function KpiCard({ label, value, color, icon }) {
   return (
     <div style={{
       background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 10,
-      padding: '.75rem 1.25rem', minWidth: 150, flex: '1 1 150px',
-    }}>
+      padding: '.75rem 1.25rem', minWidth: 150, flex: '1 1 150px'}}>
       <div style={{ display: 'flex', alignItems: 'center', gap: '.4rem' }}>
         {icon && <span style={{ fontSize: '1rem' }}>{icon}</span>}
         <span style={{ fontSize: '.75rem', color: 'var(--text-muted)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '.05em' }}>
@@ -189,14 +181,12 @@ function WorkflowChain({ currentStep }) {
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
                 fontSize: '.7rem', color: 'white', fontWeight: 700,
                 border: isCurrent ? '2px solid #f59e0b' : 'none',
-                boxShadow: isCurrent ? '0 0 0 3px #fef3c740' : 'none',
-              }}>
+                boxShadow: isCurrent ? '0 0 0 3px #fef3c740' : 'none'}}>
                 {isCompleted ? '✓' : step.icon}
               </div>
               <span style={{
                 fontSize: '.68rem', fontWeight: isCurrent ? 700 : 500, marginTop: '.3rem',
-                color: isUpcoming ? 'var(--text-muted)' : 'var(--text)', textAlign: 'center',
-              }}>
+                color: isUpcoming ? 'var(--text-muted)' : 'var(--text)', textAlign: 'center'}}>
                 {step.label}
               </span>
             </div>
@@ -216,8 +206,7 @@ function WorkflowConfigPanel() {
   const [configs, setConfigs] = useState(() => loadLocal(STORAGE_KEY_WORKFLOWS, {
     notes_de_frais: { enabled: true, steps: ['soumis', 'manager', 'validation'] },
     conges:         { enabled: true, steps: ['soumis', 'manager', 'validation'] },
-    temps:          { enabled: true, steps: ['soumis', 'manager', 'validation'] },
-  }))
+    temps:          { enabled: true, steps: ['soumis', 'manager', 'validation'] }}))
 
   function toggleWorkflow(type) {
     const updated = { ...configs, [type]: { ...configs[type], enabled: !configs[type].enabled } }
@@ -236,12 +225,10 @@ function WorkflowConfigPanel() {
           return (
             <div key={key} style={{
               background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 12,
-              padding: '1.25rem', position: 'relative', overflow: 'hidden',
-            }}>
+              padding: '1.25rem', position: 'relative', overflow: 'hidden'}}>
               <div style={{
                 position: 'absolute', top: 0, left: 0, right: 0, height: 3,
-                background: cfg.enabled ? wf.color : '#e2e8f0',
-              }} />
+                background: cfg.enabled ? wf.color : '#e2e8f0'}} />
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '.5rem' }}>
                   <span style={{ fontSize: '1.3rem' }}>{wf.icon}</span>
@@ -253,8 +240,7 @@ function WorkflowConfigPanel() {
                     padding: '.25rem .75rem', borderRadius: 20, border: 'none', cursor: 'pointer',
                     fontSize: '.75rem', fontWeight: 700,
                     background: cfg.enabled ? '#f0fdf4' : '#fef2f2',
-                    color: cfg.enabled ? '#22c55e' : '#ef4444',
-                  }}
+                    color: cfg.enabled ? '#22c55e' : '#ef4444'}}
                 >
                   {cfg.enabled ? 'Actif' : 'Inactif'}
                 </button>
@@ -264,13 +250,11 @@ function WorkflowConfigPanel() {
                   {WORKFLOW_STEPS.map((step, i) => (
                     <div key={step.key} style={{ display: 'flex', alignItems: 'center' }}>
                       <div style={{
-                        display: 'flex', flexDirection: 'column', alignItems: 'center', minWidth: 70,
-                      }}>
+                        display: 'flex', flexDirection: 'column', alignItems: 'center', minWidth: 70}}>
                         <div style={{
                           width: 32, height: 32, borderRadius: '50%', background: step.color + '22',
                           display: 'flex', alignItems: 'center', justifyContent: 'center',
-                          fontSize: '.85rem', border: `2px solid ${step.color}`,
-                        }}>
+                          fontSize: '.85rem', border: `2px solid ${step.color}`}}>
                           {step.icon}
                         </div>
                         <span style={{ fontSize: '.65rem', fontWeight: 600, marginTop: '.25rem', textAlign: 'center', color: 'var(--text-muted)' }}>
@@ -282,8 +266,7 @@ function WorkflowConfigPanel() {
                       </div>
                       {i < WORKFLOW_STEPS.length - 1 && (
                         <div style={{
-                          display: 'flex', alignItems: 'center', marginBottom: '2rem',
-                        }}>
+                          display: 'flex', alignItems: 'center', marginBottom: '2rem'}}>
                           <div style={{ width: 24, height: 2, background: '#e2e8f0' }} />
                           <span style={{ fontSize: '.7rem', color: 'var(--text-muted)' }}>→</span>
                           <div style={{ width: 24, height: 2, background: '#e2e8f0' }} />
@@ -313,7 +296,7 @@ function NotesDeFraisTab({ isDemoMode, selectedSociete, profile }) {
   const [comment, setComment] = useState('')
   const [historyId, setHistoryId] = useState(null)
 
-  useEffect(() => { fetchNotes() }, [isDemoMode, selectedSociete?.id])
+  useEffect(() => { fetchNotes() }, [isDemoMode])
 
   async function fetchNotes() {
     setLoading(true)
@@ -324,7 +307,6 @@ function NotesDeFraisTab({ isDemoMode, selectedSociete, profile }) {
       return
     }
     let q = supabase.from('notes_de_frais').select('*').eq('statut', 'soumis').order('date', { ascending: false })
-    if (selectedSociete?.id) q = q.eq('societe_id', selectedSociete.id)
     const { data } = await q
     setNotes(data || [])
     setLoading(false)
@@ -392,8 +374,7 @@ function NotesDeFraisTab({ isDemoMode, selectedSociete, profile }) {
       {selected.length > 0 && (
         <div style={{
           display: 'flex', alignItems: 'center', gap: '1rem', padding: '.75rem 1rem',
-          background: '#eff6ff', border: '1px solid #bfdbfe', borderRadius: 8, marginBottom: '1rem',
-        }}>
+          background: '#eff6ff', border: '1px solid #bfdbfe', borderRadius: 8, marginBottom: '1rem'}}>
           <span style={{ fontSize: '.85rem', fontWeight: 600 }}>
             {selected.length} element{selected.length > 1 ? 's' : ''} selectionne{selected.length > 1 ? 's' : ''}
           </span>
@@ -498,8 +479,7 @@ function NotesDeFraisTab({ isDemoMode, selectedSociete, profile }) {
                             <span style={{
                               width: 8, height: 8, borderRadius: '50%',
                               background: h.status === 'completed' ? '#22c55e' : h.status === 'current' ? '#f59e0b' : '#cbd5e1',
-                              flexShrink: 0,
-                            }} />
+                              flexShrink: 0}} />
                             <span style={{ fontWeight: 600 }}>{h.step}</span>
                             <span style={{ color: 'var(--text-muted)' }}>{h.by}</span>
                             <span style={{ color: 'var(--text-muted)', marginLeft: 'auto' }}>{h.date ? fmtDate(h.date) : '—'}</span>
@@ -540,8 +520,7 @@ function NotesDeFraisTab({ isDemoMode, selectedSociete, profile }) {
                   onChange={e => setRejectMotif(e.target.value)}
                   style={{
                     width: '100%', border: '1px solid var(--border)', borderRadius: 8,
-                    padding: '.5rem .75rem', fontSize: '.85rem', resize: 'vertical', fontFamily: 'inherit',
-                  }}
+                    padding: '.5rem .75rem', fontSize: '.85rem', resize: 'vertical', fontFamily: 'inherit'}}
                 />
               </div>
               <div style={{ display: 'flex', gap: '.5rem', justifyContent: 'flex-end', marginTop: '1rem' }}>
@@ -658,8 +637,7 @@ function CongesTab({ isDemoMode, profile }) {
       {/* Calendar preview */}
       <div style={{
         background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 12,
-        padding: '1rem 1.25rem', marginBottom: '1.25rem',
-      }}>
+        padding: '1rem 1.25rem', marginBottom: '1.25rem'}}>
         <h3 style={{ fontSize: '.9rem', fontWeight: 700, marginBottom: '.75rem' }}>Apercu calendrier equipe (4 semaines)</h3>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '.5rem', fontSize: '.75rem' }}>
           {['Lun', 'Mar', 'Mer', 'Jeu', 'Ven'].map(d => (
@@ -670,8 +648,7 @@ function CongesTab({ isDemoMode, profile }) {
               padding: '.35rem', borderRadius: 6, textAlign: 'center',
               background: day.usersOff.length > 0 ? '#fef3c7' : '#f8fafc',
               border: `1px solid ${day.usersOff.length > 0 ? '#fcd34d' : 'var(--border)'}`,
-              minHeight: 40,
-            }}>
+              minHeight: 40}}>
               <div style={{ fontWeight: 600, fontSize: '.7rem' }}>
                 {day.date.toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit' })}
               </div>
@@ -679,8 +656,7 @@ function CongesTab({ isDemoMode, profile }) {
                 <div key={i} style={{
                   fontSize: '.6rem', background: '#6366f122', color: '#6366f1',
                   borderRadius: 4, padding: '.1rem .25rem', marginTop: '.15rem',
-                  overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
-                }}>
+                  overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap'}}>
                   {name.split(' ')[0]}
                 </div>
               ))}
@@ -692,8 +668,7 @@ function CongesTab({ isDemoMode, profile }) {
       {selected.length > 0 && (
         <div style={{
           display: 'flex', alignItems: 'center', gap: '1rem', padding: '.75rem 1rem',
-          background: '#eef2ff', border: '1px solid #c7d2fe', borderRadius: 8, marginBottom: '1rem',
-        }}>
+          background: '#eef2ff', border: '1px solid #c7d2fe', borderRadius: 8, marginBottom: '1rem'}}>
           <span style={{ fontSize: '.85rem', fontWeight: 600 }}>
             {selected.length} demande{selected.length > 1 ? 's' : ''} selectionnee{selected.length > 1 ? 's' : ''}
           </span>
@@ -737,8 +712,7 @@ function CongesTab({ isDemoMode, profile }) {
                     <span style={{
                       display: 'inline-flex', padding: '.2rem .65rem', borderRadius: 20,
                       fontSize: '.78rem', fontWeight: 700, background: typeCfg.bg, color: typeCfg.color,
-                      border: `1px solid ${typeCfg.color}33`,
-                    }}>
+                      border: `1px solid ${typeCfg.color}33`}}>
                       {typeCfg.label}
                     </span>
                   </td>
@@ -783,8 +757,7 @@ function CongesTab({ isDemoMode, profile }) {
                             <span style={{
                               width: 8, height: 8, borderRadius: '50%',
                               background: h.status === 'completed' ? '#22c55e' : h.status === 'current' ? '#f59e0b' : '#cbd5e1',
-                              flexShrink: 0,
-                            }} />
+                              flexShrink: 0}} />
                             <span style={{ fontWeight: 600 }}>{h.step}</span>
                             <span style={{ color: 'var(--text-muted)' }}>{h.by}</span>
                             <span style={{ color: 'var(--text-muted)', marginLeft: 'auto' }}>{h.date ? fmtDate(h.date) : '—'}</span>
@@ -825,8 +798,7 @@ function CongesTab({ isDemoMode, profile }) {
                   onChange={e => setRejectMotif(e.target.value)}
                   style={{
                     width: '100%', border: '1px solid var(--border)', borderRadius: 8,
-                    padding: '.5rem .75rem', fontSize: '.85rem', resize: 'vertical', fontFamily: 'inherit',
-                  }}
+                    padding: '.5rem .75rem', fontSize: '.85rem', resize: 'vertical', fontFamily: 'inherit'}}
                 />
               </div>
               <div style={{ display: 'flex', gap: '.5rem', justifyContent: 'flex-end', marginTop: '1rem' }}>
@@ -902,8 +874,7 @@ function TempsTab({ isDemoMode, profile }) {
       {selected.length > 0 && (
         <div style={{
           display: 'flex', alignItems: 'center', gap: '1rem', padding: '.75rem 1rem',
-          background: '#e0f2fe', border: '1px solid #7dd3fc', borderRadius: 8, marginBottom: '1rem',
-        }}>
+          background: '#e0f2fe', border: '1px solid #7dd3fc', borderRadius: 8, marginBottom: '1rem'}}>
           <span style={{ fontSize: '.85rem', fontWeight: 600 }}>
             {selected.length} feuille{selected.length > 1 ? 's' : ''} selectionnee{selected.length > 1 ? 's' : ''}
           </span>
@@ -943,8 +914,7 @@ function TempsTab({ isDemoMode, profile }) {
                 </td>
                 <td>
                   <span style={{
-                    fontWeight: 700, color: t.total_heures >= 40 ? '#22c55e' : t.total_heures >= 35 ? '#f59e0b' : '#ef4444',
-                  }}>
+                    fontWeight: 700, color: t.total_heures >= 40 ? '#22c55e' : t.total_heures >= 35 ? '#f59e0b' : '#ef4444'}}>
                     {t.total_heures}h
                   </span>
                 </td>
@@ -954,8 +924,7 @@ function TempsTab({ isDemoMode, profile }) {
                       <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '.4rem', fontSize: '.78rem' }}>
                         <div style={{
                           width: Math.max(20, (p.heures / t.total_heures) * 100), height: 6,
-                          borderRadius: 3, background: i === 0 ? '#6366f1' : i === 1 ? '#0ea5e9' : '#f59e0b',
-                        }} />
+                          borderRadius: 3, background: i === 0 ? '#6366f1' : i === 1 ? '#0ea5e9' : '#f59e0b'}} />
                         <span style={{ color: 'var(--text-muted)' }}>{p.nom}</span>
                         <span style={{ fontWeight: 600 }}>{p.heures}h</span>
                       </div>
@@ -999,8 +968,7 @@ function TempsTab({ isDemoMode, profile }) {
                           <span style={{
                             width: 8, height: 8, borderRadius: '50%',
                             background: h.status === 'completed' ? '#22c55e' : h.status === 'current' ? '#f59e0b' : '#cbd5e1',
-                            flexShrink: 0,
-                          }} />
+                            flexShrink: 0}} />
                           <span style={{ fontWeight: 600 }}>{h.step}</span>
                           <span style={{ color: 'var(--text-muted)' }}>{h.by}</span>
                           <span style={{ color: 'var(--text-muted)', marginLeft: 'auto' }}>{h.date ? fmtDate(h.date) : '—'}</span>
@@ -1030,7 +998,6 @@ function TempsTab({ isDemoMode, profile }) {
 export default function WorkflowsPage() {
   const { profile } = useAuth()
   const { isDemoMode } = useDemo()
-  const { selectedSociete } = useSociete()
   const [activeTab, setActiveTab] = useState('notes_de_frais')
   const [showConfig, setShowConfig] = useState(false)
 
@@ -1050,8 +1017,7 @@ export default function WorkflowsPage() {
         enAttente: pendingNdf + pendingAbs + pendingTs,
         approuvesMois: approuvedNdf + 3,
         rejetesMois: rejectedNdf,
-        tempsMoyen: '2.1j',
-      })
+        tempsMoyen: '2.1j'})
     } else {
       // Would query Supabase for real KPIs
       setKpis({ enAttente: 0, approuvesMois: 0, rejetesMois: 0, tempsMoyen: '—' })
@@ -1100,8 +1066,7 @@ export default function WorkflowsPage() {
       {/* Tabs */}
       <div style={{
         display: 'flex', gap: 0, marginBottom: '1.25rem',
-        borderBottom: '2px solid var(--border)', overflow: 'auto',
-      }}>
+        borderBottom: '2px solid var(--border)', overflow: 'auto'}}>
         {TABS.map(tab => (
           <button
             key={tab.key}
@@ -1112,8 +1077,7 @@ export default function WorkflowsPage() {
               marginBottom: '-2px', fontSize: '.88rem', fontWeight: activeTab === tab.key ? 700 : 500,
               color: activeTab === tab.key ? 'var(--primary)' : 'var(--text-muted)',
               display: 'flex', alignItems: 'center', gap: '.4rem', whiteSpace: 'nowrap',
-              transition: 'all .15s',
-            }}
+              transition: 'all .15s'}}
           >
             <span>{tab.icon}</span>
             <span>{tab.label}</span>
@@ -1121,8 +1085,7 @@ export default function WorkflowsPage() {
               <span style={{
                 background: activeTab === tab.key ? 'var(--primary)' : '#94a3b8',
                 color: 'white', borderRadius: 10, padding: '.1rem .45rem',
-                fontSize: '.7rem', fontWeight: 700, lineHeight: 1.3,
-              }}>
+                fontSize: '.7rem', fontWeight: 700, lineHeight: 1.3}}>
                 {tab.count}
               </span>
             )}

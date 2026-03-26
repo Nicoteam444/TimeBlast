@@ -1,7 +1,6 @@
 import { useState, useEffect, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { supabase } from '../../lib/supabase'
-import { useSociete } from '../../contexts/SocieteContext'
 import useSortableTable from '../../hooks/useSortableTable'
 import SortableHeader from '../../components/SortableHeader'
 import Spinner from '../../components/Spinner'
@@ -27,7 +26,6 @@ function fmtDate(iso) {
 
 export default function EquipePage() {
   const navigate = useNavigate()
-  const { selectedSociete } = useSociete()
   const [equipe, setEquipe]       = useState([])
   const [loading, setLoading]     = useState(true)
   const [search, setSearch]       = useState('')
@@ -38,12 +36,11 @@ export default function EquipePage() {
   useEffect(() => {
     setPage(1)
     fetchEquipe()
-  }, [selectedSociete?.id])
+  }, [])
 
   async function fetchEquipe() {
     setLoading(true)
     let query = supabase.from('equipe').select('*')
-    if (selectedSociete?.id) query = query.eq('societe_id', selectedSociete.id)
     const { data } = await query
     setEquipe(data || [])
     setLoading(false)
@@ -76,8 +73,7 @@ export default function EquipePage() {
       'Développeur': '#16a34a', 'Architecte': '#16a34a', 'Ingénieur': '#16a34a',
       'Consultant': '#f59e0b', 'Analyste': '#f59e0b',
       'Commercial': '#0ea5e9', 'Responsable commercial': '#0ea5e9',
-      'Comptable': '#8b5cf6', 'Contrôleur': '#8b5cf6',
-    }
+      'Comptable': '#8b5cf6', 'Contrôleur': '#8b5cf6'}
     for (const [k, v] of Object.entries(map)) {
       if (poste.includes(k)) return v
     }

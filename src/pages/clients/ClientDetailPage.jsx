@@ -2,20 +2,17 @@ import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { supabase } from '../../lib/supabase'
 import { useBreadcrumb } from '../../contexts/BreadcrumbContext'
-import { useSociete } from '../../contexts/SocieteContext'
 import Spinner from '../../components/Spinner'
 
 const STATUT_COLORS = {
   actif:    { color: '#16a34a', bg: '#f0fdf4' },
   termine:  { color: '#64748b', bg: '#f8fafc' },
-  suspendu: { color: '#f59e0b', bg: '#fffbeb' },
-}
+  suspendu: { color: '#f59e0b', bg: '#fffbeb' }}
 
 export default function ClientDetailPage() {
   const { id } = useParams()
   const navigate = useNavigate()
   const { setSegments, clearSegments } = useBreadcrumb() || {}
-  const { selectedSociete } = useSociete()
   const [client, setClient] = useState(null)
   const [projets, setProjets] = useState([])
   const [loading, setLoading] = useState(true)
@@ -31,12 +28,6 @@ export default function ClientDetailPage() {
       supabase.from('clients').select('*').eq('id', id).single(),
       supabase.from('projets').select('*, lots(count)').eq('client_id', id).order('created_at', { ascending: false }),
     ])
-    if (c && selectedSociete?.id && c.societe_id !== selectedSociete.id) {
-      setClient(null)
-      setProjets([])
-      setLoading(false)
-      return
-    }
     setClient(c)
     setNameValue(c?.name || '')
     setProjets(p || [])

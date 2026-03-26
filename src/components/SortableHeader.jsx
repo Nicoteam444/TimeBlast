@@ -12,8 +12,7 @@ export default function SortableHeader({ label, field, sortKey, sortDir, onSort,
       onClick={() => onSort(field)}
       style={{
         cursor: 'pointer', userSelect: 'none', whiteSpace: 'nowrap',
-        ...style,
-      }}
+        ...style}}
       title={`Trier par ${label}`}
     >
       <span style={{ display: 'inline-flex', alignItems: 'center', gap: '.3rem' }}>

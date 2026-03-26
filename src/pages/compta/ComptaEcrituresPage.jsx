@@ -32,10 +32,7 @@ export default function ComptaEcrituresPage() {
       setLoadingImports(false)
       return
     }
-    supabase.from('fec_imports')
-      .select('id, created_at, meta')
-      .order('created_at', { ascending: false })
-      .then(({ data }) => {
+    supabase.from('fec_imports').select('id, created_at, meta').order('created_at', { ascending: false }).then(({ data }) => {
         const parsed = (data || []).map(i => {
           let m = {}
           try { m = JSON.parse(i.meta || '{}') } catch {}
@@ -64,10 +61,7 @@ export default function ComptaEcrituresPage() {
       return
     }
 
-    supabase.from('fec_ecritures')
-      .select('id, import_id, data')
-      .eq('import_id', selectedImportId)
-      .then(({ data }) => {
+    supabase.from('fec_ecritures').select('id, import_id, data').eq('import_id', selectedImportId).then(({ data }) => {
         const parsed = (data || []).map(r => {
           let d = {}
           try { d = JSON.parse(r.data || '{}') } catch {}

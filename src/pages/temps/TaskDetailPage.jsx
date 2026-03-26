@@ -10,8 +10,7 @@ import Spinner from '../../components/Spinner'
 const PRIORITY_CONFIG = {
   haute:   { label: 'Haute',   color: '#dc2626', bg: '#fef2f2', icon: '🔴' },
   moyenne: { label: 'Moyenne', color: '#f59e0b', bg: '#fffbeb', icon: '🟡' },
-  basse:   { label: 'Basse',   color: '#16a34a', bg: '#f0fdf4', icon: '🟢' },
-}
+  basse:   { label: 'Basse',   color: '#16a34a', bg: '#f0fdf4', icon: '🟢' }}
 
 export default function TaskDetailPage() {
   const { projetId, taskId } = useParams()
@@ -82,8 +81,7 @@ export default function TaskDetailPage() {
           priority: task.priority || 'moyenne',
           estimated_hours: task.estimated_hours || '',
           due_date: task.due_date || '',
-          column_id: task.column_id || '',
-        })
+          column_id: task.column_id || ''})
       }
     }
   }
@@ -118,8 +116,7 @@ export default function TaskDetailPage() {
       priority: form.priority,
       estimated_hours: form.estimated_hours ? parseFloat(form.estimated_hours) : 0,
       due_date: form.due_date || null,
-      column_id: form.column_id || selectedTask.column_id,
-    }).eq('id', selectedTask.id)
+      column_id: form.column_id || selectedTask.column_id}).eq('id', selectedTask.id)
     setSaving(false)
     loadAll()
   }
@@ -138,8 +135,7 @@ export default function TaskDetailPage() {
       priority: task.priority || 'moyenne',
       estimated_hours: task.estimated_hours || '',
       due_date: task.due_date || '',
-      column_id: task.column_id || '',
-    })
+      column_id: task.column_id || ''})
   }
 
   if (loading) return <div className="admin-page"><Spinner /></div>

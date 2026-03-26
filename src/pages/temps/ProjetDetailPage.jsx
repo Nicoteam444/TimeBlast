@@ -17,8 +17,7 @@ const DEFAULT_COLUMNS = [
 const PRIORITY_CONFIG = {
   haute:   { label: 'Haute',   color: '#dc2626', bg: '#fef2f2', icon: '🔴' },
   moyenne: { label: 'Moyenne', color: '#f59e0b', bg: '#fffbeb', icon: '🟡' },
-  basse:   { label: 'Basse',   color: '#16a34a', bg: '#f0fdf4', icon: '🟢' },
-}
+  basse:   { label: 'Basse',   color: '#16a34a', bg: '#f0fdf4', icon: '🟢' }}
 
 export default function ProjetDetailPage({ projet, onBack }) {
   const { user } = useAuth()
@@ -148,8 +147,7 @@ export default function ProjetDetailPage({ projet, onBack }) {
       assigned_to: taskForm.assigned_to || null,
       priority: taskForm.priority,
       estimated_hours: taskForm.estimated_hours ? parseFloat(taskForm.estimated_hours) : 0,
-      due_date: taskForm.due_date || null,
-    })
+      due_date: taskForm.due_date || null})
     setTaskForm({ title: '', assigned_to: '', priority: 'moyenne', estimated_hours: '', due_date: '' })
     setShowTaskForm(null); fetchTasks()
   }
@@ -170,8 +168,7 @@ export default function ProjetDetailPage({ projet, onBack }) {
         entity_id: taskId,
         entity_name: task.title,
         details: `${oldCol.name} → ${newCol.name}`,
-        icon: '🔀',
-      }).then(() => {})
+        icon: '🔀'}).then(() => {})
     }
   }
 
@@ -187,8 +184,7 @@ export default function ProjetDetailPage({ projet, onBack }) {
       assigned_to: task.assigned_to || '',
       priority: task.priority || 'moyenne',
       estimated_hours: task.estimated_hours || '',
-      due_date: task.due_date || '',
-    })
+      due_date: task.due_date || ''})
   }
 
   async function handleUpdateTask(e) {
@@ -200,8 +196,7 @@ export default function ProjetDetailPage({ projet, onBack }) {
       priority: taskForm.priority,
       estimated_hours: taskForm.estimated_hours ? parseFloat(taskForm.estimated_hours) : 0,
       due_date: taskForm.due_date || null,
-      column_id: taskForm.column_id || editingTask.column_id,
-    }).eq('id', editingTask.id)
+      column_id: taskForm.column_id || editingTask.column_id}).eq('id', editingTask.id)
     setEditingTask(null)
     setTaskForm({ title: '', assigned_to: '', priority: 'moyenne', estimated_hours: '', due_date: '' })
     fetchTasks()
@@ -215,8 +210,7 @@ export default function ProjetDetailPage({ projet, onBack }) {
       user_id: user.id,
       hours: parseFloat(timeForm.hours),
       date: timeForm.date,
-      note: timeForm.note || null,
-    })
+      note: timeForm.note || null})
     setTimeForm({ hours: '', note: '', date: new Date().toISOString().slice(0, 10) })
     setShowTimeForm(null); fetchTimeEntries()
   }
@@ -520,9 +514,7 @@ export default function ProjetDetailPage({ projet, onBack }) {
             {/* Répartition par membre */}
             <div style={{ background: '#fff', border: '1px solid var(--border)', borderRadius: 10, padding: '1.25rem' }}>
               <h3 style={{ fontSize: '.95rem', fontWeight: 700, marginBottom: '.75rem' }}>Temps par membre</h3>
-              {Object.entries(timeByUser).length > 0 ? Object.entries(timeByUser)
-                .sort((a, b) => b[1] - a[1])
-                .map(([name, hours]) => (
+              {Object.entries(timeByUser).length > 0 ? Object.entries(timeByUser).sort((a, b) => b[1] - a[1]).map(([name, hours]) => (
                   <div key={name} style={{ display: 'flex', alignItems: 'center', gap: '.75rem', padding: '.5rem 0', borderBottom: '1px solid #f1f5f9' }}>
                     <span style={{ fontSize: '.85rem' }}>👤</span>
                     <span style={{ flex: 1, fontSize: '.85rem', fontWeight: 500 }}>{name}</span>

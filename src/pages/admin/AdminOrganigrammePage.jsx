@@ -27,8 +27,7 @@ const DEFAULT_SIZES = {
   mini_groupe: { w: 240, h: 160 },
   societe: { w: 160, h: 70 },
   poste: { w: 150, h: 44 },
-  personne: { w: 160, h: 72 },
-}
+  personne: { w: 160, h: 72 }}
 
 const SQL_HINT = `CREATE TABLE IF NOT EXISTS org_nodes (
   id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
@@ -68,8 +67,7 @@ function GroupeNode({ node, selected, onHeaderMouseDown, onDelete, onEdit }) {
         left: node.x, top: node.y,
         width: node.width, height: node.height,
         borderColor: node.color,
-        backgroundColor: hexToRgba(node.color, 0.07),
-      }}
+        backgroundColor: hexToRgba(node.color, 0.07)}}
     >
       <div
         className="org-node-groupe-header"
@@ -107,8 +105,7 @@ function MiniGroupeNode({ node, selected, onHeaderMouseDown, onDelete, onEdit })
         left: node.x, top: node.y,
         width: node.width, height: node.height,
         borderColor: node.color,
-        backgroundColor: hexToRgba(node.color, 0.06),
-      }}
+        backgroundColor: hexToRgba(node.color, 0.06)}}
     >
       <div
         className="org-node-mini-header"
@@ -152,8 +149,7 @@ function SocieteNode({ node, selected, onMouseDown, onDelete, onEdit }) {
       style={{
         left: node.x, top: node.y,
         width: node.width, height: node.height,
-        borderColor: node.color,
-      }}
+        borderColor: node.color}}
       onMouseDown={onMouseDown}
     >
       <div className="org-node-societe-bar" style={{ backgroundColor: node.color }} />
@@ -182,8 +178,7 @@ function PosteNode({ node, selected, onMouseDown, onDelete, onEdit }) {
         left: node.x, top: node.y,
         width: node.width, height: node.height,
         borderColor: node.color,
-        color: node.color,
-      }}
+        color: node.color}}
       onMouseDown={onMouseDown}
     >
       <span style={{ fontSize: '.9rem' }}>💼</span>
@@ -201,8 +196,7 @@ function PersonneNode({ node, selected, onMouseDown, onDelete, onEdit }) {
       style={{
         left: node.x, top: node.y,
         width: node.width, height: node.height,
-        borderColor: node.color,
-      }}
+        borderColor: node.color}}
       onMouseDown={onMouseDown}
     >
       <div className="org-node-personne-avatar" style={{ backgroundColor: node.color }}>
@@ -294,8 +288,7 @@ function AddNodeModal({ onClose, onAdd, societes }) {
     visibility_roles: [],
     meta_role: '',
     meta_email: '',
-    meta_siren: '',
-  })
+    meta_siren: ''})
 
   const PALETTE = ['#1a5c82','#0ea5e9','#8b5cf6','#ef4444','#f59e0b','#10b981','#ec4899','#64748b','#0d1b24']
 
@@ -325,10 +318,8 @@ function AddNodeModal({ onClose, onAdd, societes }) {
       y: 100 + Math.random() * 200,
       width: sz.w,
       height: sz.h,
-      societe_id: form.societe_id || null,
       visibility_roles: form.visibility_roles,
-      meta,
-    })
+      meta})
     onClose()
   }
 
@@ -445,8 +436,7 @@ function EditNodeModal({ node, onClose, onSave, onDelete, societes }) {
     societe_id: node.societe_id || '',
     meta_role: node.meta?.role || '',
     meta_email: node.meta?.email || '',
-    meta_siren: node.meta?.siren || '',
-  })
+    meta_siren: node.meta?.siren || ''})
 
   const PALETTE = ['#1a5c82','#0ea5e9','#8b5cf6','#ef4444','#f59e0b','#10b981','#ec4899','#64748b','#0d1b24']
 
@@ -470,9 +460,7 @@ function EditNodeModal({ node, onClose, onSave, onDelete, societes }) {
       label: form.label,
       color: form.color,
       visibility_roles: form.visibility_roles,
-      societe_id: form.societe_id || null,
-      meta,
-    })
+      meta})
     onClose()
   }
 
@@ -753,18 +741,14 @@ export default function AdminOrganigrammePage() {
       let loaded = false
       try {
         const { data: nData, error: nErr } = await supabase
-          .from('org_nodes')
-          .select('*')
-          .eq('canvas_id', CANVAS_ID)
+          .from('org_nodes').select('*').eq('canvas_id', CANVAS_ID)
 
         if (nErr && nErr.code === '42P01') {
           // Table doesn't exist
           setShowSql(true)
         } else if (nData && nData.length > 0) {
           const { data: eData } = await supabase
-            .from('org_edges')
-            .select('*')
-            .eq('canvas_id', CANVAS_ID)
+            .from('org_edges').select('*').eq('canvas_id', CANVAS_ID)
 
           const mappedNodes = nData.map(n => ({
             id: n.id,
@@ -775,10 +759,8 @@ export default function AdminOrganigrammePage() {
             y: n.y || 100,
             width: n.width || DEFAULT_SIZES[n.type]?.w || 160,
             height: n.height || DEFAULT_SIZES[n.type]?.h || 80,
-            societe_id: n.societe_id || null,
             visibility_roles: n.visibility_roles || [],
-            meta: n.meta || {},
-          }))
+            meta: n.meta || {}}))
 
           setNodes(mappedNodes)
           setEdges(eData || [])
@@ -827,8 +809,7 @@ export default function AdminOrganigrammePage() {
           height: 75,
           societe_id: holdingSociete?.id || null,
           visibility_roles: [],
-          meta: { holding: true },
-        })
+          meta: { holding: true }})
 
         // 2. Groupe nodes in a row, and société nodes inside
         const groupeSpacing = 400
@@ -853,8 +834,7 @@ export default function AdminOrganigrammePage() {
             height: nodeHeight,
             societe_id: null,
             visibility_roles: [],
-            meta: {},
-          })
+            meta: {}})
 
           // Edge from holding to groupe
           defaultEdges.push({
@@ -862,8 +842,7 @@ export default function AdminOrganigrammePage() {
             source_id: holdingId,
             target_id: groupeNodeId,
             canvas_id: 'admin_global',
-            label: '',
-          })
+            label: ''})
 
           // Société nodes inside groupe
           societesInGroupe.forEach((s, si) => {
@@ -878,8 +857,7 @@ export default function AdminOrganigrammePage() {
               height: 70,
               societe_id: s.id,
               visibility_roles: [],
-              meta: {},
-            })
+              meta: {}})
           })
         })
 
@@ -898,8 +876,7 @@ export default function AdminOrganigrammePage() {
             height: Math.max(200, 80 + orphans.length * 90),
             societe_id: null,
             visibility_roles: [],
-            meta: {},
-          })
+            meta: {}})
           orphans.forEach((s, si) => {
             defaultNodes.push({
               id: 's_' + s.id,
@@ -912,8 +889,7 @@ export default function AdminOrganigrammePage() {
               height: 70,
               societe_id: s.id,
               visibility_roles: [],
-              meta: {},
-            })
+              meta: {}})
           })
         }
 
@@ -957,8 +933,7 @@ export default function AdminOrganigrammePage() {
               width: n.width, height: n.height,
               societe_id: n.societe_id,
               visibility_roles: n.visibility_roles,
-              meta: n.meta,
-            }))
+              meta: n.meta}))
           )
         }
         // Insert edges
@@ -968,8 +943,7 @@ export default function AdminOrganigrammePage() {
               canvas_id: CANVAS_ID,
               source_id: e.source_id,
               target_id: e.target_id,
-              label: e.label || null,
-            }))
+              label: e.label || null}))
           )
         }
       } catch { /* ignore Supabase errors */ }
@@ -1027,8 +1001,7 @@ export default function AdminOrganigrammePage() {
           canvas_id: CANVAS_ID,
           source_id: connecting,
           target_id: nodeId,
-          label: '',
-        }])
+          label: ''}])
         setConnecting(null)
       }
       return

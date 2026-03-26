@@ -113,8 +113,7 @@ function HistoryTab() {
         {STATS.map((s, i) => (
           <div key={i} style={{
             background: '#fff', borderRadius: 12, padding: '1rem 1.5rem', textAlign: 'center',
-            boxShadow: '0 4px 20px rgba(0,0,0,0.1)', minWidth: 120, transition: 'transform .2s',
-          }}
+            boxShadow: '0 4px 20px rgba(0,0,0,0.1)', minWidth: 120, transition: 'transform .2s'}}
           onMouseEnter={e => e.currentTarget.style.transform = 'translateY(-4px)'}
           onMouseLeave={e => e.currentTarget.style.transform = 'translateY(0)'}
           >
@@ -251,8 +250,7 @@ const PHASES = [
 const STATUS = {
   done: { icon: '✅', color: '#16a34a', bg: '#f0fdf4' },
   wip: { icon: '🔄', color: '#2B4C7E', bg: '#eff6ff' },
-  todo: { icon: '⬜', color: '#94a3b8', bg: '#f8fafc' },
-}
+  todo: { icon: '⬜', color: '#94a3b8', bg: '#f8fafc' }}
 
 function getPhaseProgress(phase) {
   const total = phase.items.length
@@ -352,8 +350,7 @@ export default function InfoPage() {
       {/* Hero */}
       <div style={{
         background: 'linear-gradient(135deg, #2B4C7E 0%, #1a3a5c 50%, #0f2942 100%)',
-        borderRadius: 16, padding: '2.5rem 2rem 1.5rem', textAlign: 'center', marginBottom: 24,
-      }}>
+        borderRadius: 16, padding: '2.5rem 2rem 1.5rem', textAlign: 'center', marginBottom: 24}}>
         <h1 style={{ color: '#fff', fontSize: '1.8rem', fontWeight: 800, margin: '0 0 .5rem' }}>
           TimeBlast.ai
         </h1>
@@ -369,8 +366,7 @@ export default function InfoPage() {
           fontWeight: 700, fontSize: '.9rem',
           color: tab === 'histoire' ? '#2B4C7E' : '#94a3b8',
           borderBottom: tab === 'histoire' ? '3px solid #2B4C7E' : '3px solid transparent',
-          marginBottom: -2,
-        }}>
+          marginBottom: -2}}>
           📜 Histoire
         </button>
         <button onClick={() => setTab('roadmap')} style={{
@@ -378,8 +374,7 @@ export default function InfoPage() {
           fontWeight: 700, fontSize: '.9rem',
           color: tab === 'roadmap' ? '#2B4C7E' : '#94a3b8',
           borderBottom: tab === 'roadmap' ? '3px solid #2B4C7E' : '3px solid transparent',
-          marginBottom: -2,
-        }}>
+          marginBottom: -2}}>
           🗺️ Avancement
         </button>
       </div>

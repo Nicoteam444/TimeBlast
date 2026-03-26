@@ -1,5 +1,4 @@
 import { useState, useEffect, useMemo } from 'react'
-import { useSociete } from '../../contexts/SocieteContext'
 import useSortableTable from '../../hooks/useSortableTable'
 import SortableHeader from '../../components/SortableHeader'
 
@@ -26,8 +25,7 @@ function generateDemoTransactions() {
   const types = ['encaissement', 'decaissement']
   const categories = {
     encaissement: ['Virement client', 'Paiement facture', 'Remboursement', 'Prélèvement reçu', 'Vente CB'],
-    decaissement: ['Loyer bureau', 'Salaires', 'Fournisseur', 'Abonnement SaaS', 'Frais bancaires', 'Impôts', 'Achat matériel'],
-  }
+    decaissement: ['Loyer bureau', 'Salaires', 'Fournisseur', 'Abonnement SaaS', 'Frais bancaires', 'Impôts', 'Achat matériel']}
   const clients = ['Acme Corp', 'TechVision', 'DataFlow', 'MegaStore', 'CloudNine', 'StartupLab']
   const fournisseurs = ['OVH', 'Office Depot', 'EDF', 'Orange Pro', 'Sage', 'Adobe', 'Amazon Business']
 
@@ -55,14 +53,12 @@ function generateDemoTransactions() {
       montant,
       banque: BANKS[Math.floor(Math.random() * 3)].name,
       reference: `REF-${String(1000 + i).padStart(5, '0')}`,
-      rapproche: Math.random() > 0.3,
-    })
+      rapproche: Math.random() > 0.3})
   }
   return txs.sort((a, b) => b.date.localeCompare(a.date))
 }
 
 export default function TransactionsBancairesPage() {
-  const { selectedSociete } = useSociete()
   const [transactions, setTransactions] = useState([])
   const [search, setSearch] = useState('')
   const [filterType, setFilterType] = useState('')
@@ -73,7 +69,7 @@ export default function TransactionsBancairesPage() {
 
   useEffect(() => {
     setTransactions(generateDemoTransactions())
-  }, [selectedSociete?.id])
+  }, [])
 
   const filtered = useMemo(() => {
     let rows = transactions
@@ -191,8 +187,7 @@ export default function TransactionsBancairesPage() {
                 <td>
                   <span className="status-badge" style={{
                     background: tx.type === 'encaissement' ? '#f0fdf4' : '#fef2f2',
-                    color: tx.type === 'encaissement' ? '#16a34a' : '#ef4444',
-                  }}>
+                    color: tx.type === 'encaissement' ? '#16a34a' : '#ef4444'}}>
                     {tx.type === 'encaissement' ? '📈 Encaissement' : '📉 Décaissement'}
                   </span>
                 </td>
@@ -248,8 +243,7 @@ export default function TransactionsBancairesPage() {
                       cursor: isConnected ? 'default' : 'pointer',
                       textAlign: 'center',
                       transition: 'all .2s',
-                      opacity: isConnecting ? 0.6 : 1,
-                    }}
+                      opacity: isConnecting ? 0.6 : 1}}
                   >
                     <div style={{ fontSize: '1.5rem', marginBottom: '.25rem' }}>{bank.icon}</div>
                     <div style={{ fontWeight: 600, fontSize: '.9rem', color: bank.color }}>{bank.name}</div>

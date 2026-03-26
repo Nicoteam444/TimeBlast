@@ -6,14 +6,12 @@ import Spinner from '../components/Spinner'
 const SEVERITY_META = {
   danger:  { label: 'Urgent',      color: '#dc2626', bg: '#fef2f2', icon: '🔴' },
   warning: { label: 'Attention',   color: '#f59e0b', bg: '#fffbeb', icon: '🟠' },
-  info:    { label: 'Information', color: '#3b82f6', bg: '#eff6ff', icon: '🔵' },
-}
+  info:    { label: 'Information', color: '#3b82f6', bg: '#eff6ff', icon: '🔵' }}
 
 const TYPE_META = {
   finance:    { label: 'Finance',    icon: '💰' },
   rh:         { label: 'RH',         icon: '👥' },
-  commercial: { label: 'Commercial', icon: '🤝' },
-}
+  commercial: { label: 'Commercial', icon: '🤝' }}
 
 const TABS = [
   { id: 'toutes',   label: 'Toutes' },

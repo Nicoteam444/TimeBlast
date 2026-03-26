@@ -1,6 +1,5 @@
 import { useState, useEffect, useMemo } from 'react'
 import { supabase } from '../../lib/supabase'
-import { useSociete } from '../../contexts/SocieteContext'
 import useSortableTable from '../../hooks/useSortableTable'
 import SortableHeader from '../../components/SortableHeader'
 import Spinner from '../../components/Spinner'
@@ -50,7 +49,6 @@ function LevelPicker({ value, onChange }) {
 }
 
 export default function CompetencesPage() {
-  const { selectedSociete } = useSociete()
   const [competences, setCompetences] = useState([])  // { id, nom, categorie }
   const [evaluations, setEvaluations] = useState([])   // { id, competence_id, equipe_id, niveau }
   const [equipe, setEquipe] = useState([])
@@ -70,12 +68,11 @@ export default function CompetencesPage() {
   const [evalTarget, setEvalTarget] = useState(null) // { competence_id, equipe_id }
   const [evalLevel, setEvalLevel] = useState(0)
 
-  useEffect(() => { fetchAll() }, [selectedSociete?.id])
+  useEffect(() => { fetchAll() }, [])
 
   async function fetchAll() {
     setLoading(true)
     setMigrationNeeded(false)
-    const sid = selectedSociete?.id
 
     const [compRes, evalRes, eqRes] = await Promise.all([
       supabase.from('competences').select('*').order('categorie').order('nom'),
@@ -163,8 +160,7 @@ export default function CompetencesPage() {
       await supabase.from('competence_evaluations').insert({
         competence_id: evalTarget.competence_id,
         equipe_id: evalTarget.equipe_id,
-        niveau: evalLevel,
-      })
+        niveau: evalLevel})
     }
     setShowEvalModal(false)
     setEvalTarget(null)

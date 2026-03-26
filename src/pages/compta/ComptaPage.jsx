@@ -1,7 +1,6 @@
 import { useState, useEffect, useMemo, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { supabase } from '../../lib/supabase'
-import { useSociete } from '../../contexts/SocieteContext'
 import Spinner from '../../components/Spinner'
 import {
   BarChart, Bar, ComposedChart, Line,
@@ -12,8 +11,7 @@ import {
 // ── Couleurs ─────────────────────────────────────────────────
 const COLORS = {
   primary: '#1a5c82', blue2: '#4a8fad', blue3: '#8ec6d8',
-  green: '#16a34a', red: '#dc2626', grey: '#94a3b8',
-}
+  green: '#16a34a', red: '#dc2626', grey: '#94a3b8'}
 const MONTH_LABELS = ['Jan','Fév','Mar','Avr','Mai','Jun','Jul','Aoû','Sep','Oct','Nov','Déc']
 
 // ── Classification comptes PCG ────────────────────────────────
@@ -168,10 +166,7 @@ async function fetchAllEcritures(importId, signal) {
     const from = page * PAGE_SIZE
     const to   = from + PAGE_SIZE - 1
     const { data, error } = await supabase
-      .from('fec_ecritures')
-      .select('data')
-      .eq('import_id', importId)
-      .range(from, to)
+      .from('fec_ecritures').select('data').eq('import_id', importId).range(from, to)
     if (signal?.aborted) return []
     if (error || !data || data.length === 0) break
     const parsed = data.map(r => { let d = {}; try { d = JSON.parse(r.data || '{}') } catch {}; return d })
@@ -185,7 +180,6 @@ async function fetchAllEcritures(importId, signal) {
 // ── Page principale ───────────────────────────────────────────
 export default function ComptaPage() {
   const navigate = useNavigate()
-  const { selectedSociete } = useSociete()
 
   const [activeTab, setActiveTab]     = useState('analyse')
   const [imports, setImports]         = useState([])
@@ -201,12 +195,11 @@ export default function ComptaPage() {
   const [loadingHist, setLoadingHist] = useState(false)
 
   // Reset histKpis quand la société change
-  useEffect(() => { setHistKpis({}) }, [selectedSociete?.id])
+  useEffect(() => { setHistKpis({}) }, [])
 
   // Charger imports
   useEffect(() => {
     let query = supabase.from('fec_imports').select('id, created_at, meta').order('created_at', { ascending: false })
-    if (selectedSociete?.id) query = query.eq('societe_id', selectedSociete.id)
     query.then(({ data }) => {
       const parsed = (data || []).map(i => {
         let m = {}; try { m = JSON.parse(i.meta || '{}') } catch {}
@@ -216,7 +209,7 @@ export default function ComptaPage() {
       if (parsed.length > 0) setSelectedId(parsed[0].id)
       setLoadingImports(false)
     })
-  }, [selectedSociete?.id])
+  }, [])
 
   // Charger écritures (avec abort controller pour éviter les race conditions)
   useEffect(() => {

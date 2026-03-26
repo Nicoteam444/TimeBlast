@@ -27,8 +27,7 @@ const STATUS_CONFIG = {
   brouillon: { label: 'Brouillon', color: '#64748b', bg: '#f1f5f9' },
   soumis:    { label: 'Soumis',    color: '#f59e0b', bg: '#fffbeb' },
   valide:    { label: 'Validé',    color: '#16a34a', bg: '#f0fdf4' },
-  rejete:    { label: 'Rejeté',    color: '#dc2626', bg: '#fef2f2' },
-}
+  rejete:    { label: 'Rejeté',    color: '#dc2626', bg: '#fef2f2' }}
 
 // Default demo statuses for each user
 const DEMO_DEFAULT_STATUSES = {
@@ -36,8 +35,7 @@ const DEMO_DEFAULT_STATUSES = {
   u2: 'soumis',
   u3: 'soumis',
   u4: 'valide',
-  u5: 'brouillon',
-}
+  u5: 'brouillon'}
 
 function loadStatuts() {
   try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}') } catch { return {} }
@@ -58,8 +56,7 @@ function StatusBadge({ status }) {
       fontWeight: 700,
       background: cfg.bg,
       color: cfg.color,
-      border: `1px solid ${cfg.color}33`,
-    }}>
+      border: `1px solid ${cfg.color}33`}}>
       {cfg.label}
     </span>
   )
@@ -160,8 +157,7 @@ export default function ValidationPage() {
                         width: 32, height: 32, borderRadius: '50%',
                         background: 'var(--primary)', color: 'white',
                         display: 'flex', alignItems: 'center', justifyContent: 'center',
-                        fontSize: '.75rem', fontWeight: 700, flexShrink: 0,
-                      }}>
+                        fontSize: '.75rem', fontWeight: 700, flexShrink: 0}}>
                         {user.full_name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase()}
                       </span>
                       <div>

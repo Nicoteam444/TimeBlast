@@ -9,8 +9,7 @@ import {
   migrateLocalFavoritesToDB,
   shouldMigrateToDatabase,
   syncDatabaseToLocal,
-  subscribeToFavoritesChanges,
-} from '../lib/favoritesSync'
+  subscribeToFavoritesChanges} from '../lib/favoritesSync'
 
 const FavoritesContext = createContext()
 
@@ -165,8 +164,7 @@ export function FavoritesProvider({ children }) {
     syncing,
     toggleFavorite,
     updateFavLabel,
-    isFavorite,
-  }
+    isFavorite}
 
   return (
     <FavoritesContext.Provider value={value}>

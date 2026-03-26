@@ -15,8 +15,7 @@ const DEFAULTS = {
   bgColor: '#F0F0F0',         // Fond derrière les vignettes
   // ──
   logoUrl: null,
-  platformName: 'TimeBlast.ai',
-}
+  platformName: 'TimeBlast.ai'}
 
 // Labels pour affichage UI
 export const COLOR_FIELDS = [
@@ -78,11 +77,7 @@ export function AppearanceProvider({ children }) {
         // Re-load from user-specific localStorage key
         setSettings(load(uid))
         // Load appearance from DB
-        supabase.from('profiles')
-          .select('appearance_settings')
-          .eq('id', uid)
-          .single()
-          .then(({ data: profile }) => {
+        supabase.from('profiles').select('appearance_settings').eq('id', uid).single().then(({ data: profile }) => {
             if (profile?.appearance_settings) {
               const dbSettings = { ...DEFAULTS, ...profile.appearance_settings }
               setSettings(dbSettings)
@@ -105,9 +100,7 @@ export function AppearanceProvider({ children }) {
   async function saveToDatabase(newSettings) {
     if (!userId) return
     try {
-      await supabase.from('profiles')
-        .update({ appearance_settings: newSettings || settings })
-        .eq('id', userId)
+      await supabase.from('profiles').update({ appearance_settings: newSettings || settings }).eq('id', userId)
     } catch (err) {
       console.error('Error saving appearance to DB:', err)
     }

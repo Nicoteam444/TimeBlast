@@ -132,8 +132,7 @@ export default function TimelineHistoryPage() {
       {/* Hero */}
       <div style={{
         background: 'linear-gradient(135deg, #2B4C7E 0%, #1a3a5c 50%, #0f2942 100%)',
-        borderRadius: 16, padding: '3rem 2rem 4rem', textAlign: 'center', marginBottom: -40, position: 'relative',
-      }}>
+        borderRadius: 16, padding: '3rem 2rem 4rem', textAlign: 'center', marginBottom: -40, position: 'relative'}}>
         <div style={{ fontSize: 48, marginBottom: 8 }}>📜</div>
         <h1 style={{ color: '#fff', fontSize: '2rem', fontWeight: 800, margin: '0 0 .5rem' }}>
           L'histoire de TimeBlast.ai
@@ -146,14 +145,12 @@ export default function TimelineHistoryPage() {
       {/* Stats */}
       <div style={{
         display: 'flex', gap: 12, justifyContent: 'center', flexWrap: 'wrap',
-        position: 'relative', zIndex: 1, marginBottom: '2rem',
-      }}>
+        position: 'relative', zIndex: 1, marginBottom: '2rem'}}>
         {STATS.map((s, i) => (
           <div key={i} style={{
             background: '#fff', borderRadius: 12, padding: '1rem 1.5rem', textAlign: 'center',
             boxShadow: '0 4px 20px rgba(0,0,0,0.1)', minWidth: 120,
-            transition: 'transform .2s', cursor: 'default',
-          }}
+            transition: 'transform .2s', cursor: 'default'}}
           onMouseEnter={e => e.currentTarget.style.transform = 'translateY(-4px)'}
           onMouseLeave={e => e.currentTarget.style.transform = 'translateY(0)'}
           >
@@ -170,8 +167,7 @@ export default function TimelineHistoryPage() {
         <div style={{
           position: 'absolute', left: 19, top: 0, bottom: 0, width: 3,
           background: 'linear-gradient(180deg, #2B4C7E, #16a34a, #7c3aed, #ea580c, #dc2626)',
-          borderRadius: 2,
-        }} />
+          borderRadius: 2}} />
 
         {TIMELINE.map((entry, i) => (
           <div
@@ -180,16 +176,14 @@ export default function TimelineHistoryPage() {
             style={{
               position: 'relative', marginBottom: 32, paddingLeft: 32,
               opacity: 0, transform: 'translateY(30px)',
-              transition: `opacity .6s ease ${i * 0.15}s, transform .6s ease ${i * 0.15}s`,
-            }}
+              transition: `opacity .6s ease ${i * 0.15}s, transform .6s ease ${i * 0.15}s`}}
           >
             {/* Dot */}
             <div style={{
               position: 'absolute', left: -12, top: 4, width: 24, height: 24,
               borderRadius: '50%', background: entry.color, border: '3px solid #fff',
               boxShadow: `0 0 0 3px ${entry.color}33`, display: 'flex', alignItems: 'center',
-              justifyContent: 'center', fontSize: 12,
-            }}>
+              justifyContent: 'center', fontSize: 12}}>
               {entry.icon}
             </div>
 
@@ -200,16 +194,14 @@ export default function TimelineHistoryPage() {
                 background: '#fff', borderRadius: 12, padding: '1.25rem',
                 boxShadow: '0 2px 12px rgba(0,0,0,0.06)',
                 border: expanded.has(i) ? `2px solid ${entry.color}` : '2px solid transparent',
-                cursor: 'pointer', transition: 'all .3s',
-              }}
+                cursor: 'pointer', transition: 'all .3s'}}
             >
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                 <div>
                   <div style={{ display: 'flex', gap: 8, alignItems: 'center', marginBottom: 4 }}>
                     <span style={{
                       fontSize: '.7rem', fontWeight: 700, color: '#fff', background: entry.color,
-                      padding: '2px 8px', borderRadius: 4,
-                    }}>{entry.day}</span>
+                      padding: '2px 8px', borderRadius: 4}}>{entry.day}</span>
                     <span style={{ fontSize: '.8rem', color: '#94a3b8' }}>{entry.date}</span>
                   </div>
                   <h3 style={{ margin: '4px 0 0', fontSize: '1.15rem', fontWeight: 700, color: '#1e293b' }}>
@@ -219,8 +211,7 @@ export default function TimelineHistoryPage() {
                 </div>
                 <span style={{
                   fontSize: '1.2rem', transform: expanded.has(i) ? 'rotate(180deg)' : 'rotate(0)',
-                  transition: 'transform .3s', color: '#94a3b8',
-                }}>▼</span>
+                  transition: 'transform .3s', color: '#94a3b8'}}>▼</span>
               </div>
 
               {expanded.has(i) && (
@@ -229,8 +220,7 @@ export default function TimelineHistoryPage() {
                     <div key={j} style={{
                       display: 'flex', gap: 8, alignItems: 'flex-start', padding: '4px 0',
                       fontSize: '.85rem', color: '#475569',
-                      opacity: 0, animation: `fadeSlideIn .3s ease ${j * 0.05}s forwards`,
-                    }}>
+                      opacity: 0, animation: `fadeSlideIn .3s ease ${j * 0.05}s forwards`}}>
                       <span style={{ color: entry.color, fontWeight: 700 }}>✓</span>
                       <span>{d}</span>
                     </div>
@@ -252,8 +242,7 @@ export default function TimelineHistoryPage() {
           padding: '12px 28px', borderRadius: 10,
           background: 'linear-gradient(135deg, #2B4C7E, #1a8cff)',
           color: '#fff', textDecoration: 'none', fontWeight: 700, fontSize: '1rem',
-          boxShadow: '0 4px 15px rgba(43,76,126,0.3)',
-        }}>
+          boxShadow: '0 4px 15px rgba(43,76,126,0.3)'}}>
           🗺️ Voir la Roadmap →
         </a>
       </div>

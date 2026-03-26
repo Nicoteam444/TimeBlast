@@ -18,11 +18,7 @@ export default function ProjetsWrapper() {
     if (projetId) {
       setLoading(true)
       supabase
-        .from('projets')
-        .select('*, clients(name, societe_id)')
-        .eq('id', projetId)
-        .single()
-        .then(({ data }) => {
+        .from('projets').select('*, clients(name, societe_id)').eq('id', projetId).single().then(({ data }) => {
           setProjet(data)
           setLoading(false)
           if (data) {

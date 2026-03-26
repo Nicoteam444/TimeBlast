@@ -1,5 +1,4 @@
 import { useState, useEffect, useMemo, useCallback, useRef } from 'react'
-import { useSociete } from '../../contexts/SocieteContext'
 import useSortableTable from '../../hooks/useSortableTable'
 import SortableHeader from '../../components/SortableHeader'
 import Spinner from '../../components/Spinner'
@@ -138,7 +137,6 @@ const DEMO = [
 
 // ── Page principale ───────────────────────────────────────────
 export default function FacturesFournisseursPage() {
-  const { selectedSociete } = useSociete()
   const [factures, setFactures] = useState([])
   const [loading, setLoading] = useState(true)
   const [selected, setSelected] = useState(null)
@@ -151,7 +149,7 @@ export default function FacturesFournisseursPage() {
     setFactures(DEMO)
     setSelected(DEMO[0])
     setLoading(false)
-  }, [selectedSociete?.id])
+  }, [])
 
   const filtered = useMemo(() => {
     let rows = factures

@@ -13,8 +13,7 @@ const ACTION_TYPES = {
   saisie_rejetee:  { label: 'Saisie rejetée',      color: '#f59e0b', bg: '#fffbeb' },
   login:           { label: 'Connexion',           color: '#64748b', bg: '#f1f5f9' },
   absence_added:   { label: 'Absence ajoutée',     color: '#8b5cf6', bg: '#f5f3ff' },
-  settings_changed:{ label: 'Paramètres modifiés', color: '#14b8a6', bg: '#f0fdfa' },
-}
+  settings_changed:{ label: 'Paramètres modifiés', color: '#14b8a6', bg: '#f0fdfa' }}
 
 function generateDemoAudit() {
   const now = new Date()
@@ -47,8 +46,7 @@ function ActionBadge({ action }) {
       fontSize: '.75rem', fontWeight: 700,
       background: cfg.bg, color: cfg.color,
       border: `1px solid ${cfg.color}33`,
-      whiteSpace: 'nowrap',
-    }}>
+      whiteSpace: 'nowrap'}}>
       {cfg.label}
     </span>
   )
@@ -125,8 +123,7 @@ export default function AdminAuditPage() {
             border: '1px solid var(--border)',
             background: !filterAction ? 'var(--primary)' : 'var(--surface)',
             color: !filterAction ? 'white' : 'var(--text-muted)',
-            cursor: 'pointer', fontWeight: !filterAction ? 700 : 500,
-          }}
+            cursor: 'pointer', fontWeight: !filterAction ? 700 : 500}}
           onClick={() => setFilterAction('')}
         >
           Tous ({entries.length})
@@ -142,8 +139,7 @@ export default function AdminAuditPage() {
                 border: `1px solid ${cfg.color}44`,
                 background: filterAction === key ? cfg.bg : 'var(--surface)',
                 color: filterAction === key ? cfg.color : 'var(--text-muted)',
-                cursor: 'pointer', fontWeight: filterAction === key ? 700 : 500,
-              }}
+                cursor: 'pointer', fontWeight: filterAction === key ? 700 : 500}}
               onClick={() => setFilterAction(filterAction === key ? '' : key)}
             >
               {cfg.label} ({count})

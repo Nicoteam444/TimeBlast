@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { supabase } from '../../lib/supabase'
 import { useBreadcrumb } from '../../contexts/BreadcrumbContext'
-import { useSociete } from '../../contexts/SocieteContext'
 import ClientAutocomplete from '../../components/ClientAutocomplete'
 import { phaseInfo } from './TransactionsPage'
 import Spinner from '../../components/Spinner'
@@ -19,7 +18,6 @@ export default function TransactionDetailPage() {
   const { id } = useParams()
   const navigate = useNavigate()
   const { setSegments, clearSegments } = useBreadcrumb() || {}
-  const { selectedSociete } = useSociete()
   const [transaction, setTransaction] = useState(null)
   const [loading, setLoading] = useState(true)
   const [editing, setEditing] = useState(false)
@@ -33,15 +31,7 @@ export default function TransactionDetailPage() {
   async function fetchTransaction() {
     setLoading(true)
     const { data } = await supabase
-      .from('transactions')
-      .select('*, clients(id, name)')
-      .eq('id', id)
-      .single()
-    if (data && selectedSociete?.id && data.societe_id !== selectedSociete.id) {
-      setTransaction(null)
-      setLoading(false)
-      return
-    }
+      .from('transactions').select('*, clients(id, name)').eq('id', id).single()
     if (data) {
       setTransaction(data)
       setForm({
@@ -49,8 +39,7 @@ export default function TransactionDetailPage() {
         phase: data.phase,
         montant: data.montant ?? '',
         date_fermeture_prevue: data.date_fermeture_prevue ?? '',
-        notes: data.notes ?? '',
-      })
+        notes: data.notes ?? ''})
       setSelectedClient(data.clients ? { id: data.clients.id, name: data.clients.name } : null)
       if (setSegments) {
         setSegments([{ id, label: data.name }])
@@ -68,8 +57,7 @@ export default function TransactionDetailPage() {
       montant: form.montant ? parseFloat(form.montant) : null,
       date_fermeture_prevue: form.date_fermeture_prevue || null,
       notes: form.notes || null,
-      updated_at: new Date().toISOString(),
-    }).eq('id', id)
+      updated_at: new Date().toISOString()}).eq('id', id)
     setSaving(false)
     setEditing(false)
     fetchTransaction()

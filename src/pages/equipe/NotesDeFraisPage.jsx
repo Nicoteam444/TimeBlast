@@ -1,7 +1,6 @@
 import { useState, useEffect, useMemo } from 'react'
 import { useAuth } from '../../contexts/AuthContext'
 import { useDemo } from '../../contexts/DemoContext'
-import { useSociete } from '../../contexts/SocieteContext'
 import { DEMO_NOTES_DE_FRAIS } from '../../data/demoData'
 import { supabase } from '../../lib/supabase'
 import useSortableTable from '../../hooks/useSortableTable'
@@ -14,16 +13,14 @@ const CATEGORIE_META = {
   repas:        { label: 'Repas',          icon: '🍽', color: '#f59e0b', bg: '#fffbeb' },
   materiel:     { label: 'Matériel',       icon: '💻', color: '#0ea5e9', bg: '#f0f9ff' },
   formation:    { label: 'Formation',      icon: '📚', color: '#22c55e', bg: '#f0fdf4' },
-  autre:        { label: 'Autre',          icon: '📎', color: '#64748b', bg: '#f8fafc' },
-}
+  autre:        { label: 'Autre',          icon: '📎', color: '#64748b', bg: '#f8fafc' }}
 
 const STATUT_META = {
   brouillon:  { label: 'Brouillon',   color: '#64748b', bg: '#f1f5f9' },
   soumis:     { label: 'Soumis',      color: '#f59e0b', bg: '#fffbeb' },
   valide:     { label: 'Validé',      color: '#22c55e', bg: '#f0fdf4' },
   refuse:     { label: 'Refusé',      color: '#ef4444', bg: '#fef2f2' },
-  rembourse:  { label: 'Remboursé',   color: '#6366f1', bg: '#eef2ff' },
-}
+  rembourse:  { label: 'Remboursé',   color: '#6366f1', bg: '#eef2ff' }}
 
 function fmtDate(iso) {
   if (!iso) return '—'
@@ -40,13 +37,11 @@ const EMPTY_FORM = {
   categorie: 'repas',
   montant: '',
   description: '',
-  justificatif: '',
-}
+  justificatif: ''}
 
 export default function NotesDeFraisPage() {
   const { profile } = useAuth()
   const { isDemoMode } = useDemo()
-  const { selectedSociete } = useSociete()
   const [notes, setNotes] = useState([])
   const [loading, setLoading] = useState(true)
   const [showForm, setShowForm] = useState(false)
@@ -59,7 +54,7 @@ export default function NotesDeFraisPage() {
 
   useEffect(() => {
     fetchNotes()
-  }, [isDemoMode, selectedSociete?.id, profile?.id])
+  }, [isDemoMode, profile?.id])
 
   async function fetchNotes() {
     setLoading(true)
@@ -73,10 +68,7 @@ export default function NotesDeFraisPage() {
       return
     }
     let q = supabase
-      .from('notes_de_frais')
-      .select('*')
-      .order('date', { ascending: false })
-    if (selectedSociete?.id) q = q.eq('societe_id', selectedSociete.id)
+      .from('notes_de_frais').select('*').order('date', { ascending: false })
     if (profile?.role === 'collaborateur') q = q.eq('user_id', profile.id)
     const { data } = await q
     setNotes(data || [])
@@ -95,8 +87,7 @@ export default function NotesDeFraisPage() {
         montant: parseFloat(form.montant),
         statut: 'brouillon',
         user_id: profile?.id || 'u1',
-        user_name: profile?.full_name || 'Utilisateur démo',
-      }
+        user_name: profile?.full_name || 'Utilisateur démo'}
       setNotes(prev => [newNote, ...prev])
       setSaving(false)
       setShowForm(false)
@@ -107,9 +98,7 @@ export default function NotesDeFraisPage() {
       ...form,
       montant: parseFloat(form.montant),
       statut: 'brouillon',
-      user_id: profile?.id,
-      societe_id: selectedSociete?.id,
-    }
+      user_id: profile?.id}
     await supabase.from('notes_de_frais').insert([payload])
     setSaving(false)
     setShowForm(false)
@@ -202,8 +191,7 @@ export default function NotesDeFraisPage() {
       <div style={{
         display: 'flex', alignItems: 'center', gap: '1.5rem', padding: '.6rem 1rem',
         background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 8,
-        marginBottom: '1rem', fontSize: '.78rem', flexWrap: 'wrap',
-      }}>
+        marginBottom: '1rem', fontSize: '.78rem', flexWrap: 'wrap'}}>
         <span style={{ fontWeight: 700, color: 'var(--text-muted)' }}>Circuit de validation :</span>
         {[
           { label: 'Brouillon', color: '#64748b' },

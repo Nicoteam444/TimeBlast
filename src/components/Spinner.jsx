@@ -6,8 +6,7 @@ export default function Spinner({ size = 36, color = '#2B4C7E', label = '' }) {
         border: `4px solid #e2e8f0`,
         borderTopColor: color,
         borderRadius: '50%',
-        animation: 'tbSpin .8s linear infinite',
-      }} />
+        animation: 'tbSpin .8s linear infinite'}} />
       {label && <span style={{ color: '#94a3b8', fontSize: '.85rem' }}>{label}</span>}
       <style>{`@keyframes tbSpin { to { transform: rotate(360deg) } }`}</style>
     </div>

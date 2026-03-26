@@ -1,7 +1,6 @@
 import { useState, useEffect, useMemo, useRef } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { supabase } from '../../lib/supabase'
-import { useSociete } from '../../contexts/SocieteContext'
 import { useAuth } from '../../contexts/AuthContext'
 import useSortableTable from '../../hooks/useSortableTable'
 import SortableHeader from '../../components/SortableHeader'
@@ -43,8 +42,7 @@ function toISO(date) {
 function fmtDate(iso) {
   if (!iso) return '—'
   return new Date(iso + 'T12:00:00').toLocaleDateString('fr-FR', {
-    day: '2-digit', month: '2-digit', year: 'numeric',
-  })
+    day: '2-digit', month: '2-digit', year: 'numeric'})
 }
 
 function fmtNum(n, decimals = 1) {
@@ -63,15 +61,13 @@ function periodeRange(periode, year) {
     const m = now.getMonth()
     return {
       start: toISO(new Date(y, m, 1)),
-      end: toISO(new Date(y, m + 1, 0)),
-    }
+      end: toISO(new Date(y, m + 1, 0))}
   }
   if (periode === 'trimestre') {
     const q = Math.floor(now.getMonth() / 3)
     return {
       start: toISO(new Date(y, q * 3, 1)),
-      end: toISO(new Date(y, q * 3 + 3, 0)),
-    }
+      end: toISO(new Date(y, q * 3 + 3, 0))}
   }
   // annee
   return { start: `${y}-01-01`, end: `${y}-12-31` }
@@ -115,8 +111,7 @@ function ProgressBar({ pct }) {
           background: color,
           height: '100%',
           borderRadius: 4,
-          transition: 'width .3s',
-        }}
+          transition: 'width .3s'}}
       />
     </div>
   )
@@ -124,7 +119,6 @@ function ProgressBar({ pct }) {
 
 // ── Main component ────────────────────────────────────────────
 export default function ReportingPage() {
-  const { selectedSociete } = useSociete()
   const { profile } = useAuth()
   const [searchParams, setSearchParams] = useSearchParams()
   const highlightId = searchParams.get('highlight')
@@ -171,9 +165,8 @@ export default function ReportingPage() {
 
   // ── Load data ───────────────────────────────────────────────
   useEffect(() => {
-    if (!selectedSociete?.id) return
     loadAll()
-  }, [selectedSociete?.id])
+  }, [])
 
   async function loadAll() {
     setLoading(true)
@@ -190,8 +183,7 @@ export default function ReportingPage() {
       supabase.from('projets').select('*').eq('societe_id', sid),
       supabase.from('lots').select('*').eq('societe_id', sid),
       supabase.from('clients').select('*').eq('societe_id', sid),
-      supabase.from('profiles').select('*').eq('societe_id', sid)
-        .in('role', ['collaborateur', 'manager', 'admin']),
+      supabase.from('profiles').select('*').eq('societe_id', sid).in('role', ['collaborateur', 'manager', 'admin']),
     ])
 
     setSaisies(saisiesData || [])
@@ -258,8 +250,7 @@ export default function ReportingPage() {
           projetName: projetName || '—',
           clientName,
           totalHeures: 0,
-          intervenants: new Set(),
-        }
+          intervenants: new Set()}
       }
       byProjet[projetId].totalHeures += Number(s.heures) || 0
       byProjet[projetId].intervenants.add(s.user_id)
@@ -268,14 +259,12 @@ export default function ReportingPage() {
     return Object.values(byProjet).map(r => ({
       ...r,
       totalJours: r.totalHeures / 8,
-      nbIntervenants: r.intervenants.size,
-    })).sort((a, b) => a.projetName.localeCompare(b.projetName))
+      nbIntervenants: r.intervenants.size})).sort((a, b) => a.projetName.localeCompare(b.projetName))
   }, [saisies, lotMap, projetMap, clientMap, t1Range, t1Projet, t1Collab])
 
   const t1Total = useMemo(() => ({
     totalHeures: t1Rows.reduce((s, r) => s + r.totalHeures, 0),
-    totalJours: t1Rows.reduce((s, r) => s + r.totalJours, 0),
-  }), [t1Rows])
+    totalJours: t1Rows.reduce((s, r) => s + r.totalJours, 0)}), [t1Rows])
 
   const { sortedData: sortedT1, sortKey: t1SortKey, sortDir: t1SortDir, requestSort: t1RequestSort } = useSortableTable(t1Rows)
 
@@ -305,8 +294,7 @@ export default function ReportingPage() {
       for (const mondayISO of t2Columns) {
         const sun = toISO(addDays(new Date(mondayISO), 6))
         const h = saisies
-          .filter(s => s.user_id === collab.id && s.date >= mondayISO && s.date <= sun)
-          .reduce((acc, s) => acc + (Number(s.heures) || 0), 0)
+          .filter(s => s.user_id === collab.id && s.date >= mondayISO && s.date <= sun).reduce((acc, s) => acc + (Number(s.heures) || 0), 0)
         weekTotals[mondayISO] = h
       }
       const totalH = Object.values(weekTotals).reduce((a, b) => a + b, 0)
@@ -334,8 +322,7 @@ export default function ReportingPage() {
       const projetLots = lots.filter(l => l.projet_id === projet.id)
       const lotIds = new Set(projetLots.map(l => l.id))
       const heuresSaisies = saisies
-        .filter(s => lotIds.has(s.lot_id))
-        .reduce((acc, s) => acc + (Number(s.heures) || 0), 0)
+        .filter(s => lotIds.has(s.lot_id)).reduce((acc, s) => acc + (Number(s.heures) || 0), 0)
       const joursVendus = Number(projet.total_jours) || 0
       const joursConsom = heuresSaisies / 8
       const joursRestants = joursVendus - joursConsom
@@ -347,8 +334,7 @@ export default function ReportingPage() {
         joursVendus,
         joursConsom,
         joursRestants,
-        avancement,
-      }
+        avancement}
     }).sort((a, b) => a.projet.name.localeCompare(b.projet.name))
   }, [projets, lots, saisies, clientMap])
 
@@ -744,8 +730,7 @@ export default function ReportingPage() {
                           style={isHighlighted ? {
                             background: '#dbeafe',
                             animation: 'highlight-fade 4s ease-out forwards',
-                            boxShadow: 'inset 3px 0 0 var(--primary, #3b82f6)',
-                          } : undefined}
+                            boxShadow: 'inset 3px 0 0 var(--primary, #3b82f6)'} : undefined}
                         >
                           <td style={{ whiteSpace: 'nowrap' }}>{fmtDate(s.date)}</td>
                           <td>{splitFullName(collab?.full_name).nom}</td>

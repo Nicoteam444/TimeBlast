@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useAuth } from '../../contexts/AuthContext'
 import { useDemo } from '../../contexts/DemoContext'
-import { useSociete } from '../../contexts/SocieteContext'
 import { DEMO_USERS } from '../../data/demoData'
 import { supabase } from '../../lib/supabase'
 import useSortableTable from '../../hooks/useSortableTable'
@@ -14,15 +13,13 @@ const ABSENCE_TYPES = {
   conge:    { color: '#6366f1', bg: '#eef2ff', label: 'Conge' },
   RTT:      { color: '#0ea5e9', bg: '#e0f2fe', label: 'RTT' },
   maladie:  { color: '#dc2626', bg: '#fef2f2', label: 'Maladie' },
-  ferie:    { color: '#f59e0b', bg: '#fffbeb', label: 'Ferie' },
-}
+  ferie:    { color: '#f59e0b', bg: '#fffbeb', label: 'Ferie' }}
 
 const STATUT_META = {
   brouillon:  { label: 'Brouillon',   color: '#64748b', bg: '#f1f5f9' },
   en_attente: { label: 'En attente',  color: '#f59e0b', bg: '#fffbeb' },
   approuve:   { label: 'Approuve',    color: '#22c55e', bg: '#f0fdf4' },
-  rejete:     { label: 'Rejete',      color: '#ef4444', bg: '#fef2f2' },
-}
+  rejete:     { label: 'Rejete',      color: '#ef4444', bg: '#fef2f2' }}
 
 function getMonday(d) {
   const date = new Date(d)
@@ -59,8 +56,7 @@ function TypeBadge({ type }) {
       padding: '.2rem .65rem', borderRadius: 20,
       fontSize: '.78rem', fontWeight: 700,
       background: cfg.bg, color: cfg.color,
-      border: `1px solid ${cfg.color}33`,
-    }}>
+      border: `1px solid ${cfg.color}33`}}>
       {cfg.label}
     </span>
   )
@@ -74,8 +70,7 @@ function StatutBadge({ statut }) {
       padding: '.2rem .65rem', borderRadius: 20,
       fontSize: '.78rem', fontWeight: 700,
       background: cfg.bg, color: cfg.color,
-      border: `1px solid ${cfg.color}33`,
-    }}>
+      border: `1px solid ${cfg.color}33`}}>
       {cfg.label}
     </span>
   )
@@ -91,8 +86,7 @@ function generateDemoAbsences() {
       date_debut: toISO(addDays(monday, -7)),
       date_fin: toISO(addDays(monday, -3)),
       note: 'Vacances d\'hiver',
-      statut: 'approuve',
-    },
+      statut: 'approuve'},
     {
       id: 'abs-2',
       user_id: 'u3',
@@ -100,8 +94,7 @@ function generateDemoAbsences() {
       date_debut: toISO(addDays(monday, 1)),
       date_fin: toISO(addDays(monday, 1)),
       note: '',
-      statut: 'en_attente',
-    },
+      statut: 'en_attente'},
     {
       id: 'abs-3',
       user_id: 'u4',
@@ -109,8 +102,7 @@ function generateDemoAbsences() {
       date_debut: toISO(addDays(monday, -2)),
       date_fin: toISO(addDays(monday, -1)),
       note: 'Arret medical',
-      statut: 'approuve',
-    },
+      statut: 'approuve'},
     {
       id: 'abs-4',
       user_id: 'u5',
@@ -118,8 +110,7 @@ function generateDemoAbsences() {
       date_debut: toISO(addDays(monday, 14)),
       date_fin: toISO(addDays(monday, 14)),
       note: 'Jour ferie',
-      statut: 'en_attente',
-    },
+      statut: 'en_attente'},
     {
       id: 'abs-5',
       user_id: 'u1',
@@ -127,8 +118,7 @@ function generateDemoAbsences() {
       date_debut: toISO(addDays(monday, 21)),
       date_fin: toISO(addDays(monday, 25)),
       note: 'Conges printemps',
-      statut: 'brouillon',
-    },
+      statut: 'brouillon'},
   ]
 }
 
@@ -142,7 +132,6 @@ function saveLocalAbsences(data) {
 export default function AbsencesPage() {
   const { profile } = useAuth()
   const { isDemoMode } = useDemo()
-  const { selectedSociete } = useSociete()
   const [absences, setAbsences] = useState([])
   const [loading, setLoading] = useState(true)
   const [showForm, setShowForm] = useState(false)
@@ -151,8 +140,7 @@ export default function AbsencesPage() {
     type: 'conge',
     date_debut: toISO(new Date()),
     date_fin: toISO(new Date()),
-    note: '',
-  })
+    note: ''})
   const [saving, setSaving] = useState(false)
   const [filterType, setFilterType] = useState('')
   const [filterStatut, setFilterStatut] = useState('')
@@ -167,7 +155,6 @@ export default function AbsencesPage() {
     } else {
       try {
         let q = supabase.from('absences').select('*')
-        if (selectedSociete?.id) q = q.eq('societe_id', selectedSociete.id)
         if (profile?.role === 'collaborateur') q = q.eq('user_id', profile.id)
         const { data } = await q.order('date_debut', { ascending: false })
         setAbsences((data || []).map(a => ({ ...a, statut: a.statut || 'brouillon' })))
@@ -178,7 +165,7 @@ export default function AbsencesPage() {
     setLoading(false)
   }
 
-  useEffect(() => { loadAbsences() }, [isDemoMode, selectedSociete?.id])
+  useEffect(() => { loadAbsences() }, [isDemoMode])
 
   function getUserName(userId) {
     const user = DEMO_USERS.find(u => u.id === userId)
@@ -206,8 +193,7 @@ export default function AbsencesPage() {
     const newAbs = {
       id: `abs-${Date.now()}`,
       ...form,
-      statut: 'brouillon',
-    }
+      statut: 'brouillon'}
     if (isDemoMode) {
       const updated = [newAbs, ...absences]
       setAbsences(updated)
@@ -220,8 +206,7 @@ export default function AbsencesPage() {
           date_debut: form.date_debut,
           date_fin: form.date_fin,
           note: form.note || null,
-          statut: 'brouillon',
-        })
+          statut: 'brouillon'})
         await loadAbsences()
       } catch {
         const updated = [newAbs, ...absences]
@@ -280,8 +265,7 @@ export default function AbsencesPage() {
   const countByStatut = {
     en_attente: absences.filter(a => a.statut === 'en_attente').length,
     approuve: absences.filter(a => a.statut === 'approuve').length,
-    rejete: absences.filter(a => a.statut === 'rejete').length,
-  }
+    rejete: absences.filter(a => a.statut === 'rejete').length}
 
   return (
     <div className="admin-page">
@@ -307,8 +291,7 @@ export default function AbsencesPage() {
         ].map(k => (
           <div key={k.label} style={{
             background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 10,
-            padding: '.6rem 1rem', minWidth: 110, flex: '1 1 110px',
-          }}>
+            padding: '.6rem 1rem', minWidth: 110, flex: '1 1 110px'}}>
             <div style={{ fontSize: '.72rem', color: 'var(--text-muted)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '.05em' }}>{k.label}</div>
             <div style={{ fontSize: '1.4rem', fontWeight: 800, color: k.color, marginTop: '.1rem' }}>{k.value}</div>
           </div>
@@ -319,8 +302,7 @@ export default function AbsencesPage() {
       {showForm && (
         <div style={{
           background: 'var(--surface)', border: '1px solid var(--border)',
-          borderRadius: 12, padding: '1.25rem 1.5rem', marginBottom: '1.5rem',
-        }}>
+          borderRadius: 12, padding: '1.25rem 1.5rem', marginBottom: '1.5rem'}}>
           <h3 style={{ marginBottom: '1rem', fontSize: '.95rem', fontWeight: 700 }}>Nouvelle absence</h3>
           <form onSubmit={handleAdd}>
             <div className="form-row" style={{ gap: '1rem', flexWrap: 'wrap' }}>
@@ -380,8 +362,7 @@ export default function AbsencesPage() {
               fontSize: '.8rem', padding: '.3rem .75rem', borderRadius: 20, border: `1px solid ${cfg.color}44`,
               background: filterType === key ? cfg.bg : 'var(--surface)',
               color: filterType === key ? cfg.color : 'var(--text-muted)',
-              cursor: 'pointer', fontWeight: filterType === key ? 700 : 500,
-            }}
+              cursor: 'pointer', fontWeight: filterType === key ? 700 : 500}}
             onClick={() => setFilterType(filterType === key ? '' : key)}
           >
             {cfg.label}
@@ -394,8 +375,7 @@ export default function AbsencesPage() {
           style={{
             fontSize: '.8rem', padding: '.3rem .6rem', borderRadius: 8,
             border: '1px solid var(--border)', background: 'var(--surface)', color: 'var(--text)',
-            cursor: 'pointer',
-          }}
+            cursor: 'pointer'}}
         >
           <option value="">Tous les statuts</option>
           {Object.entries(STATUT_META).map(([k, v]) => (
@@ -464,8 +444,7 @@ export default function AbsencesPage() {
                           style={{
                             background: 'none', border: '1px solid #f59e0b33',
                             color: '#f59e0b', borderRadius: 6, padding: '.25rem .6rem',
-                            cursor: 'pointer', fontSize: '.78rem', fontWeight: 600,
-                          }}
+                            cursor: 'pointer', fontSize: '.78rem', fontWeight: 600}}
                           onClick={() => handleStatut(absence.id, 'en_attente')}
                         >
                           Soumettre
@@ -476,8 +455,7 @@ export default function AbsencesPage() {
                           style={{
                             background: 'none', border: '1px solid #dc262633',
                             color: '#dc2626', borderRadius: 6, padding: '.25rem .6rem',
-                            cursor: 'pointer', fontSize: '.78rem', fontWeight: 600,
-                          }}
+                            cursor: 'pointer', fontSize: '.78rem', fontWeight: 600}}
                           onClick={() => handleDelete(absence.id)}
                         >
                           Supprimer

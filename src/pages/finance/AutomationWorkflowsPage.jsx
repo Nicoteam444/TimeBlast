@@ -1,6 +1,5 @@
 import { useState, useEffect, useMemo, useRef, useCallback } from 'react'
 import { supabase } from '../../lib/supabase'
-import { useSociete } from '../../contexts/SocieteContext'
 import useSortableTable from '../../hooks/useSortableTable'
 import SortableHeader from '../../components/SortableHeader'
 import Spinner from '../../components/Spinner'
@@ -12,8 +11,7 @@ const TRIGGER_META = {
   facture_overdue:   { label: 'Facture depasse echeance',            icon: '⚠️', color: '#ef4444', bg: '#fef2f2' },
   projet_created:    { label: 'Quand un projet est cree',            icon: '📁', color: '#8b5cf6', bg: '#f5f3ff' },
   document_uploaded: { label: 'Quand un document est archive',       icon: '📎', color: '#6366f1', bg: '#eef2ff' },
-  task_moved:        { label: 'Quand une tache change de phase',     icon: '🔄', color: '#0ea5e9', bg: '#e0f2fe' },
-}
+  task_moved:        { label: 'Quand une tache change de phase',     icon: '🔄', color: '#0ea5e9', bg: '#e0f2fe' }}
 
 const ACTION_META = {
   create_client:      { label: 'Creer une fiche client',            icon: '👤', color: '#22c55e' },
@@ -23,8 +21,7 @@ const ACTION_META = {
   send_slack:         { label: 'Envoyer un Slack',                  icon: '💬', color: '#e11d48' },
   create_document:    { label: 'Creer un document',                 icon: '📄', color: '#6366f1' },
   update_status:      { label: 'Mettre a jour un statut',           icon: '🔄', color: '#0ea5e9' },
-  create_contact:     { label: 'Creer un contact',                  icon: '📇', color: '#059669' },
-}
+  create_contact:     { label: 'Creer un contact',                  icon: '📇', color: '#059669' }}
 
 const SQL_HINT = `CREATE TABLE IF NOT EXISTS automation_workflows (
   id uuid DEFAULT gen_random_uuid() PRIMARY KEY, created_at timestamptz DEFAULT now(),
@@ -133,8 +130,7 @@ function WorkflowVisualEditor({ workflow, onSave, onCancel, societeId }) {
         <div ref={canvasRef} onClick={() => setSelectedNode(null)} style={{
           flex: 1, overflow: 'auto', position: 'relative',
           backgroundImage: 'radial-gradient(circle, #cbd5e1 1px, transparent 1px)',
-          backgroundSize: '20px 20px', backgroundColor: '#f1f5f9',
-        }}>
+          backgroundSize: '20px 20px', backgroundColor: '#f1f5f9'}}>
           <div style={{ position: 'relative', width: '100%', minHeight: canvasH }}>
             {/* SVG Edges */}
             <svg style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', pointerEvents: 'none', overflow: 'visible' }}>
@@ -202,16 +198,14 @@ function WorkflowVisualEditor({ workflow, onSave, onCancel, societeId }) {
                 <button onClick={e => { e.stopPropagation(); setShowAddMenu(true) }} style={{
                   padding: '.5rem 1rem', background: '#fff', border: '2px dashed #94a3b8',
                   borderRadius: 10, cursor: 'pointer', fontSize: '.85rem', fontWeight: 600, color: '#64748b',
-                  boxShadow: '0 2px 8px rgba(0,0,0,.06)',
-                }}>+ Ajouter une action</button>
+                  boxShadow: '0 2px 8px rgba(0,0,0,.06)'}}>+ Ajouter une action</button>
               ) : (
                 <div style={{ background: '#fff', borderRadius: 10, boxShadow: '0 8px 24px rgba(0,0,0,.15)', border: '1px solid #e2e8f0', overflow: 'hidden', width: 220 }}>
                   {Object.entries(ACTION_META).map(([k, v]) => (
                     <button key={k} onClick={e => { e.stopPropagation(); addAction(k) }} style={{
                       display: 'flex', alignItems: 'center', gap: '.5rem', width: '100%',
                       padding: '.5rem .75rem', border: 'none', background: '#fff', cursor: 'pointer',
-                      fontSize: '.8rem', fontWeight: 500, textAlign: 'left', borderBottom: '1px solid #f1f5f9',
-                    }} onMouseEnter={e => e.currentTarget.style.background = '#f8fafc'} onMouseLeave={e => e.currentTarget.style.background = '#fff'}>
+                      fontSize: '.8rem', fontWeight: 500, textAlign: 'left', borderBottom: '1px solid #f1f5f9'}} onMouseEnter={e => e.currentTarget.style.background = '#f8fafc'} onMouseLeave={e => e.currentTarget.style.background = '#fff'}>
                       <span>{v.icon}</span> {v.label}
                     </button>
                   ))}
@@ -263,7 +257,6 @@ function WorkflowVisualEditor({ workflow, onSave, onCancel, societeId }) {
 
 /* ───────── Main Page ───────── */
 export default function AutomationWorkflowsPage() {
-  const { selectedSociete } = useSociete()
   const [workflows, setWorkflows] = useState([])
   const [loading, setLoading] = useState(true)
   const [tableError, setTableError] = useState(false)
@@ -281,12 +274,11 @@ export default function AutomationWorkflowsPage() {
   const [filterActive, setFilterActive] = useState('')
   const [search, setSearch] = useState('')
 
-  useEffect(() => { fetchWorkflows() }, [selectedSociete?.id])
+  useEffect(() => { fetchWorkflows() }, [])
 
   async function fetchWorkflows() {
     setLoading(true); setTableError(false)
     let q = supabase.from('automation_workflows').select('*').order('created_at', { ascending: false })
-    if (selectedSociete?.id) q = q.eq('societe_id', selectedSociete.id)
     const { data, error } = await q
     if (error) { if (error.code === '42P01' || error.message?.includes('schema cache')) setTableError(true); setWorkflows([]) }
     else setWorkflows(data || [])
@@ -310,7 +302,8 @@ export default function AutomationWorkflowsPage() {
     if (!form.name.trim()) { setFormError('Le nom est requis.'); return }
     if (!form.actions.length) { setFormError('Au moins une action.'); return }
     setSaving(true); setFormError('')
-    const payload = { name: form.name.trim(), description: form.description.trim() || null, trigger_type: form.trigger_type, trigger_config: {}, actions: form.actions, active: form.active, societe_id: selectedSociete?.id || null, updated_at: new Date().toISOString() }
+    const payload = { name: form.name.trim(), description: form.description.trim() || null, trigger_type: form.trigger_type, trigger_config: {}, actions: form.actions, active: form.active,
+ updated_at: new Date().toISOString() }
     let error
     if (editItem) { ;({ error } = await supabase.from('automation_workflows').update(payload).eq('id', editItem.id)) }
     else { ;({ error } = await supabase.from('automation_workflows').insert([payload])) }
@@ -355,7 +348,7 @@ export default function AutomationWorkflowsPage() {
 
   // Visual editor mode
   if (visualWorkflow !== null) {
-    return <WorkflowVisualEditor workflow={visualWorkflow === 'new' ? null : visualWorkflow} onSave={handleVisualSave} onCancel={() => setVisualWorkflow(null)} societeId={selectedSociete?.id} />
+    return <WorkflowVisualEditor workflow={visualWorkflow === 'new' ? null : visualWorkflow} onSave={handleVisualSave} onCancel={() => setVisualWorkflow(null)} societeId={null} />
   }
 
   return (
@@ -495,8 +488,7 @@ export default function AutomationWorkflowsPage() {
               <div key={w.id} onClick={() => setVisualWorkflow(w)} style={{
                 background: '#fff', borderRadius: 12, padding: '1.25rem', border: '1px solid #e2e8f0',
                 cursor: 'pointer', transition: 'all .2s', boxShadow: '0 2px 8px rgba(0,0,0,.04)',
-                borderLeft: `4px solid ${trig.color}`,
-              }} onMouseEnter={e => e.currentTarget.style.boxShadow = '0 4px 16px rgba(0,0,0,.1)'} onMouseLeave={e => e.currentTarget.style.boxShadow = '0 2px 8px rgba(0,0,0,.04)'}>
+                borderLeft: `4px solid ${trig.color}`}} onMouseEnter={e => e.currentTarget.style.boxShadow = '0 4px 16px rgba(0,0,0,.1)'} onMouseLeave={e => e.currentTarget.style.boxShadow = '0 2px 8px rgba(0,0,0,.04)'}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '.5rem' }}>
                   <div style={{ fontWeight: 600, fontSize: '.95rem' }}>{w.name}</div>
                   <span style={{ fontSize: '.7rem', fontWeight: 600, padding: '.15rem .4rem', borderRadius: 10, background: w.active ? '#dcfce7' : '#f1f5f9', color: w.active ? '#16a34a' : '#64748b' }}>{w.active ? 'Actif' : 'Inactif'}</span>

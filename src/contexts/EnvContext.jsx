@@ -18,16 +18,11 @@ export function EnvProvider({ children }) {
   async function loadEnvironments() {
     try {
       const { data, error } = await supabase
-        .from('user_environments')
-        .select('role, environments(id, env_code, name, description, supabase_url, is_production, is_active)')
-        .eq('user_id', user.id)
+        .from('user_environments').select('role, environments(id, env_code, name, description, supabase_url, is_production, is_active)').eq('user_id', user.id)
 
       if (error) throw error
 
-      const envs = (data || [])
-        .map(ue => ({ ...ue.environments, userRole: ue.role }))
-        .filter(e => e && e.is_active)
-        .sort((a, b) => (b.is_production ? 1 : 0) - (a.is_production ? 1 : 0))
+      const envs = (data || []).map(ue => ({ ...ue.environments, userRole: ue.role })).filter(e => e && e.is_active).sort((a, b) => (b.is_production ? 1 : 0) - (a.is_production ? 1 : 0))
 
       setEnvironments(envs)
 

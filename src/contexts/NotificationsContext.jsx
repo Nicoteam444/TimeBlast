@@ -1,6 +1,5 @@
 import { createContext, useContext, useState, useEffect, useCallback } from 'react'
 import { useDemo } from './DemoContext'
-import { useSociete } from './SocieteContext'
 import { useAuth } from './AuthContext'
 import { supabase } from '../lib/supabase'
 
@@ -42,8 +41,7 @@ function getMockNotifications() {
       message: 'Facture FAC-2024-047 (Groupe Altea) - echue depuis 12 jours',
       date: oneHourAgo.toISOString(),
       read: false,
-      link: '/finance/facturation',
-    },
+      link: '/finance/facturation'},
     {
       id: 'demo-n2',
       type: 'finance',
@@ -52,8 +50,7 @@ function getMockNotifications() {
       message: 'Facture FAC-2024-051 (Meridian Finance) - echue depuis 5 jours',
       date: threeHoursAgo.toISOString(),
       read: false,
-      link: '/finance/facturation',
-    },
+      link: '/finance/facturation'},
     {
       id: 'demo-n3',
       type: 'rh',
@@ -62,8 +59,7 @@ function getMockNotifications() {
       message: 'Alice Martin a demande 5 jours de conges (24-28 mars)',
       date: yesterday.toISOString(),
       read: false,
-      link: '/activite/absences',
-    },
+      link: '/activite/absences'},
     {
       id: 'demo-n4',
       type: 'rh',
@@ -72,8 +68,7 @@ function getMockNotifications() {
       message: 'Thomas Durand a demande 2 jours de RTT (1-2 avril)',
       date: yesterday.toISOString(),
       read: false,
-      link: '/activite/absences',
-    },
+      link: '/activite/absences'},
     {
       id: 'demo-n5',
       type: 'commercial',
@@ -82,8 +77,7 @@ function getMockNotifications() {
       message: 'Audit SI Altea 2024 - fermeture prevue dans 4 jours (240 000 EUR)',
       date: twoDaysAgo.toISOString(),
       read: false,
-      link: '/commerce/transactions',
-    },
+      link: '/commerce/transactions'},
     {
       id: 'demo-n6',
       type: 'finance',
@@ -92,8 +86,7 @@ function getMockNotifications() {
       message: 'Migration ERP Meridian - 112% du budget consomme (268 800 EUR / 240 000 EUR)',
       date: twoDaysAgo.toISOString(),
       read: false,
-      link: '/activite/projets',
-    },
+      link: '/activite/projets'},
     {
       id: 'demo-n7',
       type: 'rh',
@@ -102,8 +95,7 @@ function getMockNotifications() {
       message: '3 notes de frais en attente de validation (total: 542 EUR)',
       date: threeDaysAgo.toISOString(),
       read: false,
-      link: '/equipe/notes-de-frais',
-    },
+      link: '/equipe/notes-de-frais'},
     {
       id: 'demo-n8',
       type: 'rh',
@@ -112,8 +104,7 @@ function getMockNotifications() {
       message: 'Alice Martin a soumis sa semaine pour validation',
       date: threeDaysAgo.toISOString(),
       read: false,
-      link: '/activite/validation',
-    },
+      link: '/activite/validation'},
     {
       id: 'demo-n9',
       type: 'commercial',
@@ -122,8 +113,7 @@ function getMockNotifications() {
       message: 'Conseil RH Cabinet Marceau - fermeture prevue dans 6 jours',
       date: fiveDaysAgo.toISOString(),
       read: false,
-      link: '/commerce/transactions',
-    },
+      link: '/commerce/transactions'},
     {
       id: 'demo-n10',
       type: 'finance',
@@ -132,8 +122,7 @@ function getMockNotifications() {
       message: 'Facture FAC-2024-039 (TechForge SAS) - echue depuis 22 jours',
       date: fiveDaysAgo.toISOString(),
       read: false,
-      link: '/finance/facturation',
-    },
+      link: '/finance/facturation'},
   ]
 }
 
@@ -148,10 +137,7 @@ async function fetchSmartNotifications(societeId) {
   try {
     // 1. Factures en retard
     let facQuery = supabase
-      .from('factures')
-      .select('id, numero, client_nom, date_echeance, total_ttc')
-      .eq('statut', 'envoyee')
-      .lt('date_echeance', todayISO)
+      .from('factures').select('id, numero, client_nom, date_echeance, total_ttc').eq('statut', 'envoyee').lt('date_echeance', todayISO)
     if (societeId) facQuery = facQuery.eq('societe_id', societeId)
 
     const { data: factures } = await facQuery
@@ -166,16 +152,13 @@ async function fetchSmartNotifications(societeId) {
           message: `${f.numero || 'Facture'} (${f.client_nom || 'Client'}) - echue depuis ${daysLate} jour${daysLate > 1 ? 's' : ''}`,
           date: new Date(now - daysLate * 86400000 / 2).toISOString(),
           read: false,
-          link: '/finance/facturation',
-        })
+          link: '/finance/facturation'})
       })
     }
 
     // 2. Absences a valider (en_attente)
     let absQuery = supabase
-      .from('absences')
-      .select('id, user_id, type, date_debut, date_fin, created_at, profiles(full_name)')
-      .eq('statut', 'en_attente')
+      .from('absences').select('id, user_id, type, date_debut, date_fin, created_at, profiles(full_name)').eq('statut', 'en_attente')
     if (societeId) absQuery = absQuery.eq('societe_id', societeId)
 
     const { data: absences } = await absQuery
@@ -192,25 +175,20 @@ async function fetchSmartNotifications(societeId) {
           message: `${userName} - du ${debut} au ${fin}`,
           date: a.created_at || now.toISOString(),
           read: false,
-          link: '/activite/absences',
-        })
+          link: '/activite/absences'})
       })
     }
 
     // 3. Projets qui depassent le budget
     let projQuery = supabase
-      .from('projets')
-      .select('id, name, budget, client_id, clients(name)')
-      .gt('budget', 0)
+      .from('projets').select('id, name, budget, client_id, clients(name)').gt('budget', 0)
     if (societeId) projQuery = projQuery.eq('societe_id', societeId)
 
     const { data: projets } = await projQuery
     if (projets) {
       for (const p of projets) {
         const { data: saisies } = await supabase
-          .from('saisies_temps')
-          .select('duree, taux_journalier')
-          .eq('projet_id', p.id)
+          .from('saisies_temps').select('duree, taux_journalier').eq('projet_id', p.id)
         if (saisies) {
           const totalCost = saisies.reduce((sum, s) => sum + ((s.duree || 0) / 8) * (s.taux_journalier || 0), 0)
           const ratio = totalCost / p.budget
@@ -223,8 +201,7 @@ async function fetchSmartNotifications(societeId) {
               message: `${p.name} - ${Math.round(ratio * 100)}% du budget consomme`,
               date: now.toISOString(),
               read: false,
-              link: '/activite/projets',
-            })
+              link: '/activite/projets'})
           }
         }
       }
@@ -232,11 +209,7 @@ async function fetchSmartNotifications(societeId) {
 
     // 4. Transactions proches de fermeture
     let txQuery = supabase
-      .from('transactions')
-      .select('id, name, montant, date_fermeture_prevue, phase')
-      .gte('date_fermeture_prevue', todayISO)
-      .lte('date_fermeture_prevue', sevenDaysISO)
-      .not('phase', 'in', '("ferme","perdu")')
+      .from('transactions').select('id, name, montant, date_fermeture_prevue, phase').gte('date_fermeture_prevue', todayISO).lte('date_fermeture_prevue', sevenDaysISO).not('phase', 'in', '("ferme","perdu")')
     if (societeId) txQuery = txQuery.eq('societe_id', societeId)
 
     const { data: transactions } = await txQuery
@@ -252,16 +225,13 @@ async function fetchSmartNotifications(societeId) {
           message: `${t.name} - fermeture dans ${daysLeft} jour${daysLeft > 1 ? 's' : ''}${montantStr ? ` (${montantStr})` : ''}`,
           date: now.toISOString(),
           read: false,
-          link: `/commerce/transactions/${t.id}`,
-        })
+          link: `/commerce/transactions/${t.id}`})
       })
     }
 
     // 5. Notes de frais a approuver
     let ndfQuery = supabase
-      .from('notes_de_frais')
-      .select('id, montant, description, created_at, user_id, profiles(full_name)')
-      .eq('statut', 'soumis')
+      .from('notes_de_frais').select('id, montant, description, created_at, user_id, profiles(full_name)').eq('statut', 'soumis')
     if (societeId) ndfQuery = ndfQuery.eq('societe_id', societeId)
 
     const { data: notesFrais } = await ndfQuery
@@ -276,8 +246,7 @@ async function fetchSmartNotifications(societeId) {
         message: `${notesFrais.length} note${notesFrais.length > 1 ? 's' : ''} de frais en attente (total: ${totalStr})`,
         date: notesFrais[0]?.created_at || now.toISOString(),
         read: false,
-        link: '/equipe/notes-de-frais',
-      })
+        link: '/equipe/notes-de-frais'})
     }
   } catch (err) {
     console.error('Erreur chargement notifications:', err)
@@ -290,7 +259,6 @@ async function fetchSmartNotifications(societeId) {
 
 export function NotificationsProvider({ children }) {
   const { isDemoMode } = useDemo()
-  const { selectedSociete } = useSociete() || {}
   const { user } = useAuth()
   const uid = user?.id || 'anon'
   const [notifications, setNotifications] = useState([])
@@ -303,20 +271,18 @@ export function NotificationsProvider({ children }) {
     if (isDemoMode) {
       const mocks = getMockNotifications().map(n => ({
         ...n,
-        read: readIds.has(n.id),
-      }))
+        read: readIds.has(n.id)}))
       setNotifications(mocks)
       setLoading(false)
     } else {
-      const smart = await fetchSmartNotifications(selectedSociete?.id)
+      const smart = await fetchSmartNotifications()
       const withRead = smart.map(n => ({
         ...n,
-        read: readIds.has(n.id),
-      }))
+        read: readIds.has(n.id)}))
       setNotifications(withRead)
       setLoading(false)
     }
-  }, [isDemoMode, selectedSociete?.id, uid])
+  }, [isDemoMode, uid])
 
   useEffect(() => {
     refreshNotifications()

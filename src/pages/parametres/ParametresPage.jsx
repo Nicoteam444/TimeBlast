@@ -117,16 +117,14 @@ function AffichageTab() {
               padding: '1rem',
               display: 'flex',
               alignItems: 'center',
-              gap: '1rem',
-            }}>
+              gap: '1rem'}}>
               <label style={{
                 width: 44, height: 44, borderRadius: 8, cursor: 'pointer',
                 border: '2px solid var(--border)',
                 background: settings[field.key] || '#ccc',
                 flexShrink: 0,
                 position: 'relative',
-                overflow: 'hidden',
-              }}>
+                overflow: 'hidden'}}>
                 <input
                   type="color"
                   value={settings[field.key] || '#195C82'}
@@ -576,8 +574,7 @@ function TiersVerificationBlock() {
           <div style={{ padding: '.75rem 1rem', borderRadius: 10, marginBottom: '1rem',
             background: enrichResult.type === 'created' ? '#f0fdf4' : enrichResult.type === 'exists' ? '#fffbeb' : '#fef2f2',
             border: `1px solid ${enrichResult.type === 'created' ? '#86efac' : enrichResult.type === 'exists' ? '#fcd34d' : '#fca5a5'}`,
-            fontSize: '.9rem',
-          }}>
+            fontSize: '.9rem'}}>
             {enrichResult.type === 'created' && <p style={{ color: '#166534' }}>✅ Client <strong>{enrichResult.nom}</strong> créé ! (SIREN : {enrichResult.siren})</p>}
             {enrichResult.type === 'exists' && <p style={{ color: '#92400e' }}>⚠ <strong>{enrichResult.nom}</strong> existe déjà dans votre base.</p>}
             {enrichResult.type === 'error' && <p style={{ color: '#dc2626' }}>❌ {enrichResult.message}</p>}
@@ -770,8 +767,7 @@ function BaseDeDonneesTab() {
                                     display: 'flex', alignItems: 'center', gap: '.4rem',
                                     padding: '.3rem .65rem', borderRadius: 6,
                                     background: 'var(--card-bg, #fff)', border: '1px solid var(--border, #e2e8f0)',
-                                    fontSize: '.8rem',
-                                  }}>
+                                    fontSize: '.8rem'}}>
                                     <span style={{ fontWeight: 500 }}>{socName}</span>
                                     <span style={{ fontWeight: 700, color: 'var(--primary)' }}>{cnt.toLocaleString('fr-FR')}</span>
                                   </div>

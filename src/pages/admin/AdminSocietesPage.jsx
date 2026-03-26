@@ -58,8 +58,7 @@ export default function AdminSocietesPage() {
       adresse: form.adresse.trim() || null,
       ville: form.ville.trim() || null,
       code_postal: form.code_postal.trim() || null,
-      groupe_id: form.groupe_id || null,
-    }
+      groupe_id: form.groupe_id || null}
     let error
 
     if (editItem) {
@@ -271,8 +270,7 @@ ALTER TABLE profiles ADD COLUMN IF NOT EXISTS societe_id uuid REFERENCES societe
                         color: groupe.color,
                         background: groupe.color + '18',
                         fontSize: '.72rem',
-                        fontWeight: 600,
-                      }}>
+                        fontWeight: 600}}>
                         🏛 {groupe.name}
                       </span>
                     ) : (

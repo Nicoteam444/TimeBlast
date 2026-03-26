@@ -1,6 +1,5 @@
 import { useState, useRef } from 'react'
 import { supabase } from '../../lib/supabase'
-import { useSociete } from '../../contexts/SocieteContext'
 
 const TARGETS = [
   { id: 'contacts', label: 'Contacts CRM', icon: '👤', fields: ['nom', 'prenom', 'email', 'telephone', 'poste', 'entreprise'] },
@@ -23,7 +22,6 @@ function parseCSV(text) {
 }
 
 export default function ImportPage() {
-  const { selectedSociete } = useSociete()
   const [target, setTarget] = useState('contacts')
   const [file, setFile] = useState(null)
   const [parsed, setParsed] = useState(null)
@@ -65,7 +63,8 @@ export default function ImportPage() {
     let inserted = 0, errors = 0
 
     for (const row of parsed.rows) {
-      const record = { societe_id: selectedSociete?.id }
+      const record = {
+}
 
       if (target === 'contacts') {
         record.nom = row[mapping.nom] || ''
@@ -143,8 +142,7 @@ export default function ImportPage() {
             flex: 1, padding: '.6rem', textAlign: 'center', fontSize: '.82rem', fontWeight: step >= s.n ? 700 : 400,
             background: step >= s.n ? 'var(--primary)' : 'var(--border)',
             color: step >= s.n ? '#fff' : 'var(--text-muted)',
-            borderRadius: s.n === 1 ? '8px 0 0 8px' : s.n === 4 ? '0 8px 8px 0' : 0,
-          }}>
+            borderRadius: s.n === 1 ? '8px 0 0 8px' : s.n === 4 ? '0 8px 8px 0' : 0}}>
             {s.n}. {s.label}
           </div>
         ))}

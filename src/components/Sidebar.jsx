@@ -14,8 +14,7 @@ const SECTIONS = [
     landingTo: '/activite/saisie',
     directLink: true,
     roles: ['admin', 'manager', 'collaborateur'],
-    items: [],
-  },
+    items: []},
   {
     id: 'activite',
     icon: '⏱',
@@ -27,8 +26,7 @@ const SECTIONS = [
       { to: '/activite/projets',       icon: '📁', label: 'Gestion de projet' },
       { to: '/activite/reporting',     icon: '📊', label: 'Reporting temps',    roles: ['admin', 'manager'] },
       { to: '/activite/rentabilite',   icon: '💹', label: 'Rentabilité',        roles: ['admin', 'manager'] },
-    ],
-  },
+    ]},
   {
     id: 'equipe',
     icon: '👥',
@@ -43,8 +41,7 @@ const SECTIONS = [
       { to: '/equipe/trombinoscope',   icon: '🪪',  label: 'Trombinoscope',  roles: ['admin', 'manager'] },
       { to: '/equipe/organigramme',    icon: '🏢',  label: 'Organigramme',   roles: ['admin', 'manager'] },
       { to: '/equipe/competences',     icon: '🎯',  label: 'Compétences',    roles: ['admin', 'manager'] },
-    ],
-  },
+    ]},
   {
     id: 'gestion',
     icon: '🧾',
@@ -57,8 +54,7 @@ const SECTIONS = [
       { to: '/finance/facturation',            icon: '📤', label: 'Ventes' },
       { to: '/gestion/achats',  icon: '📥', label: 'Achats' },
       { to: '/commerce/stock',                 icon: '📦', label: 'Stock' },
-    ],
-  },
+    ]},
   {
     id: 'crm',
     icon: '🎯',
@@ -73,8 +69,7 @@ const SECTIONS = [
       { to: '/commerce/devis',        icon: '📝', label: 'Devis',          roles: ['admin', 'manager', 'comptable'] },
       { to: '/commerce/produits',     icon: '🏷️', label: 'Produits',       roles: ['admin', 'manager', 'comptable'] },
       { to: '/commerce/abonnements',  icon: '🔄', label: 'Abonnements',    roles: ['admin', 'manager', 'comptable'] },
-    ],
-  },
+    ]},
   {
     id: 'marketing',
     icon: '📣',
@@ -84,8 +79,7 @@ const SECTIONS = [
     items: [
       { to: '/marketing/campagnes', icon: '🎯', label: 'Campagnes' },
       { to: '/marketing/leads',     icon: '🚀', label: 'Leads' },
-    ],
-  },
+    ]},
   {
     id: 'finance',
     icon: '💰',
@@ -98,8 +92,7 @@ const SECTIONS = [
       { to: '/finance/previsionnel',    icon: '📈', label: 'Prévisionnel' },
       { to: '/finance/immobilisations', icon: '🏢', label: 'Immobilisations' },
       { to: '/finance/rapprochement',   icon: '🔗', label: 'Rapprochement' },
-    ],
-  },
+    ]},
   {
     id: 'documents',
     icon: '📁',
@@ -108,8 +101,7 @@ const SECTIONS = [
     roles: ['admin', 'manager', 'collaborateur', 'comptable'],
     items: [
       { to: '/documents/archives', icon: '🗄️', label: 'Archives' },
-    ],
-  },
+    ]},
   {
     id: 'workflows',
     icon: '🔀',
@@ -117,8 +109,7 @@ const SECTIONS = [
     directLink: true,
     landingTo: '/automatisation/workflows',
     roles: ['admin', 'manager'],
-    items: [],
-  },
+    items: []},
 ]
 
 const INFO_SECTION = {
@@ -127,8 +118,7 @@ const INFO_SECTION = {
   label: 'À propos',
   items: [
     { to: '/info',  icon: '💡', label: 'À propos' },
-  ],
-}
+  ]}
 
 const ADMIN_SECTION = {
   id: 'admin',
@@ -146,8 +136,7 @@ const ADMIN_SECTION = {
     { to: '/admin/historique',   icon: '👁', label: 'Historique',            roles: ['admin'], superAdminOnly: true },
     { to: '/admin/analytics',    icon: '📊', label: 'Analytics',         roles: ['admin', 'manager'] },
     { to: '/parametres',         icon: '🔧', label: 'Paramètres',        roles: ['admin'] },
-  ],
-}
+  ]}
 
 export default function Sidebar() {
   const { profile, user } = useAuth()
@@ -187,8 +176,7 @@ export default function Sidebar() {
     gestion: 'Gestion', equipe: 'Équipe', admin: 'Admin',
     contacts: 'Contacts', entreprises: 'Entreprises', leads: 'Leads',
     clients: 'Clients', collaborateurs: 'Collaborateur', projets: 'Projet',
-    facturation: 'Facturation', transactions: 'Opportunités',
-  }
+    facturation: 'Facturation', transactions: 'Opportunités'}
   const favItems = favorites.map(to => {
     const known = allItems.find(i => i.to === to)
     if (known) return known

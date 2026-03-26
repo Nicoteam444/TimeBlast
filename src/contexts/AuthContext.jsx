@@ -45,8 +45,7 @@ export function AuthProvider({ children }) {
       provider: 'azure',
       options: {
         scopes: 'openid email profile',
-        redirectTo: window.location.origin + '/',
-      }
+        redirectTo: window.location.origin + '/'}
     })
     return { error }
   }

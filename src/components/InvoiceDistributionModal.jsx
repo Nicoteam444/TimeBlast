@@ -3,8 +3,7 @@ import {
   sendInvoiceByEmail,
   generateAndSaveUBLXml,
   createClientAccessToken,
-  downloadXmlFile,
-} from '../lib/invoiceDistribution'
+  downloadXmlFile} from '../lib/invoiceDistribution'
 
 export default function InvoiceDistributionModal({ invoice, company, client, onClose }) {
   const [method, setMethod] = useState('email')
@@ -141,8 +140,7 @@ export default function InvoiceDistributionModal({ invoice, company, client, onC
                   background: method === m.id ? '#f0f5f9' : '#fff',
                   cursor: 'pointer',
                   textAlign: 'center',
-                  transition: 'all .2s',
-                }}
+                  transition: 'all .2s'}}
                 disabled={m.id === 'chorus'} // Not implemented yet
               >
                 <div style={{ fontWeight: 600, marginBottom: '.25rem' }}>{m.label}</div>
@@ -190,8 +188,7 @@ export default function InvoiceDistributionModal({ invoice, company, client, onC
             padding: '1rem',
             marginBottom: '1.5rem',
             fontSize: '.9rem',
-            color: '#166534',
-          }}>
+            color: '#166534'}}>
             <strong>💡 Email :</strong> La facture PDF sera envoyée directement au client avec un lien de suivi.
           </div>
         )}
@@ -204,8 +201,7 @@ export default function InvoiceDistributionModal({ invoice, company, client, onC
             padding: '1rem',
             marginBottom: '1.5rem',
             fontSize: '.9rem',
-            color: '#166534',
-          }}>
+            color: '#166534'}}>
             <strong>💡 XML UBL :</strong> Vous allez télécharger le fichier XML au format UBL 2.1. Vous pourrez le partager via email ou vos systèmes internes.
           </div>
         )}
@@ -218,8 +214,7 @@ export default function InvoiceDistributionModal({ invoice, company, client, onC
             padding: '1rem',
             marginBottom: '1.5rem',
             fontSize: '.9rem',
-            color: '#0c4a6e',
-          }}>
+            color: '#0c4a6e'}}>
             <strong>💡 Portail Client :</strong> Le client recevra un lien unique pour accéder à la facture sans créer de compte.
           </div>
         )}

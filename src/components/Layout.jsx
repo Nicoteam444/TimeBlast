@@ -46,8 +46,7 @@ function FavoriteButton() {
         background: 'none', border: 'none', cursor: 'pointer',
         fontSize: '1.1rem', opacity: isFav ? 1 : 0.3,
         transition: 'opacity .15s, transform .15s',
-        padding: 4,
-      }}
+        padding: 4}}
       onMouseEnter={e => e.target.style.opacity = '1'}
       onMouseLeave={e => { if (!isFav) e.target.style.opacity = '0.3' }}
     >
@@ -68,8 +67,7 @@ function usePageTracking() {
     supabase.from('page_views').insert({
       user_id: user.id,
       page_path: location.pathname,
-      page_title: title,
-    }).then(() => {})
+      page_title: title}).then(() => {})
   }, [location.pathname, user?.id])
 }
 

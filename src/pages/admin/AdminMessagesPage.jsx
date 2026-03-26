@@ -15,9 +15,7 @@ export default function AdminMessagesPage() {
   async function fetchMessages() {
     setLoading(true)
     const { data, error } = await supabase
-      .from('contact_messages')
-      .select('*')
-      .order('created_at', { ascending: false })
+      .from('contact_messages').select('*').order('created_at', { ascending: false })
     if (!error) setMessages(data || [])
     setLoading(false)
   }

@@ -1,6 +1,5 @@
 import { useState, useEffect, useMemo } from 'react'
 import { supabase } from '../../lib/supabase'
-import { useSociete } from '../../contexts/SocieteContext'
 import Spinner from '../../components/Spinner'
 
 const STATUTS = [
@@ -19,7 +18,6 @@ const CHAMP_TYPES = [
 ]
 
 export default function FormulairesPage() {
-  const { selectedSociete } = useSociete()
   const [formulaires, setFormulaires] = useState([])
   const [loading, setLoading] = useState(true)
   const [modal, setModal] = useState(null)
@@ -27,11 +25,10 @@ export default function FormulairesPage() {
   const [search, setSearch] = useState('')
   const [tableExists, setTableExists] = useState(true)
 
-  useEffect(() => { loadFormulaires() }, [selectedSociete?.id])
+  useEffect(() => { loadFormulaires() }, [])
 
   async function loadFormulaires() {
     setLoading(true)
-    const sid = selectedSociete?.id
     let q = supabase.from('formulaires').select('*').order('created_at', { ascending: false })
     if (sid) q = q.eq('societe_id', sid)
     const { data, error } = await q
@@ -52,22 +49,19 @@ export default function FormulairesPage() {
     soumissions: formulaires.reduce((s, f) => s + (f.nb_soumissions || 0), 0),
     tauxConversion: formulaires.length > 0
       ? (formulaires.reduce((s, f) => s + (f.nb_soumissions || 0), 0) / Math.max(1, formulaires.reduce((s, f) => s + (f.nb_vues || 0), 0)) * 100)
-      : 0,
-  }), [formulaires])
+      : 0}), [formulaires])
 
   async function handleSave(e) {
     e.preventDefault()
     const form = new FormData(e.target)
     const champs = modal?.champs || []
     const payload = {
-      societe_id: selectedSociete?.id,
       nom: form.get('nom'),
       description: form.get('description'),
       statut: form.get('statut'),
       champs: JSON.stringify(champs),
       redirect_url: form.get('redirect_url'),
-      notification_email: form.get('notification_email'),
-    }
+      notification_email: form.get('notification_email')}
     if (modal?.id) {
       await supabase.from('formulaires').update(payload).eq('id', modal.id)
     } else {
@@ -89,15 +83,13 @@ export default function FormulairesPage() {
   function addChamp() {
     setModal(prev => ({
       ...prev,
-      champs: [...(prev.champs || []), { id: Date.now(), label: '', type: 'text', required: false, options: '' }],
-    }))
+      champs: [...(prev.champs || []), { id: Date.now(), label: '', type: 'text', required: false, options: '' }]}))
   }
 
   function updateChamp(id, field, val) {
     setModal(prev => ({
       ...prev,
-      champs: (prev.champs || []).map(c => c.id === id ? { ...c, [field]: val } : c),
-    }))
+      champs: (prev.champs || []).map(c => c.id === id ? { ...c, [field]: val } : c)}))
   }
 
   function removeChamp(id) {

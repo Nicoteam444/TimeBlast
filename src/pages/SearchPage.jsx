@@ -12,8 +12,7 @@ const SECTIONS = [
     fetch: async (q) => {
       const { data } = await supabase.from('clients').select('id, name').ilike('name', `%${q}%`).limit(10)
       return (data || []).map(r => ({ ...r, subtitle: 'Client', path: `/clients/${r.id}` }))
-    },
-  },
+    }},
   {
     key: 'transactions',
     label: 'Transactions',
@@ -22,8 +21,7 @@ const SECTIONS = [
     fetch: async (q) => {
       const { data } = await supabase.from('transactions').select('id, name, phase, clients(name)').ilike('name', `%${q}%`).limit(10)
       return (data || []).map(r => ({ ...r, subtitle: r.clients?.name || 'Sans client', path: `/commerce/transactions/${r.id}` }))
-    },
-  },
+    }},
   {
     key: 'projets',
     label: 'Projets',
@@ -32,8 +30,7 @@ const SECTIONS = [
     fetch: async (q) => {
       const { data } = await supabase.from('projets').select('id, name, statut, clients(name)').ilike('name', `%${q}%`).limit(10)
       return (data || []).map(r => ({ ...r, subtitle: r.clients?.name || 'Sans client', path: `/activite/projets` }))
-    },
-  },
+    }},
   {
     key: 'saisies',
     label: 'Saisies de temps',
@@ -49,11 +46,9 @@ const SECTIONS = [
           ...r,
           name: meta.projet_name || '—',
           subtitle: new Date(r.date + 'T12:00:00').toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric' }) + ` · ${r.heures}h`,
-          path: `/activite/saisie`,
-        }
+          path: `/activite/saisie`}
       })
-    },
-  },
+    }},
 ]
 
 export default function SearchPage() {

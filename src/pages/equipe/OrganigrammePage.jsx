@@ -1,6 +1,5 @@
 import { useState, useEffect, useMemo } from 'react'
 import { supabase } from '../../lib/supabase'
-import { useSociete } from '../../contexts/SocieteContext'
 import Spinner from '../../components/Spinner'
 
 // Niveaux hiérarchiques selon le poste
@@ -49,19 +48,17 @@ function OrgNode({ person, color }) {
 }
 
 export default function OrganigrammePage() {
-  const { selectedSociete } = useSociete()
   const [equipe, setEquipe] = useState([])
   const [loading, setLoading] = useState(true)
   const [filterDept, setFilterDept] = useState('')
 
   useEffect(() => {
     fetchEquipe()
-  }, [selectedSociete?.id])
+  }, [])
 
   async function fetchEquipe() {
     setLoading(true)
     let q = supabase.from('equipe').select('*').order('nom')
-    if (selectedSociete?.id) q = q.eq('societe_id', selectedSociete.id)
     const { data } = await q
     setEquipe(data || [])
     setLoading(false)

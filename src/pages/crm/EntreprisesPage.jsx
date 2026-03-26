@@ -1,6 +1,5 @@
 import { useState, useEffect, useMemo, useRef } from 'react'
 import { supabase } from '../../lib/supabase'
-import { useSociete } from '../../contexts/SocieteContext'
 import { useNavigate } from 'react-router-dom'
 import useSortableTable from '../../hooks/useSortableTable'
 import SortableHeader from '../../components/SortableHeader'
@@ -14,7 +13,6 @@ function fmtK(n) {
 }
 
 export default function EntreprisesPage() {
-  const { selectedSociete } = useSociete()
   const navigate = useNavigate()
   const [entreprises, setEntreprises] = useState([])
   const [contacts, setContacts] = useState([])
@@ -30,11 +28,10 @@ export default function EntreprisesPage() {
   const debounceRef = useRef(null)
   const PAGE_SIZE = 20
 
-  useEffect(() => { loadData() }, [selectedSociete?.id])
+  useEffect(() => { loadData() }, [])
 
   async function loadData() {
     setLoading(true)
-    const sid = selectedSociete?.id
     const [e, c, l] = await Promise.all([
       sid ? supabase.from('clients').select('*').eq('societe_id', sid) : supabase.from('clients').select('*'),
       sid ? supabase.from('contacts').select('*').eq('societe_id', sid) : supabase.from('contacts').select('*'),
@@ -51,9 +48,7 @@ export default function EntreprisesPage() {
       ...e,
       nbContacts: contacts.filter(c => c.entreprise_id === e.id).length,
       nbLeads: leads.filter(l => l.entreprise_id === e.id).length,
-      caPotentiel: leads.filter(l => l.entreprise_id === e.id && !['perdu'].includes(l.phase))
-        .reduce((s, l) => s + (l.montant_estime || 0), 0),
-    }))
+      caPotentiel: leads.filter(l => l.entreprise_id === e.id && !['perdu'].includes(l.phase)).reduce((s, l) => s + (l.montant_estime || 0), 0)}))
   }, [entreprises, contacts, leads])
 
   const filtered = useMemo(() => {
@@ -71,8 +66,7 @@ export default function EntreprisesPage() {
     total: entreprises.length,
     avecContacts: new Set(contacts.map(c => c.entreprise_id).filter(Boolean)).size,
     avecLeads: new Set(leads.map(l => l.entreprise_id).filter(Boolean)).size,
-    caPipeline: leads.filter(l => !['perdu', 'gagne'].includes(l.phase)).reduce((s, l) => s + (l.montant_estime || 0), 0),
-  }), [entreprises, contacts, leads])
+    caPipeline: leads.filter(l => !['perdu', 'gagne'].includes(l.phase)).reduce((s, l) => s + (l.montant_estime || 0), 0)}), [entreprises, contacts, leads])
 
   // SIRENE search
   async function searchSirene(q) {
@@ -101,8 +95,7 @@ export default function EntreprisesPage() {
       setEnrichResult({ type: 'exists', nom })
     } else {
       const { error } = await supabase.from('clients').insert({
-        name: nom, ville: siege.libelle_commune || '', societe_id: selectedSociete?.id || null,
-      })
+        name: nom, ville: siege.libelle_commune || ''})
       if (error) { setEnrichResult({ type: 'error', message: error.message }) }
       else { setEnrichResult({ type: 'created', nom }); loadData() }
     }
@@ -114,9 +107,7 @@ export default function EntreprisesPage() {
     const form = new FormData(e.target)
     const payload = {
       name: form.get('name'),
-      ville: form.get('ville') || null,
-      societe_id: selectedSociete?.id || null,
-    }
+      ville: form.get('ville') || null}
     if (modal?.id) {
       await supabase.from('clients').update(payload).eq('id', modal.id)
     } else {
@@ -179,8 +170,7 @@ export default function EntreprisesPage() {
         {enrichResult && (
           <div style={{ marginTop: '.5rem', padding: '.5rem .75rem', borderRadius: 8, fontSize: '.85rem',
             background: enrichResult.type === 'created' ? '#f0fdf4' : enrichResult.type === 'exists' ? '#fffbeb' : '#fef2f2',
-            color: enrichResult.type === 'created' ? '#166534' : enrichResult.type === 'exists' ? '#92400e' : '#dc2626',
-          }}>
+            color: enrichResult.type === 'created' ? '#166534' : enrichResult.type === 'exists' ? '#92400e' : '#dc2626'}}>
             {enrichResult.type === 'created' && `✅ ${enrichResult.nom} ajoutée !`}
             {enrichResult.type === 'exists' && `⚠ ${enrichResult.nom} existe déjà.`}
             {enrichResult.type === 'error' && `❌ ${enrichResult.message}`}

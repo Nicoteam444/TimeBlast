@@ -722,8 +722,7 @@ export default function LoginPage() {
                       width: '100%', padding: '.75rem', borderRadius: 8, cursor: 'pointer',
                       border: '1px solid #e2e8f0', background: '#fff', fontSize: '.9rem',
                       display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '.5rem',
-                      color: '#1e293b', fontWeight: 600, transition: 'all .2s',
-                    }}
+                      color: '#1e293b', fontWeight: 600, transition: 'all .2s'}}
                     onMouseEnter={e => { e.target.style.background = '#f1f5f9'; e.target.style.borderColor = '#0078d4' }}
                     onMouseLeave={e => { e.target.style.background = '#fff'; e.target.style.borderColor = '#e2e8f0' }}
                   >

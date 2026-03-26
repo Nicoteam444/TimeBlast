@@ -1,7 +1,6 @@
 import { useState, useEffect, useMemo, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
-import { useSociete } from '../contexts/SocieteContext'
 import { supabase } from '../lib/supabase'
 import {
   BarChart, Bar, LineChart, Line, AreaChart, Area, PieChart, Pie, Cell,
@@ -74,8 +73,7 @@ const cardStyle = {
   background: 'var(--card-bg, #fff)',
   border: '1px solid var(--border, #e2e8f0)',
   borderRadius: 12,
-  padding: '1.25rem',
-}
+  padding: '1.25rem'}
 
 // ── SVG Donut helper ──
 function DonutChart({ size = 56, stroke = 5, pct = 0, color = '#16a34a', trackColor = '#e5e7eb', label }) {
@@ -106,8 +104,7 @@ function SectionHeader({ icon, title, linkLabel, onLink }) {
       {linkLabel && onLink && (
         <button onClick={onLink} style={{
           background: 'none', border: 'none', color: 'var(--primary)', cursor: 'pointer',
-          fontSize: '.82rem', fontWeight: 600, padding: 0,
-        }}>{linkLabel}</button>
+          fontSize: '.82rem', fontWeight: 600, padding: 0}}>{linkLabel}</button>
       )}
     </div>
   )
@@ -116,7 +113,6 @@ function SectionHeader({ icon, title, linkLabel, onLink }) {
 // ── Main Dashboard ──
 export default function DashboardPage() {
   const { user, profile } = useAuth()
-  const { selectedSociete } = useSociete()
   const navigate = useNavigate()
   const [loading, setLoading] = useState(true)
   const [raw, setRaw] = useState({})
@@ -201,8 +197,7 @@ export default function DashboardPage() {
     '/admin/utilisateurs': 'Utilisateurs',
     '/activite/kanban': 'Kanban',
     '/finance/achats': 'Achats',
-    '/marketing/campagnes': 'Campagnes',
-  }
+    '/marketing/campagnes': 'Campagnes'}
   const [presenceData, setPresenceData] = useState([])
   const [allProfiles, setAllProfiles] = useState([])
 
@@ -235,8 +230,7 @@ export default function DashboardPage() {
             page_path: v.page_path,
             page_label: PATH_LABELS[v.page_path] || v.page_path,
             last_seen: v.created_at,
-            active: true,
-          }
+            active: true}
         })
 
         setPresenceData(presenceList)
@@ -289,7 +283,6 @@ export default function DashboardPage() {
   // ── Fetch all data ──
   useEffect(() => {
     if (!user) return
-    const socId = selectedSociete?.id
     const today = new Date().toISOString().slice(0, 10)
     const monday = getMonday(new Date()).toISOString().slice(0, 10)
     const sunday = getSunday(new Date()).toISOString().slice(0, 10)
@@ -343,13 +336,11 @@ export default function DashboardPage() {
           // 2. Mon temps (this week)
           safeQuery(() => {
             let q = supabase.from('saisies_temps').select('*').eq('user_id', user.id).gte('date', monday).lte('date', sunday)
-            if (socId) q = q.eq('societe_id', socId)
             return q
           }),
           // 3. Alertes - factures overdue
           safeQuery(() => {
             let q = supabase.from('factures').select('id', { count: 'exact', head: true }).lt('date_echeance', today).neq('statut', 'payee')
-            if (socId) q = q.eq('societe_id', socId)
             return q
           }),
           // Alertes - tasks overdue
@@ -361,61 +352,51 @@ export default function DashboardPage() {
           // Alertes - absences pending
           safeQuery(() => {
             let q = supabase.from('absences').select('id', { count: 'exact', head: true }).eq('statut', 'en_attente')
-            if (socId) q = q.eq('societe_id', socId)
             return q
           }),
           // Alertes - notes de frais pending
           safeQuery(() => {
             let q = supabase.from('notes_de_frais').select('id', { count: 'exact', head: true }).eq('statut', 'en_attente')
-            if (socId) q = q.eq('societe_id', socId)
             return q
           }),
           // 4. Projets actifs
           safeQuery(() => {
             let q = supabase.from('projets').select('*').eq('statut', 'actif').limit(5)
-            if (socId) q = q.eq('societe_id', socId)
             return q
           }),
           // 5. Tresorerie - factures paid last 30d
           safeQuery(() => {
             let q = supabase.from('factures').select('montant_ttc, date_emission').eq('statut', 'payee').gte('date_emission', thirtyDaysAgo)
-            if (socId) q = q.eq('societe_id', socId)
             return q
           }),
           // Tresorerie - achats last 30d
           safeQuery(() => {
             let q = supabase.from('achats').select('montant, date').gte('date', thirtyDaysAgo)
-            if (socId) q = q.eq('societe_id', socId)
             return q
           }),
           // Tresorerie - factures trend last 6 months
           safeQuery(() => {
             let q = supabase.from('factures').select('montant_ttc, date_emission, statut').gte('date_emission', sixMonthsAgo)
-            if (socId) q = q.eq('societe_id', socId)
             return q
           }),
           // 6. Marketing - campagnes
           safeQuery(() => {
             let q = supabase.from('campagnes').select('*').eq('statut', 'en_cours')
-            if (socId) q = q.eq('societe_id', socId)
             return q
           }),
           // Marketing - leads count this month
           safeQuery(() => {
             let q = supabase.from('leads').select('id', { count: 'exact', head: true }).gte('created_at', monthStart)
-            if (socId) q = q.eq('societe_id', socId)
             return q
           }),
           // Marketing - leads pipeline total
           safeQuery(() => {
             let q = supabase.from('leads').select('montant')
-            if (socId) q = q.eq('societe_id', socId)
             return q
           }),
           // 7. Derniers documents
           safeQuery(() => {
             let q = supabase.from('documents_archive').select('*').order('created_at', { ascending: false }).limit(5)
-            if (socId) q = q.eq('societe_id', socId)
             return q
           }),
           // 8. Activite recente - tasks
@@ -427,25 +408,21 @@ export default function DashboardPage() {
           // Activite recente - docs
           safeQuery(() => {
             let q = supabase.from('documents_archive').select('id, nom, created_at').order('created_at', { ascending: false }).limit(3)
-            if (socId) q = q.eq('societe_id', socId)
             return q
           }),
           // Activite recente - contacts
           safeQuery(() => {
             let q = supabase.from('contacts').select('id, nom, prenom, created_at').order('created_at', { ascending: false }).limit(3)
-            if (socId) q = q.eq('societe_id', socId)
             return q
           }),
           // Activity log (déplacements kanban)
           safeQuery(() => {
             let q = supabase.from('activity_log').select('*').order('created_at', { ascending: false }).limit(10)
-            if (socId) q = q.eq('societe_id', socId)
             return q
           }),
           // Projets actifs count for KPI
           safeQuery(() => {
             let q = supabase.from('projets').select('id', { count: 'exact', head: true }).eq('statut', 'actif')
-            if (socId) q = q.eq('societe_id', socId)
             return q
           }),
         ])
@@ -486,8 +463,7 @@ export default function DashboardPage() {
           recentDocs: recentDocsRes?.data || [],
           recentContacts: recentContactsRes?.data || [],
           activityLog: activityLogRes?.data || [],
-          projetsActifsCount: projetsActifsCountRes?.count || 0,
-        })
+          projetsActifsCount: projetsActifsCountRes?.count || 0})
       } catch (err) {
         console.error('Dashboard fetch error:', err)
         setRaw({})
@@ -496,7 +472,7 @@ export default function DashboardPage() {
       }
     }
     load()
-  }, [user?.id, selectedSociete?.id])
+  }, [user?.id])
 
   // ── Computed values ──
   const today = new Date()
@@ -578,8 +554,7 @@ export default function DashboardPage() {
           ? `${a.entity_type === 'transaction' ? 'Opportunite' : 'Tache'} "${a.entity_name}" deplacee : ${a.details}`
           : `${a.entity_name} : ${a.details || a.action}`,
         date: a.created_at,
-        link,
-      })
+        link})
     }
     for (const t of (raw.recentTasks || [])) {
       items.push({ type: 'task', icon: '✅', label: `Tache creee : ${t.title}`, date: t.created_at, link: t.projet_id ? `/activite/projets/${t.projet_id}/taches/${t.id}` : null })
@@ -600,7 +575,6 @@ export default function DashboardPage() {
   const [leaderboard, setLeaderboard] = useState([])
   useEffect(() => {
     if (!user) return
-    const socId = selectedSociete?.id
     async function loadLeaderboard() {
       try {
         // Compter les page_views par user ces 7 derniers jours
@@ -628,7 +602,7 @@ export default function DashboardPage() {
       } catch {}
     }
     loadLeaderboard()
-  }, [user?.id, selectedSociete?.id])
+  }, [user?.id])
 
   // Header subtitle
   const headerSubtitle = useMemo(() => {
@@ -658,8 +632,7 @@ export default function DashboardPage() {
         fontSize: '.7rem', padding: '2px 6px', borderRadius: 4,
         background: (colors[status] || '#94a3b8') + '20',
         color: colors[status] || '#94a3b8',
-        fontWeight: 600,
-      }}>{labels[status] || status}</span>
+        fontWeight: 600}}>{labels[status] || status}</span>
     )
   }
 
@@ -717,15 +690,13 @@ export default function DashboardPage() {
                 padding: '.6rem .75rem', borderRadius: 8,
                 background: done ? '#f0fdf4' : 'var(--surface, #f8fafc)',
                 border: done ? '1px solid #bbf7d0' : '1px solid var(--border, #e2e8f0)',
-                opacity: done ? 0.7 : 1, transition: 'all .2s',
-              }}>
+                opacity: done ? 0.7 : 1, transition: 'all .2s'}}>
                 <div onClick={() => toggleAiCheck(i)} style={{
                   width: 20, height: 20, borderRadius: 6, cursor: 'pointer', flexShrink: 0,
                   border: done ? 'none' : '2px solid #cbd5e1',
                   background: done ? '#16a34a' : '#fff',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  transition: 'all .15s',
-                }}>
+                  transition: 'all .15s'}}>
                   {done && <span style={{ color: '#fff', fontSize: 12, fontWeight: 700 }}>✓</span>}
                 </div>
                 <span style={{ fontSize: 14 }}>{todo.icon}</span>
@@ -733,8 +704,7 @@ export default function DashboardPage() {
                   flex: 1, fontSize: '.85rem', fontWeight: 500,
                   color: done ? '#94a3b8' : 'var(--text)',
                   textDecoration: done ? 'line-through' : 'none',
-                  cursor: done ? 'default' : 'pointer',
-                }}>{todo.text}</span>
+                  cursor: done ? 'default' : 'pointer'}}>{todo.text}</span>
                 {todo.priority === 'high' && !done && (
                   <span style={{ fontSize: '.6rem', padding: '1px 6px', borderRadius: 8, background: '#fef2f2', color: '#dc2626', fontWeight: 700 }}>Urgent</span>
                 )}
@@ -747,7 +717,6 @@ export default function DashboardPage() {
         </div>
       </>
     ),
-
     score: (
       <>
         <SectionHeader icon="🏅" title="Top utilisateurs cette semaine" />
@@ -766,14 +735,12 @@ export default function DashboardPage() {
                   display: 'flex', alignItems: 'center', gap: '.6rem',
                   padding: '.5rem .6rem', borderRadius: 8,
                   background: u.isMe ? 'var(--primary, #2B4C7E)' + '0A' : 'var(--surface, #f8fafc)',
-                  border: u.isMe ? '1px solid var(--primary, #2B4C7E)' + '25' : '1px solid transparent',
-                }}>
+                  border: u.isMe ? '1px solid var(--primary, #2B4C7E)' + '25' : '1px solid transparent'}}>
                   <span style={{ fontSize: 14, width: 20, textAlign: 'center' }}>{i < 3 ? medals[i] : `${i + 1}.`}</span>
                   <div style={{
                     width: 26, height: 26, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center',
                     background: u.isMe ? 'var(--primary, #2B4C7E)' : '#e2e8f0', color: u.isMe ? '#fff' : '#475569',
-                    fontSize: '.6rem', fontWeight: 700, flexShrink: 0,
-                  }}>{u.initials}</div>
+                    fontSize: '.6rem', fontWeight: 700, flexShrink: 0}}>{u.initials}</div>
                   <div style={{ flex: 1, minWidth: 0 }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 2 }}>
                       <span style={{ fontSize: '.8rem', fontWeight: u.isMe ? 700 : 600, color: 'var(--text)' }}>
@@ -792,7 +759,6 @@ export default function DashboardPage() {
         )}
       </>
     ),
-
     tasks: (
       <>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
@@ -820,8 +786,7 @@ export default function DashboardPage() {
                   padding: '.5rem .75rem', borderRadius: 8,
                   background: overdue ? '#fef2f2' : 'var(--surface, #f8fafc)',
                   border: overdue ? '1px solid #fecaca' : '1px solid transparent',
-                  fontSize: '.85rem', cursor: 'pointer', transition: 'background .15s',
-                }} onMouseEnter={e => e.currentTarget.style.background = '#e0f2fe'}
+                  fontSize: '.85rem', cursor: 'pointer', transition: 'background .15s'}} onMouseEnter={e => e.currentTarget.style.background = '#e0f2fe'}
                    onMouseLeave={e => e.currentTarget.style.background = overdue ? '#fef2f2' : 'var(--surface, #f8fafc)'}>
                   <span>{priorityIcon(t.priority)}</span>
                   <span style={{ flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', color: overdue ? '#dc2626' : 'var(--text)' }}>
@@ -839,7 +804,6 @@ export default function DashboardPage() {
         )}
       </>
     ),
-
     time: (
       <>
         <SectionHeader icon="⏱" title="Mon Temps" linkLabel="Saisir du temps →" onLink={() => navigate('/activite/saisie')} />
@@ -872,7 +836,6 @@ export default function DashboardPage() {
         </div>
       </>
     ),
-
     alerts: (
       <>
         <SectionHeader icon="🔔" title="Alertes" />
@@ -890,8 +853,7 @@ export default function DashboardPage() {
               borderLeft: `4px solid ${alert.count > 0 ? alert.color : 'transparent'}`,
               cursor: alert.link ? 'pointer' : 'default',
               transition: 'all .15s',
-              animation: alert.count > 0 && alert.severity === 'red' ? 'dashPulse 2s ease-in-out infinite' : 'none',
-            }}>
+              animation: alert.count > 0 && alert.severity === 'red' ? 'dashPulse 2s ease-in-out infinite' : 'none'}}>
               <span style={{ fontSize: '1.1rem' }}>{alert.icon}</span>
               <span style={{ flex: 1, fontSize: '.85rem', color: 'var(--text)' }}>{alert.label}</span>
               <span style={{
@@ -899,14 +861,12 @@ export default function DashboardPage() {
                 color: alert.count > 0 ? '#fff' : 'var(--text-muted)',
                 background: alert.count > 0 ? alert.color : 'transparent',
                 borderRadius: 10, padding: alert.count > 0 ? '1px 8px' : 0,
-                minWidth: 24, textAlign: 'center',
-              }}>{alert.count}</span>
+                minWidth: 24, textAlign: 'center'}}>{alert.count}</span>
             </div>
           ))}
         </div>
       </>
     ),
-
     projects: (
       <>
         <SectionHeader icon="📁" title="Projets Actifs" linkLabel="Voir tout →" onLink={() => navigate('/activite/projets')} />
@@ -930,8 +890,7 @@ export default function DashboardPage() {
                         <span style={{
                           fontSize: '.65rem', padding: '1px 6px', borderRadius: 4,
                           background: 'var(--primary, #1a5c82)' + '15', color: 'var(--primary, #1a5c82)',
-                          fontWeight: 600, whiteSpace: 'nowrap',
-                        }}>{p.societe_name}</span>
+                          fontWeight: 600, whiteSpace: 'nowrap'}}>{p.societe_name}</span>
                       )}
                     </div>
                     <span style={{ fontSize: '.75rem', color: 'var(--text-muted)' }}>{tc.done}/{tc.total} taches ({pct}%)</span>
@@ -946,7 +905,6 @@ export default function DashboardPage() {
         )}
       </>
     ),
-
     treasury: (() => {
       // Projection cumulée sur 12 mois (3 scénarios)
       const SCENARIO_COLORS = { optimiste: '#16a34a', realiste: '#2d8bc9', pessimiste: '#ef4444' }
@@ -1017,7 +975,6 @@ export default function DashboardPage() {
         </>
       )
     })(),
-
     marketing: (
       <>
         <SectionHeader icon="📣" title="Marketing" linkLabel="Voir campagnes →" onLink={() => navigate('/marketing/campagnes')} />
@@ -1060,8 +1017,7 @@ export default function DashboardPage() {
                       background: `linear-gradient(90deg, ${s.color}, ${s.color}cc)`,
                       display: 'flex', alignItems: 'center', justifyContent: 'center',
                       color: '#fff', fontSize: '.7rem', fontWeight: 700,
-                      transition: 'width .5s ease',
-                    }}>{s.count}</div>
+                      transition: 'width .5s ease'}}>{s.count}</div>
                   </div>
                 )
               })}
@@ -1070,7 +1026,6 @@ export default function DashboardPage() {
         })()}
       </>
     ),
-
     documents: (
       <>
         <SectionHeader icon="📄" title="Derniers Documents" linkLabel="Voir archives →" onLink={() => navigate('/documents/archives')} />
@@ -1090,8 +1045,7 @@ export default function DashboardPage() {
                   background: 'var(--surface, #f8fafc)',
                   fontSize: '.85rem',
                   transition: 'background .15s, transform .15s',
-                  cursor: 'pointer',
-                }}
+                  cursor: 'pointer'}}
                 onMouseEnter={e => { e.currentTarget.style.background = tColor + '10'; e.currentTarget.style.transform = 'translateX(3px)' }}
                 onMouseLeave={e => { e.currentTarget.style.background = 'var(--surface, #f8fafc)'; e.currentTarget.style.transform = 'translateX(0)' }}
                 >
@@ -1112,7 +1066,6 @@ export default function DashboardPage() {
         )}
       </>
     ),
-
     presence: (
       <>
         <SectionHeader icon="👁" title="En ligne maintenant" />
@@ -1133,21 +1086,18 @@ export default function DashboardPage() {
                   display: 'flex', alignItems: 'center', gap: '.6rem',
                   padding: '.5rem .6rem', borderRadius: 8,
                   background: isMe ? 'var(--primary, #2B4C7E)0A' : 'var(--surface, #f8fafc)',
-                  border: isMe ? '1px solid var(--primary, #2B4C7E)25' : '1px solid transparent',
-                }}>
+                  border: isMe ? '1px solid var(--primary, #2B4C7E)25' : '1px solid transparent'}}>
                   <div style={{ position: 'relative', flexShrink: 0 }}>
                     <div style={{
                       width: 28, height: 28, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center',
                       background: isMe ? 'var(--primary, #2B4C7E)' : '#e2e8f0',
-                      color: isMe ? '#fff' : '#475569', fontSize: '.65rem', fontWeight: 700,
-                    }}>
+                      color: isMe ? '#fff' : '#475569', fontSize: '.65rem', fontWeight: 700}}>
                       {initials}
                     </div>
                     <div style={{
                       position: 'absolute', bottom: -1, right: -1, width: 10, height: 10, borderRadius: '50%',
                       background: p.active ? '#16a34a' : '#9ca3af',
-                      border: '2px solid var(--card-bg, #fff)',
-                    }} />
+                      border: '2px solid var(--card-bg, #fff)'}} />
                   </div>
                   <div style={{ flex: 1, minWidth: 0 }}>
                     <div style={{ fontSize: '.82rem', fontWeight: 600, color: 'var(--text)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
@@ -1167,7 +1117,6 @@ export default function DashboardPage() {
         )}
       </>
     ),
-
     activity: (
       <>
         <SectionHeader icon="🕐" title="Activite Recente" />
@@ -1179,8 +1128,7 @@ export default function DashboardPage() {
           <div style={{ position: 'relative', paddingLeft: 28 }}>
             <div style={{
               position: 'absolute', left: 9, top: 10, bottom: 10, width: 2,
-              background: 'var(--border, #e2e8f0)', borderRadius: 1,
-            }} />
+              background: 'var(--border, #e2e8f0)', borderRadius: 1}} />
             <div style={{ display: 'flex', flexDirection: 'column', gap: '.5rem' }}>
               {activityTimeline.map((item, i) => {
                 const dotColors = { task: '#16a34a', doc: '#2d8bc9', contact: '#8b5cf6' }
@@ -1192,15 +1140,13 @@ export default function DashboardPage() {
                     background: 'var(--surface, #f8fafc)',
                     fontSize: '.85rem', position: 'relative',
                     cursor: item.link ? 'pointer' : 'default',
-                    transition: 'background .15s',
-                  }}
+                    transition: 'background .15s'}}
                   onMouseEnter={e => { if (item.link) e.currentTarget.style.background = '#e0f2fe' }}
                   onMouseLeave={e => e.currentTarget.style.background = 'var(--surface, #f8fafc)'}>
                     <div style={{
                       position: 'absolute', left: -23, top: '50%', transform: 'translateY(-50%)',
                       width: 10, height: 10, borderRadius: '50%', background: dotColor,
-                      border: '2px solid var(--card-bg, #fff)',
-                    }} />
+                      border: '2px solid var(--card-bg, #fff)'}} />
                     <span style={{ fontSize: '.75rem', color: 'var(--text-muted)', minWidth: 70 }}>{relativeTime(item.date)}</span>
                     <span>{item.icon}</span>
                     <span style={{ color: 'var(--text)' }}>{item.label}</span>
@@ -1212,7 +1158,6 @@ export default function DashboardPage() {
         )}
       </>
     ),
-
     mood: (
       <>
         <SectionHeader icon="😊" title="Humeur equipe" />
@@ -1225,8 +1170,7 @@ export default function DashboardPage() {
                 flex: 1, padding: '.4rem', border: myMood?.emoji === m.emoji ? `2px solid ${m.color}` : '2px solid transparent',
                 background: myMood?.emoji === m.emoji ? m.color + '15' : 'var(--surface, #f8fafc)',
                 borderRadius: 10, cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2,
-                transition: 'all .15s',
-              }}>
+                transition: 'all .15s'}}>
                 <span style={{ fontSize: '1.3rem' }}>{m.emoji}</span>
                 <span style={{ fontSize: '.6rem', color: m.color, fontWeight: 600 }}>{m.label}</span>
               </button>
@@ -1239,8 +1183,7 @@ export default function DashboardPage() {
             <div key={i} style={{
               display: 'flex', alignItems: 'center', gap: '.5rem',
               padding: '.35rem .6rem', borderRadius: 6,
-              background: 'var(--surface, #f8fafc)', fontSize: '.82rem',
-            }}>
+              background: 'var(--surface, #f8fafc)', fontSize: '.82rem'}}>
               <span style={{ fontSize: '1.1rem' }}>{m.emoji}</span>
               <span style={{ flex: 1, fontWeight: 500, color: 'var(--text)' }}>{m.user}</span>
               <span style={{ fontSize: '.7rem', color: 'var(--text-muted)' }}>{relativeTime(m.date)}</span>
@@ -1249,7 +1192,6 @@ export default function DashboardPage() {
         </div>
       </>
     ),
-
     shortcuts: (
       <>
         <SectionHeader icon="⚡" title="Raccourcis" />
@@ -1267,8 +1209,7 @@ export default function DashboardPage() {
               padding: '.6rem .75rem', borderRadius: 8, border: '1px solid var(--border, #e2e8f0)',
               background: 'var(--surface, #f8fafc)', cursor: 'pointer',
               fontSize: '.82rem', fontWeight: 500, color: 'var(--text)',
-              transition: 'all .15s', textAlign: 'left',
-            }}
+              transition: 'all .15s', textAlign: 'left'}}
             onMouseEnter={e => { e.currentTarget.style.background = 'var(--primary, #1a5c82)'; e.currentTarget.style.color = '#fff'; e.currentTarget.style.borderColor = 'var(--primary)' }}
             onMouseLeave={e => { e.currentTarget.style.background = 'var(--surface, #f8fafc)'; e.currentTarget.style.color = 'var(--text)'; e.currentTarget.style.borderColor = 'var(--border, #e2e8f0)' }}
             >
@@ -1279,7 +1220,6 @@ export default function DashboardPage() {
         </div>
       </>
     ),
-
     goals: (() => {
       const goalsData = [
         {
@@ -1288,24 +1228,21 @@ export default function DashboardPage() {
           current: encaissements30,
           target: 100000,
           format: v => fmtE(v),
-          unit: '',
-        },
+          unit: ''},
         {
           icon: '👥',
           label: 'Nouveaux contacts CRM',
           current: raw.leadsCount || 0,
           target: 50,
           format: v => `${v}`,
-          unit: '/50',
-        },
+          unit: '/50'},
         {
           icon: '⏱️',
           label: 'Heures saisies equipe',
           current: Math.round(totalHeures * 4),
           target: 800,
           format: v => `${v}h`,
-          unit: '/800h',
-        },
+          unit: '/800h'},
       ]
       return (
         <>
@@ -1319,8 +1256,7 @@ export default function DashboardPage() {
                 <div key={i} style={{
                   padding: '.75rem', borderRadius: 10,
                   background: 'var(--surface, #f8fafc)',
-                  border: '1px solid var(--border, #e2e8f0)',
-                }}>
+                  border: '1px solid var(--border, #e2e8f0)'}}>
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '.4rem' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '.4rem', fontWeight: 600, fontSize: '.85rem' }}>
                       <span>{g.icon}</span>
@@ -1332,13 +1268,11 @@ export default function DashboardPage() {
                   </div>
                   <div style={{
                     width: '100%', height: 10, borderRadius: 5,
-                    background: '#e5e7eb', overflow: 'hidden', marginBottom: '.35rem',
-                  }}>
+                    background: '#e5e7eb', overflow: 'hidden', marginBottom: '.35rem'}}>
                     <div style={{
                       width: `${pct}%`, height: '100%', borderRadius: 5,
                       background: barColor,
-                      transition: 'width .6s ease',
-                    }} />
+                      transition: 'width .6s ease'}} />
                   </div>
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                     <span style={{ fontSize: '.78rem', color: 'var(--text-muted)' }}>
@@ -1357,7 +1291,6 @@ export default function DashboardPage() {
         </>
       )
     })(),
-
     feed: (() => {
       const activities = (raw.activityLog || []).slice(0, 5)
       const contacts = raw.recentContacts || []
@@ -1382,23 +1315,19 @@ export default function DashboardPage() {
           key: `act-${a.id || a.created_at}`,
           icon: feedIcon(a.action),
           text: feedLabel(a),
-          date: a.created_at,
-        })),
+          date: a.created_at})),
         ...contacts.slice(0, 2).map(c => ({
           key: `contact-${c.id}`,
           icon: '👤',
           text: `Nouveau contact: ${c.nom || c.full_name || 'Inconnu'}`,
-          date: c.created_at,
-        })),
+          date: c.created_at})),
         ...docs.slice(0, 2).map(d => ({
           key: `doc-${d.id}`,
           icon: '📄',
           text: `Document: ${d.nom || d.name || 'Sans titre'}`,
-          date: d.created_at,
-        })),
+          date: d.created_at})),
       ]
-        .sort((a, b) => new Date(b.date) - new Date(a.date))
-        .slice(0, 5)
+        .sort((a, b) => new Date(b.date) - new Date(a.date)).slice(0, 5)
 
       return (
         <>
@@ -1415,8 +1344,7 @@ export default function DashboardPage() {
                   <div key={item.key} style={{
                     padding: '.6rem .75rem', borderRadius: 10,
                     background: 'var(--surface, #f8fafc)',
-                    border: '1px solid var(--border, #e2e8f0)',
-                  }}>
+                    border: '1px solid var(--border, #e2e8f0)'}}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '.5rem', marginBottom: '.35rem' }}>
                       <span style={{ fontSize: '1rem' }}>{item.icon}</span>
                       <span style={{ flex: 1, fontSize: '.85rem', color: 'var(--text)' }}>{item.text}</span>
@@ -1432,8 +1360,7 @@ export default function DashboardPage() {
                             padding: '.15rem .45rem', borderRadius: 20,
                             border: active ? '1px solid var(--primary, #1a5c82)' : '1px solid var(--border, #e2e8f0)',
                             background: active ? 'var(--primary, #1a5c82)' + '12' : 'transparent',
-                            cursor: 'pointer', fontSize: '.78rem', transition: 'all .15s',
-                          }}>
+                            cursor: 'pointer', fontSize: '.78rem', transition: 'all .15s'}}>
                             <span>{emoji}</span>
                             {count > 0 && <span style={{ fontSize: '.7rem', fontWeight: 600, color: 'var(--primary, #1a5c82)' }}>{count}</span>}
                           </button>
@@ -1447,8 +1374,7 @@ export default function DashboardPage() {
           )}
         </>
       )
-    })(),
-  }
+    })()}
 
   if (loading) {
     return (
@@ -1471,8 +1397,7 @@ export default function DashboardPage() {
       <div style={{
         background: 'linear-gradient(135deg, var(--primary, #1a5c82) 0%, #2d8bc9 60%, #56b4e8 100%)',
         borderRadius: 16, padding: '1.5rem 2rem', color: '#fff', marginBottom: '1.25rem',
-        display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-      }}>
+        display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
         <div>
           <h1 style={{ margin: 0, fontSize: '1.6rem', fontWeight: 700, color: '#fff' }}>
             Bonjour, {prenom} 👋
@@ -1510,15 +1435,13 @@ export default function DashboardPage() {
               onDrop={e => { e.preventDefault(); onDropWidget() }}
               className="dash-card" style={{
                 ...cardStyle, position: 'relative', cursor: 'default',
-                gridColumn: (id === 'activity' || id === 'feed') ? '1 / -1' : undefined,
-              }}>
+                gridColumn: (id === 'activity' || id === 'feed') ? '1 / -1' : undefined}}>
               {/* Grip visuel — visible uniquement au hover */}
               <div className="dash-grip" style={{
                 position: 'absolute', top: 6, left: 8, zIndex: 2,
                 display: 'grid', gridTemplateColumns: '5px 5px', gap: 3,
                 cursor: 'grab', padding: 2, borderRadius: 4,
-                opacity: 0, transition: 'opacity .2s',
-              }}>
+                opacity: 0, transition: 'opacity .2s'}}>
                 <span style={{ width: 5, height: 5, borderRadius: '50%', background: '#94a3b8' }} />
                 <span style={{ width: 5, height: 5, borderRadius: '50%', background: '#94a3b8' }} />
                 <span style={{ width: 5, height: 5, borderRadius: '50%', background: '#94a3b8' }} />

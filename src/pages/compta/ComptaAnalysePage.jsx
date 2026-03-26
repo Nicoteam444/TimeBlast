@@ -20,8 +20,7 @@ const COLORS = {
   orange:   '#f59e0b',
   grey:     '#94a3b8',
   actif:    '#1a5c82',
-  passif:   '#4a8fad',
-}
+  passif:   '#4a8fad'}
 
 const MONTH_LABELS = ['Jan','Fév','Mar','Avr','Mai','Jun','Jul','Aoû','Sep','Oct','Nov','Déc']
 
@@ -98,9 +97,7 @@ function computeMonthly(ecritures) {
     if (!byMonth[month]) byMonth[month] = []
     byMonth[month].push(e)
   }
-  return Object.entries(byMonth)
-    .sort(([a], [b]) => a.localeCompare(b))
-    .map(([month, rows]) => {
+  return Object.entries(byMonth).sort(([a], [b]) => a.localeCompare(b)).map(([month, rows]) => {
       const kpi = computeKPIs(rows)
       const [y, m] = month.split('-')
       return { month, label: MONTH_LABELS[parseInt(m) - 1], year: y, ...kpi }
@@ -195,8 +192,7 @@ export default function ComptaAnalysePage() {
       setLoadingImports(false)
       return
     }
-    supabase.from('fec_imports').select('id, created_at, meta').order('created_at', { ascending: false })
-      .then(({ data }) => {
+    supabase.from('fec_imports').select('id, created_at, meta').order('created_at', { ascending: false }).then(({ data }) => {
         const parsed = (data || []).map(i => {
           let m = {}; try { m = JSON.parse(i.meta || '{}') } catch {}
           return { ...i, ...m }
@@ -214,8 +210,7 @@ export default function ComptaAnalysePage() {
       return
     }
     setLoading(true)
-    supabase.from('fec_ecritures').select('id, import_id, data').eq('import_id', selectedId)
-      .then(({ data }) => {
+    supabase.from('fec_ecritures').select('id, import_id, data').eq('import_id', selectedId).then(({ data }) => {
         const parsed = (data || []).map(r => {
           let d = {}; try { d = JSON.parse(r.data || '{}') } catch {}
           return { id: r.id, ...d }

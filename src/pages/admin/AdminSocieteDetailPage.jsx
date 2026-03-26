@@ -41,11 +41,7 @@ function HoldingOrgChart({ holding, groupes, societes }) {
                 ) : (
                   societesInGroupe.map(s => {
                     const initials = s.name
-                      .split(/\s+/)
-                      .map(w => w[0])
-                      .join('')
-                      .toUpperCase()
-                      .slice(0, 2)
+                      .split(/\s+/).map(w => w[0]).join('').toUpperCase().slice(0, 2)
                     return (
                       <div key={s.id} className="holding-societe-card">
                         <div
@@ -82,11 +78,7 @@ function HoldingOrgChart({ holding, groupes, societes }) {
               <div className="holding-group-body">
                 {orphans.map(s => {
                   const initials = s.name
-                    .split(/\s+/)
-                    .map(w => w[0])
-                    .join('')
-                    .toUpperCase()
-                    .slice(0, 2)
+                    .split(/\s+/).map(w => w[0]).join('').toUpperCase().slice(0, 2)
                   return (
                     <div key={s.id} className="holding-societe-card">
                       <div
@@ -141,10 +133,7 @@ export default function AdminSocieteDetailPage() {
 
     // Fetch société
     const { data: s, error: sErr } = await supabase
-      .from('societes')
-      .select('*, groupes(id, name, color)')
-      .eq('id', id)
-      .single()
+      .from('societes').select('*, groupes(id, name, color)').eq('id', id).single()
 
     if (sErr || !s) {
       setError('Société introuvable.')
@@ -174,8 +163,7 @@ export default function AdminSocieteDetailPage() {
       users: userCount || 0,
       clients: clientCount || 0,
       transactions: transCount || 0,
-      projets: projetCount || 0,
-    })
+      projets: projetCount || 0})
 
     // If holding, fetch all groupes + societes for org chart
     if (s.name === 'SRA TEST') {
@@ -195,8 +183,7 @@ export default function AdminSocieteDetailPage() {
       name: societe.name || '',
       siren: societe.siren || '',
       ville: societe.ville || '',
-      groupe_id: societe.groupe_id || '',
-    })
+      groupe_id: societe.groupe_id || ''})
     setFormError(null)
     // Fetch groupes for select
     supabase.from('groupes').select('id, name, color').order('name').then(({ data }) => {
@@ -215,8 +202,7 @@ export default function AdminSocieteDetailPage() {
       name: form.name.trim(),
       siren: form.siren.trim() || null,
       ville: form.ville.trim() || null,
-      groupe_id: form.groupe_id || null,
-    }
+      groupe_id: form.groupe_id || null}
 
     const { error: upErr } = await supabase.from('societes').update(payload).eq('id', id)
     setFormLoading(false)
@@ -247,11 +233,7 @@ export default function AdminSocieteDetailPage() {
   const groupe = societe.groupes
   const avatarColor = groupe?.color || '#1a5c82'
   const initials = societe.name
-    .split(/\s+/)
-    .map(w => w[0])
-    .join('')
-    .toUpperCase()
-    .slice(0, 2)
+    .split(/\s+/).map(w => w[0]).join('').toUpperCase().slice(0, 2)
 
   const isHolding = societe.name === 'SRA TEST'
 
@@ -279,8 +261,7 @@ export default function AdminSocieteDetailPage() {
                   color: groupe.color,
                   background: groupe.color + '18',
                   fontSize: '.72rem',
-                  fontWeight: 600,
-                }}
+                  fontWeight: 600}}
               >
                 🏛 {groupe.name}
               </span>

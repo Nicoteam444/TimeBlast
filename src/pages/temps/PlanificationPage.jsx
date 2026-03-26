@@ -1,6 +1,5 @@
 import { useState, useEffect, useMemo, useRef, useCallback } from 'react'
 import { supabase } from '../../lib/supabase'
-import { useSociete } from '../../contexts/SocieteContext'
 
 // ── Constantes ────────────────────────────────────────────────
 const DAY_W   = 28
@@ -126,7 +125,6 @@ function TaskModal({ task, onSave, onDelete, onClose }) {
 
 // ── Page principale ───────────────────────────────────────────
 export default function PlanificationPage() {
-  const { selectedSociete } = useSociete()
   const [posteFilter, setPosteFilter]     = useState('tous')
   const [searchCollab, setSearchCollab]   = useState('')
   const [equipe, setEquipe]               = useState([])
@@ -143,22 +141,15 @@ export default function PlanificationPage() {
   const todayIdx    = days.findIndex(d => toISO(d) === todayISO)
 
   useEffect(() => {
-    if (!selectedSociete?.id) { setEquipe([]); return }
-    supabase.from('equipe').select('id, nom, prenom, poste')
-      .eq('societe_id', selectedSociete.id).order('nom')
-      .then(({ data }) => setEquipe(data || []))
-  }, [selectedSociete?.id])
+    supabase.from('equipe').select('id, nom, prenom, poste').order('nom').then(({ data }) => setEquipe(data || []))
+  }, [])
 
   function loadPlannings() {
-    if (!selectedSociete?.id) { setPlannings([]); return }
     const from = toISO(quarterStart)
     const to   = toISO(addMonths(quarterStart, N_MONTHS))
-    supabase.from('plannings').select('*')
-      .eq('societe_id', selectedSociete.id)
-      .gte('date_fin', from).lte('date_debut', to)
-      .then(({ data }) => setPlannings(data || []))
+    supabase.from('plannings').select('*').gte('date_fin', from).lte('date_debut', to).then(({ data }) => setPlannings(data || []))
   }
-  useEffect(() => { loadPlannings() }, [selectedSociete?.id, quarterStart])
+  useEffect(() => { loadPlannings() }, [, quarterStart])
 
   useEffect(() => {
     if (scrollRef.current && todayIdx > 0)
@@ -229,15 +220,13 @@ export default function PlanificationPage() {
     if (task.id) {
       await supabase.from('plannings').update({
         label: task.label, color: task.color,
-        date_debut: task.date_debut, date_fin: task.date_fin,
-      }).eq('id', task.id)
+        date_debut: task.date_debut, date_fin: task.date_fin}).eq('id', task.id)
     } else {
       await supabase.from('plannings').insert({
         user_key: task.user_key, user_label: task.user_label,
         societe_id: selectedSociete.id,
         label: task.label, color: task.color,
-        date_debut: task.date_debut, date_fin: task.date_fin,
-      })
+        date_debut: task.date_debut, date_fin: task.date_fin})
     }
     setEditModal(null)
     loadPlannings()
@@ -257,8 +246,7 @@ export default function PlanificationPage() {
         label: '',
         color: '#6366f1',
         date_debut: dayISO,
-        date_fin: toISO(addDaysDate(isoToDate(dayISO), 4)),
-      }
+        date_fin: toISO(addDaysDate(isoToDate(dayISO), 4))}
     })
   }
 
@@ -384,8 +372,7 @@ export default function PlanificationPage() {
                         left: si * DAY_W + 2, width: blockW,
                         background: p.color + '28',
                         borderLeftColor: p.color, color: p.color,
-                        cursor: 'grab',
-                      }}
+                        cursor: 'grab'}}
                       onMouseDown={e => { e.stopPropagation(); handleBlockMouseDown(e, p) }}
                       onClick={e => openEditTask(e, p)}
                       title={`${p.label}\n${p.date_debut} → ${p.date_fin}\nClic pour éditer · Glisser pour déplacer`}>

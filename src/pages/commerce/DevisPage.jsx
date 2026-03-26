@@ -32,7 +32,6 @@ CREATE POLICY "Users can manage devis for their societe"
 
 import { useState, useMemo, useEffect, useCallback } from 'react'
 import { supabase } from '../../lib/supabase'
-import { useSociete } from '../../contexts/SocieteContext'
 import useSortableTable from '../../hooks/useSortableTable'
 import SortableHeader from '../../components/SortableHeader'
 import Spinner from '../../components/Spinner'
@@ -124,8 +123,7 @@ function DevisModal({ devis, societe, clients, transactions, onSave, onClose }) 
       transaction_id: transactionId || null,
       total_ht: Math.round(totals.ht * 100) / 100,
       tva: Math.round(totals.tva * 100) / 100,
-      total_ttc: Math.round(totals.ttc * 100) / 100,
-    }
+      total_ttc: Math.round(totals.ttc * 100) / 100}
     try {
       if (isNew) {
         const { data } = await supabase.from('devis').insert(payload).select().single()
@@ -254,7 +252,6 @@ function DevisModal({ devis, societe, clients, transactions, onSave, onClose }) 
 
 // ── Page principale ───────────────────────────────────────────
 export default function DevisPage() {
-  const { selectedSociete } = useSociete()
   const [devisList, setDevisList] = useState([])
   const [clients, setClients] = useState([])
   const [transactions, setTransactions] = useState([])
@@ -268,12 +265,8 @@ export default function DevisPage() {
 
   // Load devis
   const loadDevis = useCallback(() => {
-    if (!selectedSociete?.id) { setDevisList([]); setLoading(false); return }
     setLoading(true)
-    supabase.from('devis').select('*')
-      .eq('societe_id', selectedSociete.id)
-      .order('date_emission', { ascending: false })
-      .then(({ data, error }) => {
+    supabase.from('devis').select('*').order('date_emission', { ascending: false }).then(({ data, error }) => {
         if (error && (error.code === '42P01' || error.message?.includes('relation') || error.message?.includes('does not exist'))) {
           setTableExists(false)
           setLoading(false)
@@ -282,25 +275,17 @@ export default function DevisPage() {
         setDevisList(data || [])
         setLoading(false)
       })
-  }, [selectedSociete?.id])
+  }, [])
 
   // Load clients
   const loadClients = useCallback(() => {
-    if (!selectedSociete?.id) return
-    supabase.from('clients').select('id, name, nom')
-      .eq('societe_id', selectedSociete.id)
-      .order('name', { ascending: true })
-      .then(({ data }) => setClients(data || []))
-  }, [selectedSociete?.id])
+    supabase.from('clients').select('id, name, nom').order('name', { ascending: true }).then(({ data }) => setClients(data || []))
+  }, [])
 
   // Load transactions
   const loadTransactions = useCallback(() => {
-    if (!selectedSociete?.id) return
-    supabase.from('transactions').select('id, reference, nom')
-      .eq('societe_id', selectedSociete.id)
-      .order('created_at', { ascending: false })
-      .then(({ data }) => setTransactions(data || []))
-  }, [selectedSociete?.id])
+    supabase.from('transactions').select('id, reference, nom').order('created_at', { ascending: false }).then(({ data }) => setTransactions(data || []))
+  }, [])
 
   useEffect(() => {
     loadDevis()
@@ -335,8 +320,7 @@ export default function DevisPage() {
     const nonBrouillon = devisList.filter(d => d.statut !== 'brouillon').length
     const tauxAcceptation = nonBrouillon > 0 ? Math.round((acceptes / nonBrouillon) * 100) : 0
     const enAttente = devisList
-      .filter(d => d.statut === 'envoye')
-      .reduce((s, d) => s + (d.total_ht || 0), 0)
+      .filter(d => d.statut === 'envoye').reduce((s, d) => s + (d.total_ht || 0), 0)
     return { total, montantTotal, tauxAcceptation, enAttente }
   }, [devisList])
 
@@ -359,7 +343,6 @@ export default function DevisPage() {
     const today = new Date().toISOString().slice(0, 10)
     const validite = (() => { const d = new Date(); d.setDate(d.getDate() + 30); return d.toISOString().slice(0, 10) })()
     const payload = {
-      societe_id: selectedSociete?.id,
       numero: devis.numero + '-COPIE',
       client_id: devis.client_id,
       client_nom: devis.client_nom,
@@ -371,8 +354,7 @@ export default function DevisPage() {
       total_ttc: devis.total_ttc,
       statut: 'brouillon',
       notes: devis.notes,
-      transaction_id: devis.transaction_id,
-    }
+      transaction_id: devis.transaction_id}
     await supabase.from('devis').insert(payload)
     loadDevis()
   }
@@ -384,7 +366,6 @@ export default function DevisPage() {
     const today = new Date().toISOString().slice(0, 10)
     const echeance = (() => { const d = new Date(); d.setDate(d.getDate() + 30); return d.toISOString().slice(0, 10) })()
     const facturePayload = {
-      societe_id: selectedSociete?.id,
       num_facture: devis.numero?.replace('DEV', 'FAC') || `FAC-${new Date().getFullYear()}-001`,
       date_emission: today,
       date_echeance: echeance,
@@ -393,8 +374,7 @@ export default function DevisPage() {
       lignes,
       notes: devis.notes,
       total_ht: devis.total_ht,
-      total_ttc: devis.total_ttc,
-    }
+      total_ttc: devis.total_ttc}
     const { data: facture, error } = await supabase.from('factures').insert(facturePayload).select().single()
     if (error) {
       alert('Erreur lors de la création de la facture : ' + error.message)

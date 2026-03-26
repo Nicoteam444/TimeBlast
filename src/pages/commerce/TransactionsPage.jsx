@@ -2,7 +2,6 @@ import { useState, useEffect, useMemo, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { supabase } from '../../lib/supabase'
 import ClientAutocomplete from '../../components/ClientAutocomplete'
-import { useSociete } from '../../contexts/SocieteContext'
 import { useAuth } from '../../contexts/AuthContext'
 import useSortableTable from '../../hooks/useSortableTable'
 import SortableHeader from '../../components/SortableHeader'
@@ -22,8 +21,7 @@ export function phaseInfo(id) {
 
 const EMPTY_FORM = {
   name: '', phase: 'qualification', montant: '',
-  date_fermeture_prevue: '', notes: '',
-}
+  date_fermeture_prevue: '', notes: ''}
 
 function formatMontant(v) {
   if (!v && v !== 0) return '—'
@@ -101,7 +99,6 @@ function KanbanColumn({ phase, cards, onDragStart, onDrop, onClick }) {
 export default function TransactionsPage() {
   const navigate = useNavigate()
   const { user } = useAuth()
-  const { selectedSociete, societes } = useSociete()
   const [transactions, setTransactions] = useState([])
   const [loading, setLoading] = useState(true)
   const [showForm, setShowForm] = useState(false)
@@ -120,9 +117,7 @@ export default function TransactionsPage() {
   async function fetchTransactions() {
     setLoading(true)
     const query = supabase
-      .from('transactions')
-      .select('*, clients(name), societes(name)')
-      .order('created_at', { ascending: false })
+      .from('transactions').select('*, clients(name), societes(name)').order('created_at', { ascending: false })
     const { data, error } = await query
     if (error) setError(error.message)
     setTransactions(data || [])
@@ -134,12 +129,10 @@ export default function TransactionsPage() {
     const { error } = await supabase.from('transactions').insert({
       name: form.name,
       client_id: selectedClient?.id || null,
-      societe_id: selectedSociete?.id || null,
       phase: form.phase,
       montant: form.montant ? parseFloat(form.montant) : null,
       date_fermeture_prevue: form.date_fermeture_prevue || null,
-      notes: form.notes || null,
-    })
+      notes: form.notes || null})
     if (error) { setError(error.message); return }
     setShowForm(false); setForm(EMPTY_FORM); setSelectedClient(null)
     fetchTransactions()
@@ -157,14 +150,12 @@ export default function TransactionsPage() {
       const newLabel = PHASES.find(p => p.id === targetPhase)?.label || targetPhase
       supabase.from('activity_log').insert({
         user_id: user?.id || null,
-        societe_id: card.societe_id || selectedSociete?.id || null,
         action: 'move',
         entity_type: 'transaction',
         entity_id: card.id,
         entity_name: card.name,
         details: `${oldLabel} → ${newLabel}`,
-        icon: '💼',
-      }).then(() => {})
+        icon: '💼'}).then(() => {})
     }
     dragCard.current = null
   }

@@ -32,8 +32,7 @@ export default function BusinessIntelligencePage() {
         gap: 0,
         borderBottom: '2px solid var(--border)',
         marginBottom: '1.5rem',
-        marginTop: '.75rem',
-      }}>
+        marginTop: '.75rem'}}>
         {TABS.map(tab => (
           <button
             key={tab.id}
@@ -48,8 +47,7 @@ export default function BusinessIntelligencePage() {
               fontSize: '.92rem',
               cursor: 'pointer',
               transition: 'all .15s',
-              marginBottom: '-2px',
-            }}
+              marginBottom: '-2px'}}
           >
             {tab.label}
           </button>

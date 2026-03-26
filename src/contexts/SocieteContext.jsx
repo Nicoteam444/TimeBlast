@@ -59,8 +59,7 @@ export function SocieteProvider({ children }) {
       societes,
       selectedSociete,
       setSelectedSociete: handleSelectSociete,
-      loadingSocietes,
-    }}>
+      loadingSocietes}}>
       {children}
     </SocieteContext.Provider>
   )

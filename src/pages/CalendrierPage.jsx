@@ -1,7 +1,6 @@
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../contexts/AuthContext'
-import { useSociete } from '../contexts/SocieteContext'
 import Spinner from '../components/Spinner'
 
 // ── Constantes ─────────────────────────────────────────────
@@ -257,14 +256,8 @@ export default function CalendrierPage() {
       const userIds = [...selectedCollabs]
 
       const [evRes, saisieRes] = await Promise.all([
-        supabase.from('calendar_events').select('*')
-          .in('user_id', userIds)
-          .gte('start_time', startDate)
-          .lt('start_time', endDate),
-        supabase.from('saisies_temps').select('*')
-          .in('user_id', userIds)
-          .gte('date', startDate)
-          .lt('date', endDate)
+        supabase.from('calendar_events').select('*').in('user_id', userIds).gte('start_time', startDate).lt('start_time', endDate),
+        supabase.from('saisies_temps').select('*').in('user_id', userIds).gte('date', startDate).lt('date', endDate)
       ])
 
       setEvents((evRes.data || []).map(parseEventTime))
@@ -507,8 +500,7 @@ export default function CalendrierPage() {
                           background: color + '18', borderLeft: `3px solid ${color}`,
                           borderRadius: '0 6px 6px 0', padding: '3px 6px',
                           cursor: 'pointer', overflow: 'hidden', fontSize: 11,
-                          transition: 'box-shadow .15s',
-                        }}
+                          transition: 'box-shadow .15s'}}
                         onClick={e => e.stopPropagation()}
                         onMouseEnter={e => e.currentTarget.style.boxShadow = '0 2px 8px rgba(0,0,0,.15)'}
                         onMouseLeave={e => e.currentTarget.style.boxShadow = 'none'}>

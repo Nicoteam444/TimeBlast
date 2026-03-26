@@ -40,8 +40,7 @@ export default function ConfirmDeleteModal({ title, message, onConfirm, onCancel
                 textAlign: 'center',
                 letterSpacing: 1,
                 outline: 'none',
-                transition: 'border-color .15s',
-              }}
+                transition: 'border-color .15s'}}
             />
           </div>
           <div className="modal-actions">

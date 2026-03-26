@@ -1,7 +1,6 @@
 import { useState, useEffect, useRef, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
-import { useSociete } from '../contexts/SocieteContext'
 import { supabase } from '../lib/supabase'
 
 const B = '#2B4C7E'
@@ -68,7 +67,6 @@ export default function CommandPalette() {
   const inputRef = useRef(null)
   const navigate = useNavigate()
   const { user } = useAuth()
-  const { selectedSociete } = useSociete()
 
   // Cmd+K / Ctrl+K
   useEffect(() => {
@@ -98,7 +96,6 @@ export default function CommandPalette() {
     const timer = setTimeout(async () => {
       setSearching(true)
       const q = query.toLowerCase()
-      const socId = selectedSociete?.id
       const results = []
 
       try {
@@ -147,7 +144,7 @@ export default function CommandPalette() {
       setSearching(false)
     }, 300)
     return () => clearTimeout(timer)
-  }, [query, selectedSociete?.id])
+  }, [query])
 
   // Filter pages & actions by query
   const filteredPages = useMemo(() => {
@@ -207,13 +204,11 @@ export default function CommandPalette() {
     <div style={{
       position: 'fixed', inset: 0, zIndex: 9999,
       background: 'rgba(0,0,0,0.4)', backdropFilter: 'blur(4px)',
-      display: 'flex', alignItems: 'flex-start', justifyContent: 'center', paddingTop: '12vh',
-    }} onClick={() => setOpen(false)}>
+      display: 'flex', alignItems: 'flex-start', justifyContent: 'center', paddingTop: '12vh'}} onClick={() => setOpen(false)}>
       <div style={{
         width: '100%', maxWidth: 580, background: '#fff', borderRadius: 16,
         boxShadow: '0 25px 80px rgba(0,0,0,0.25)', overflow: 'hidden',
-        animation: 'cmdSlideIn .15s ease',
-      }} onClick={e => e.stopPropagation()}>
+        animation: 'cmdSlideIn .15s ease'}} onClick={e => e.stopPropagation()}>
         <style>{`
           @keyframes cmdSlideIn { from { opacity: 0; transform: translateY(-10px) scale(0.98); } to { opacity: 1; transform: translateY(0) scale(1); } }
         `}</style>
@@ -229,13 +224,11 @@ export default function CommandPalette() {
             placeholder="Rechercher, naviguer, agir..."
             style={{
               flex: 1, border: 'none', outline: 'none', fontSize: '1rem', color: '#1a2332',
-              background: 'transparent', fontWeight: 500,
-            }}
+              background: 'transparent', fontWeight: 500}}
           />
           <kbd style={{
             padding: '2px 8px', borderRadius: 4, background: '#f1f5f9', border: '1px solid #e2e8f0',
-            fontSize: '.7rem', color: '#94a3b8', fontFamily: 'monospace',
-          }}>ESC</kbd>
+            fontSize: '.7rem', color: '#94a3b8', fontFamily: 'monospace'}}>ESC</kbd>
         </div>
 
         {/* Results */}
@@ -258,8 +251,7 @@ export default function CommandPalette() {
               return (
                 <div key={`h-${idx}`} style={{
                   padding: '8px 20px 4px', fontSize: '.7rem', fontWeight: 700, color: '#94a3b8',
-                  letterSpacing: '0.5px', textTransform: 'uppercase',
-                }}>{item.label}</div>
+                  letterSpacing: '0.5px', textTransform: 'uppercase'}}>{item.label}</div>
               )
             }
 
@@ -276,8 +268,7 @@ export default function CommandPalette() {
                   padding: '10px 20px', cursor: 'pointer',
                   background: isSelected ? `${B}10` : 'transparent',
                   borderLeft: isSelected ? `3px solid ${B}` : '3px solid transparent',
-                  transition: 'all .1s',
-                }}
+                  transition: 'all .1s'}}
               >
                 <span style={{ fontSize: 16, width: 24, textAlign: 'center' }}>{item.icon}</span>
                 <div style={{ flex: 1 }}>
@@ -293,8 +284,7 @@ export default function CommandPalette() {
         {/* Footer */}
         <div style={{
           padding: '10px 20px', borderTop: '1px solid #f1f5f9', background: '#fafbfc',
-          display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-        }}>
+          display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
           <div style={{ display: 'flex', gap: 12, fontSize: '.72rem', color: '#94a3b8' }}>
             <span><kbd style={{ padding: '1px 4px', borderRadius: 3, background: '#e2e8f0', fontSize: '.65rem' }}>↑↓</kbd> naviguer</span>
             <span><kbd style={{ padding: '1px 4px', borderRadius: 3, background: '#e2e8f0', fontSize: '.65rem' }}>↵</kbd> ouvrir</span>

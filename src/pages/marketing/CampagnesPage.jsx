@@ -1,6 +1,5 @@
 import { useState, useEffect, useMemo } from 'react'
 import { supabase } from '../../lib/supabase'
-import { useSociete } from '../../contexts/SocieteContext'
 import useSortableTable from '../../hooks/useSortableTable'
 import SortableHeader from '../../components/SortableHeader'
 import Spinner from '../../components/Spinner'
@@ -10,15 +9,13 @@ const TYPE_META = {
   social: { label: 'R\u00e9seaux sociaux', icon: '\u{1F4F1}', color: '#8b5cf6', bg: '#f5f3ff' },
   seo:    { label: 'SEO',             icon: '\u{1F50D}', color: '#22c55e', bg: '#f0fdf4' },
   ads:    { label: 'Publicit\u00e9',  icon: '\u{1F4E3}', color: '#f59e0b', bg: '#fffbeb' },
-  event:  { label: '\u00c9v\u00e9nement', icon: '\u{1F3EA}', color: '#ec4899', bg: '#fdf2f8' },
-}
+  event:  { label: '\u00c9v\u00e9nement', icon: '\u{1F3EA}', color: '#ec4899', bg: '#fdf2f8' }}
 
 const STATUT_META = {
   brouillon: { label: 'Brouillon', color: '#64748b', bg: '#f1f5f9' },
   en_cours:  { label: 'En cours',  color: '#3b82f6', bg: '#eff6ff' },
   terminee:  { label: 'Termin\u00e9e', color: '#16a34a', bg: '#f0fdf4' },
-  annulee:   { label: 'Annul\u00e9e',  color: '#dc2626', bg: '#fef2f2' },
-}
+  annulee:   { label: 'Annul\u00e9e',  color: '#dc2626', bg: '#fef2f2' }}
 
 const SQL_HINT = `CREATE TABLE IF NOT EXISTS campagnes (
   id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
@@ -43,8 +40,7 @@ const EMPTY_FORM = {
   date_fin: '',
   budget: '',
   statut: 'brouillon',
-  objectif: '',
-}
+  objectif: ''}
 
 function fmtDate(iso) {
   if (!iso) return '\u2014'
@@ -57,7 +53,6 @@ function fmtMontant(n) {
 }
 
 export default function CampagnesPage() {
-  const { selectedSociete } = useSociete()
   const [campagnes, setCampagnes] = useState([])
   const [loading, setLoading] = useState(true)
   const [tableError, setTableError] = useState(false)
@@ -74,16 +69,13 @@ export default function CampagnesPage() {
 
   useEffect(() => {
     fetchCampagnes()
-  }, [selectedSociete?.id])
+  }, [])
 
   async function fetchCampagnes() {
     setLoading(true)
     setTableError(false)
     let q = supabase
-      .from('campagnes')
-      .select('*')
-      .order('date_debut', { ascending: false })
-    if (selectedSociete?.id) q = q.eq('societe_id', selectedSociete.id)
+      .from('campagnes').select('*').order('date_debut', { ascending: false })
     const { data, error } = await q
     if (error) {
       if (error.code === '42P01') setTableError(true)
@@ -111,8 +103,7 @@ export default function CampagnesPage() {
       date_fin: item.date_fin || '',
       budget: item.budget !== null && item.budget !== undefined ? String(item.budget) : '',
       statut: item.statut || 'brouillon',
-      objectif: item.objectif || '',
-    })
+      objectif: item.objectif || ''})
     setFormError('')
     setShowForm(true)
   }
@@ -138,9 +129,7 @@ export default function CampagnesPage() {
       date_fin: form.date_fin || null,
       budget: form.budget ? parseFloat(form.budget) : 0,
       statut: form.statut,
-      objectif: form.objectif.trim() || null,
-      societe_id: selectedSociete?.id || null,
-    }
+      objectif: form.objectif.trim() || null}
 
     let error
     if (editItem) {

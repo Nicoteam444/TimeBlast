@@ -1,6 +1,5 @@
 import { useState, useEffect, useMemo } from 'react'
 import { supabase } from '../../lib/supabase'
-import { useSociete } from '../../contexts/SocieteContext'
 import useSortableTable from '../../hooks/useSortableTable'
 import SortableHeader from '../../components/SortableHeader'
 import Spinner from '../../components/Spinner'
@@ -10,8 +9,7 @@ const CATEGORIE_META = {
   logiciel:    { label: 'Logiciel',   icon: '💻', color: '#8b5cf6', bg: '#f5f3ff' },
   consommable: { label: 'Consommable',icon: '🧪', color: '#f59e0b', bg: '#fffbeb' },
   equipement:  { label: 'Équipement', icon: '⚙️', color: '#22c55e', bg: '#f0fdf4' },
-  autre:       { label: 'Autre',      icon: '📋', color: '#64748b', bg: '#f8fafc' },
-}
+  autre:       { label: 'Autre',      icon: '📋', color: '#64748b', bg: '#f8fafc' }}
 
 const SQL_HINT = `CREATE TABLE IF NOT EXISTS stocks (
   id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
@@ -37,8 +35,7 @@ const EMPTY_FORM = {
   quantite_min: '0',
   prix_unitaire: '0',
   fournisseur: '',
-  localisation: '',
-}
+  localisation: ''}
 
 function fmtMontant(n) {
   if (n === null || n === undefined || n === '') return '—'
@@ -54,7 +51,6 @@ function getQtyState(quantite, quantite_min) {
 }
 
 export default function StockPage() {
-  const { selectedSociete } = useSociete()
   const [items, setItems] = useState([])
   const [loading, setLoading] = useState(true)
   const [tableError, setTableError] = useState(false)
@@ -70,16 +66,13 @@ export default function StockPage() {
 
   useEffect(() => {
     fetchStock()
-  }, [selectedSociete?.id])
+  }, [])
 
   async function fetchStock() {
     setLoading(true)
     setTableError(false)
     let q = supabase
-      .from('stocks')
-      .select('*')
-      .order('nom', { ascending: true })
-    if (selectedSociete?.id) q = q.eq('societe_id', selectedSociete.id)
+      .from('stocks').select('*').order('nom', { ascending: true })
     const { data, error } = await q
     if (error) {
       if (error.code === '42P01') setTableError(true)
@@ -108,8 +101,7 @@ export default function StockPage() {
       quantite_min: item.quantite_min !== null && item.quantite_min !== undefined ? String(item.quantite_min) : '0',
       prix_unitaire: item.prix_unitaire !== null && item.prix_unitaire !== undefined ? String(item.prix_unitaire) : '0',
       fournisseur: item.fournisseur || '',
-      localisation: item.localisation || '',
-    })
+      localisation: item.localisation || ''})
     setFormError('')
     setShowForm(true)
   }
@@ -136,9 +128,7 @@ export default function StockPage() {
       quantite_min: parseInt(form.quantite_min, 10) || 0,
       prix_unitaire: parseFloat(form.prix_unitaire) || 0,
       fournisseur: form.fournisseur.trim() || null,
-      localisation: form.localisation.trim() || null,
-      societe_id: selectedSociete?.id || null,
-    }
+      localisation: form.localisation.trim() || null}
 
     let error
     if (editItem) {

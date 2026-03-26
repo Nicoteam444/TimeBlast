@@ -1,6 +1,5 @@
 import { useState, useEffect, useMemo } from 'react'
 import { supabase } from '../../lib/supabase'
-import { useSociete } from '../../contexts/SocieteContext'
 import { useAuth } from '../../contexts/AuthContext'
 import Spinner from '../../components/Spinner'
 
@@ -66,7 +65,6 @@ function parseNum(s) {
 function toISO(d) { return d.toISOString().slice(0, 10) }
 
 export default function SaisieEcriturePage() {
-  const { selectedSociete } = useSociete()
   const { profile } = useAuth()
 
   // ── Formulaire ─────────────────────────────────────────────
@@ -87,18 +85,13 @@ export default function SaisieEcriturePage() {
   const [search, setSearch] = useState('')
   const [filterJournal, setFilterJournal] = useState('')
 
-  useEffect(() => { loadEntries() }, [selectedSociete?.id])
+  useEffect(() => { loadEntries() }, [])
 
   async function loadEntries() {
     setLoading(true)
     let q = supabase
-      .from('journal_entries')
-      .select(`id, date, piece_ref, journal_code, libelle, exercice, created_at,
-               journal_lines(id, compte_num, compte_lib, libelle, debit, credit)`)
-      .order('date', { ascending: false })
-      .order('created_at', { ascending: false })
-      .limit(200)
-    if (selectedSociete?.id) q = q.eq('societe_id', selectedSociete.id)
+      .from('journal_entries').select(`id, date, piece_ref, journal_code, libelle, exercice, created_at,
+               journal_lines(id, compte_num, compte_lib, libelle, debit, credit)`).order('date', { ascending: false }).order('created_at', { ascending: false }).limit(200)
     const { data, error } = await q
     if (!error) setEntries(data || [])
     setLoading(false)
@@ -149,40 +142,34 @@ export default function SaisieEcriturePage() {
   // ── Sauvegarde ──────────────────────────────────────────────
   async function handleSave(e) {
     e?.preventDefault()
-    if (!balanced || !hasLines || !selectedSociete?.id) return
+    if (!balanced || !hasLines ) return
     setSaving(true)
     setSaveError(null)
     setSaveOk(false)
 
     // Créer l'en-tête
     const { data: entry, error: entryErr } = await supabase
-      .from('journal_entries')
-      .insert({
+      .from('journal_entries').insert({
         societe_id: selectedSociete.id,
         date,
         piece_ref: pieceRef || null,
         journal_code: journal,
         libelle: libelle || null,
         exercice,
-        created_by: profile?.id || null,
-      })
-      .select()
-      .single()
+        created_by: profile?.id || null}).select().single()
 
     if (entryErr) { setSaveError(entryErr.message); setSaving(false); return }
 
     // Créer les lignes
     const validLines = lines.filter(l => l.compte_num)
     const { error: linesErr } = await supabase
-      .from('journal_lines')
-      .insert(validLines.map(l => ({
+      .from('journal_lines').insert(validLines.map(l => ({
         entry_id: entry.id,
         compte_num: l.compte_num,
         compte_lib: l.compte_lib || null,
         libelle: l.libelle || null,
         debit: parseNum(l.debit) || 0,
-        credit: parseNum(l.credit) || 0,
-      })))
+        credit: parseNum(l.credit) || 0})))
 
     if (linesErr) { setSaveError(linesErr.message); setSaving(false); return }
 
@@ -223,8 +210,7 @@ export default function SaisieEcriturePage() {
           libelle: l.libelle || e.libelle,
           debit: l.debit,
           credit: l.credit,
-          line_id: l.id,
-        })
+          line_id: l.id})
       }
     }
     return rows
@@ -258,16 +244,9 @@ export default function SaisieEcriturePage() {
     <div className="admin-page">
       <div className="admin-page-header">
         <h1>Saisie des écritures</h1>
-        {selectedSociete && <span className="badge-info">{selectedSociete.name}</span>}
       </div>
 
-      {!selectedSociete?.id && (
-        <div style={{ padding: '2rem', textAlign: 'center', color: 'var(--text-muted)' }}>
-          Sélectionnez une société pour saisir des écritures.
-        </div>
-      )}
-
-      {selectedSociete?.id && (
+      {true && (
         <div className="saisie-ecriture-layout-vertical">
 
           {/* ── FORMULAIRE ───────────────────────────── */}

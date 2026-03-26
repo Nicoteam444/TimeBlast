@@ -1,14 +1,12 @@
 import { useState, useEffect, useMemo } from 'react'
 import { supabase } from '../../lib/supabase'
-import { useSociete } from '../../contexts/SocieteContext'
 import useSortableTable from '../../hooks/useSortableTable'
 import SortableHeader from '../../components/SortableHeader'
 import Spinner from '../../components/Spinner'
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend,
   ResponsiveContainer, PieChart, Pie, Cell, ScatterChart, Scatter,
-  ZAxis,
-} from 'recharts'
+  ZAxis} from 'recharts'
 
 // ── Helpers ─────────────────────────────────────────────────────
 function fmtMontant(n) {
@@ -33,8 +31,7 @@ const COLORS = {
   red: '#dc2626',
   grey: '#94a3b8',
   blue2: '#4a8fad',
-  blue3: '#8ec6d8',
-}
+  blue3: '#8ec6d8'}
 
 // ── Status badge ────────────────────────────────────────────────
 function MarginBadge({ pct }) {
@@ -101,7 +98,6 @@ function downloadCSV(filename, rows, headers) {
 // MAIN COMPONENT
 // ═════════════════════════════════════════════════════════════════
 export default function RentabilitePage() {
-  const { selectedSociete } = useSociete()
 
   const [loading, setLoading] = useState(true)
   const [projets, setProjets] = useState([])
@@ -124,9 +120,8 @@ export default function RentabilitePage() {
 
   // ── Load data ───────────────────────────────────────────────
   useEffect(() => {
-    if (!selectedSociete?.id) return
     loadAll()
-  }, [selectedSociete?.id])
+  }, [])
 
   async function loadAll() {
     setLoading(true)
@@ -299,8 +294,7 @@ export default function RentabilitePage() {
         margePct,
         status,
         byCollab: hoursByProjet[p.id]?.byCollab || {},
-        byMonth: hoursByProjet[p.id]?.byMonth || {},
-      }
+        byMonth: hoursByProjet[p.id]?.byMonth || {}}
     }).filter(r => {
       if (filterClient && r.clientId !== filterClient) return false
       if (filterStatus !== 'all' && r.status !== filterStatus) return false
@@ -325,13 +319,10 @@ export default function RentabilitePage() {
   // ── Chart data: Budget vs Coût (top 10) ────────────────────
   const barChartData = useMemo(() => {
     return [...rows]
-      .sort((a, b) => b.budget - a.budget)
-      .slice(0, 10)
-      .map(r => ({
+      .sort((a, b) => b.budget - a.budget).slice(0, 10).map(r => ({
         name: r.projet.name.length > 20 ? r.projet.name.slice(0, 18) + '…' : r.projet.name,
         budget: Math.round(r.budget),
-        cout: Math.round(r.coutReel),
-      }))
+        cout: Math.round(r.coutReel)}))
   }, [rows])
 
   // ── Chart data: Donut overall margin ──────────────────────
@@ -350,8 +341,7 @@ export default function RentabilitePage() {
       y: r.marge,
       z: r.budget,
       projetName: r.projet.name,
-      fill: r.status === 'rentable' ? COLORS.green : r.status === 'attention' ? COLORS.orange : COLORS.red,
-    }))
+      fill: r.status === 'rentable' ? COLORS.green : r.status === 'attention' ? COLORS.orange : COLORS.red}))
   }, [rows])
 
   // ── Detail: monthly cost evolution for expanded project ────
@@ -373,12 +363,10 @@ export default function RentabilitePage() {
     if (!expandedId) return []
     const row = rows.find(r => r.id === expandedId)
     if (!row) return []
-    return Object.entries(row.byCollab)
-      .map(([uid, h]) => {
+    return Object.entries(row.byCollab).map(([uid, h]) => {
         const member = equipe.find(e => e.id === uid)
         return { name: member ? `${member.prenom} ${member.nom}` : uid, heures: h }
-      })
-      .sort((a, b) => b.heures - a.heures)
+      }).sort((a, b) => b.heures - a.heures)
   }, [expandedId, rows, equipe])
 
   // ── Export CSV ─────────────────────────────────────────────
@@ -600,8 +588,7 @@ export default function RentabilitePage() {
                                       className="rent-budget-bar-fill"
                                       style={{
                                         width: `${Math.min(100, r.budget > 0 ? (r.coutReel / r.budget) * 100 : 0)}%`,
-                                        background: r.coutReel > r.budget ? COLORS.red : r.coutReel / r.budget > 0.8 ? COLORS.orange : COLORS.green,
-                                      }}
+                                        background: r.coutReel > r.budget ? COLORS.red : r.coutReel / r.budget > 0.8 ? COLORS.orange : COLORS.green}}
                                     />
                                   </div>
                                   <span style={{ fontSize: '.82rem', color: 'var(--text-muted)' }}>

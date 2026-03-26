@@ -1,6 +1,5 @@
 import { useState, useEffect, useMemo } from 'react'
 import { supabase } from '../../lib/supabase'
-import { useSociete } from '../../contexts/SocieteContext'
 import useSortableTable from '../../hooks/useSortableTable'
 import SortableHeader from '../../components/SortableHeader'
 import Spinner from '../../components/Spinner'
@@ -27,8 +26,7 @@ const EMPTY_FORM = {
   date_acquisition: '',
   valeur_brute: '',
   duree_amort: '5',
-  statut: 'actif',
-}
+  statut: 'actif'}
 
 function fmt(n) {
   if (n === null || n === undefined || n === '') return '—'
@@ -54,7 +52,6 @@ function computeAmort(valeurBrute, dureeAmort, dateAcquisition) {
 }
 
 export default function ImmobilisationsPage() {
-  const { selectedSociete } = useSociete()
   const [immos, setImmos] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
@@ -71,14 +68,13 @@ export default function ImmobilisationsPage() {
   const [formError, setFormError] = useState(null)
   const [deleteId, setDeleteId] = useState(null)
 
-  useEffect(() => { fetchImmos() }, [selectedSociete?.id])
+  useEffect(() => { fetchImmos() }, [])
 
   async function fetchImmos() {
     setLoading(true)
     setError(null)
     setMigrationNeeded(false)
     let query = supabase.from('immobilisations').select('*').order('libelle')
-    if (selectedSociete?.id) query = query.eq('societe_id', selectedSociete.id)
     const { data, error } = await query
     if (error) {
       if (error.code === '42P01' || error.message?.includes('immobilisations')) { setMigrationNeeded(true) }
@@ -106,8 +102,7 @@ export default function ImmobilisationsPage() {
       date_acquisition: item.date_acquisition || '',
       valeur_brute: item.valeur_brute != null ? String(item.valeur_brute) : '',
       duree_amort: item.duree_amort != null ? String(item.duree_amort) : '5',
-      statut: item.statut || 'actif',
-    })
+      statut: item.statut || 'actif'})
     setFormError(null)
     setShowModal(true)
   }
@@ -125,15 +120,13 @@ export default function ImmobilisationsPage() {
     setSaving(true)
     setFormError(null)
     const payload = {
-      societe_id: selectedSociete?.id || null,
       numero_comptable: form.numero_comptable.trim() || null,
       libelle: form.libelle.trim(),
       categorie: form.categorie,
       date_acquisition: form.date_acquisition || null,
       valeur_brute: form.valeur_brute !== '' ? parseFloat(form.valeur_brute) : 0,
       duree_amort: form.duree_amort !== '' ? parseFloat(form.duree_amort) : 5,
-      statut: form.statut,
-    }
+      statut: form.statut}
     let err
     if (editingId) {
       ;({ error: err } = await supabase.from('immobilisations').update(payload).eq('id', editingId))
@@ -304,8 +297,7 @@ CREATE POLICY "immo_all" ON immobilisations FOR ALL
                           <span style={{
                             padding: '.15rem .55rem', borderRadius: 12, fontSize: '.75rem', fontWeight: 600,
                             color: statutInfo?.color || 'var(--text-muted)',
-                            background: (statutInfo?.color || '#94a3b8') + '18',
-                          }}>
+                            background: (statutInfo?.color || '#94a3b8') + '18'}}>
                             {statutInfo?.label || i.statut}
                           </span>
                         </td>
@@ -315,8 +307,7 @@ CREATE POLICY "immo_all" ON immobilisations FOR ALL
                               onClick={() => openEdit(i)}>Modifier</button>
                             <button style={{
                               padding: '.2rem .55rem', fontSize: '.78rem', background: 'transparent',
-                              border: '1px solid #fca5a5', color: '#dc2626', borderRadius: 6, cursor: 'pointer',
-                            }} onClick={() => setDeleteId(i.id)}>Supprimer</button>
+                              border: '1px solid #fca5a5', color: '#dc2626', borderRadius: 6, cursor: 'pointer'}} onClick={() => setDeleteId(i.id)}>Supprimer</button>
                           </div>
                         </td>
                       </tr>

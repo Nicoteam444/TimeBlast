@@ -1,6 +1,5 @@
 import { useState, useRef, useEffect } from 'react'
 import { supabase } from '../lib/supabase'
-import { useSociete } from '../contexts/SocieteContext'
 import { useAuth } from '../contexts/AuthContext'
 
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL
@@ -19,14 +18,12 @@ function buildSystemPrompt(societe, ctx) {
     `=== SOCIÉTÉ ACTIVE ===`,
     societe ? `${societe.name}` : `Aucune société sélectionnée.`,
     ``,
-
     // --- Clients ---
     `=== CLIENTS (${ctx.clients?.length || 0}) ===`,
     ctx.clients?.length > 0
       ? ctx.clients.map(c => `• ${c.name}${c.ville ? ' — ' + c.ville : ''}`).join('\n')
       : `Aucun client.`,
     ``,
-
     // --- Transactions / Pipeline ---
     `=== TRANSACTIONS (${ctx.transactions?.length || 0}) ===`,
     ctx.transactions?.length > 0
@@ -39,7 +36,6 @@ function buildSystemPrompt(societe, ctx) {
         ].filter(Boolean).join('\n')
       : `Aucune transaction.`,
     ``,
-
     // --- Projets ---
     `=== PROJETS (${ctx.projets?.length || 0}) ===`,
     ctx.projets?.length > 0
@@ -48,7 +44,6 @@ function buildSystemPrompt(societe, ctx) {
         ).join('\n')
       : `Aucun projet.`,
     ``,
-
     // --- Factures ---
     `=== FACTURES (${ctx.factures?.length || 0}) ===`,
     ctx.factures?.length > 0
@@ -63,7 +58,6 @@ function buildSystemPrompt(societe, ctx) {
         ].join('\n')
       : `Aucune facture.`,
     ``,
-
     // --- Équipe ---
     `=== ÉQUIPE (${ctx.equipe?.length || 0} collaborateurs) ===`,
     ctx.equipe?.length > 0
@@ -72,7 +66,6 @@ function buildSystemPrompt(societe, ctx) {
         ).join('\n')
       : `Aucun collaborateur.`,
     ``,
-
     // --- Immobilisations ---
     `=== IMMOBILISATIONS (${ctx.immos?.length || 0}) ===`,
     ctx.immos?.length > 0
@@ -84,7 +77,6 @@ function buildSystemPrompt(societe, ctx) {
         ].join('\n')
       : `Aucune immobilisation.`,
     ``,
-
     // --- Achats ---
     `=== ACHATS (${ctx.achats?.length || 0}) ===`,
     ctx.achats?.length > 0
@@ -96,7 +88,6 @@ function buildSystemPrompt(societe, ctx) {
         ].join('\n')
       : `Aucun achat.`,
     ``,
-
     // --- FEC ---
     `=== DONNÉES COMPTABLES (FEC) ===`,
     ctx.fecImports?.length > 0
@@ -106,14 +97,12 @@ function buildSystemPrompt(societe, ctx) {
         }).join('\n')
       : `Aucun import FEC.`,
     ``,
-
     // --- Saisies temps ---
     `=== SAISIES TEMPS (semaine en cours) ===`,
     ctx.saisies?.length > 0
       ? `${ctx.saisies.reduce((s, st) => s + (parseFloat(st.heures) || 0), 0)}h saisies cette semaine sur ${ctx.saisies.length} entrée(s)`
       : `Aucune saisie cette semaine.`,
     ``,
-
     `=== INSTRUCTIONS ===`,
     `Réponds aux questions en utilisant les données réelles ci-dessus.`,
     `Sois précis avec les chiffres. Si une donnée manque, dis-le.`,
@@ -155,7 +144,6 @@ function saveHistory(history, userId) {
 }
 
 export default function ChatWidget() {
-  const { selectedSociete } = useSociete()
   const { profile } = useAuth()
 
   const [open, setOpen] = useState(false)
@@ -204,7 +192,7 @@ export default function ChatWidget() {
   useEffect(() => {
     if (!open) return
     loadContext()
-  }, [open, selectedSociete?.id])
+  }, [open])
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
@@ -217,7 +205,6 @@ export default function ChatWidget() {
   async function loadContext() {
     setCtxLoading(true)
     try {
-      const sid = selectedSociete?.id
       const filter = q => sid ? q.eq('societe_id', sid) : q
 
       // Helper pour requêtes sécurisées (table peut ne pas exister)
@@ -269,8 +256,7 @@ export default function ChatWidget() {
         immos,
         achats,
         fecImports,
-        saisies,
-      })
+        saisies})
     } catch (e) {
       console.error('ChatWidget context error', e)
       setCtx({ clients: [], transactions: [], projets: [], factures: [], equipe: [], immos: [], achats: [], fecImports: [], saisies: [] })
@@ -306,14 +292,11 @@ export default function ChatWidget() {
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${session?.access_token || ''}`,
-          'apikey': SUPABASE_ANON_KEY,
-        },
+          'apikey': SUPABASE_ANON_KEY},
         body: JSON.stringify({
           system: systemPrompt,
-          messages: newMessages.slice(-8).map(m => ({ role: m.role, content: m.content })),
-        }),
-        signal: abortRef.current.signal,
-      })
+          messages: newMessages.slice(-8).map(m => ({ role: m.role, content: m.content }))}),
+        signal: abortRef.current.signal})
 
       const body = await response.json()
 
@@ -326,8 +309,7 @@ export default function ChatWidget() {
         const updated = [...prev]
         updated[updated.length - 1] = {
           ...updated[updated.length - 1],
-          content: text,
-        }
+          content: text}
         return updated
       })
     } catch (err) {
@@ -338,8 +320,7 @@ export default function ChatWidget() {
         updated[updated.length - 1] = {
           role: 'assistant',
           content: `❌ Erreur : ${err.message}`,
-          isError: true,
-        }
+          isError: true}
         return updated
       })
       setError(null)

@@ -1,6 +1,5 @@
 import { useState, useEffect, useMemo } from 'react'
 import { supabase } from '../../lib/supabase'
-import { useSociete } from '../../contexts/SocieteContext'
 import useSortableTable from '../../hooks/useSortableTable'
 import SortableHeader from '../../components/SortableHeader'
 import Spinner from '../../components/Spinner'
@@ -63,7 +62,6 @@ function fmtEUR(val) {
 }
 
 export default function DocumentsArchivePage() {
-  const { selectedSociete } = useSociete()
   const [documents, setDocuments] = useState([])
   const [loading, setLoading] = useState(true)
   const [tableError, setTableError] = useState(false)
@@ -98,7 +96,7 @@ export default function DocumentsArchivePage() {
   const [fDatePrestFinTo, setFDatePrestFinTo] = useState('')
   const [societes, setSocietes] = useState([])
 
-  useEffect(() => { fetchDocuments(); fetchSocietes() }, [selectedSociete?.id])
+  useEffect(() => { fetchDocuments(); fetchSocietes() }, [])
 
   async function fetchSocietes() {
     const { data } = await supabase.from('societes').select('id, name').order('name')
@@ -109,7 +107,6 @@ export default function DocumentsArchivePage() {
     setLoading(true)
     setTableError(false)
     let q = supabase.from('documents_archive').select('*').order('created_at', { ascending: false })
-    if (selectedSociete?.id) q = q.eq('societe_id', selectedSociete.id)
     const { data, error } = await q
     if (error) {
       if (error.code === '42P01' || error.message?.includes('schema cache')) setTableError(true)
@@ -187,10 +184,8 @@ export default function DocumentsArchivePage() {
       type_document: importForm.type_document,
       type_frais: importForm.type_frais || null,
       tags: importForm.tags ? importForm.tags.split(',').map(t => t.trim()).filter(Boolean) : [],
-      societe_id: selectedSociete?.id || null,
       nb_pages: 1,
-      ocr_status: 'en_attente',
-    }
+      ocr_status: 'en_attente'}
     await supabase.from('documents_archive').insert([payload])
     setSaving(false)
     setShowImport(false)
@@ -202,13 +197,11 @@ export default function DocumentsArchivePage() {
   const TYPE_COLORS = {
     facture: '#3b82f6', avoir: '#8b5cf6', contrat: '#ec4899',
     devis: '#f59e0b', bon_commande: '#22c55e', courrier: '#64748b',
-    releve: '#0ea5e9', autre: '#94a3b8',
-  }
+    releve: '#0ea5e9', autre: '#94a3b8'}
 
   const TYPE_ICONS = {
     facture: '🧾', avoir: '📄', contrat: '📝', devis: '📋',
-    bon_commande: '📦', courrier: '✉️', releve: '🏦', autre: '📄',
-  }
+    bon_commande: '📦', courrier: '✉️', releve: '🏦', autre: '📄'}
 
   return (
     <div className="admin-page admin-page--full">
@@ -229,8 +222,7 @@ export default function DocumentsArchivePage() {
           overflowY: 'auto',
           maxHeight: 'calc(100vh - 140px)',
           display: 'flex',
-          flexDirection: 'column',
-        }}>
+          flexDirection: 'column'}}>
           {/* Simple / Expert tabs */}
           <div style={{ display: 'flex', borderBottom: '2px solid var(--border, #e2e8f0)', marginBottom: '1rem' }}>
             <button
@@ -240,8 +232,7 @@ export default function DocumentsArchivePage() {
                 fontWeight: 600, fontSize: '.85rem',
                 color: filterTab === 'simple' ? 'var(--primary, #3b82f6)' : 'var(--text-muted, #64748b)',
                 borderBottom: filterTab === 'simple' ? '2px solid var(--primary, #3b82f6)' : '2px solid transparent',
-                marginBottom: '-2px',
-              }}
+                marginBottom: '-2px'}}
             >Simple</button>
             <button
               onClick={() => setFilterTab('expert')}
@@ -250,8 +241,7 @@ export default function DocumentsArchivePage() {
                 fontWeight: 600, fontSize: '.85rem',
                 color: filterTab === 'expert' ? 'var(--primary, #3b82f6)' : 'var(--text-muted, #64748b)',
                 borderBottom: filterTab === 'expert' ? '2px solid var(--primary, #3b82f6)' : '2px solid transparent',
-                marginBottom: '-2px',
-              }}
+                marginBottom: '-2px'}}
             >Expert</button>
           </div>
 
@@ -316,8 +306,7 @@ export default function DocumentsArchivePage() {
             <button onClick={fetchDocuments} style={{
               marginLeft: 'auto', padding: '.45rem 1.2rem', background: 'var(--primary, #3b82f6)',
               color: '#fff', border: 'none', borderRadius: 6, cursor: 'pointer', fontWeight: 600, fontSize: '.8rem',
-              display: 'flex', alignItems: 'center', gap: '.35rem',
-            }}>
+              display: 'flex', alignItems: 'center', gap: '.35rem'}}>
               🔍 Search
             </button>
           </div>
@@ -330,8 +319,7 @@ export default function DocumentsArchivePage() {
             <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
               <span style={{
                 padding: '.3rem .8rem', border: '1px solid var(--primary, #3b82f6)', borderRadius: 6,
-                color: 'var(--primary, #3b82f6)', fontSize: '.85rem', fontWeight: 500,
-              }}>
+                color: 'var(--primary, #3b82f6)', fontSize: '.85rem', fontWeight: 500}}>
                 {selected.size} selected document{selected.size > 1 ? 's' : ''}
               </span>
               <button className="btn-primary" onClick={() => setShowImport(true)} style={{ fontSize: '.8rem', padding: '.4rem .8rem' }}>
@@ -348,16 +336,14 @@ export default function DocumentsArchivePage() {
                   style={{
                     padding: '.35rem .55rem', border: 'none', cursor: 'pointer', fontSize: '.85rem',
                     background: viewMode === 'grid' ? 'var(--primary, #3b82f6)' : 'var(--card-bg, #fff)',
-                    color: viewMode === 'grid' ? '#fff' : 'var(--text-muted)',
-                  }}
+                    color: viewMode === 'grid' ? '#fff' : 'var(--text-muted)'}}
                 >▦</button>
                 <button
                   onClick={() => setViewMode('list')}
                   style={{
                     padding: '.35rem .55rem', border: 'none', cursor: 'pointer', fontSize: '.85rem',
                     background: viewMode === 'list' ? 'var(--primary, #3b82f6)' : 'var(--card-bg, #fff)',
-                    color: viewMode === 'list' ? '#fff' : 'var(--text-muted)',
-                  }}
+                    color: viewMode === 'list' ? '#fff' : 'var(--text-muted)'}}
                 >☰</button>
               </div>
             </div>
@@ -384,8 +370,7 @@ export default function DocumentsArchivePage() {
             <div style={{
               display: 'grid',
               gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))',
-              gap: '1rem',
-            }}>
+              gap: '1rem'}}>
               {filtered.map(doc => (
                 <div key={doc.id} style={{ display: 'flex', flexDirection: 'column', cursor: 'pointer' }}>
                   {/* Thumbnail */}
@@ -397,15 +382,13 @@ export default function DocumentsArchivePage() {
                       border: selected.has(doc.id) ? '2px solid var(--primary, #3b82f6)' : previewDoc?.id === doc.id ? '2px solid #0ea5e9' : '1px solid var(--border, #e2e8f0)',
                       borderRadius: 6,
                       display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
-                      position: 'relative', overflow: 'hidden', transition: 'all .15s',
-                    }}
+                      position: 'relative', overflow: 'hidden', transition: 'all .15s'}}
                   >
                       {/* Mini document réaliste */}
                     <div style={{
                       width: '100%', height: '100%', padding: '8px 10px',
                       display: 'flex', flexDirection: 'column', background: '#fff',
-                      fontSize: '.48rem', color: '#334155', lineHeight: 1.4, overflow: 'hidden',
-                    }}>
+                      fontSize: '.48rem', color: '#334155', lineHeight: 1.4, overflow: 'hidden'}}>
                       {/* En-tête mini */}
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 4 }}>
                         <div style={{ fontWeight: 800, fontSize: '.55rem', color: '#1e293b', maxWidth: '55%', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
@@ -413,8 +396,7 @@ export default function DocumentsArchivePage() {
                         </div>
                         <div style={{
                           background: '#1e293b', color: '#fff', borderRadius: 2, padding: '1px 4px',
-                          fontSize: '.38rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: .5,
-                        }}>
+                          fontSize: '.38rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: .5}}>
                           {TYPE_OPTIONS.find(o => o.value === doc.type_document)?.label || 'DOC'}
                         </div>
                       </div>
@@ -444,12 +426,10 @@ export default function DocumentsArchivePage() {
                       {doc.montant_ttc != null && (
                         <div style={{
                           marginTop: 'auto', paddingTop: 3,
-                          display: 'flex', justifyContent: 'flex-end',
-                        }}>
+                          display: 'flex', justifyContent: 'flex-end'}}>
                           <div style={{
                             background: '#1e293b', color: '#fff', borderRadius: 2,
-                            padding: '1px 5px', fontSize: '.45rem', fontWeight: 800,
-                          }}>
+                            padding: '1px 5px', fontSize: '.45rem', fontWeight: 800}}>
                             {fmtEUR(doc.montant_ttc)}
                           </div>
                         </div>
@@ -465,8 +445,7 @@ export default function DocumentsArchivePage() {
                     {doc.ocr_status === 'termine' && (
                       <div style={{
                         position: 'absolute', bottom: 4, left: 4,
-                        width: 8, height: 8, borderRadius: '50%', background: '#16a34a',
-                      }} title="OCR terminé" />
+                        width: 8, height: 8, borderRadius: '50%', background: '#16a34a'}} title="OCR terminé" />
                     )}
                   </div>
                   {/* Info below thumbnail */}
@@ -484,8 +463,7 @@ export default function DocumentsArchivePage() {
                   <div style={{
                     fontSize: '.7rem', color: 'var(--text)', fontWeight: 500,
                     overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
-                    maxWidth: '100%', marginTop: 2,
-                  }} title={doc.nom}>
+                    maxWidth: '100%', marginTop: 2}} title={doc.nom}>
                     {doc.nom}
                   </div>
                 </div>
@@ -522,8 +500,7 @@ export default function DocumentsArchivePage() {
                       <span style={{
                         padding: '2px 8px', borderRadius: 4, fontSize: '.75rem', fontWeight: 500,
                         color: TYPE_COLORS[doc.type_document] || '#64748b',
-                        background: '#f1f5f9',
-                      }}>
+                        background: '#f1f5f9'}}>
                         {TYPE_ICONS[doc.type_document] || '📄'} {TYPE_OPTIONS.find(o => o.value === doc.type_document)?.label || doc.type_document}
                       </span>
                     </td>
@@ -534,8 +511,7 @@ export default function DocumentsArchivePage() {
                     <td>
                       <span style={{
                         width: 8, height: 8, borderRadius: '50%', display: 'inline-block',
-                        background: doc.ocr_status === 'termine' ? '#16a34a' : doc.ocr_status === 'en_cours' ? '#3b82f6' : '#f59e0b',
-                      }} />
+                        background: doc.ocr_status === 'termine' ? '#16a34a' : doc.ocr_status === 'en_cours' ? '#3b82f6' : '#f59e0b'}} />
                     </td>
                   </tr>
                 ))}
@@ -555,8 +531,7 @@ export default function DocumentsArchivePage() {
             maxHeight: 'calc(100vh - 140px)',
             display: 'flex',
             flexDirection: 'column',
-            gap: '.75rem',
-          }}>
+            gap: '.75rem'}}>
             {/* Header bar */}
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
               <span style={{ fontSize: '.8rem', fontWeight: 600, color: 'var(--text)' }}>Prévisualisation</span>
@@ -571,8 +546,7 @@ export default function DocumentsArchivePage() {
               background: '#fff', borderRadius: 4, boxShadow: '0 2px 12px rgba(0,0,0,.12)',
               padding: '1.5rem 1.25rem', fontSize: '.78rem', color: '#1e293b', overflow: 'hidden',
               aspectRatio: '0.707', width: '100%', position: 'relative',
-              lineHeight: 1.5, position: 'relative',
-            }}>
+              lineHeight: 1.5, position: 'relative'}}>
               {/* En-tête : Fournisseur + Type badge */}
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1.5rem' }}>
                 <div>
@@ -582,8 +556,7 @@ export default function DocumentsArchivePage() {
                 </div>
                 <div style={{
                   background: '#1e293b', color: '#fff', borderRadius: 8, padding: '.5rem .75rem',
-                  textAlign: 'center', minWidth: 0, maxWidth: '55%', overflow: 'hidden',
-                }}>
+                  textAlign: 'center', minWidth: 0, maxWidth: '55%', overflow: 'hidden'}}>
                   <div style={{ fontSize: '.65rem', fontWeight: 600, textTransform: 'uppercase', letterSpacing: 1.5, opacity: .8 }}>
                     {TYPE_OPTIONS.find(o => o.value === previewDoc.type_document)?.label || 'DOCUMENT'}
                   </div>
@@ -604,8 +577,7 @@ export default function DocumentsArchivePage() {
               {/* Destinataire */}
               <div style={{
                 borderLeft: '3px solid #1e293b', paddingLeft: '1rem', marginBottom: '1.5rem',
-                background: '#f8fafc', padding: '.75rem 1rem', borderRadius: '0 8px 8px 0',
-              }}>
+                background: '#f8fafc', padding: '.75rem 1rem', borderRadius: '0 8px 8px 0'}}>
                 <div style={{ fontSize: '.65rem', fontWeight: 600, textTransform: 'uppercase', color: '#94a3b8', letterSpacing: 1 }}>Document de</div>
                 <div style={{ fontWeight: 700, fontSize: '.95rem' }}>{previewDoc.fournisseur || '—'}</div>
                 {previewDoc.numero_commande && <div style={{ fontSize: '.78rem', color: '#64748b' }}>N° commande : {previewDoc.numero_commande}</div>}
@@ -648,8 +620,7 @@ export default function DocumentsArchivePage() {
                       {previewDoc.montant_ttc != null && (
                         <div style={{
                           display: 'flex', justifyContent: 'space-between', padding: '.4rem .5rem',
-                          background: '#1e293b', color: '#fff', borderRadius: 4, fontWeight: 800, fontSize: '.8rem', marginTop: '.2rem',
-                        }}>
+                          background: '#1e293b', color: '#fff', borderRadius: 4, fontWeight: 800, fontSize: '.8rem', marginTop: '.2rem'}}>
                           <span>TOTAL TTC</span><span>{fmtEUR(previewDoc.montant_ttc)}</span>
                         </div>
                       )}
@@ -674,8 +645,7 @@ export default function DocumentsArchivePage() {
                   {previewDoc.tags.map((tag, i) => (
                     <span key={i} style={{
                       padding: '2px 8px', borderRadius: 12, fontSize: '.68rem', fontWeight: 500,
-                      background: '#e0f2fe', color: '#0369a1', border: '1px solid #bae6fd',
-                    }}>{tag}</span>
+                      background: '#e0f2fe', color: '#0369a1', border: '1px solid #bae6fd'}}>{tag}</span>
                   ))}
                 </div>
               )}
@@ -686,8 +656,7 @@ export default function DocumentsArchivePage() {
                   background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: 6,
                   padding: '.75rem', fontSize: '.75rem', fontFamily: 'monospace',
                   color: '#475569', lineHeight: 1.6, whiteSpace: 'pre-wrap',
-                  maxHeight: 200, overflowY: 'auto',
-                }}>
+                  maxHeight: 200, overflowY: 'auto'}}>
                   {previewDoc.ocr_contenu}
                 </div>
               )}
@@ -696,8 +665,7 @@ export default function DocumentsArchivePage() {
               <div style={{
                 position: 'absolute', bottom: '1.5rem', left: '2rem', right: '2rem',
                 borderTop: '1px solid #e2e8f0', paddingTop: '.5rem',
-                textAlign: 'center', fontSize: '.65rem', color: '#94a3b8',
-              }}>
+                textAlign: 'center', fontSize: '.65rem', color: '#94a3b8'}}>
                 {previewDoc.fournisseur || 'Document'} · {previewDoc.reference || 'Sans référence'}
                 {previewDoc.nb_pages && ` · ${previewDoc.nb_pages} page${previewDoc.nb_pages > 1 ? 's' : ''}`}
               </div>
@@ -767,17 +735,14 @@ export default function DocumentsArchivePage() {
 const inputStyle = {
   width: '100%', padding: '.35rem .5rem', border: '1px solid var(--border, #e2e8f0)',
   borderRadius: 4, fontSize: '.8rem', background: 'var(--card-bg, #fff)', color: 'var(--text)',
-  outline: 'none',
-}
+  outline: 'none'}
 
 const selectStyle = {
-  ...inputStyle, cursor: 'pointer',
-}
+  ...inputStyle, cursor: 'pointer'}
 
 const iconBtnStyle = {
   padding: '.35rem .5rem', border: '1px solid var(--border, #e2e8f0)', borderRadius: 6,
-  background: 'var(--card-bg, #fff)', cursor: 'pointer', fontSize: '.85rem',
-}
+  background: 'var(--card-bg, #fff)', cursor: 'pointer', fontSize: '.85rem'}
 
 function FilterField({ label, children }) {
   return (

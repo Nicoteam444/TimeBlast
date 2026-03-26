@@ -1,7 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from 'react'
 import { supabase } from '../../lib/supabase'
 import { useAuth } from '../../contexts/AuthContext'
-import { useSociete } from '../../contexts/SocieteContext'
 
 // ── Validation semaine ───────────────────────────────────────
 const VALIDATION_STORAGE_KEY = 'validation_statuts'
@@ -44,8 +43,7 @@ function WeekStatusBar({ userId, mondayISO, userRole }) {
           display: 'inline-flex', alignItems: 'center', gap: '.4rem',
           padding: '.3rem .85rem', borderRadius: 20,
           background: '#fffbeb', color: '#f59e0b',
-          border: '1px solid #f59e0b44', fontSize: '.82rem', fontWeight: 700,
-        }}>
+          border: '1px solid #f59e0b44', fontSize: '.82rem', fontWeight: 700}}>
           ⏳ En attente de validation
         </span>
       )}
@@ -54,8 +52,7 @@ function WeekStatusBar({ userId, mondayISO, userRole }) {
           display: 'inline-flex', alignItems: 'center', gap: '.4rem',
           padding: '.3rem .85rem', borderRadius: 20,
           background: '#f0fdf4', color: '#16a34a',
-          border: '1px solid #16a34a44', fontSize: '.82rem', fontWeight: 700,
-        }}>
+          border: '1px solid #16a34a44', fontSize: '.82rem', fontWeight: 700}}>
           ✓ Semaine validée
         </span>
       )}
@@ -64,8 +61,7 @@ function WeekStatusBar({ userId, mondayISO, userRole }) {
           display: 'inline-flex', alignItems: 'center', gap: '.4rem',
           padding: '.3rem .85rem', borderRadius: 20,
           background: '#fef2f2', color: '#dc2626',
-          border: '1px solid #dc262644', fontSize: '.82rem', fontWeight: 700,
-        }}>
+          border: '1px solid #dc262644', fontSize: '.82rem', fontWeight: 700}}>
           ✕ À corriger
         </span>
       )}
@@ -185,15 +181,13 @@ function EventModal({ event, userId, societeId, onClose, onSaved }) {
       projet_name: project._create ? project.name : project.name,
       h_debut: fmtTime(startMin),
       h_fin: fmtTime(endMin),
-      note: notes || null,
-    })
+      note: notes || null})
     const { error } = await supabase.from('saisies_temps').insert({
       user_id: userId,
       date: event.date,
       heures,
       commentaire: meta,
-      societe_id: societeId || null,
-    })
+      societe_id: societeId || null})
 
     setSaving(false)
     if (error) { setSaveError(error.message); return }
@@ -271,8 +265,7 @@ function EventDetailModal({ ev, onClose, onDelete, onRefresh }) {
       projet_name: project?.name || null,
       h_debut: fmtTime(startMin),
       h_fin: fmtTime(endMin),
-      note: notes || null,
-    })
+      note: notes || null})
     await supabase.from('saisies_temps').update({ heures: Math.round((endMin - startMin) / 60 * 10) / 10, commentaire: meta }).eq('id', ev.id)
     setSaving(false)
     setEditing(false)
@@ -396,8 +389,7 @@ function TotalsBar({ weekDates, events }) {
           className="cal-totals-progress-bar"
           style={{
             width: `${progress}%`,
-            background: weekTotal > OBJECTIVE_H ? '#dc2626' : 'var(--primary)',
-          }}
+            background: weekTotal > OBJECTIVE_H ? '#dc2626' : 'var(--primary)'}}
         />
       </div>
       <span style={{ fontSize: '.75rem', color: 'var(--text-muted)' }}>{progress}%</span>
@@ -440,7 +432,6 @@ function collabColor(idx) { return COLLAB_COLORS[idx % COLLAB_COLORS.length] }
 // ── Page principale ──────────────────────────────────────────
 export default function SaisiePage() {
   const { profile, user } = useAuth()
-  const { selectedSociete } = useSociete()
   const [weekStart, setWeekStart] = useState(() => getMonday(new Date()))
   const [events, setEvents] = useState({})
   const [loading, setLoading] = useState(true)
@@ -464,8 +455,7 @@ export default function SaisiePage() {
   useEffect(() => {
     async function loadCollabs() {
       // Charger les deux : equipe (pour la sidebar) et profiles (pour mapper les events)
-      if (!selectedSociete?.id) { setCollabs([]); setSelectedCollabs(new Set()); setLoading(false); return }
-      let equipeQuery = supabase.from('equipe').select('id, prenom, nom, poste').eq('societe_id', selectedSociete.id).order('nom')
+      let equipeQuery = supabase.from('equipe').select('id, prenom, nom, poste').order('nom')
       const [equipeRes, profilesRes] = await Promise.all([
         equipeQuery,
         supabase.from('profiles').select('id, full_name, role')
@@ -494,7 +484,7 @@ export default function SaisiePage() {
       }
     }
     loadCollabs()
-  }, [profile?.id, selectedSociete?.id])
+  }, [profile?.id])
 
   function toggleCollab(id) {
     setSelectedCollabs(prev => {
@@ -536,19 +526,11 @@ export default function SaisiePage() {
 
     // Charger les saisies de temps de l'utilisateur connecté
     const { data: saisiesData } = await supabase
-      .from('saisies_temps')
-      .select('id, date, heures, commentaire, user_id')
-      .eq('user_id', profile.id)
-      .gte('date', startISO)
-      .lte('date', endISO)
+      .from('saisies_temps').select('id, date, heures, commentaire, user_id').eq('user_id', profile.id).gte('date', startISO).lte('date', endISO)
 
     // Charger TOUS les événements calendrier de la société
     let calQuery = supabase
-      .from('calendar_events')
-      .select('*')
-      .gte('start_time', startISO)
-      .lt('start_time', toISO(addDays(weekStart, 7)))
-    if (selectedSociete?.id) calQuery = calQuery.eq('societe_id', selectedSociete.id)
+      .from('calendar_events').select('*').gte('start_time', startISO).lt('start_time', toISO(addDays(weekStart, 7)))
     const { data: calData } = await calQuery
 
     const map = {}
@@ -568,8 +550,7 @@ export default function SaisiePage() {
         startMin, endMin,
         projets: { id: meta.projet_id, name: meta.projet_name || '—' },
         noteText: meta.note,
-        _source: 'saisie',
-      })
+        _source: 'saisie'})
     }
 
     // Événements calendrier — tous affichés, mappés vers equipe pour coloration
@@ -593,13 +574,12 @@ export default function SaisiePage() {
         event_type: ev.event_type,
         location: ev.location,
         color: ev.color,
-        _source: 'calendar',
-      })
+        _source: 'calendar'})
     }
 
     setEvents(map)
     setLoading(false)
-  }, [profile?.id, weekStart, selectedSociete?.id, collabs, profilesList])
+  }, [profile?.id, weekStart, collabs, profilesList])
 
   useEffect(() => { fetchWeek() }, [fetchWeek])
 
@@ -682,13 +662,11 @@ export default function SaisiePage() {
         projet_name: ev.projets?.name,
         h_debut: fmtTime(m.startMin),
         h_fin: fmtTime(m.endMin),
-        note: ev.noteText || null,
-      })
+        note: ev.noteText || null})
       await supabase.from('saisies_temps').update({
         date: m.date,
         heures,
-        commentaire: meta,
-      }).eq('id', ev.id)
+        commentaire: meta}).eq('id', ev.id)
       setMovingEvent(null)
       fetchWeek()
     }
@@ -885,8 +863,7 @@ export default function SaisiePage() {
                           backgroundColor: '#fff',
                           opacity: isMoving ? 0.3 : isOther ? 0.85 : 1,
                           cursor: isOther ? 'default' : 'grab',
-                          left: `${colLeft}%`, right: 'auto', width: `${colWidth - 1}%`,
-                        }}
+                          left: `${colLeft}%`, right: 'auto', width: `${colWidth - 1}%`}}
                         onMouseDown={e => !isOther && handleEventDragStart(e, ev, e.currentTarget.parentElement)}
                         onClick={e => { e.stopPropagation(); if (!movingEvent) setSelectedEvent(ev) }}
                       >
@@ -914,8 +891,7 @@ export default function SaisiePage() {
                       height: Math.max(20, minToY(movingEvent.endMin) - minToY(movingEvent.startMin)),
                       background: colorFor(movingEvent.ev.projets?.id) + '44',
                       borderLeftColor: colorFor(movingEvent.ev.projets?.id),
-                      pointerEvents: 'none',
-                    }}
+                      pointerEvents: 'none'}}
                   >
                     <div className="cal-event-title">{movingEvent.ev.projets?.name || '—'}</div>
                     <div className="cal-event-time">{fmtTime(movingEvent.startMin)}–{fmtTime(movingEvent.endMin)}</div>
@@ -926,8 +902,7 @@ export default function SaisiePage() {
                 {dragPreview?.date === iso && (
                   <div className="cal-drag-preview" style={{
                     top: minToY(dragPreview.startMin),
-                    height: Math.max(20, minToY(dragPreview.endMin) - minToY(dragPreview.startMin)),
-                  }}>
+                    height: Math.max(20, minToY(dragPreview.endMin) - minToY(dragPreview.startMin))}}>
                     <span>{fmtTime(dragPreview.startMin)} – {fmtTime(dragPreview.endMin)}</span>
                   </div>
                 )}
@@ -936,8 +911,7 @@ export default function SaisiePage() {
                 {!dragPreview && newEvent?.date === iso && (
                   <div className="cal-drag-preview cal-drag-ghost" style={{
                     top: minToY(newEvent.startMin),
-                    height: Math.max(20, minToY(newEvent.endMin) - minToY(newEvent.startMin)),
-                  }}>
+                    height: Math.max(20, minToY(newEvent.endMin) - minToY(newEvent.startMin))}}>
                     <span>{fmtTime(newEvent.startMin)} – {fmtTime(newEvent.endMin)}</span>
                   </div>
                 )}
@@ -1083,7 +1057,7 @@ export default function SaisiePage() {
         <EventModal
           event={newEvent}
           userId={profile.id}
-          societeId={selectedSociete?.id || null}
+          societeId={null}
           onClose={() => setNewEvent(null)}
           onSaved={fetchWeek}
         />

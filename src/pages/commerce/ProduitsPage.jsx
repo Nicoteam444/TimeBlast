@@ -1,6 +1,5 @@
 import { useState, useEffect, useMemo } from 'react'
 import { supabase } from '../../lib/supabase'
-import { useSociete } from '../../contexts/SocieteContext'
 import useSortableTable from '../../hooks/useSortableTable'
 import SortableHeader from '../../components/SortableHeader'
 import Spinner from '../../components/Spinner'
@@ -38,8 +37,7 @@ const EMPTY_FORM = {
   prix_ht: '',
   taux_tva: '20',
   unite: 'jour',
-  actif: true,
-}
+  actif: true}
 
 function fmt(n) {
   if (n === null || n === undefined || n === '') return '—'
@@ -47,7 +45,6 @@ function fmt(n) {
 }
 
 export default function ProduitsPage() {
-  const { selectedSociete } = useSociete()
   const [produits, setProduits] = useState([])
   const [loading, setLoading] = useState(true)
   const [migrationNeeded, setMigrationNeeded] = useState(false)
@@ -68,17 +65,14 @@ export default function ProduitsPage() {
 
   useEffect(() => {
     fetchProduits()
-  }, [selectedSociete?.id])
+  }, [])
 
   async function fetchProduits() {
     setLoading(true)
     setMigrationNeeded(false)
     setError(null)
     let query = supabase
-      .from('produits')
-      .select('*')
-      .order('nom', { ascending: true })
-    if (selectedSociete?.id) query = query.eq('societe_id', selectedSociete.id)
+      .from('produits').select('*').order('nom', { ascending: true })
     const { data, error } = await query
     if (error) {
       if (error.code === '42P01') {
@@ -110,8 +104,7 @@ export default function ProduitsPage() {
       prix_ht:     p.prix_ht     != null ? String(p.prix_ht) : '',
       taux_tva:    p.taux_tva    != null ? String(p.taux_tva) : '20',
       unite:       p.unite       || 'jour',
-      actif:       p.actif !== false,
-    })
+      actif:       p.actif !== false})
     setFormError(null)
     setShowModal(true)
   }
@@ -132,7 +125,6 @@ export default function ProduitsPage() {
     setSaving(true)
     setFormError(null)
     const payload = {
-      societe_id:  selectedSociete?.id || null,
       reference:   form.reference   || null,
       nom:         form.nom,
       description: form.description || null,
@@ -140,8 +132,7 @@ export default function ProduitsPage() {
       prix_ht:     form.prix_ht !== '' ? parseFloat(form.prix_ht) : 0,
       taux_tva:    form.taux_tva !== '' ? parseFloat(form.taux_tva) : 20,
       unite:       form.unite || 'jour',
-      actif:       form.actif,
-    }
+      actif:       form.actif}
     let err
     if (editingId) {
       ;({ error: err } = await supabase.from('produits').update(payload).eq('id', editingId))
@@ -216,8 +207,7 @@ export default function ProduitsPage() {
             <pre style={{
               background: '#1e293b', color: '#e2e8f0', borderRadius: 8,
               padding: '1rem', fontSize: '.8rem', overflowX: 'auto',
-              lineHeight: 1.6, margin: 0,
-            }}>{SQL_MIGRATION}</pre>
+              lineHeight: 1.6, margin: 0}}>{SQL_MIGRATION}</pre>
             <button
               onClick={handleCopy}
               style={{
@@ -225,8 +215,7 @@ export default function ProduitsPage() {
                 background: copied ? '#16a34a' : 'rgba(255,255,255,0.1)',
                 border: '1px solid rgba(255,255,255,0.2)',
                 borderRadius: 6, color: '#fff', fontSize: '.75rem',
-                padding: '.25rem .65rem', cursor: 'pointer', transition: 'background .15s',
-              }}
+                padding: '.25rem .65rem', cursor: 'pointer', transition: 'background .15s'}}
             >{copied ? 'Copié !' : 'Copier'}</button>
           </div>
         </div>
@@ -343,8 +332,7 @@ export default function ProduitsPage() {
                               style={{
                                 padding: '.25rem .65rem', fontSize: '.8rem',
                                 background: 'transparent', border: '1px solid #fca5a5',
-                                color: '#dc2626', borderRadius: 6, cursor: 'pointer',
-                              }}
+                                color: '#dc2626', borderRadius: 6, cursor: 'pointer'}}
                               onClick={() => setDeleteId(p.id)}
                             >Supprimer</button>
                           </div>

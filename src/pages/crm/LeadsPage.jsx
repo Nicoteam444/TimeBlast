@@ -1,6 +1,5 @@
 import { useState, useEffect, useMemo, useRef } from 'react'
 import { supabase } from '../../lib/supabase'
-import { useSociete } from '../../contexts/SocieteContext'
 import useSortableTable from '../../hooks/useSortableTable'
 import SortableHeader from '../../components/SortableHeader'
 import Spinner from '../../components/Spinner'
@@ -25,8 +24,7 @@ function phaseInfo(id) {
 
 const EMPTY_FORM = {
   titre: '', contact_id: '', client_id: '', source: '',
-  phase: 'nouveau', montant_estime: '', date_relance: '', notes: '',
-}
+  phase: 'nouveau', montant_estime: '', date_relance: '', notes: ''}
 
 function formatMontant(v) {
   if (!v && v !== 0) return '—'
@@ -109,7 +107,6 @@ function KanbanColumn({ phase, cards, onDragStart, onDrop, onClick }) {
 
 // ── Main Page ─────────────────────────────────────────────────────────────────
 export default function LeadsPage() {
-  const { selectedSociete, societes } = useSociete()
   const [leads, setLeads] = useState([])
   const [contacts, setContacts] = useState([])
   const [clients, setClients] = useState([])
@@ -130,9 +127,7 @@ export default function LeadsPage() {
   async function fetchLeads() {
     setLoading(true)
     const { data, error } = await supabase
-      .from('leads')
-      .select('*, contacts(nom, prenom), clients(name)')
-      .order('created_at', { ascending: false })
+      .from('leads').select('*, contacts(nom, prenom), clients(name)').order('created_at', { ascending: false })
     if (error) setError(error.message)
     setLeads(data || [])
     setLoading(false)
@@ -164,8 +159,7 @@ export default function LeadsPage() {
       phase: lead.phase || 'nouveau',
       montant_estime: lead.montant_estime || '',
       date_relance: lead.date_relance || '',
-      notes: lead.notes || '',
-    })
+      notes: lead.notes || ''})
     setShowForm(true)
   }
 
@@ -179,9 +173,7 @@ export default function LeadsPage() {
       phase: form.phase,
       montant_estime: form.montant_estime ? parseFloat(form.montant_estime) : null,
       date_relance: form.date_relance || null,
-      notes: form.notes || null,
-      societe_id: selectedSociete?.id || null,
-    }
+      notes: form.notes || null}
 
     let err
     if (editingLead) {

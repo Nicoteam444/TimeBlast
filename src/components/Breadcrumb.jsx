@@ -15,12 +15,10 @@ const ROUTE_LABELS = {
   'equipe':     'Équipe',
   'admin':      'Administration',
   'parametres': 'Paramètres',
-
   // CRM
   'contacts':     'Contacts',
   'entreprises':  'Entreprises',
   'leads':        'Leads',
-
   // Commerce
   'clients':       'Clients',
   'transactions':  'Opportunités',
@@ -29,7 +27,6 @@ const ROUTE_LABELS = {
   'produits':      'Produits',
   'abonnements':   'Abonnements',
   'devis':         'Devis',
-
   // Activité
   'saisie':        'Calendrier',
   'planification': 'Planification',
@@ -38,7 +35,6 @@ const ROUTE_LABELS = {
   'absences':      'Absences',
   'reporting':     'Reporting',
   'rentabilite':   'Rentabilité',
-
   // Finance
   'business-intelligence': 'Business Intelligence',
   'comptabilite':          'Comptabilité',
@@ -48,17 +44,14 @@ const ROUTE_LABELS = {
   'immobilisations':       'Immobilisations',
   'rapprochement':         'Rapprochement',
   'saisie-ecriture':       'Saisie écriture',
-
   // Gestion
   'tableau-de-bord': 'Tableau de bord',
-
   // Équipe
   'trombinoscope':    'Trombinoscope',
   'collaborateurs':   'Collaborateurs',
   'organigramme':     'Organigramme',
   'notes-de-frais':   'Notes de frais',
   'competences':      'Compétences',
-
   // Admin
   'utilisateurs': 'Utilisateurs',
   'audit':        'Audit',
@@ -66,23 +59,18 @@ const ROUTE_LABELS = {
   'groupes':      'Groupes',
   'workflows':    'Workflows',
   'analytics':    'Analytics',
-
   // Marketing
   'marketing':  'Marketing',
   'campagnes':  'Campagnes',
   'leads':      'Leads',
-
   // Documents
   'documents':  'Documents',
   'archives':   'Archives',
-
   // Taches
   'taches':  'Taches',
-
   // Other
   'notifications': 'Notifications',
-  'recherche':     'Recherche',
-}
+  'recherche':     'Recherche'}
 
 /**
  * Certains chemins construits à partir de l'URL ne correspondent pas aux vraies routes.
@@ -97,8 +85,7 @@ const PATH_OVERRIDES = {
   // /commerce/* n'a pas de landing → redirige vers la catégorie parente
   '/commerce':              '/crm',
   // /equipe/* sous-pages qui sont dans le sidebar sous Équipe
-  '/equipe':                '/equipe',
-}
+  '/equipe':                '/equipe'}
 
 /**
  * Breadcrumb dynamique.

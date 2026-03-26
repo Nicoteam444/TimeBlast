@@ -43,10 +43,7 @@ export default function ClientInvoicePortal() {
 
         // Load invoice
         const { data: invoiceData, error: invoiceError } = await supabase
-          .from('factures')
-          .select('*')
-          .eq('id', invoiceId)
-          .single()
+          .from('factures').select('*').eq('id', invoiceId).single()
 
         if (invoiceError) {
           throw new Error('Facture non trouvée')
@@ -56,10 +53,7 @@ export default function ClientInvoicePortal() {
 
         // Load company data
         const { data: companyData } = await supabase
-          .from('societes')
-          .select('*')
-          .eq('id', invoiceData.societe_id)
-          .single()
+          .from('societes').select('*').eq('id', invoiceData.societe_id).single()
 
         setCompany(companyData)
         setVerified(true)
@@ -80,8 +74,7 @@ export default function ClientInvoicePortal() {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        background: '#f5f7fa',
-      }}>
+        background: '#f5f7fa'}}>
         <Spinner />
       </div>
     )
@@ -94,16 +87,14 @@ export default function ClientInvoicePortal() {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        background: '#f5f7fa',
-      }}>
+        background: '#f5f7fa'}}>
         <div style={{
           maxWidth: '400px',
           background: 'white',
           borderRadius: '12px',
           padding: '2rem',
           textAlign: 'center',
-          boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
-        }}>
+          boxShadow: '0 4px 12px rgba(0,0,0,0.1)'}}>
           <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>❌</div>
           <h2 style={{ marginBottom: '1rem', color: '#195C82' }}>Accès refusé</h2>
           <p style={{ color: '#64748b', marginBottom: '1.5rem' }}>
@@ -118,8 +109,7 @@ export default function ClientInvoicePortal() {
               border: 'none',
               borderRadius: '8px',
               cursor: 'pointer',
-              fontWeight: 600,
-            }}
+              fontWeight: 600}}
           >
             Retour à l'accueil
           </button>
@@ -148,8 +138,7 @@ export default function ClientInvoicePortal() {
           borderRadius: '12px',
           padding: '2rem',
           marginBottom: '2rem',
-          boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
-        }}>
+          boxShadow: '0 1px 3px rgba(0,0,0,0.1)'}}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <div>
               <h1 style={{ margin: 0, color: '#195C82', marginBottom: '.5rem' }}>
@@ -172,8 +161,7 @@ export default function ClientInvoicePortal() {
                   border: 'none',
                   borderRadius: '8px',
                   cursor: 'pointer',
-                  fontWeight: 600,
-                }}
+                  fontWeight: 600}}
               >
                 📥 Télécharger PDF
               </button>
@@ -186,8 +174,7 @@ export default function ClientInvoicePortal() {
           background: 'white',
           borderRadius: '12px',
           padding: '2rem',
-          boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
-        }}>
+          boxShadow: '0 1px 3px rgba(0,0,0,0.1)'}}>
           {/* Émetteur et Destinataire */}
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '3rem', marginBottom: '2rem' }}>
             {/* Émetteur */}
@@ -273,8 +260,7 @@ export default function ClientInvoicePortal() {
             gridTemplateColumns: '1fr 200px',
             gap: '2rem',
             paddingTop: '2rem',
-            borderTop: '2px solid #e2e8f0',
-          }}>
+            borderTop: '2px solid #e2e8f0'}}>
             <div />
             <div>
               <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1rem', paddingBottom: '1rem', borderBottom: '1px solid #e2e8f0' }}>
@@ -297,8 +283,7 @@ export default function ClientInvoicePortal() {
             <div style={{
               marginTop: '2rem',
               paddingTop: '2rem',
-              borderTop: '1px solid #e2e8f0',
-            }}>
+              borderTop: '1px solid #e2e8f0'}}>
               <h4 style={{ color: '#64748b', marginBottom: '.5rem' }}>Notes</h4>
               <p style={{ color: '#195C82', whiteSpace: 'pre-wrap' }}>{invoice.notes}</p>
             </div>
@@ -310,8 +295,7 @@ export default function ClientInvoicePortal() {
           marginTop: '2rem',
           textAlign: 'center',
           color: '#94a3b8',
-          fontSize: '.85rem',
-        }}>
+          fontSize: '.85rem'}}>
           <p>Facture générée par TimeBlast.ai · Portail Client Sécurisé</p>
         </div>
       </div>

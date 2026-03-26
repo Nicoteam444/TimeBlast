@@ -1,6 +1,5 @@
 import { useState, useEffect, useMemo } from 'react'
 import { supabase } from '../../lib/supabase'
-import { useSociete } from '../../contexts/SocieteContext'
 import Spinner from '../../components/Spinner'
 
 const SQL_MIGRATION = `CREATE TABLE IF NOT EXISTS campagnes_sms (
@@ -33,8 +32,7 @@ const EMPTY_FORM = {
   message: '',
   destinataires_ids: [],
   date_envoi: '',
-  statut: 'brouillon',
-}
+  statut: 'brouillon'}
 
 function statutInfo(v) {
   return STATUTS.find(s => s.value === v) || { value: v, label: v || '\u2014', color: '#64748b', bg: '#f8fafc' }
@@ -51,7 +49,6 @@ function truncate(str, max) {
 }
 
 export default function CampagnesSMSPage() {
-  const { selectedSociete } = useSociete()
   const [campagnes, setCampagnes] = useState([])
   const [contacts, setContacts] = useState([])
   const [loading, setLoading] = useState(true)
@@ -74,17 +71,14 @@ export default function CampagnesSMSPage() {
   useEffect(() => {
     fetchCampagnes()
     fetchContacts()
-  }, [selectedSociete?.id])
+  }, [])
 
   async function fetchCampagnes() {
     setLoading(true)
     setMigrationNeeded(false)
     setError(null)
     let query = supabase
-      .from('campagnes_sms')
-      .select('*')
-      .order('created_at', { ascending: false })
-    if (selectedSociete?.id) query = query.eq('societe_id', selectedSociete.id)
+      .from('campagnes_sms').select('*').order('created_at', { ascending: false })
     const { data, error } = await query
     if (error) {
       if (error.code === '42P01') {
@@ -101,12 +95,7 @@ export default function CampagnesSMSPage() {
 
   async function fetchContacts() {
     let query = supabase
-      .from('contacts')
-      .select('id, nom, prenom, telephone')
-      .not('telephone', 'is', null)
-      .neq('telephone', '')
-      .order('nom', { ascending: true })
-    if (selectedSociete?.id) query = query.eq('societe_id', selectedSociete.id)
+      .from('contacts').select('id, nom, prenom, telephone').not('telephone', 'is', null).neq('telephone', '').order('nom', { ascending: true })
     const { data } = await query
     setContacts(data || [])
   }
@@ -125,8 +114,7 @@ export default function CampagnesSMSPage() {
       message:            c.message || '',
       destinataires_ids:  c.destinataires_ids || [],
       date_envoi:         c.date_envoi ? c.date_envoi.slice(0, 16) : '',
-      statut:             c.statut || 'brouillon',
-    })
+      statut:             c.statut || 'brouillon'})
     setFormError(null)
     setShowModal(true)
   }
@@ -138,8 +126,7 @@ export default function CampagnesSMSPage() {
       message:            c.message || '',
       destinataires_ids:  c.destinataires_ids || [],
       date_envoi:         '',
-      statut:             'brouillon',
-    })
+      statut:             'brouillon'})
     setFormError(null)
     setShowModal(true)
   }
@@ -179,14 +166,12 @@ export default function CampagnesSMSPage() {
     setSaving(true)
     setFormError(null)
     const payload = {
-      societe_id:        selectedSociete?.id || null,
       nom:               form.nom,
       message:           form.message || null,
       destinataires_ids: form.destinataires_ids,
       nb_destinataires:  form.destinataires_ids.length,
       date_envoi:        form.date_envoi || null,
-      statut:            form.statut,
-    }
+      statut:            form.statut}
     let err
     if (editingId) {
       ;({ error: err } = await supabase.from('campagnes_sms').update(payload).eq('id', editingId))
@@ -208,15 +193,12 @@ export default function CampagnesSMSPage() {
 
   async function handleEnvoyer(c) {
     const { error } = await supabase
-      .from('campagnes_sms')
-      .update({
+      .from('campagnes_sms').update({
         statut: 'envoyee',
         date_envoi: new Date().toISOString(),
         nb_envoyes: c.nb_destinataires,
         nb_livres: c.nb_destinataires,
-        taux_livraison: 100,
-      })
-      .eq('id', c.id)
+        taux_livraison: 100}).eq('id', c.id)
     if (error) { setError(error.message); return }
     fetchCampagnes()
   }
@@ -273,8 +255,7 @@ export default function CampagnesSMSPage() {
             <pre style={{
               background: '#1e293b', color: '#e2e8f0', borderRadius: 8,
               padding: '1rem', fontSize: '.8rem', overflowX: 'auto',
-              lineHeight: 1.6, margin: 0,
-            }}>{SQL_MIGRATION}</pre>
+              lineHeight: 1.6, margin: 0}}>{SQL_MIGRATION}</pre>
             <button
               onClick={handleCopy}
               style={{
@@ -282,8 +263,7 @@ export default function CampagnesSMSPage() {
                 background: copied ? '#16a34a' : 'rgba(255,255,255,0.1)',
                 border: '1px solid rgba(255,255,255,0.2)',
                 borderRadius: 6, color: '#fff', fontSize: '.75rem',
-                padding: '.25rem .65rem', cursor: 'pointer', transition: 'background .15s',
-              }}
+                padding: '.25rem .65rem', cursor: 'pointer', transition: 'background .15s'}}
             >{copied ? 'Copi\u00e9 !' : 'Copier'}</button>
           </div>
         </div>
@@ -378,8 +358,7 @@ export default function CampagnesSMSPage() {
                             fontWeight: 600,
                             color: si.color,
                             background: si.bg,
-                            border: `1px solid ${si.color}25`,
-                          }}>{si.label}</span>
+                            border: `1px solid ${si.color}25`}}>{si.label}</span>
                         </td>
                         <td style={{ color: 'var(--text-muted)', fontSize: '.85rem' }}>
                           {fmtDate(c.date_envoi)}
@@ -408,8 +387,7 @@ export default function CampagnesSMSPage() {
                                   padding: '.25rem .55rem', fontSize: '.78rem',
                                   background: '#3b82f6', border: '1px solid #3b82f6',
                                   color: '#fff', borderRadius: 6, cursor: 'pointer',
-                                  fontWeight: 500,
-                                }}
+                                  fontWeight: 500}}
                                 onClick={() => handleEnvoyer(c)}
                               >Envoyer</button>
                             )}
@@ -417,8 +395,7 @@ export default function CampagnesSMSPage() {
                               style={{
                                 padding: '.25rem .55rem', fontSize: '.78rem',
                                 background: 'transparent', border: '1px solid #fca5a5',
-                                color: '#dc2626', borderRadius: 6, cursor: 'pointer',
-                              }}
+                                color: '#dc2626', borderRadius: 6, cursor: 'pointer'}}
                               onClick={() => setDeleteId(c.id)}
                             >Supprimer</button>
                           </div>
@@ -476,14 +453,12 @@ export default function CampagnesSMSPage() {
                     style={{
                       resize: 'vertical', fontFamily: 'inherit', fontSize: '.9rem',
                       padding: '.625rem .875rem', border: '1px solid var(--border)',
-                      borderRadius: 8, outline: 'none', width: '100%',
-                    }}
+                      borderRadius: 8, outline: 'none', width: '100%'}}
                   />
                   <div style={{
                     textAlign: 'right', fontSize: '.78rem', marginTop: '.25rem',
                     color: form.message.length >= 150 ? '#dc2626' : 'var(--text-muted)',
-                    fontVariantNumeric: 'tabular-nums',
-                  }}>
+                    fontVariantNumeric: 'tabular-nums'}}>
                     {form.message.length} / 160 caract\u00e8res
                   </div>
                 </div>
@@ -499,30 +474,25 @@ export default function CampagnesSMSPage() {
                     width: 260, margin: '0 auto',
                     background: '#1e1e1e', borderRadius: 28, padding: '40px 12px 28px',
                     boxShadow: '0 8px 32px rgba(0,0,0,.18)',
-                    position: 'relative',
-                  }}>
+                    position: 'relative'}}>
                     {/* Phone notch */}
                     <div style={{
                       position: 'absolute', top: 12, left: '50%', transform: 'translateX(-50%)',
-                      width: 80, height: 6, borderRadius: 3, background: '#333',
-                    }} />
+                      width: 80, height: 6, borderRadius: 3, background: '#333'}} />
                     {/* Screen area */}
                     <div style={{
                       background: '#f0f0f0', borderRadius: 18, padding: '1rem .75rem',
                       minHeight: 160, display: 'flex', flexDirection: 'column',
-                      justifyContent: 'flex-start',
-                    }}>
+                      justifyContent: 'flex-start'}}>
                       {/* Header */}
                       <div style={{
                         textAlign: 'center', fontSize: '.7rem', color: '#999',
-                        marginBottom: '.75rem', fontWeight: 600,
-                      }}>Messages</div>
+                        marginBottom: '.75rem', fontWeight: 600}}>Messages</div>
                       {/* Message bubble */}
                       <div style={{
                         background: '#e2e2e2', borderRadius: '16px 16px 16px 4px',
                         padding: '.6rem .8rem', fontSize: '.8rem', lineHeight: 1.4,
-                        color: '#1a1a1a', maxWidth: '90%', wordBreak: 'break-word',
-                      }}>
+                        color: '#1a1a1a', maxWidth: '90%', wordBreak: 'break-word'}}>
                         {form.message}
                       </div>
                       <div style={{ fontSize: '.65rem', color: '#aaa', marginTop: '.25rem' }}>
@@ -534,8 +504,7 @@ export default function CampagnesSMSPage() {
                     {/* Home bar */}
                     <div style={{
                       width: 80, height: 4, borderRadius: 2, background: '#555',
-                      margin: '10px auto 0',
-                    }} />
+                      margin: '10px auto 0'}} />
                   </div>
                 </div>
               )}
@@ -560,8 +529,7 @@ export default function CampagnesSMSPage() {
                     <div style={{
                       maxHeight: 180, overflowY: 'auto',
                       border: '1px solid var(--border)', borderRadius: 8,
-                      padding: '.5rem',
-                    }}>
+                      padding: '.5rem'}}>
                       {contacts.map(ct => (
                         <label
                           key={ct.id}
@@ -569,8 +537,7 @@ export default function CampagnesSMSPage() {
                             display: 'flex', alignItems: 'center', gap: '.5rem',
                             padding: '.3rem .4rem', cursor: 'pointer', borderRadius: 6,
                             background: (form.destinataires_ids || []).includes(ct.id) ? 'var(--primary-light)' : 'transparent',
-                            fontSize: '.85rem',
-                          }}
+                            fontSize: '.85rem'}}
                         >
                           <input
                             type="checkbox"

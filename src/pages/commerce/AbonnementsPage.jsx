@@ -1,6 +1,5 @@
 import { useState, useEffect, useMemo } from 'react'
 import { supabase } from '../../lib/supabase'
-import { useSociete } from '../../contexts/SocieteContext'
 import useSortableTable from '../../hooks/useSortableTable'
 import SortableHeader from '../../components/SortableHeader'
 import Spinner from '../../components/Spinner'
@@ -44,8 +43,7 @@ const EMPTY_FORM = {
   date_debut: '',
   date_prochaine_facturation: '',
   statut: 'actif',
-  notes: '',
-}
+  notes: ''}
 
 function freqInfo(v) {
   return FREQUENCES.find(f => f.value === v) || { value: v, label: v || '—', color: '#64748b', bg: '#f8fafc' }
@@ -63,8 +61,7 @@ function fmtEur(n, frac = 0) {
   return new Intl.NumberFormat('fr-FR', {
     style: 'currency', currency: 'EUR',
     minimumFractionDigits: frac,
-    maximumFractionDigits: frac,
-  }).format(n)
+    maximumFractionDigits: frac}).format(n)
 }
 
 function fmtDate(d) {
@@ -73,7 +70,6 @@ function fmtDate(d) {
 }
 
 export default function AbonnementsPage() {
-  const { selectedSociete } = useSociete()
   const [abonnements, setAbonnements] = useState([])
   const [clients, setClients] = useState([])
   const [loading, setLoading] = useState(true)
@@ -96,17 +92,14 @@ export default function AbonnementsPage() {
   useEffect(() => {
     fetchAbonnements()
     fetchClients()
-  }, [selectedSociete?.id])
+  }, [])
 
   async function fetchAbonnements() {
     setLoading(true)
     setMigrationNeeded(false)
     setError(null)
     let query = supabase
-      .from('abonnements')
-      .select('*, clients(id, name)')
-      .order('nom', { ascending: true })
-    if (selectedSociete?.id) query = query.eq('societe_id', selectedSociete.id)
+      .from('abonnements').select('*, clients(id, name)').order('nom', { ascending: true })
     const { data, error } = await query
     if (error) {
       if (error.code === '42P01') {
@@ -123,7 +116,6 @@ export default function AbonnementsPage() {
 
   async function fetchClients() {
     let query = supabase.from('clients').select('id, name').order('name', { ascending: true })
-    if (selectedSociete?.id) query = query.eq('societe_id', selectedSociete.id)
     const { data } = await query
     setClients(data || [])
   }
@@ -145,8 +137,7 @@ export default function AbonnementsPage() {
       date_debut:                 a.date_debut || '',
       date_prochaine_facturation: a.date_prochaine_facturation || '',
       statut:                     a.statut || 'actif',
-      notes:                      a.notes || '',
-    })
+      notes:                      a.notes || ''})
     setFormError(null)
     setShowModal(true)
   }
@@ -167,7 +158,6 @@ export default function AbonnementsPage() {
     setSaving(true)
     setFormError(null)
     const payload = {
-      societe_id:                 selectedSociete?.id || null,
       nom:                        form.nom,
       client_id:                  form.client_id || null,
       frequence:                  form.frequence,
@@ -175,8 +165,7 @@ export default function AbonnementsPage() {
       date_debut:                 form.date_debut || null,
       date_prochaine_facturation: form.date_prochaine_facturation || null,
       statut:                     form.statut,
-      notes:                      form.notes || null,
-    }
+      notes:                      form.notes || null}
     let err
     if (editingId) {
       ;({ error: err } = await supabase.from('abonnements').update(payload).eq('id', editingId))
@@ -252,8 +241,7 @@ export default function AbonnementsPage() {
             <pre style={{
               background: '#1e293b', color: '#e2e8f0', borderRadius: 8,
               padding: '1rem', fontSize: '.8rem', overflowX: 'auto',
-              lineHeight: 1.6, margin: 0,
-            }}>{SQL_MIGRATION}</pre>
+              lineHeight: 1.6, margin: 0}}>{SQL_MIGRATION}</pre>
             <button
               onClick={handleCopy}
               style={{
@@ -261,8 +249,7 @@ export default function AbonnementsPage() {
                 background: copied ? '#16a34a' : 'rgba(255,255,255,0.1)',
                 border: '1px solid rgba(255,255,255,0.2)',
                 borderRadius: 6, color: '#fff', fontSize: '.75rem',
-                padding: '.25rem .65rem', cursor: 'pointer', transition: 'background .15s',
-              }}
+                padding: '.25rem .65rem', cursor: 'pointer', transition: 'background .15s'}}
             >{copied ? 'Copié !' : 'Copier'}</button>
           </div>
         </div>
@@ -376,8 +363,7 @@ export default function AbonnementsPage() {
                               style={{
                                 padding: '.25rem .65rem', fontSize: '.8rem',
                                 background: 'transparent', border: '1px solid #fca5a5',
-                                color: '#dc2626', borderRadius: 6, cursor: 'pointer',
-                              }}
+                                color: '#dc2626', borderRadius: 6, cursor: 'pointer'}}
                               onClick={() => setDeleteId(a.id)}
                             >Supprimer</button>
                           </div>
@@ -535,8 +521,7 @@ function AboStatutBadge({ statut }) {
   const styles = {
     actif:    { color: '#15803d', background: '#f0fdf4', border: '1px solid #bbf7d0' },
     suspendu: { color: '#92400e', background: '#fffbeb', border: '1px solid #fde68a' },
-    resilie:  { color: '#991b1b', background: '#fef2f2', border: '1px solid #fecaca' },
-  }
+    resilie:  { color: '#991b1b', background: '#fef2f2', border: '1px solid #fecaca' }}
   const labels = { actif: 'Actif', suspendu: 'Suspendu', resilie: 'Résilié' }
   const s = styles[statut] || { color: '#64748b', background: '#f8fafc', border: '1px solid #e2e8f0' }
   return (

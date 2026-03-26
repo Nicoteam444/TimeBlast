@@ -1,6 +1,5 @@
 import { useState, useEffect, useMemo } from 'react'
 import { supabase } from '../../lib/supabase'
-import { useSociete } from '../../contexts/SocieteContext'
 import useSortableTable from '../../hooks/useSortableTable'
 import SortableHeader from '../../components/SortableHeader'
 import Spinner from '../../components/Spinner'
@@ -10,16 +9,14 @@ const CATEGORIE_META = {
   logiciel:   { label: 'Logiciel',   icon: '💻', color: '#8b5cf6', bg: '#f5f3ff' },
   prestation: { label: 'Prestation', icon: '🤝', color: '#f59e0b', bg: '#fffbeb' },
   fourniture: { label: 'Fourniture', icon: '📦', color: '#22c55e', bg: '#f0fdf4' },
-  autre:      { label: 'Autre',      icon: '📋', color: '#64748b', bg: '#f8fafc' },
-}
+  autre:      { label: 'Autre',      icon: '📋', color: '#64748b', bg: '#f8fafc' }}
 
 const STATUT_META = {
   commande:   { label: 'Commandé',   color: '#6366f1', bg: '#eef2ff' },
   en_cours:   { label: 'En cours',   color: '#f59e0b', bg: '#fffbeb' },
   recu:       { label: 'Reçu',       color: '#16a34a', bg: '#f0fdf4' },
   annule:     { label: 'Annulé',     color: '#dc2626', bg: '#fef2f2' },
-  en_attente: { label: 'En attente', color: '#64748b', bg: '#f1f5f9' },
-}
+  en_attente: { label: 'En attente', color: '#64748b', bg: '#f1f5f9' }}
 
 const SQL_HINT = `CREATE TABLE IF NOT EXISTS achats (
   id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
@@ -45,8 +42,7 @@ const EMPTY_FORM = {
   quantite: '1',
   date_achat: new Date().toISOString().slice(0, 10),
   date_livraison_prevue: '',
-  statut: 'commande',
-}
+  statut: 'commande'}
 
 function fmtDate(iso) {
   if (!iso) return '—'
@@ -59,7 +55,6 @@ function fmtMontant(n) {
 }
 
 export default function AchatsPage() {
-  const { selectedSociete } = useSociete()
   const [achats, setAchats] = useState([])
   const [loading, setLoading] = useState(true)
   const [tableError, setTableError] = useState(false)
@@ -76,16 +71,13 @@ export default function AchatsPage() {
 
   useEffect(() => {
     fetchAchats()
-  }, [selectedSociete?.id])
+  }, [])
 
   async function fetchAchats() {
     setLoading(true)
     setTableError(false)
     let q = supabase
-      .from('achats')
-      .select('*')
-      .order('date_achat', { ascending: false })
-    if (selectedSociete?.id) q = q.eq('societe_id', selectedSociete.id)
+      .from('achats').select('*').order('date_achat', { ascending: false })
     const { data, error } = await q
     if (error) {
       if (error.code === '42P01') setTableError(true)
@@ -114,8 +106,7 @@ export default function AchatsPage() {
       quantite: item.quantite !== null && item.quantite !== undefined ? String(item.quantite) : '1',
       date_achat: item.date_achat || '',
       date_livraison_prevue: item.date_livraison_prevue || '',
-      statut: item.statut || 'commande',
-    })
+      statut: item.statut || 'commande'})
     setFormError('')
     setShowForm(true)
   }
@@ -143,9 +134,7 @@ export default function AchatsPage() {
       quantite: parseInt(form.quantite, 10) || 1,
       date_achat: form.date_achat,
       date_livraison_prevue: form.date_livraison_prevue || null,
-      statut: form.statut,
-      societe_id: selectedSociete?.id || null,
-    }
+      statut: form.statut}
 
     let error
     if (editItem) {

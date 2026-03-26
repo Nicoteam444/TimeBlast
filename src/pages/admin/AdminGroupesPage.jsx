@@ -191,8 +191,7 @@ export default function AdminGroupesPage() {
                         width: 28, height: 28, borderRadius: '50%', background: c,
                         border: form.color === c ? '3px solid #0d1b24' : '2px solid transparent',
                         cursor: 'pointer', outline: 'none', boxShadow: form.color === c ? '0 0 0 2px #fff, 0 0 0 4px ' + c : 'none',
-                        transition: 'all .15s',
-                      }}
+                        transition: 'all .15s'}}
                     />
                   ))}
                   <input

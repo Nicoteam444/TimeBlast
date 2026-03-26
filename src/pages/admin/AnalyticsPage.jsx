@@ -1,6 +1,5 @@
 import { useState, useEffect, useMemo } from 'react'
 import { supabase } from '../../lib/supabase'
-import { useSociete } from '../../contexts/SocieteContext'
 import Spinner from '../../components/Spinner'
 import { BarChart, Bar, LineChart, Line, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend, ComposedChart, Area } from 'recharts'
 
@@ -16,17 +15,15 @@ function fmtK(n) {
 function fmtPct(n) { return (n || 0).toFixed(1) + '%' }
 
 export default function AnalyticsPage() {
-  const { selectedSociete } = useSociete()
   const [data, setData] = useState(null)
   const [loading, setLoading] = useState(true)
   const [period, setPeriod] = useState('year') // year, quarter, month
 
-  useEffect(() => { loadData() }, [selectedSociete?.id])
+  useEffect(() => { loadData() }, [])
 
   async function loadData() {
     setLoading(true)
-    const sid = selectedSociete?.id
-    const filters = sid ? (q) => q.eq('societe_id', sid) : (q) => q
+    const filters = (q) => q
 
     const [clients, transactions, factures, achats, equipe, saisies, projets, absences] = await Promise.all([
       filters(supabase.from('clients').select('*')).then(r => r.data || []),
@@ -124,8 +121,7 @@ export default function AnalyticsPage() {
         projetsActifs, tauxConversion, facImpayees: facImpayees.length,
         montantImpaye: facImpayees.reduce((s, f) => s + (f.total_ttc || 0), 0),
         masseSalariale, nbClients: clients.length, nbCollaborateurs: equipe.length,
-        tauxUtilMoyen,
-      },
+        tauxUtilMoyen},
       charts: { months, pipelineData, topClients, topProjets, facStatutData }
     }
   }, [data])
@@ -237,8 +233,7 @@ function KpiCard({ label, value, color, icon }) {
   return (
     <div style={{
       background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 12,
-      padding: '.85rem 1rem', borderLeft: `4px solid ${color}`,
-    }}>
+      padding: '.85rem 1rem', borderLeft: `4px solid ${color}`}}>
       <div style={{ fontSize: '.72rem', color: 'var(--text-muted)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '.04em', marginBottom: '.25rem' }}>
         {icon} {label}
       </div>
@@ -251,8 +246,7 @@ function ChartCard({ title, children }) {
   return (
     <div style={{
       background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 12,
-      padding: '1.25rem', overflow: 'hidden',
-    }}>
+      padding: '1.25rem', overflow: 'hidden'}}>
       <h3 style={{ fontSize: '.85rem', fontWeight: 700, color: 'var(--text)', marginBottom: '.75rem' }}>{title}</h3>
       {children}
     </div>

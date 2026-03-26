@@ -34,11 +34,7 @@ export default function ClientAutocomplete({ value, onChange }) {
     debounceRef.current = setTimeout(async () => {
       setLoading(true)
       const { data } = await supabase
-        .from('clients')
-        .select('id, name')
-        .ilike('name', `%${q}%`)
-        .order('name')
-        .limit(10)
+        .from('clients').select('id, name').ilike('name', `%${q}%`).order('name').limit(10)
       setResults(data || [])
       setOpen(true)
       setLoading(false)

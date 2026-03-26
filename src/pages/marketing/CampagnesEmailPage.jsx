@@ -30,7 +30,6 @@ CREATE POLICY "Users can manage campagnes_email for their societe"
 
 import { useState, useMemo, useEffect, useCallback } from 'react'
 import { supabase } from '../../lib/supabase'
-import { useSociete } from '../../contexts/SocieteContext'
 import Spinner from '../../components/Spinner'
 
 // ── Status config ──────────────────────────────────────────
@@ -105,8 +104,7 @@ function CampagneModal({ campagne, societe, contacts, onSave, onClose }) {
       destinataires_ids: JSON.stringify(selectedIds),
       nb_destinataires: selectedIds.length,
       date_envoi: dateEnvoi ? new Date(dateEnvoi).toISOString() : null,
-      statut,
-    }
+      statut}
 
     try {
       if (isNew) {
@@ -171,8 +169,7 @@ function CampagneModal({ campagne, societe, contacts, onSave, onClose }) {
             {showPreview ? (
               <div style={{
                 border: '1px solid var(--border)', borderRadius: 8, padding: '1rem',
-                minHeight: 150, background: '#fff', fontSize: '.85rem', lineHeight: 1.6,
-              }} dangerouslySetInnerHTML={{ __html: contenu }} />
+                minHeight: 150, background: '#fff', fontSize: '.85rem', lineHeight: 1.6}} dangerouslySetInnerHTML={{ __html: contenu }} />
             ) : (
               <textarea
                 value={contenu}
@@ -199,8 +196,7 @@ function CampagneModal({ campagne, societe, contacts, onSave, onClose }) {
             </div>
             <div style={{
               maxHeight: 180, overflowY: 'auto', border: '1px solid var(--border)',
-              borderRadius: 8, padding: '.5rem',
-            }}>
+              borderRadius: 8, padding: '.5rem'}}>
               {contacts.length === 0 ? (
                 <p style={{ color: 'var(--text-muted)', fontSize: '.85rem', textAlign: 'center', padding: '.5rem' }}>
                   Aucun contact trouvé
@@ -209,8 +205,7 @@ function CampagneModal({ campagne, societe, contacts, onSave, onClose }) {
                 <label key={c.id} style={{
                   display: 'flex', alignItems: 'center', gap: '.5rem', padding: '.3rem .25rem',
                   cursor: 'pointer', fontSize: '.85rem', borderRadius: 4,
-                  background: selectedIds.includes(c.id) ? '#eff6ff' : 'transparent',
-                }}>
+                  background: selectedIds.includes(c.id) ? '#eff6ff' : 'transparent'}}>
                   <input
                     type="checkbox"
                     checked={selectedIds.includes(c.id)}
@@ -265,8 +260,7 @@ function CampagneDetail({ campagne, contacts }) {
                 <div style={{
                   border: '1px solid var(--border)', borderRadius: 8, padding: '1rem',
                   background: '#fff', fontSize: '.8rem', lineHeight: 1.6, maxHeight: 200,
-                  overflowY: 'auto',
-                }} dangerouslySetInnerHTML={{ __html: campagne.contenu }} />
+                  overflowY: 'auto'}} dangerouslySetInnerHTML={{ __html: campagne.contenu }} />
               ) : (
                 <p style={{ color: 'var(--text-muted)', fontSize: '.85rem', fontStyle: 'italic' }}>Aucun contenu</p>
               )}
@@ -279,8 +273,7 @@ function CampagneDetail({ campagne, contacts }) {
                     {destinataires.slice(0, 10).map(c => (
                       <span key={c.id} style={{
                         fontSize: '.75rem', background: '#e2e8f0', borderRadius: 12,
-                        padding: '.15rem .5rem', color: '#475569',
-                      }}>
+                        padding: '.15rem .5rem', color: '#475569'}}>
                         {c.prenom} {c.nom}
                       </span>
                     ))}
@@ -311,8 +304,7 @@ function CampagneDetail({ campagne, contacts }) {
                       <div style={{ height: 8, background: '#e2e8f0', borderRadius: 4, overflow: 'hidden' }}>
                         <div style={{
                           height: '100%', width: pct + '%', background: s.color,
-                          borderRadius: 4, transition: 'width .3s ease',
-                        }} />
+                          borderRadius: 4, transition: 'width .3s ease'}} />
                       </div>
                     </div>
                   )
@@ -328,7 +320,6 @@ function CampagneDetail({ campagne, contacts }) {
 
 // ── Main Page ──────────────────────────────────────────────
 export default function CampagnesEmailPage() {
-  const { selectedSociete } = useSociete()
   const [campagnes, setCampagnes] = useState([])
   const [contacts, setContacts] = useState([])
   const [loading, setLoading] = useState(true)
@@ -344,12 +335,8 @@ export default function CampagnesEmailPage() {
 
   // Load campagnes
   const loadCampagnes = useCallback(() => {
-    if (!selectedSociete?.id) { setCampagnes([]); setLoading(false); return }
     setLoading(true)
-    supabase.from('campagnes_email').select('*')
-      .eq('societe_id', selectedSociete.id)
-      .order('created_at', { ascending: false })
-      .then(({ data, error }) => {
+    supabase.from('campagnes_email').select('*').order('created_at', { ascending: false }).then(({ data, error }) => {
         if (error && (error.code === '42P01' || error.message?.includes('relation') || error.message?.includes('does not exist'))) {
           setTableExists(false)
           setLoading(false)
@@ -358,16 +345,12 @@ export default function CampagnesEmailPage() {
         setCampagnes(data || [])
         setLoading(false)
       })
-  }, [selectedSociete?.id])
+  }, [])
 
   // Load contacts for destinataires
   const loadContacts = useCallback(() => {
-    if (!selectedSociete?.id) return
-    supabase.from('contacts').select('id, nom, prenom, email')
-      .eq('societe_id', selectedSociete.id)
-      .order('nom', { ascending: true })
-      .then(({ data }) => setContacts(data || []))
-  }, [selectedSociete?.id])
+    supabase.from('contacts').select('id, nom, prenom, email').order('nom', { ascending: true }).then(({ data }) => setContacts(data || []))
+  }, [])
 
   useEffect(() => {
     loadCampagnes()
@@ -434,7 +417,6 @@ export default function CampagnesEmailPage() {
   // Duplicate
   async function handleDuplicate(campagne) {
     const payload = {
-      societe_id: selectedSociete?.id,
       nom: campagne.nom + ' (copie)',
       objet: campagne.objet,
       contenu: campagne.contenu,
@@ -446,8 +428,7 @@ export default function CampagnesEmailPage() {
       taux_clic: 0,
       nb_envoyes: 0,
       nb_ouverts: 0,
-      nb_clics: 0,
-    }
+      nb_clics: 0}
     await supabase.from('campagnes_email').insert(payload)
     loadCampagnes()
   }
@@ -457,8 +438,7 @@ export default function CampagnesEmailPage() {
     if (!window.confirm(`Envoyer la campagne "${campagne.nom}" maintenant ?\n\n(Simulation : le statut passera en "envoyée")`)) return
     await supabase.from('campagnes_email').update({
       statut: 'envoyee',
-      date_envoi: new Date().toISOString(),
-    }).eq('id', campagne.id)
+      date_envoi: new Date().toISOString()}).eq('id', campagne.id)
     loadCampagnes()
   }
 

@@ -1,10 +1,8 @@
 import { useState, useEffect, useRef } from 'react'
 import { supabase } from '../../lib/supabase'
-import { useSociete } from '../../contexts/SocieteContext'
 
 // ── Recherche tiers via API publique ──
 function TiersVerification() {
-  const { selectedSociete } = useSociete()
   const [query, setQuery] = useState('')
   const [results, setResults] = useState([])
   const [searching, setSearching] = useState(false)
@@ -55,9 +53,7 @@ function TiersVerification() {
       // Créer le client
       const { data, error } = await supabase.from('clients').insert({
         name: nom.toUpperCase(),
-        ville,
-        societe_id: selectedSociete?.id || null,
-      }).select().single()
+        ville}).select().single()
 
       if (error) {
         setEnrichResult({ type: 'error', message: error.message })
@@ -106,8 +102,7 @@ function TiersVerification() {
         {enrichResult && (
           <div style={{ padding: '.75rem 1rem', borderRadius: 10, marginBottom: '1rem',
             background: enrichResult.type === 'created' ? '#f0fdf4' : enrichResult.type === 'exists' ? '#fffbeb' : '#fef2f2',
-            border: `1px solid ${enrichResult.type === 'created' ? '#86efac' : enrichResult.type === 'exists' ? '#fcd34d' : '#fca5a5'}`,
-          }}>
+            border: `1px solid ${enrichResult.type === 'created' ? '#86efac' : enrichResult.type === 'exists' ? '#fcd34d' : '#fca5a5'}`}}>
             {enrichResult.type === 'created' && (
               <p style={{ color: '#166534', fontSize: '.9rem' }}>
                 ✅ Client <strong>{enrichResult.entreprise.nom}</strong> créé avec succès !
@@ -207,8 +202,7 @@ export default function IntegrationsPage() {
     setError(null)
 
     const { data, error } = await supabase.functions.invoke('hubspot-sync', {
-      body: { action },
-    })
+      body: { action }})
 
     setSyncing(null)
 

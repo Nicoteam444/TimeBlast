@@ -22,8 +22,7 @@ const PHASE_META = {
   proposition: { label: 'Proposition', color: '#f59e0b', bg: '#fffbeb' },
   negoce: { label: 'Négociation', color: '#8b5cf6', bg: '#faf5ff' },
   gagne: { label: 'Gagné', color: '#22c55e', bg: '#f0fdf4' },
-  perdu: { label: 'Perdu', color: '#ef4444', bg: '#fef2f2' },
-}
+  perdu: { label: 'Perdu', color: '#ef4444', bg: '#fef2f2' }}
 
 export default function ContactDetailPage() {
   const { id } = useParams()
@@ -65,8 +64,7 @@ export default function ContactDetailPage() {
       telephone: form.get('telephone'),
       poste: form.get('poste'),
       linkedin: form.get('linkedin'),
-      notes: form.get('notes'),
-    }).eq('id', id)
+      notes: form.get('notes')}).eq('id', id)
     setEditing(false)
     loadContact()
   }
@@ -89,8 +87,7 @@ export default function ContactDetailPage() {
               <span className="fac-statut-badge" style={{
                 color: contact.statut === 'actif' ? '#22c55e' : '#94a3b8',
                 background: contact.statut === 'actif' ? '#f0fdf4' : '#f1f5f9',
-                fontSize: '.75rem',
-              }}>{contact.statut === 'actif' ? 'Actif' : 'Inactif'}</span>
+                fontSize: '.75rem'}}>{contact.statut === 'actif' ? 'Actif' : 'Inactif'}</span>
             </h1>
             <p style={{ color: 'var(--text-muted)', fontSize: '.9rem' }}>
               {contact.poste}{contact.poste && entreprise ? ' · ' : ''}{entreprise?.name || ''}
@@ -184,8 +181,7 @@ export default function ContactDetailPage() {
                   return (
                     <div key={l.id} style={{
                       padding: '.6rem .85rem', border: '1px solid var(--border)', borderRadius: 8,
-                      borderLeft: `3px solid ${pm.color}`, cursor: 'pointer',
-                    }} onClick={() => navigate('/crm/leads')}>
+                      borderLeft: `3px solid ${pm.color}`, cursor: 'pointer'}} onClick={() => navigate('/crm/leads')}>
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                         <span style={{ fontWeight: 600, fontSize: '.88rem' }}>{l.titre}</span>
                         <span className="fac-statut-badge" style={{ color: pm.color, background: pm.bg, fontSize: '.72rem' }}>{pm.label}</span>

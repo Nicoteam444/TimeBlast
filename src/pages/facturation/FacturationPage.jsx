@@ -1,6 +1,5 @@
 import { useState, useMemo, useEffect, useCallback, useRef } from 'react'
 import { supabase } from '../../lib/supabase'
-import { useSociete } from '../../contexts/SocieteContext'
 import { generateInvoicePDF } from '../../lib/pdfGenerator'
 import InvoiceDistributionModal from '../../components/InvoiceDistributionModal'
 import { getDistributionHistory } from '../../lib/invoiceDistribution'
@@ -78,8 +77,7 @@ function InvoicePreview({ fac }) {
             width: A4_W,
             height: A4_H,
             transform: `scale(${scale})`,
-            transformOrigin: 'top left',
-          }}
+            transformOrigin: 'top left'}}
         >
         {/* ── En-tête émetteur / facture ── */}
         <div className="fac-p-header">
@@ -193,8 +191,7 @@ function FactureModal({ facture, societe, onSave, onClose }) {
       client_siret: clSiret, objet, emetteur_nom: emNom, emetteur_siret: emSiret,
       emetteur_email: emEmail, lignes: JSON.stringify(lignes), notes,
       total_ht: Math.round(totals.ht*100)/100,
-      total_ttc: Math.round(totals.ttc*100)/100,
-    }
+      total_ttc: Math.round(totals.ttc*100)/100}
     if (isNew) {
       const { data } = await supabase.from('factures').insert(payload).select().single()
       onSave(data)
@@ -292,7 +289,6 @@ function FactureModal({ facture, societe, onSave, onClose }) {
 
 // ── Page principale ───────────────────────────────────────────
 export default function FacturationPage() {
-  const { selectedSociete } = useSociete()
   const [factures, setFactures]       = useState([])
   const [loading, setLoading]         = useState(true)
   const [selected, setSelected]       = useState(null)
@@ -305,12 +301,8 @@ export default function FacturationPage() {
   const PAGE_SIZE = 50
 
   function loadFactures(keepSelection = false) {
-    if (!selectedSociete?.id) { setFactures([]); setLoading(false); return }
     setLoading(true)
-    supabase.from('factures').select('*')
-      .eq('societe_id', selectedSociete.id)
-      .order('date_emission', { ascending: false })
-      .then(({ data }) => {
+    supabase.from('factures').select('*').order('date_emission', { ascending: false }).then(({ data }) => {
         const rows = data || []
         setFactures(rows)
         setLoading(false)
@@ -318,19 +310,13 @@ export default function FacturationPage() {
         if (!keepSelection && rows.length > 0) setSelected(rows[0])
       })
   }
-  useEffect(() => { loadFactures() }, [selectedSociete?.id])
+  useEffect(() => { loadFactures() }, [])
 
   // Load company data when selected societe changes
   useEffect(() => {
-    if (!selectedSociete?.id) return
     supabase
-      .from('societes')
-      .select('*')
-      .eq('id', selectedSociete.id)
-      .single()
-      .then(({ data }) => setCompanyData(data))
-      .catch(err => console.error('Error loading company data:', err))
-  }, [selectedSociete?.id])
+      .from('societes').select('*').eq('id', selectedSociete.id).single().then(({ data }) => setCompanyData(data)).catch(err => console.error('Error loading company data:', err))
+  }, [])
 
   const filtered = useMemo(() => {
     let rows = factures

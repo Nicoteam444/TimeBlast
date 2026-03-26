@@ -10,15 +10,13 @@ const ROLE_LABELS = {
   collaborateur: 'Collaborateur',
   manager: 'Manager',
   comptable: 'Comptable',
-  admin: 'Administrateur',
-}
+  admin: 'Administrateur'}
 const ROLE_COLORS = {
   collaborateur: '#64748b',
   manager: '#0891b2',
   comptable: '#7c3aed',
   admin: '#dc2626',
-  superadmin: '#7c2d12',
-}
+  superadmin: '#7c2d12'}
 const SUPER_ADMIN_EMAIL = 'nicolas.nabhan@groupe-sra.fr'
 
 function getRoleDisplay(user) {
@@ -46,8 +44,7 @@ function formatDateTime(date) {
 const EMPTY_CREATE = {
   prenom: '', nom: '', email: '', password: '', role: 'collaborateur',
   societe_id: '', send_invite: true,
-  telephone: '', poste: '', date_embauche: '', date_naissance: '',
-}
+  telephone: '', poste: '', date_embauche: '', date_naissance: ''}
 
 function splitFullName(fullName) {
   if (!fullName) return { prenom: '', nom: '' }
@@ -80,10 +77,8 @@ export default function AdminUtilisateursPage() {
 
   useEffect(() => {
     fetchUsers()
-    supabase.from('societes').select('id, name, groupe_id, groupes(id, name, color)').order('name')
-      .then(({ data }) => setSocietes(data || []))
-    supabase.from('groupes').select('id, name, color').order('name')
-      .then(({ data }) => setGroupes(data || []))
+    supabase.from('societes').select('id, name, groupe_id, groupes(id, name, color)').order('name').then(({ data }) => setSocietes(data || []))
+    supabase.from('groupes').select('id, name, color').order('name').then(({ data }) => setGroupes(data || []))
   }, [])
 
   async function fetchUsers() {
@@ -101,8 +96,7 @@ export default function AdminUtilisateursPage() {
     delete submitPayload.prenom
     delete submitPayload.nom
     const { data, error } = await supabase.functions.invoke('manage-user', {
-      body: { action: 'create', ...submitPayload },
-    })
+      body: { action: 'create', ...submitPayload }})
     setFormLoading(false)
     if (error || data?.error) {
       setFormError(data?.error || error.message); return
@@ -131,8 +125,7 @@ export default function AdminUtilisateursPage() {
       telephone: user.telephone || '',
       poste: user.poste || '',
       date_embauche: user.date_embauche ? user.date_embauche.split('T')[0] : '',
-      actif: user.actif !== false,
-    })
+      actif: user.actif !== false})
     setEditError(null)
   }
 
@@ -142,9 +135,7 @@ export default function AdminUtilisateursPage() {
     setEditError(null)
     const update = {
       full_name: [editForm.prenom, editForm.nom].filter(Boolean).join(' '),
-      role: editForm.role,
-      societe_id: editForm.societe_id || null,
-    }
+      role: editForm.role,}
     // Optional fields — may not exist in profiles yet
     if (editForm.telephone !== undefined) update.telephone = editForm.telephone || null
     if (editForm.poste !== undefined) update.poste = editForm.poste || null
@@ -201,8 +192,7 @@ export default function AdminUtilisateursPage() {
   const stats = {
     actifs: users.filter(u => getStatus(u).label === 'Actif').length,
     invites: users.filter(u => getStatus(u).label === 'Invitation envoyée').length,
-    admins: users.filter(u => u.role === 'admin').length,
-  }
+    admins: users.filter(u => u.role === 'admin').length}
 
   return (
     <div className="admin-page admin-page--full">
@@ -243,8 +233,7 @@ export default function AdminUtilisateursPage() {
               fontSize: '.9rem', fontWeight: activeTab === tab.id ? 700 : 500,
               color: activeTab === tab.id ? '#2B4C7E' : '#64748b',
               borderBottom: activeTab === tab.id ? '3px solid #2B4C7E' : '3px solid transparent',
-              marginBottom: '-2px', transition: 'all .15s',
-            }}>{tab.label}</button>
+              marginBottom: '-2px', transition: 'all .15s'}}>{tab.label}</button>
           ))}
         </div>
       )}
@@ -618,8 +607,7 @@ export default function AdminUtilisateursPage() {
                             background: groupe.color + '18',
                             fontSize: '.7rem',
                             fontWeight: 600,
-                            width: 'fit-content',
-                          }}>🏛 {groupe.name}</span>
+                            width: 'fit-content'}}>🏛 {groupe.name}</span>
                         )}
                       </div>
                     </td>
@@ -741,8 +729,7 @@ const DEFAULT_PERMS = {
   manager: { calendrier: 'VCMS', activite: 'VCMS', equipe: 'VCMS', gestion: 'V', crm: 'VCMS', marketing: 'VCMS', finance: '', documents: 'VCMS', administration: '' },
   comptable: { calendrier: 'V', activite: '', equipe: '', gestion: 'VCMS', crm: '', marketing: '', finance: 'VCMS', documents: 'V', administration: '' },
   admin: { calendrier: 'VCMS', activite: 'VCMS', equipe: 'VCMS', gestion: 'VCMS', crm: 'VCMS', marketing: 'VCMS', finance: 'VCMS', documents: 'VCMS', administration: 'V' },
-  superadmin: { calendrier: 'VCMS', activite: 'VCMS', equipe: 'VCMS', gestion: 'VCMS', crm: 'VCMS', marketing: 'VCMS', finance: 'VCMS', documents: 'VCMS', administration: 'VCMS' },
-}
+  superadmin: { calendrier: 'VCMS', activite: 'VCMS', equipe: 'VCMS', gestion: 'VCMS', crm: 'VCMS', marketing: 'VCMS', finance: 'VCMS', documents: 'VCMS', administration: 'VCMS' }}
 
 function PermissionsMatrix() {
   const [perms, setPerms] = useState({})
@@ -764,8 +751,7 @@ function PermissionsMatrix() {
           const key = `${m.id}:${s.id}`
           const row = (data || []).find(d => d.role === r && d.module === m.id && d.sub_module === s.id)
           map[r][key] = row ? {
-            can_view: row.can_view, can_create: row.can_create, can_edit: row.can_edit, can_delete: row.can_delete,
-          } : getDefault(r, m.id)
+            can_view: row.can_view, can_create: row.can_create, can_edit: row.can_edit, can_delete: row.can_delete} : getDefault(r, m.id)
         }
       }
     }
@@ -844,8 +830,7 @@ function PermissionsMatrix() {
     width: 22, height: 22, borderRadius: 4, border: `2px solid ${checked ? color : '#cbd5e1'}`,
     background: checked ? color + '20' : '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center',
     cursor: disabled ? 'not-allowed' : 'pointer', opacity: disabled ? .5 : 1, fontSize: 11, fontWeight: 700,
-    color: checked ? color : 'transparent', transition: 'all .15s',
-  })
+    color: checked ? color : 'transparent', transition: 'all .15s'})
 
   return (
     <div>
@@ -858,8 +843,7 @@ function PermissionsMatrix() {
           <button onClick={resetDefaults} style={{ padding: '8px 16px', borderRadius: 8, border: '1px solid #e2e8f0', background: '#fff', cursor: 'pointer', fontSize: '.85rem' }}>🔄 Réinitialiser par défaut</button>
           <button onClick={save} disabled={saving || !dirty} style={{
             padding: '8px 20px', borderRadius: 8, border: 'none', cursor: dirty ? 'pointer' : 'default',
-            background: dirty ? '#2B4C7E' : '#94a3b8', color: '#fff', fontSize: '.85rem', fontWeight: 600,
-          }}>{saving ? 'Enregistrement...' : '💾 Enregistrer'}</button>
+            background: dirty ? '#2B4C7E' : '#94a3b8', color: '#fff', fontSize: '.85rem', fontWeight: 600}}>{saving ? 'Enregistrement...' : '💾 Enregistrer'}</button>
         </div>
       </div>
 

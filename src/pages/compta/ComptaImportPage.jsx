@@ -45,11 +45,7 @@ function detectSep(line) {
 
 // Normalise un nom de colonne pour la correspondance
 function normHeader(h) {
-  return String(h).toLowerCase().trim()
-    .replace(/\s+/g, '')
-    .replace(/[_\-]/g, '')
-    .replace(/é|è|ê/g, 'e')
-    .replace(/[^a-z0-9]/g, '')
+  return String(h).toLowerCase().trim().replace(/\s+/g, '').replace(/[_\-]/g, '').replace(/é|è|ê/g, 'e').replace(/[^a-z0-9]/g, '')
 }
 
 // Correspondances flexibles (alias normalisés → clé interne)
@@ -89,8 +85,7 @@ const HEADER_MAP = {
   datevalidation:'valid_date',
   montantdevise: 'montant_devise',
   idevise:       'idevise',
-  devise:        'idevise',
-}
+  devise:        'idevise'}
 
 function buildRowFromObj(obj) {
   // Normalise les clés de l'objet
@@ -118,8 +113,7 @@ function buildRowFromObj(obj) {
     date_let:       parseFecDate(mapped.date_let) || null,
     valid_date:     parseFecDate(mapped.valid_date) || null,
     montant_devise: mapped.montant_devise ? parseFecNum(mapped.montant_devise) : null,
-    idevise:        mapped.idevise ? String(mapped.idevise).trim() : null,
-  }
+    idevise:        mapped.idevise ? String(mapped.idevise).trim() : null}
 }
 
 function parseFecText(text) {
@@ -281,10 +275,7 @@ export default function ComptaImportPage() {
     const totalCredit = rows.reduce((s, r) => s + r.credit, 0)
 
     const { data: importRec, error: impErr } = await supabase
-      .from('fec_imports')
-      .insert({ meta: JSON.stringify({ societe: societe.trim(), exercice: exercice.trim(), filename: fileName, nb_lignes: rows.length, total_debit: totalDebit, total_credit: totalCredit }) })
-      .select('id')
-      .single()
+      .from('fec_imports').insert({ meta: JSON.stringify({ societe: societe.trim(), exercice: exercice.trim(), filename: fileName, nb_lignes: rows.length, total_debit: totalDebit, total_credit: totalCredit }) }).select('id').single()
 
     if (impErr) {
       setError(impErr.code === '42P01' ? 'TABLE_MISSING' : impErr.message)

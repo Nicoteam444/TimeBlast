@@ -13,8 +13,7 @@ const CATEGORY_DATA = {
       { to: '/commerce/devis', icon: '📝', label: 'Devis', desc: 'Créez et envoyez des devis professionnels en quelques clics. Conversion automatique en facture.' },
       { to: '/commerce/produits', icon: '🏷️', label: 'Produits', desc: 'Gérez votre catalogue de produits et services avec prix, descriptions et catégories.' },
       { to: '/commerce/abonnements', icon: '🔄', label: 'Abonnements', desc: 'Suivez vos revenus récurrents. Gestion des renouvellements et alertes d\'échéance.' },
-    ],
-  },
+    ]},
   activite: {
     title: 'Activité',
     subtitle: 'Planifiez, suivez et analysez le temps de travail de vos équipes.',
@@ -25,8 +24,7 @@ const CATEGORY_DATA = {
       { to: '/activite/projets', icon: '📁', label: 'Gestion de projet', desc: 'Kanban, tâches, membres et dashboard. Suivez l\'avancement de chaque projet en temps réel.' },
       { to: '/activite/reporting', icon: '📊', label: 'Reporting temps', desc: 'Analysez la répartition du temps par projet, client et collaborateur. Exports détaillés.' },
       { to: '/activite/rentabilite', icon: '💹', label: 'Rentabilité', desc: 'Comparez le temps passé au budget prévu. Identifiez les projets rentables et ceux en dépassement.' },
-    ],
-  },
+    ]},
   equipe: {
     title: 'Équipe',
     subtitle: 'Gérez vos collaborateurs, absences et compétences.',
@@ -39,8 +37,7 @@ const CATEGORY_DATA = {
       { to: '/equipe/trombinoscope', icon: '🪪', label: 'Trombinoscope', desc: 'Retrouvez rapidement les visages et coordonnées de tous vos collaborateurs.' },
       { to: '/equipe/organigramme', icon: '🏢', label: 'Organigramme', desc: 'Visualisez la structure hiérarchique de votre organisation en un coup d\'oeil.' },
       { to: '/equipe/competences', icon: '🎯', label: 'Compétences', desc: 'Cartographiez les compétences de vos équipes. Identifiez les besoins en formation.' },
-    ],
-  },
+    ]},
   gestion: {
     title: 'Gestion',
     subtitle: 'Pilotez vos ventes, achats et flux de trésorerie au quotidien.',
@@ -51,8 +48,7 @@ const CATEGORY_DATA = {
       { to: '/finance/facturation', icon: '📤', label: 'Ventes', desc: 'Créez, envoyez et suivez vos factures clients. Export e-facture XML UBL inclus.' },
       { to: '/gestion/achats', icon: '📥', label: 'Achats', desc: 'Enregistrez vos factures fournisseurs. Suivi des échéances et rapprochement automatique.' },
       { to: '/commerce/stock', icon: '📦', label: 'Stock', desc: 'Gérez vos niveaux de stock, mouvements d\'entrée/sortie et alertes de réapprovisionnement.' },
-    ],
-  },
+    ]},
   finance: {
     title: 'Finance',
     subtitle: 'Comptabilité, prévisionnel et intelligence financière.',
@@ -64,8 +60,7 @@ const CATEGORY_DATA = {
       { to: '/finance/immobilisations', icon: '🏢', label: 'Immobilisations', desc: 'Gérez votre parc d\'immobilisations. Amortissements, cessions et inventaire.' },
       { to: '/finance/rapprochement', icon: '🔗', label: 'Rapprochement', desc: 'Rapprochez automatiquement vos relevés bancaires avec vos écritures comptables.' },
       { to: '/documents/archives', icon: '🗄️', label: 'Documents', desc: 'Archivez, indexez et retrouvez tous vos documents d\'entreprise avec OCR.' },
-    ],
-  },
+    ]},
   marketing: {
     title: 'Marketing',
     subtitle: 'Gérez vos campagnes marketing et convertissez vos leads en clients.',
@@ -73,25 +68,21 @@ const CATEGORY_DATA = {
     items: [
       { to: '/marketing/campagnes', icon: '🎯', label: 'Campagnes', desc: 'Créez et pilotez vos campagnes marketing : emailing, réseaux sociaux, SEO, publicité et événements.' },
       { to: '/marketing/leads', icon: '🚀', label: 'Leads', desc: 'Suivez vos prospects du premier contact à la conversion. Scoring, qualification et nurturing automatisé.' },
-    ],
-  },
+    ]},
   documents: {
     title: 'Documents',
     subtitle: 'Archivez, indexez et retrouvez tous vos documents d\'entreprise.',
     icon: '📁',
     items: [
       { to: '/documents/archives', icon: '🗄️', label: 'Archives', desc: 'Recherche avancée avec OCR, aperçu des documents, filtres multicritères et indexation automatique.' },
-    ],
-  },
+    ]},
   automatisation: {
     title: 'Automatisation',
     subtitle: 'Automatisez vos processus metier avec des workflows intelligents.',
     icon: '⚡',
     items: [
       { to: '/automatisation/workflows', icon: '🔀', label: 'Workflows', desc: 'Creez des automatisations visuelles : quand un evenement se produit, declenchez des actions automatiques.' },
-    ],
-  },
-}
+    ]}}
 
 export default function CategoryLandingPage({ categoryId }) {
   const navigate = useNavigate()

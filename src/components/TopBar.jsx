@@ -4,7 +4,6 @@ import { useAuth } from '../contexts/AuthContext'
 import { useDemo } from '../contexts/DemoContext'
 import { useNotifications } from '../contexts/NotificationsContext'
 import { useLayout } from '../contexts/LayoutContext'
-import { useSociete } from '../contexts/SocieteContext'
 import { useEnv } from '../contexts/EnvContext'
 import { supabase } from '../lib/supabase'
 import { useFavorites } from '../contexts/FavoritesContext'
@@ -33,7 +32,6 @@ export default function TopBar() {
   const { isDemoMode } = useDemo()
   const { notifications, unreadCount, markRead, markAllRead } = useNotifications()
   const { toggleSidebar } = useLayout()
-  const { societes, selectedSociete, setSelectedSociete } = useSociete()
   const { favorites, favLabels, updateFavLabel } = useFavorites()
   const [editingFav, setEditingFav] = useState(null)
   const favClickTimer = useRef(null)
@@ -148,7 +146,6 @@ export default function TopBar() {
     // Charger les projets pour tâche et temps
     if (item.key === 'tache' || item.key === 'temps') {
       let q = supabase.from('projets').select('id, name').eq('statut', 'actif').order('name')
-      if (selectedSociete?.id) q = q.eq('societe_id', selectedSociete.id)
       const { data } = await q
       setQuickAddProjets(data || [])
     }
@@ -161,10 +158,6 @@ export default function TopBar() {
     setQuickAddError('')
 
     const payload = { ...quickAddForm }
-    // Attach societe_id for relevant tables
-    if (selectedSociete?.id && ['contacts', 'entreprises', 'transactions', 'projets'].includes(quickAddType.table)) {
-      payload.societe_id = selectedSociete.id
-    }
     // Set defaults per type
     if (quickAddType.key === 'opportunite') {
       payload.phase = payload.phase || 'qualification'
@@ -174,7 +167,6 @@ export default function TopBar() {
       payload.statut = payload.statut || 'actif'
       payload.total_jours = payload.total_jours ? parseFloat(payload.total_jours) : null
       delete payload.description
-      if (selectedSociete?.id) payload.societe_id = selectedSociete.id
     }
     if (quickAddType.key === 'tache') {
       // kanban_tasks: title, projet_id, column_id, priority, estimated_hours, due_date
@@ -196,7 +188,6 @@ export default function TopBar() {
       delete payload.duree
       delete payload.description
       if (profile?.id) payload.user_id = profile.id
-      if (selectedSociete?.id) payload.societe_id = selectedSociete.id
     }
 
     const { data: inserted, error } = await supabase.from(quickAddType.table).insert([payload]).select()
@@ -302,16 +293,14 @@ export default function TopBar() {
           <div style={{
             position: 'absolute', top: '100%', left: 0, right: 0, marginTop: 4,
             background: '#fff', borderRadius: 10, boxShadow: '0 10px 30px rgba(0,0,0,0.15)',
-            maxHeight: 300, overflowY: 'auto', zIndex: 9999, border: '1px solid #e2e8f0',
-          }}>
+            maxHeight: 300, overflowY: 'auto', zIndex: 9999, border: '1px solid #e2e8f0'}}>
             {searchResults.map((r, i) => (
               <div key={`${r.type}-${r.id}`}
                 onMouseDown={() => { handleSelectResult(r); setSearchOpen(false); setSearchQuery('') }}
                 style={{
                   display: 'flex', alignItems: 'center', gap: 10, padding: '8px 14px', cursor: 'pointer',
                   background: i === 0 ? '#f0f9ff' : 'transparent',
-                  borderBottom: '1px solid #f1f5f9',
-                }}>
+                  borderBottom: '1px solid #f1f5f9'}}>
                 <span style={{ fontSize: 14 }}>{r.icon}</span>
                 <div style={{ flex: 1 }}>
                   <div style={{ fontSize: '.85rem', fontWeight: 600, color: '#1a2332' }}>{r.name}</div>
@@ -336,8 +325,7 @@ export default function TopBar() {
             color: 'rgba(255,255,255,0.7)',
             fontSize: '1.2rem', fontWeight: 500, cursor: 'pointer',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
-            transition: 'all .15s', flexShrink: 0,
-          }}
+            transition: 'all .15s', flexShrink: 0}}
         >+</button>
 
         {quickAddOpen && (
@@ -345,8 +333,7 @@ export default function TopBar() {
             position: 'absolute', top: '100%', right: 0,
             marginTop: 8, background: 'var(--card-bg, #fff)', border: '1px solid var(--border, #e2e8f0)',
             borderRadius: 12, boxShadow: '0 8px 30px rgba(0,0,0,.15)', zIndex: 99999,
-            width: quickAddType ? 360 : 240,
-          }}>
+            width: quickAddType ? 360 : 240}}>
             {!quickAddType ? (
               /* Type selection */
               <div>
@@ -366,8 +353,7 @@ export default function TopBar() {
                       display: 'flex', alignItems: 'center', gap: '.6rem', width: '100%',
                       padding: '.6rem 1rem', border: 'none', background: 'none', cursor: 'pointer',
                       fontSize: '.85rem', color: 'var(--text)', textAlign: 'left',
-                      transition: 'background .1s',
-                    }}
+                      transition: 'background .1s'}}
                     onMouseEnter={e => e.currentTarget.style.background = 'var(--hover-bg, #f1f5f9)'}
                     onMouseLeave={e => e.currentTarget.style.background = 'none'}
                   >
@@ -381,8 +367,7 @@ export default function TopBar() {
               <div>
                 <div style={{
                   padding: '.6rem 1rem', borderBottom: '1px solid var(--border, #e2e8f0)',
-                  display: 'flex', alignItems: 'center', gap: '.5rem',
-                }}>
+                  display: 'flex', alignItems: 'center', gap: '.5rem'}}>
                   <button onClick={() => setQuickAddType(null)} style={{ border: 'none', background: 'none', cursor: 'pointer', fontSize: '.9rem', padding: 0 }}>←</button>
                   <span style={{ fontSize: '1rem' }}>{quickAddType.icon}</span>
                   <span style={{ fontWeight: 700, fontSize: '.85rem' }}>Nouveau {quickAddType.label.toLowerCase()}</span>
@@ -460,13 +445,11 @@ export default function TopBar() {
                   <div style={{ display: 'flex', gap: '.5rem', justifyContent: 'flex-end', marginTop: '.25rem' }}>
                     <button type="button" onClick={() => setQuickAddType(null)} style={{
                       padding: '.35rem .75rem', border: '1px solid var(--border, #e2e8f0)', borderRadius: 6,
-                      background: 'var(--card-bg, #fff)', cursor: 'pointer', fontSize: '.8rem',
-                    }}>Annuler</button>
+                      background: 'var(--card-bg, #fff)', cursor: 'pointer', fontSize: '.8rem'}}>Annuler</button>
                     <button type="submit" disabled={quickAddSaving} style={{
                       padding: '.35rem .75rem', border: 'none', borderRadius: 6,
                       background: 'var(--primary, #3b82f6)', color: '#fff', cursor: 'pointer',
-                      fontSize: '.8rem', fontWeight: 600, opacity: quickAddSaving ? .6 : 1,
-                    }}>{quickAddSaving ? '...' : 'Créer'}</button>
+                      fontSize: '.8rem', fontWeight: 600, opacity: quickAddSaving ? .6 : 1}}>{quickAddSaving ? '...' : 'Créer'}</button>
                   </div>
                 </form>
               </div>
@@ -504,8 +487,7 @@ export default function TopBar() {
                   onClick={e => e.stopPropagation()}
                   style={{
                     width: 100, padding: '2px 8px', borderRadius: 4, border: '2px solid #60d3ff',
-                    background: 'rgba(0,0,0,0.3)', color: '#fff', fontSize: '.75rem', fontWeight: 600, outline: 'none',
-                  }}
+                    background: 'rgba(0,0,0,0.3)', color: '#fff', fontSize: '.75rem', fontWeight: 600, outline: 'none'}}
                 />
               )
             }
@@ -521,8 +503,7 @@ export default function TopBar() {
                   borderRadius: 4, border: 'none', cursor: 'pointer',
                   background: 'rgba(255,255,255,0.1)', color: 'rgba(255,255,255,0.85)',
                   fontSize: '.72rem', fontWeight: 500, whiteSpace: 'nowrap',
-                  transition: 'background .15s', flexShrink: 0,
-                }}
+                  transition: 'background .15s', flexShrink: 0}}
                 onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.2)'}
                 onMouseLeave={e => e.currentTarget.style.background = 'rgba(255,255,255,0.1)'}>
                 {label}
@@ -635,13 +616,11 @@ function EnvSwitcher() {
             style={{
               display: 'flex', alignItems: 'center', gap: 8,
               fontWeight: env.id === currentEnv?.id ? 700 : 400,
-              color: env.id === currentEnv?.id ? 'var(--primary)' : undefined,
-            }}>
+              color: env.id === currentEnv?.id ? 'var(--primary)' : undefined}}>
             <span style={{
               width: 8, height: 8, borderRadius: '50%',
               background: env.is_production ? '#16a34a' : '#f59e0b',
-              flexShrink: 0,
-            }} />
+              flexShrink: 0}} />
             <span>{env.name}</span>
             <span style={{ fontSize: '.65rem', color: '#94a3b8', marginLeft: 'auto' }}>#{env.env_code}</span>
             {env.id === currentEnv?.id && <span style={{ color: 'var(--primary)', fontSize: '.75rem' }}>✓</span>}
@@ -656,8 +635,7 @@ function EnvSwitcher() {
 const qfInputStyle = {
   width: '100%', padding: '.35rem .5rem', border: '1px solid var(--border, #e2e8f0)',
   borderRadius: 4, fontSize: '.82rem', background: 'var(--card-bg, #fff)', color: 'var(--text)',
-  outline: 'none',
-}
+  outline: 'none'}
 
 function QuickField({ label, value, onChange, type = 'text', required }) {
   return (

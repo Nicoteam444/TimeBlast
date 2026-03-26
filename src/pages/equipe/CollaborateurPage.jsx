@@ -35,8 +35,7 @@ const POSTE_COLOR = {
   'Développeur': '#16a34a', 'Architecte': '#16a34a', 'Ingénieur': '#16a34a',
   'Consultant': '#f59e0b', 'Analyste': '#f59e0b',
   'Commercial': '#0ea5e9',
-  'Comptable': '#8b5cf6', 'Contrôleur': '#8b5cf6',
-}
+  'Comptable': '#8b5cf6', 'Contrôleur': '#8b5cf6'}
 function getColor(poste) {
   if (!poste) return '#64748b'
   for (const [k, v] of Object.entries(POSTE_COLOR)) {
@@ -47,12 +46,10 @@ function getColor(poste) {
 
 const CONTRAT_LABELS = {
   cdi: 'CDI', cdd: 'CDD', stage: 'Stage',
-  alternance: 'Alternance', freelance: 'Freelance', autre: 'Autre',
-}
+  alternance: 'Alternance', freelance: 'Freelance', autre: 'Autre'}
 const CONTRAT_COLORS = {
   cdi: '#16a34a', cdd: '#f59e0b', stage: '#6366f1',
-  alternance: '#8b5cf6', freelance: '#0ea5e9', autre: '#64748b',
-}
+  alternance: '#8b5cf6', freelance: '#0ea5e9', autre: '#64748b'}
 
 function Stars({ niveau }) {
   const n = Math.min(5, Math.max(0, Number(niveau) || 0))
@@ -65,8 +62,7 @@ function Stars({ niveau }) {
 
 const DOC_ICONS = {
   contrat: '📄', avenant: '📝', fiche_poste: '📋',
-  evaluation: '📊', autre: '📎',
-}
+  evaluation: '📊', autre: '📎'}
 
 const TABS = ['Infos générales', 'Contrat & RH', 'Compétences', 'Documents', 'Notes']
 
@@ -77,8 +73,7 @@ const EMPTY_COLLAB = {
   temps_travail: '', manager_direct: '', adresse: '', ville: '', code_postal: '',
   pays: 'France', linkedin: '', actif: true,
   competences: [], documents: [], notes: '',
-  conges_restants: '', jours_maladie: '',
-}
+  conges_restants: '', jours_maladie: ''}
 
 /* ════════════════════════════════════════════ */
 export default function CollaborateurPage() {

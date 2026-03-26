@@ -1,24 +1,20 @@
 import { useState, useEffect, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { supabase } from '../../lib/supabase'
-import { useSociete } from '../../contexts/SocieteContext'
 import useSortableTable from '../../hooks/useSortableTable'
 import SortableHeader from '../../components/SortableHeader'
 import Spinner from '../../components/Spinner'
 
 const STATUT_MAP = {
   actif:   { label: 'Actif',   color: '#16a34a', bg: '#dcfce7' },
-  inactif: { label: 'Inactif', color: '#dc2626', bg: '#fee2e2' },
-}
+  inactif: { label: 'Inactif', color: '#dc2626', bg: '#fee2e2' }}
 
 const EMPTY_FORM = {
   nom: '', prenom: '', email: '', telephone: '', poste: '',
-  linkedin_url: '', entreprise_id: '', notes: '', statut: 'actif',
-}
+  linkedin_url: '', entreprise_id: '', notes: '', statut: 'actif'}
 
 export default function ContactsPage() {
   const navigate = useNavigate()
-  const { selectedSociete } = useSociete()
 
   const [contacts, setContacts] = useState([])
   const [clients, setClients] = useState([])
@@ -43,11 +39,10 @@ export default function ContactsPage() {
   const [deleteConfirm, setDeleteConfirm] = useState(null)
 
   // ── Fetch ──────────────────────────────────────────────
-  useEffect(() => { fetchContacts(); fetchClients() }, [selectedSociete?.id])
+  useEffect(() => { fetchContacts(); fetchClients() }, [])
 
   async function fetchClients() {
     let q = supabase.from('clients').select('id, name').order('name')
-    if (selectedSociete?.id) q = q.eq('societe_id', selectedSociete.id)
     const { data } = await q
     setClients(data || [])
   }
@@ -55,10 +50,7 @@ export default function ContactsPage() {
   async function fetchContacts() {
     setLoading(true)
     let q = supabase
-      .from('contacts')
-      .select('*, clients(id, name)')
-      .order('nom')
-    if (selectedSociete?.id) q = q.eq('societe_id', selectedSociete.id)
+      .from('contacts').select('*, clients(id, name)').order('nom')
     const { data } = await q
     setContacts(data || [])
     setLoading(false)
@@ -115,8 +107,7 @@ export default function ContactsPage() {
       linkedin_url: contact.linkedin_url || '',
       entreprise_id: contact.entreprise_id || '',
       notes: contact.notes || '',
-      statut: contact.statut || 'actif',
-    })
+      statut: contact.statut || 'actif'})
     setShowModal(true)
   }
 
@@ -129,9 +120,7 @@ export default function ContactsPage() {
     setSaving(true)
     const payload = {
       ...form,
-      entreprise_id: form.entreprise_id || null,
-      societe_id: selectedSociete?.id || null,
-    }
+      entreprise_id: form.entreprise_id || null}
     try {
       if (editingContact) {
         await supabase.from('contacts').update(payload).eq('id', editingContact.id)

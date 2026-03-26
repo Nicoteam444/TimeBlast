@@ -1,12 +1,10 @@
 import { useState, useEffect, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { supabase } from '../../lib/supabase'
-import { useSociete } from '../../contexts/SocieteContext'
 import Spinner from '../../components/Spinner'
 
 export default function ClientsPage() {
   const navigate = useNavigate()
-  const { selectedSociete } = useSociete()
   const [clients, setClients] = useState([])
   const [loading, setLoading] = useState(true)
   const [showForm, setShowForm] = useState(false)
@@ -16,12 +14,11 @@ export default function ClientsPage() {
   const [pageSize, setPageSize] = useState(20)
   const [page, setPage] = useState(1)
 
-  useEffect(() => { fetchClients() }, [selectedSociete?.id])
+  useEffect(() => { fetchClients() }, [])
 
   async function fetchClients() {
     setLoading(true)
     let query = supabase.from('clients').select('*, projets(count)').order('name')
-    if (selectedSociete?.id) query = query.eq('societe_id', selectedSociete.id)
     const { data } = await query
     setClients(data || [])
     setLoading(false)
@@ -29,7 +26,7 @@ export default function ClientsPage() {
 
   async function handleCreate(e) {
     e.preventDefault()
-    await supabase.from('clients').insert({ name, societe_id: selectedSociete?.id || null })
+    await supabase.from('clients').insert({ name})
     setName('')
     setShowForm(false)
     fetchClients()

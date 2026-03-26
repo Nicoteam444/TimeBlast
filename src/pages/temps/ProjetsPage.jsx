@@ -1,7 +1,6 @@
 import { useState, useEffect, useMemo } from 'react'
 import { supabase } from '../../lib/supabase'
 import ClientAutocomplete from '../../components/ClientAutocomplete'
-import { useSociete } from '../../contexts/SocieteContext'
 import useSortableTable from '../../hooks/useSortableTable'
 import SortableHeader from '../../components/SortableHeader'
 import Spinner from '../../components/Spinner'
@@ -9,11 +8,9 @@ import Spinner from '../../components/Spinner'
 const STATUT_COLORS = {
   actif:    { color: '#16a34a', bg: '#f0fdf4' },
   termine:  { color: '#64748b', bg: '#f8fafc' },
-  suspendu: { color: '#f59e0b', bg: '#fffbeb' },
-}
+  suspendu: { color: '#f59e0b', bg: '#fffbeb' }}
 
 export default function ProjetsPage({ onSelect }) {
-  const { selectedSociete } = useSociete()
   const [projets, setProjets] = useState([])
   const [loading, setLoading] = useState(true)
   const [showForm, setShowForm] = useState(false)
@@ -27,7 +24,7 @@ export default function ProjetsPage({ onSelect }) {
 
   const [consumedHours, setConsumedHours] = useState({})
 
-  useEffect(() => { fetchProjets(); fetchSocietes() }, [selectedSociete?.id])
+  useEffect(() => { fetchProjets(); fetchSocietes() }, [])
 
   async function fetchSocietes() {
     const { data } = await supabase.from('societes').select('id, name').order('name')
@@ -37,18 +34,14 @@ export default function ProjetsPage({ onSelect }) {
   async function fetchProjets() {
     setLoading(true)
     let query = supabase
-      .from('projets')
-      .select('*, clients(name, societe_id), lots(count), societes:societe_id(id, name)')
-      .order('created_at', { ascending: false })
-    if (selectedSociete?.id) query = query.eq('societe_id', selectedSociete.id)
+      .from('projets').select('*, clients(name, societe_id), lots(count), societes:societe_id(id, name)').order('created_at', { ascending: false })
     const { data } = await query
     const filtered_data = data || []
     setProjets(filtered_data)
 
     // Fetch consumed hours from saisies_temps
     const { data: saisiesData } = await supabase
-      .from('saisies_temps')
-      .select('heures, commentaire')
+      .from('saisies_temps').select('heures, commentaire')
     if (saisiesData) {
       const map = {}
       for (const s of saisiesData) {
@@ -71,9 +64,7 @@ export default function ProjetsPage({ onSelect }) {
       total_jours: parseFloat(form.total_jours),
       date_debut: form.date_debut || null,
       date_fin: form.date_fin || null,
-      statut: form.statut,
-      societe_id: form.societe_id || null,
-    })
+      statut: form.statut,})
     setShowForm(false)
     setSelectedClient(null)
     setForm({ name: '', total_jours: '', date_debut: '', date_fin: '', statut: 'actif', societe_id: '' })

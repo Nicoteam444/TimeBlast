@@ -110,8 +110,7 @@ function getOverallProgress() {
 const STATUS = {
   done: { icon: '✅', color: '#16a34a', bg: '#f0fdf4', label: 'Termine' },
   wip: { icon: '🔄', color: '#2B4C7E', bg: '#eff6ff', label: 'En cours' },
-  todo: { icon: '⬜', color: '#94a3b8', bg: '#f8fafc', label: 'A venir' },
-}
+  todo: { icon: '⬜', color: '#94a3b8', bg: '#f8fafc', label: 'A venir' }}
 
 export default function RoadmapPage() {
   const [expandedPhase, setExpandedPhase] = useState(new Set([0, 1, 2]))
@@ -133,8 +132,7 @@ export default function RoadmapPage() {
       {/* Hero */}
       <div style={{
         background: 'linear-gradient(135deg, #2B4C7E 0%, #1a3a5c 50%, #0f2942 100%)',
-        borderRadius: 16, padding: '3rem 2rem', textAlign: 'center', marginBottom: 24,
-      }}>
+        borderRadius: 16, padding: '3rem 2rem', textAlign: 'center', marginBottom: 24}}>
         <div style={{ fontSize: 48, marginBottom: 8 }}>🗺️</div>
         <h1 style={{ color: '#fff', fontSize: '2rem', fontWeight: 800, margin: '0 0 .5rem' }}>
           Roadmap TimeBlast.ai
@@ -155,8 +153,7 @@ export default function RoadmapPage() {
             <div style={{
               height: '100%', borderRadius: 6,
               background: 'linear-gradient(90deg, #16a34a, #2B4C7E, #7c3aed)',
-              width: `${overall}%`, transition: 'width 1s ease',
-            }} />
+              width: `${overall}%`, transition: 'width 1s ease'}} />
           </div>
           <div style={{ display: 'flex', justifyContent: 'center', gap: 24, marginTop: 12 }}>
             <span style={{ color: 'rgba(255,255,255,0.7)', fontSize: '.8rem' }}>✅ {doneItems} termines</span>
@@ -169,8 +166,7 @@ export default function RoadmapPage() {
       {/* Link to history */}
       <div style={{ textAlign: 'center', marginBottom: 24 }}>
         <a href="/histoire" style={{
-          color: '#2B4C7E', fontSize: '.9rem', fontWeight: 600, textDecoration: 'none',
-        }}>
+          color: '#2B4C7E', fontSize: '.9rem', fontWeight: 600, textDecoration: 'none'}}>
           📜 Voir l'histoire complete de la creation →
         </a>
       </div>
@@ -187,16 +183,14 @@ export default function RoadmapPage() {
             <div key={i} style={{
               background: '#fff', borderRadius: 12, overflow: 'hidden',
               border: '1px solid #e2e8f0', boxShadow: '0 2px 8px rgba(0,0,0,0.04)',
-              transition: 'all .3s',
-            }}>
+              transition: 'all .3s'}}>
               {/* Phase header */}
               <div
                 onClick={() => togglePhase(i)}
                 style={{
                   padding: '1rem 1.25rem', cursor: 'pointer',
                   display: 'flex', alignItems: 'center', gap: 12,
-                  background: isOpen ? `${phase.color}08` : 'transparent',
-                }}
+                  background: isOpen ? `${phase.color}08` : 'transparent'}}
               >
                 <span style={{ fontSize: 28 }}>{phase.icon}</span>
                 <div style={{ flex: 1 }}>
@@ -207,19 +201,16 @@ export default function RoadmapPage() {
                     <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                       <span style={{ fontSize: '.8rem', color: '#64748b' }}>{done}/{total}</span>
                       <span style={{
-                        fontSize: '1rem', fontWeight: 800, color: phase.color,
-                      }}>{pct}%</span>
+                        fontSize: '1rem', fontWeight: 800, color: phase.color}}>{pct}%</span>
                       <span style={{
                         transform: isOpen ? 'rotate(180deg)' : 'rotate(0)',
-                        transition: 'transform .3s', color: '#94a3b8',
-                      }}>▼</span>
+                        transition: 'transform .3s', color: '#94a3b8'}}>▼</span>
                     </div>
                   </div>
                   <div style={{ height: 6, background: '#f1f5f9', borderRadius: 3, marginTop: 8, overflow: 'hidden' }}>
                     <div style={{
                       height: '100%', borderRadius: 3, background: phase.color,
-                      width: `${pct}%`, transition: 'width .8s ease',
-                    }} />
+                      width: `${pct}%`, transition: 'width .8s ease'}} />
                   </div>
                 </div>
               </div>
@@ -234,20 +225,17 @@ export default function RoadmapPage() {
                         display: 'flex', alignItems: 'center', gap: 10,
                         padding: '6px 8px', borderRadius: 6, marginBottom: 2,
                         background: st.bg,
-                        opacity: 0, animation: `roadmapFadeIn .3s ease ${j * 0.04}s forwards`,
-                      }}>
+                        opacity: 0, animation: `roadmapFadeIn .3s ease ${j * 0.04}s forwards`}}>
                         <span style={{ fontSize: 14 }}>{st.icon}</span>
                         <span style={{
                           fontSize: '.85rem', color: item.s === 'todo' ? '#94a3b8' : '#1e293b',
                           fontWeight: item.s === 'done' ? 500 : 400,
-                          textDecoration: item.s === 'done' ? 'none' : 'none',
-                        }}>{item.t}</span>
+                          textDecoration: item.s === 'done' ? 'none' : 'none'}}>{item.t}</span>
                         {item.s === 'wip' && (
                           <span style={{
                             marginLeft: 'auto', fontSize: '.7rem', fontWeight: 700,
                             color: st.color, background: `${st.color}15`, padding: '2px 6px',
-                            borderRadius: 4,
-                          }}>EN COURS</span>
+                            borderRadius: 4}}>EN COURS</span>
                         )}
                       </div>
                     )

@@ -1,6 +1,5 @@
 import { useState, useEffect, useMemo } from 'react'
 import { supabase } from '../../lib/supabase'
-import { useSociete } from '../../contexts/SocieteContext'
 import useSortableTable from '../../hooks/useSortableTable'
 import SortableHeader from '../../components/SortableHeader'
 import Spinner from '../../components/Spinner'
@@ -18,8 +17,7 @@ const COLORS = {
   orange: '#f59e0b',
   optimiste: '#16a34a',
   realiste: '#1a5c82',
-  pessimiste: '#dc2626',
-}
+  pessimiste: '#dc2626'}
 const SCENARIO_LABELS = { optimiste: 'Optimiste (+20%)', realiste: 'Réaliste', pessimiste: 'Pessimiste (-20%)' }
 const SCENARIO_FACTORS = { optimiste: 1.20, realiste: 1.00, pessimiste: 0.80 }
 const CHARGES_PATRONALES_RATE = 1.45 // charges patronales ~45% du brut
@@ -72,7 +70,6 @@ function frequenceMultiplier(freq) {
 
 // ── Composant principal ───────────────────────────────────────
 export default function PrevisionnelPage() {
-  const { selectedSociete } = useSociete()
 
   // Data
   const [factures, setFactures] = useState([])
@@ -90,11 +87,10 @@ export default function PrevisionnelPage() {
   // ── Fetch data ──────────────────────────────────────────────
   useEffect(() => {
     fetchAll()
-  }, [selectedSociete?.id])
+  }, [])
 
   async function fetchAll() {
     setLoading(true)
-    const sid = selectedSociete?.id
     const promises = []
 
     // Factures (income)
@@ -197,8 +193,7 @@ export default function PrevisionnelPage() {
         label: monthLabel(key),
         encaissements: totalIncome,
         decaissements: totalExpense,
-        solde: totalIncome - totalExpense,
-      }
+        solde: totalIncome - totalExpense}
     })
   }, [months, factures, achats, abonnements, equipe])
 
@@ -217,8 +212,7 @@ export default function PrevisionnelPage() {
           encaissements: Math.round(enc),
           decaissements: Math.round(dec),
           solde: Math.round(solde),
-          cumul: Math.round(cumul),
-        }
+          cumul: Math.round(cumul)}
       })
     }
     return result
@@ -234,8 +228,7 @@ export default function PrevisionnelPage() {
       label: monthLabel(key),
       optimiste: scenarioData.optimiste?.[i]?.cumul || 0,
       realiste: scenarioData.realiste?.[i]?.cumul || 0,
-      pessimiste: scenarioData.pessimiste?.[i]?.cumul || 0,
-    }))
+      pessimiste: scenarioData.pessimiste?.[i]?.cumul || 0}))
   }, [months, scenarioData])
 
   // ── KPIs ────────────────────────────────────────────────────
@@ -254,8 +247,7 @@ export default function PrevisionnelPage() {
       soldeActuel,
       soldeFinAnnee,
       moisCritique: moisCritique?.label || null,
-      growth: Math.round(growth),
-    }
+      growth: Math.round(growth)}
   }, [scenarioData, threshold, initialBalance])
 
   // ── Render ──────────────────────────────────────────────────
@@ -335,8 +327,7 @@ export default function PrevisionnelPage() {
                 color: scenario === key ? '#fff' : COLORS[key],
                 cursor: 'pointer',
                 fontWeight: 600,
-                transition: 'all .15s',
-              }}
+                transition: 'all .15s'}}
             >
               {label}
             </button>
@@ -355,8 +346,7 @@ export default function PrevisionnelPage() {
             style={{
               width: 100, padding: '.35rem .5rem', fontSize: '.82rem',
               border: '1px solid var(--border)', borderRadius: 6,
-              background: 'var(--bg-card)',
-            }}
+              background: 'var(--bg-card)'}}
           />
           <span style={{ fontSize: '.82rem', color: 'var(--text-muted)' }}>€</span>
         </div>
@@ -373,8 +363,7 @@ export default function PrevisionnelPage() {
             style={{
               width: 110, padding: '.35rem .5rem', fontSize: '.82rem',
               border: '1px solid var(--border)', borderRadius: 6,
-              background: 'var(--bg-card)',
-            }}
+              background: 'var(--bg-card)'}}
           />
           <span style={{ fontSize: '.82rem', color: 'var(--text-muted)' }}>€</span>
         </div>
@@ -388,8 +377,7 @@ export default function PrevisionnelPage() {
           <div style={{
             background: 'var(--bg-card)', borderRadius: 12,
             border: '1px solid var(--border)', padding: '1.25rem',
-            marginBottom: '1.5rem',
-          }}>
+            marginBottom: '1.5rem'}}>
             <h3 style={{ margin: '0 0 1rem', fontSize: '1rem', fontWeight: 600 }}>
               Projection de trésorerie cumulée
             </h3>
@@ -424,8 +412,7 @@ export default function PrevisionnelPage() {
                     background: 'var(--bg-card)',
                     border: '1px solid var(--border)',
                     borderRadius: 8,
-                    fontSize: '.85rem',
-                  }}
+                    fontSize: '.85rem'}}
                 />
                 <Legend
                   formatter={v => SCENARIO_LABELS[v] || v}
@@ -489,8 +476,7 @@ export default function PrevisionnelPage() {
                         minWidth: 95,
                         whiteSpace: 'nowrap',
                         background: r.cumul < threshold ? '#fef2f2' : undefined,
-                        color: r.cumul < threshold ? COLORS.red : undefined,
-                      }}
+                        color: r.cumul < threshold ? COLORS.red : undefined}}
                     >
                       {r.label}
                     </th>
@@ -503,8 +489,7 @@ export default function PrevisionnelPage() {
                   <td style={{
                     position: 'sticky', left: 0, zIndex: 1,
                     fontWeight: 600, color: COLORS.green,
-                    background: '#f0fdf4',
-                  }}>
+                    background: '#f0fdf4'}}>
                     Encaissements
                   </td>
                   {sortedRows.map(r => (
@@ -519,8 +504,7 @@ export default function PrevisionnelPage() {
                   <td style={{
                     position: 'sticky', left: 0, zIndex: 1,
                     fontWeight: 600, color: COLORS.red,
-                    background: '#fef2f2',
-                  }}>
+                    background: '#fef2f2'}}>
                     Décaissements
                   </td>
                   {sortedRows.map(r => (
@@ -534,8 +518,7 @@ export default function PrevisionnelPage() {
                 <tr>
                   <td style={{
                     position: 'sticky', left: 0, zIndex: 1,
-                    fontWeight: 600, background: 'var(--bg-card)',
-                  }}>
+                    fontWeight: 600, background: 'var(--bg-card)'}}>
                     Solde mensuel
                   </td>
                   {sortedRows.map(r => (
@@ -545,8 +528,7 @@ export default function PrevisionnelPage() {
                         textAlign: 'right',
                         fontVariantNumeric: 'tabular-nums',
                         fontWeight: 600,
-                        color: r.solde >= 0 ? COLORS.green : COLORS.red,
-                      }}
+                        color: r.solde >= 0 ? COLORS.green : COLORS.red}}
                     >
                       {r.solde >= 0 ? '+' : ''}{fmt(r.solde)}
                     </td>
@@ -558,8 +540,7 @@ export default function PrevisionnelPage() {
                   <td style={{
                     position: 'sticky', left: 0, zIndex: 1,
                     fontWeight: 700, fontSize: '.9rem',
-                    background: 'var(--bg-card)',
-                  }}>
+                    background: 'var(--bg-card)'}}>
                     Solde cumulé
                   </td>
                   {sortedRows.map(r => {
@@ -574,8 +555,7 @@ export default function PrevisionnelPage() {
                           fontSize: '.9rem',
                           color: belowThreshold ? '#fff' : (r.cumul >= 0 ? COLORS.primary : COLORS.red),
                           background: belowThreshold ? COLORS.red : undefined,
-                          borderRadius: belowThreshold ? 0 : undefined,
-                        }}
+                          borderRadius: belowThreshold ? 0 : undefined}}
                       >
                         {fmt(r.cumul)}
                       </td>
@@ -589,21 +569,18 @@ export default function PrevisionnelPage() {
           {/* Legend / info */}
           <div style={{
             marginTop: '1rem', display: 'flex', gap: '1.5rem',
-            flexWrap: 'wrap', fontSize: '.8rem', color: 'var(--text-muted)',
-          }}>
+            flexWrap: 'wrap', fontSize: '.8rem', color: 'var(--text-muted)'}}>
             <span>
               <span style={{
                 display: 'inline-block', width: 12, height: 12, borderRadius: 2,
-                background: COLORS.red, marginRight: 6, verticalAlign: 'middle',
-              }} />
+                background: COLORS.red, marginRight: 6, verticalAlign: 'middle'}} />
               Mois sous le seuil d'alerte ({fmt(threshold)} €)
             </span>
             <span>
               <span style={{
                 display: 'inline-block', width: 20, height: 2,
                 background: COLORS.orange, marginRight: 6, verticalAlign: 'middle',
-                borderBottom: '2px dashed ' + COLORS.orange,
-              }} />
+                borderBottom: '2px dashed ' + COLORS.orange}} />
               Seuil d'alerte sur le graphique
             </span>
             <span>

@@ -1,5 +1,4 @@
 import { useState, useMemo } from 'react'
-import { useSociete } from '../../contexts/SocieteContext'
 import { BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell, AreaChart, Area } from 'recharts'
 
 function fmtE(n) {
@@ -21,7 +20,6 @@ function generateYearData(baseCA, baseMargeRate, variance = 0.15) {
 }
 
 export default function TableauDeBordGestionPage() {
-  const { selectedSociete } = useSociete()
   const [period, setPeriod] = useState('ytd') // ytd, q1, q2, q3, q4
 
   const currentYear = new Date().getFullYear()
@@ -34,8 +32,7 @@ export default function TableauDeBordGestionPage() {
     [`CA ${currentYear}`]: dataCurrentYear[i].ca,
     [`CA ${currentYear - 1}`]: dataLastYear[i].ca,
     [`Marge ${currentYear}`]: dataCurrentYear[i].marge,
-    [`Marge ${currentYear - 1}`]: dataLastYear[i].marge,
-  }))
+    [`Marge ${currentYear - 1}`]: dataLastYear[i].marge}))
 
   // Cumulative data
   let cumCurrent = 0, cumLast = 0
@@ -69,8 +66,7 @@ export default function TableauDeBordGestionPage() {
   const margeRateData = MONTHS.map((m, i) => ({
     mois: m,
     [currentYear]: dataCurrentYear[i].margeRate,
-    [currentYear - 1]: dataLastYear[i].margeRate,
-  }))
+    [currentYear - 1]: dataLastYear[i].margeRate}))
 
   return (
     <div style={{ padding: 0 }}>

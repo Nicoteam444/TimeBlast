@@ -95,8 +95,7 @@ export default function MiniCalendar({ value, onChange, placeholder = 'Sélectio
           display: 'flex', alignItems: 'center', gap: '.5rem',
           padding: '.45rem .7rem', borderRadius: 6, border: '1px solid var(--border, #e2e8f0)',
           background: '#fff', cursor: 'pointer', fontSize: '.82rem', color: displayValue ? '#1e293b' : '#94a3b8',
-          minHeight: 34,
-        }}
+          minHeight: 34}}
       >
         <span>📅</span>
         <span style={{ flex: 1 }}>{displayValue || placeholder}</span>
@@ -109,8 +108,7 @@ export default function MiniCalendar({ value, onChange, placeholder = 'Sélectio
         <div ref={dropRef} style={{
           position: 'fixed', top: dropPos.top, left: dropPos.left, zIndex: 9999,
           background: '#fff', border: '1px solid #e2e8f0', borderRadius: 10,
-          boxShadow: '0 8px 24px rgba(0,0,0,.15)', padding: '.75rem', width: 280,
-        }}>
+          boxShadow: '0 8px 24px rgba(0,0,0,.15)', padding: '.75rem', width: 280}}>
           {/* Header */}
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '.5rem' }}>
             <button type="button" onClick={prevMonth} style={navBtn}>◀</button>
@@ -146,8 +144,7 @@ export default function MiniCalendar({ value, onChange, placeholder = 'Sélectio
                     color: isSelected ? '#fff' : isToday ? 'var(--primary, #1D9BF0)' : '#334155',
                     outline: isToday && !isSelected ? '2px solid var(--primary, #1D9BF0)' : 'none',
                     transition: 'all .1s',
-                    display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  }}
+                    display: 'flex', alignItems: 'center', justifyContent: 'center'}}
                   onMouseEnter={e => { if (!isSelected) e.target.style.background = '#f1f5f9' }}
                   onMouseLeave={e => { if (!isSelected) e.target.style.background = isToday ? '#f0f9ff' : 'transparent' }}
                 >
@@ -174,5 +171,4 @@ export default function MiniCalendar({ value, onChange, placeholder = 'Sélectio
 const navBtn = {
   background: 'none', border: 'none', cursor: 'pointer',
   fontSize: '.75rem', color: '#64748b', padding: '.25rem .5rem',
-  borderRadius: 6,
-}
+  borderRadius: 6}
