@@ -5,11 +5,12 @@ import { useState, useEffect, useRef } from 'react'
 // ══════════════════════════════════════════════════════════════════════════════
 
 const STATS = [
-  { value: '5', label: 'Jours de dev', icon: '⚡' },
-  { value: '200+', label: 'Commits', icon: '📦' },
-  { value: '65+', label: 'Pages', icon: '📄' },
-  { value: '35+', label: 'Tables BD', icon: '🗄️' },
-  { value: '57', label: 'Fichiers optimises', icon: '🚀' },
+  { value: '6', label: 'Jours de dev', icon: '⚡' },
+  { value: '221', label: 'Commits', icon: '📦' },
+  { value: '76', label: 'Pages', icon: '📄' },
+  { value: '25', label: 'Tables BD', icon: '🗄️' },
+  { value: '112', label: 'Fichiers', icon: '🚀' },
+  { value: '252 Mo', label: 'Taille projet', icon: '💾' },
 ]
 
 const TIMELINE = [
