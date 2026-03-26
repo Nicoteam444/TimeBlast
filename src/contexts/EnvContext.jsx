@@ -44,10 +44,24 @@ export function EnvProvider({ children }) {
 
   function switchEnvironment(env) {
     if (!env || env.id === currentEnv?.id) return
-    // Naviguer vers le même path mais avec le nouveau code env
     const currentPath = window.location.pathname
     const pathWithoutEnv = currentPath.replace(/^\/\d{7}/, '') || '/'
-    window.location.href = `/${env.env_code}${pathWithoutEnv}`
+    const newPath = `/${env.env_code}${pathWithoutEnv}`
+
+    // Si même base Supabase → navigation locale
+    if (env.supabase_url === currentEnv?.supabase_url) {
+      window.location.href = newPath
+      return
+    }
+
+    // Si base différente → redirection vers l'autre domaine Vercel
+    // Mapper supabase_url → domaine Vercel
+    const ENV_DOMAINS = {
+      'https://ldeoqrafauwdgrpbyfyx.supabase.co': 'https://timeblast.ai',
+      'https://cozqovnmqvttmymozwto.supabase.co': 'https://timeblast-prod.vercel.app',
+    }
+    const targetDomain = ENV_DOMAINS[env.supabase_url] || window.location.origin
+    window.location.href = `${targetDomain}${newPath}`
   }
 
   return (

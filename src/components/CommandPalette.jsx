@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useMemo } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
 import { supabase } from '../lib/supabase'
 
@@ -66,6 +66,8 @@ export default function CommandPalette() {
   })
   const inputRef = useRef(null)
   const navigate = useNavigate()
+  const { envId } = useParams()
+  const envPrefix = envId ? `/${envId}` : ""
   const { user } = useAuth()
 
   // Cmd+K / Ctrl+K
@@ -185,9 +187,9 @@ export default function CommandPalette() {
     }
 
     if (item.path) {
-      navigate(item.path)
+      navigate(envPrefix + item.path)
     } else if (item.action === 'navigate') {
-      navigate(item.path)
+      navigate(envPrefix + item.path)
     }
     setOpen(false)
   }

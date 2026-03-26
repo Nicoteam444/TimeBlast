@@ -489,7 +489,7 @@ export default function TopBar() {
               <button key={path}
                 onClick={() => {
                   if (favClickTimer.current) { clearTimeout(favClickTimer.current); favClickTimer.current = null; setEditingFav(path); return }
-                  favClickTimer.current = setTimeout(() => { favClickTimer.current = null; navigate(path) }, 250)
+                  favClickTimer.current = setTimeout(() => { favClickTimer.current = null; navigate(envPrefix + path) }, 250)
                 }}
                 title={`${favLabels?.[path] || path}\nDouble-clic pour renommer`}
                 style={{
