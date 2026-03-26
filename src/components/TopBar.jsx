@@ -34,8 +34,8 @@ export default function TopBar() {
   const { toggleSidebar } = useLayout()
   const { societes, selectedSociete, setSelectedSociete } = useSociete()
   const { favorites, favLabels, updateFavLabel } = useFavorites()
-  const [favOpen, setFavOpen] = useState(false)
-  const favRef = useRef(null)
+  const [editingFav, setEditingFav] = useState(null)
+  const [editFavVal, setEditFavVal] = useState('')
   const navigate = useNavigate()
   const [userMenuOpen, setUserMenuOpen]   = useState(false)
   const [showSocietes, setShowSocietes]  = useState(false)
@@ -115,12 +115,7 @@ export default function TopBar() {
     return () => document.removeEventListener('mousedown', handleClickOutside)
   }, [])
 
-  // Close favs on click outside
-  useEffect(() => {
-    function h(e) { if (favRef.current && !favRef.current.contains(e.target)) setFavOpen(false) }
-    document.addEventListener('mousedown', h)
-    return () => document.removeEventListener('mousedown', h)
-  }, [])
+  // (favoris click outside removed — inline now)
 
   // Quick Add state
   const [quickAddOpen, setQuickAddOpen] = useState(false)
@@ -484,26 +479,38 @@ export default function TopBar() {
       {/* Barre de favoris — style Chrome (masquée sur petit écran) */}
       {favorites.length > 0 && (
         <div className="topbar-favbar" style={{ display: 'flex', alignItems: 'center', gap: 3, marginLeft: 8, marginRight: 4 }}>
-          {favorites.slice(0, 6).map(path => (
-            <button key={path} onClick={() => navigate(path)}
-              onContextMenu={e => {
-                e.preventDefault()
-                const newName = prompt('Renommer ce favori :', favLabels?.[path] || path.split('/').pop() || 'Page')
-                if (newName && newName.trim()) updateFavLabel(path, newName.trim())
-              }}
-              title={`${favLabels?.[path] || path}\nClic droit pour renommer`}
-              style={{
-                display: 'flex', alignItems: 'center', gap: 4, padding: '3px 10px',
-                borderRadius: 4, border: 'none', cursor: 'pointer',
-                background: 'rgba(255,255,255,0.1)', color: 'rgba(255,255,255,0.85)',
-                fontSize: '.72rem', fontWeight: 500, whiteSpace: 'nowrap',
-                transition: 'background .15s', flexShrink: 0,
-              }}
-              onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.2)'}
-              onMouseLeave={e => e.currentTarget.style.background = 'rgba(255,255,255,0.1)'}>
-              {favLabels?.[path]?.slice(0, 15) || path.split('/').pop() || 'Page'}
-            </button>
-          ))}
+          {favorites.slice(0, 6).map(path => {
+            const label = favLabels?.[path]?.slice(0, 15) || path.split('/').pop() || 'Page'
+            if (editingFav === path) {
+              return (
+                <input key={path} autoFocus value={editFavVal}
+                  onChange={e => setEditFavVal(e.target.value)}
+                  onBlur={() => { if (editFavVal.trim()) updateFavLabel(path, editFavVal.trim()); setEditingFav(null) }}
+                  onKeyDown={e => { if (e.key === 'Enter') { if (editFavVal.trim()) updateFavLabel(path, editFavVal.trim()); setEditingFav(null) }; if (e.key === 'Escape') setEditingFav(null) }}
+                  style={{
+                    width: 90, padding: '2px 6px', borderRadius: 4, border: '1px solid rgba(255,255,255,0.5)',
+                    background: 'rgba(255,255,255,0.2)', color: '#fff', fontSize: '.72rem', fontWeight: 500, outline: 'none',
+                  }}
+                />
+              )
+            }
+            return (
+              <button key={path} onClick={() => navigate(path)}
+                onDoubleClick={e => { e.preventDefault(); setEditingFav(path); setEditFavVal(favLabels?.[path] || path.split('/').pop() || '') }}
+                title={`${favLabels?.[path] || path}\nDouble-clic pour renommer`}
+                style={{
+                  display: 'flex', alignItems: 'center', gap: 4, padding: '3px 10px',
+                  borderRadius: 4, border: 'none', cursor: 'pointer',
+                  background: 'rgba(255,255,255,0.1)', color: 'rgba(255,255,255,0.85)',
+                  fontSize: '.72rem', fontWeight: 500, whiteSpace: 'nowrap',
+                  transition: 'background .15s', flexShrink: 0,
+                }}
+                onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.2)'}
+                onMouseLeave={e => e.currentTarget.style.background = 'rgba(255,255,255,0.1)'}>
+                {label}
+              </button>
+            )
+          })}
         </div>
       )}
       <style>{`@media (max-width: 900px) { .topbar-favbar { display: none !important; } }`}</style>

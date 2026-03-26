@@ -11,6 +11,7 @@ export default function AdminPageViewsPage() {
   const [filterUser, setFilterUser] = useState('')
   const [filterPath, setFilterPath] = useState('')
   const [limit, setLimit] = useState(200)
+  const [selectedUser, setSelectedUser] = useState(null)
 
   useEffect(() => { fetchData() }, [limit])
 
@@ -124,7 +125,7 @@ export default function AdminPageViewsPage() {
               {sortedData.map(v => (
                 <tr key={v.id}>
                   <td className="date-cell" style={{ whiteSpace: 'nowrap' }}>{fmtDate(v.created_at)}</td>
-                  <td><span className="user-name">{userName(v.user_id)}</span></td>
+                  <td><span className="user-name" onClick={e => { e.stopPropagation(); setSelectedUser(v.user_id) }} style={{ cursor: 'pointer', color: '#2B4C7E', textDecoration: 'underline' }}>{userName(v.user_id)}</span></td>
                   <td><code style={{ fontSize: 12, background: '#f1f5f9', padding: '2px 6px', borderRadius: 4 }}>{v.page_path}</code></td>
                   <td style={{ color: '#64748b', fontSize: 13 }}>{v.page_title || '—'}</td>
                 </tr>
@@ -133,6 +134,84 @@ export default function AdminPageViewsPage() {
           </table>
         </div>
       )}
+
+      {/* Panneau détail utilisateur */}
+      {selectedUser && (() => {
+        const u = users.find(u => u.id === selectedUser)
+        const userViews = views.filter(v => v.user_id === selectedUser)
+        const pageStats = {}
+        userViews.forEach(v => {
+          const p = v.page_path
+          if (!pageStats[p]) pageStats[p] = { count: 0, last: v.created_at }
+          pageStats[p].count++
+          if (v.created_at > pageStats[p].last) pageStats[p].last = v.created_at
+        })
+        const sortedPages = Object.entries(pageStats).sort((a, b) => b[1].count - a[1].count)
+        const totalPages = userViews.length
+        const uniquePages = sortedPages.length
+        const todayCount = userViews.filter(v => new Date(v.created_at).toDateString() === new Date().toDateString()).length
+        const initials = (u?.full_name || '??').split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2)
+
+        return (
+          <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.3)', display: 'flex', justifyContent: 'flex-end', zIndex: 1000 }}
+            onClick={() => setSelectedUser(null)}>
+            <div style={{ width: 420, background: '#fff', height: '100vh', boxShadow: '-10px 0 30px rgba(0,0,0,0.1)', overflowY: 'auto', padding: 24 }}
+              onClick={e => e.stopPropagation()}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
+                <h2 style={{ margin: 0, fontSize: '1.1rem' }}>Profil utilisateur</h2>
+                <button onClick={() => setSelectedUser(null)} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 18, color: '#94a3b8' }}>✕</button>
+              </div>
+
+              {/* Avatar + nom */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 20 }}>
+                <div style={{ width: 48, height: 48, borderRadius: '50%', background: '#2B4C7E', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700, fontSize: 16 }}>{initials}</div>
+                <div>
+                  <div style={{ fontWeight: 700, fontSize: '1rem' }}>{u?.full_name || 'Inconnu'}</div>
+                  <div style={{ fontSize: '.8rem', color: '#64748b' }}>{u?.role || '—'}</div>
+                </div>
+              </div>
+
+              {/* KPIs */}
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 10, marginBottom: 20 }}>
+                <div style={{ background: '#f8fafc', borderRadius: 8, padding: '10px 12px', textAlign: 'center', border: '1px solid #e2e8f0' }}>
+                  <div style={{ fontSize: '1.2rem', fontWeight: 800, color: '#2B4C7E' }}>{totalPages}</div>
+                  <div style={{ fontSize: '.7rem', color: '#64748b' }}>Pages vues</div>
+                </div>
+                <div style={{ background: '#f8fafc', borderRadius: 8, padding: '10px 12px', textAlign: 'center', border: '1px solid #e2e8f0' }}>
+                  <div style={{ fontSize: '1.2rem', fontWeight: 800, color: '#16a34a' }}>{uniquePages}</div>
+                  <div style={{ fontSize: '.7rem', color: '#64748b' }}>Pages uniques</div>
+                </div>
+                <div style={{ background: '#f8fafc', borderRadius: 8, padding: '10px 12px', textAlign: 'center', border: '1px solid #e2e8f0' }}>
+                  <div style={{ fontSize: '1.2rem', fontWeight: 800, color: '#f59e0b' }}>{todayCount}</div>
+                  <div style={{ fontSize: '.7rem', color: '#64748b' }}>Aujourd'hui</div>
+                </div>
+              </div>
+
+              {/* Pages les plus visitées */}
+              <h3 style={{ fontSize: '.85rem', fontWeight: 700, color: '#1a2332', marginBottom: 8 }}>Pages les plus consultees</h3>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+                {sortedPages.slice(0, 15).map(([path, stats]) => {
+                  const pct = totalPages > 0 ? (stats.count / sortedPages[0][1].count) * 100 : 0
+                  return (
+                    <div key={path} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '6px 8px', borderRadius: 6, background: '#fafbfc', border: '1px solid #f1f5f9' }}>
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        <div style={{ fontSize: '.78rem', fontWeight: 500, color: '#1a2332', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{path}</div>
+                        <div style={{ height: 3, borderRadius: 2, background: '#e2e8f0', marginTop: 3, overflow: 'hidden' }}>
+                          <div style={{ height: '100%', borderRadius: 2, width: `${pct}%`, background: '#2B4C7E' }} />
+                        </div>
+                      </div>
+                      <div style={{ textAlign: 'right', flexShrink: 0 }}>
+                        <div style={{ fontSize: '.8rem', fontWeight: 700, color: '#2B4C7E' }}>{stats.count}×</div>
+                        <div style={{ fontSize: '.6rem', color: '#94a3b8' }}>{fmtDate(stats.last)}</div>
+                      </div>
+                    </div>
+                  )
+                })}
+              </div>
+            </div>
+          </div>
+        )
+      })()}
     </div>
   )
 }
