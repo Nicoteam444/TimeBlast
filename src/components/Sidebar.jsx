@@ -270,20 +270,7 @@ export default function Sidebar() {
 
         {/* ── Rail de navigation ── */}
         <nav className="sidebar-nav">
-          {/* Favoris */}
-          {favItems.length > 0 && (
-            <>
-              <div
-                className={`rail-item ${hoveredId === '_favs' ? 'rail-item--hover' : ''}`}
-                onMouseEnter={e => showFlyout('_favs', e)}
-                onMouseLeave={scheduleHide}
-              >
-                <span className="rail-item-icon">🔖</span>
-                {sidebarOpen && <span className="rail-item-label">Favoris</span>}
-              </div>
-              <div className="sidebar-separator" />
-            </>
-          )}
+          {/* Favoris déplacés dans TopBar */}
           {visibleSections.map(section => {
             const items = filterItems(section.items)
             const isActive = items.some(i => location.pathname.startsWith(i.to)) || (section.landingTo && location.pathname === section.landingTo)

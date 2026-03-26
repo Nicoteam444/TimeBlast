@@ -32,7 +32,7 @@ function buildSystemPrompt(societe, ctx) {
     ctx.transactions?.length > 0
       ? [
           `Pipeline total : ${fmtEur(ctx.transactions.reduce((s, t) => s + (parseFloat(t.montant) || 0), 0))}`,
-          ...ctx.transactions.slice(0, 30).map(t =>
+          ...ctx.transactions.slice(0, 10).map(t =>
             `• ${t.name || '—'} | ${t.client_name || '—'} | ${fmtEur(t.montant)} | phase: ${t.phase || '—'}`
           ),
           ctx.transactions.length > 30 ? `  ... et ${ctx.transactions.length - 30} autres` : '',
@@ -43,7 +43,7 @@ function buildSystemPrompt(societe, ctx) {
     // --- Projets ---
     `=== PROJETS (${ctx.projets?.length || 0}) ===`,
     ctx.projets?.length > 0
-      ? ctx.projets.slice(0, 30).map(p =>
+      ? ctx.projets.slice(0, 10).map(p =>
           `• ${p.name}${p.client_name ? ' — client: ' + p.client_name : ''} | ${p.statut || 'actif'}`
         ).join('\n')
       : `Aucun projet.`,
@@ -67,7 +67,7 @@ function buildSystemPrompt(societe, ctx) {
     // --- Équipe ---
     `=== ÉQUIPE (${ctx.equipe?.length || 0} collaborateurs) ===`,
     ctx.equipe?.length > 0
-      ? ctx.equipe.slice(0, 30).map(e =>
+      ? ctx.equipe.slice(0, 10).map(e =>
           `• ${e.full_name || '—'} | ${e.poste || '—'}`
         ).join('\n')
       : `Aucun collaborateur.`,
@@ -310,7 +310,7 @@ export default function ChatWidget() {
         },
         body: JSON.stringify({
           system: systemPrompt,
-          messages: newMessages.map(m => ({ role: m.role, content: m.content })),
+          messages: newMessages.slice(-8).map(m => ({ role: m.role, content: m.content })),
         }),
         signal: abortRef.current.signal,
       })

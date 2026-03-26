@@ -484,23 +484,26 @@ export default function TopBar() {
             if (editingFav === path) {
               return (
                 <input key={path + '-edit'} autoFocus defaultValue={favLabels?.[path] || path.split('/').pop() || ''}
-                  ref={el => { if (el) el.select() }}
-                  onKeyUp={e => {
+                  ref={el => { if (el && !el._selected) { el.select(); el._selected = true } }}
+                  onKeyDown={e => {
                     if (e.key === 'Enter') {
+                      e.preventDefault()
+                      e.stopPropagation()
                       const val = e.target.value.trim()
-                      if (val) updateFavLabel(path, val)
+                      if (val) { updateFavLabel(path, val); console.log('FAV RENAMED:', path, val) }
                       setEditingFav(null)
                     }
-                    if (e.key === 'Escape') setEditingFav(null)
+                    if (e.key === 'Escape') { e.preventDefault(); setEditingFav(null) }
                   }}
                   onBlur={e => {
                     const val = e.target.value.trim()
-                    if (val) updateFavLabel(path, val)
+                    if (val && val !== (favLabels?.[path] || path.split('/').pop() || '')) updateFavLabel(path, val)
                     setEditingFav(null)
                   }}
+                  onClick={e => e.stopPropagation()}
                   style={{
-                    width: 100, padding: '2px 8px', borderRadius: 4, border: '1px solid rgba(255,255,255,0.5)',
-                    background: 'rgba(255,255,255,0.25)', color: '#fff', fontSize: '.72rem', fontWeight: 500, outline: 'none',
+                    width: 100, padding: '2px 8px', borderRadius: 4, border: '2px solid #60d3ff',
+                    background: 'rgba(0,0,0,0.3)', color: '#fff', fontSize: '.75rem', fontWeight: 600, outline: 'none',
                   }}
                 />
               )
