@@ -15,15 +15,14 @@ export default function EnvRouteWrapper() {
     if (!user) { navigate('/login', { replace: true }); return }
     if (!envId) return
 
+    // Attendre que les environments soient chargés
+    if (!environments || environments.length === 0) return
+
     // Vérifier que l'envId est valide et que l'user y a accès
-    const env = environments?.find(e => e.env_code === envId)
+    const env = environments.find(e => e.env_code === envId)
     if (!env) {
-      // Env non trouvé ou pas accès → redirect vers le premier env accessible
-      if (environments?.length > 0) {
-        navigate(`/${environments[0].env_code}`, { replace: true })
-      } else {
-        navigate('/unauthorized', { replace: true })
-      }
+      // Env non trouvé → redirect vers le premier env accessible
+      navigate(`/${environments[0].env_code}`, { replace: true })
       return
     }
 
@@ -33,7 +32,12 @@ export default function EnvRouteWrapper() {
     }
   }, [envId, environments, authLoading, envLoading, user])
 
-  if (authLoading || envLoading) return <Spinner />
+  // Afficher spinner tant que pas prêt
+  if (authLoading || envLoading || !environments || environments.length === 0) return <Spinner />
+
+  // Si l'envId ne matche aucun env accessible, spinner (le useEffect redirigera)
+  const env = environments?.find(e => e.env_code === envId)
+  if (!env) return <Spinner />
 
   return <Outlet />
 }
