@@ -123,10 +123,10 @@ const SECTIONS = [
 
 const INFO_SECTION = {
   id: 'info',
-  icon: '📚',
-  label: 'Documentation',
+  icon: '💡',
+  label: 'À propos',
   items: [
-    { to: '/info',  icon: '📚', label: 'Documentation' },
+    { to: '/info',  icon: '💡', label: 'À propos' },
   ],
 }
 
