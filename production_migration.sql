@@ -339,9 +339,7 @@ CREATE POLICY "auth_all" ON calendar_events FOR ALL USING (auth.uid() IS NOT NUL
 CREATE POLICY "auth_all" ON automation_workflows FOR ALL USING (auth.uid() IS NOT NULL);
 CREATE POLICY "auth_all" ON activity_log FOR ALL USING (auth.uid() IS NOT NULL);
 CREATE POLICY "auth_insert" ON page_views FOR INSERT WITH CHECK (true);
-CREATE POLICY "auth_read" ON page_views FOR SELECT USING (
-  EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND role = 'admin')
-);
+CREATE POLICY "auth_read" ON page_views FOR SELECT USING (auth.uid() IS NOT NULL);
 CREATE POLICY "auth_all" ON user_favorites FOR ALL USING (auth.uid() = user_id);
 CREATE POLICY "auth_read" ON contact_messages FOR SELECT USING (
   EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND role = 'admin')

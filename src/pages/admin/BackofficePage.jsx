@@ -55,13 +55,26 @@ function EnvsTab() {
       if (env.supabase_url && env.supabase_anon_key) {
         try {
           const client = createClient(env.supabase_url, env.supabase_anon_key)
-          const [profiles, pageViews] = await Promise.all([
+          // Tenter de compter profiles et page_views (peut échouer selon RLS)
+          const [profilesRes, pageViewsRes] = await Promise.all([
             client.from('profiles').select('id', { count: 'exact', head: true }),
             client.from('page_views').select('id', { count: 'exact', head: true }),
           ])
-          setEnvStats(prev => ({ ...prev, [env.id]: { users: profiles.count || 0, pageViews: pageViews.count || 0, online: true } }))
+          // Fallback: si profiles count = 0 (RLS bloque le client anonyme), utiliser user_environments
+          const usersFromProfiles = profilesRes.count || 0
+          const usersFromAccess = env.user_environments?.[0]?.count || 0
+          setEnvStats(prev => ({ ...prev, [env.id]: {
+            users: usersFromProfiles > 0 ? usersFromProfiles : usersFromAccess,
+            pageViews: pageViewsRes.count || 0,
+            online: true
+          } }))
         } catch {
-          setEnvStats(prev => ({ ...prev, [env.id]: { users: 0, pageViews: 0, online: false } }))
+          // Hors ligne: fallback sur user_environments count
+          setEnvStats(prev => ({ ...prev, [env.id]: {
+            users: env.user_environments?.[0]?.count || 0,
+            pageViews: 0,
+            online: false
+          } }))
         }
       }
     }
@@ -138,9 +151,8 @@ function EnvsTab() {
 
                     {/* Stats row */}
                     <div style={{ display: 'flex', gap: 24, fontSize: '.8rem', color: '#64748b' }}>
-                      <span title="Utilisateurs dans cette base">👥 <strong style={{ color: '#1e293b' }}>{stats?.users ?? '...'}</strong> utilisateurs</span>
+                      <span title="Utilisateurs (profiles dans la base)">👥 <strong style={{ color: '#1e293b' }}>{stats?.users ?? '...'}</strong> utilisateur{(stats?.users || 0) > 1 ? 's' : ''}</span>
                       <span title="Pages vues">📊 <strong style={{ color: '#1e293b' }}>{stats?.pageViews?.toLocaleString('fr-FR') ?? '...'}</strong> pages vues</span>
-                      <span title="Acces backoffice">🔑 <strong style={{ color: '#1e293b' }}>{env.user_environments?.[0]?.count || 0}</strong> acces</span>
                       <span title="Date de creation">📅 {new Date(env.created_at).toLocaleDateString('fr-FR')}</span>
                     </div>
 
