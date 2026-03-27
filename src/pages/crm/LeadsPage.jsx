@@ -117,12 +117,18 @@ export default function LeadsPage() {
   const [error, setError] = useState(null)
   const [filter, setFilter] = useState('')
   const [filterSociete, setFilterSociete] = useState('')
+  const [societes, setSocietes] = useState([])
   const [pageSize, setPageSize] = useState(20)
   const [page, setPage] = useState(1)
   const [view, setView] = useState('kanban')
   const dragCard = useRef(null)
 
-  useEffect(() => { fetchLeads(); fetchContacts(); fetchClients() }, [])
+  useEffect(() => { fetchLeads(); fetchContacts(); fetchClients(); fetchSocietes() }, [])
+
+  async function fetchSocietes() {
+    const { data } = await supabase.from('societes').select('id, name').order('name')
+    setSocietes(data || [])
+  }
 
   async function fetchLeads() {
     setLoading(true)
@@ -246,7 +252,7 @@ export default function LeadsPage() {
             {filtered.length} lead{filtered.length > 1 ? 's' : ''}
             {filterSociete && societes?.length > 0 && (
               <span style={{ marginLeft: '.5rem' }}>
-                — {societes.find(s => s.id === filterSociete)?.name || ''}
+                — {societes?.find(s => s.id === filterSociete)?.name || ''}
               </span>
             )}
           </p>

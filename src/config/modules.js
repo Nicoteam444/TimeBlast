@@ -1,17 +1,19 @@
 // Configuration des modules par environnement
-// En production, seuls les modules autorisés sont visibles
+// Tous les modules sont désormais actifs — le contrôle d'accès
+// se fait via role_permissions (PermissionsContext) et non plus
+// en masquant des modules entiers.
 
 const APP_ENV = import.meta.env.VITE_APP_ENV || 'staging'
 
-// Modules masqués en production (beta SRA)
-const HIDDEN_MODULES_PROD = ['gestion', 'marketing', 'finance']
+// Plus aucun module masqué — tout est contrôlé par les permissions
+const HIDDEN_MODULES_PROD = []
 
-// Routes masquées en production (correspondance route → module)
+// Routes → modules (conservé pour référence, mais plus rien n'est bloqué)
 const ROUTE_TO_MODULE = {
   '/finance': 'finance',
   '/gestion': 'gestion',
   '/marketing': 'marketing',
-  '/commerce': 'gestion',
+  '/commerce': 'commerce',
 }
 
 /**

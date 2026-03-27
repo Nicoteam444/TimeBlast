@@ -193,7 +193,7 @@ export default function TransactionsPage() {
             {filtered.length} opportunité{filtered.length > 1 ? 's' : ''}
             {filterSociete && societes?.length > 0 && (
               <span style={{ marginLeft: '.5rem' }}>
-                — {societes.find(s => s.id === filterSociete)?.name || ''}
+                — {societes?.find(s => s.id === filterSociete)?.name || ''}
               </span>
             )}
           </p>

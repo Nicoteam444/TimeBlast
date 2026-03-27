@@ -76,7 +76,7 @@ export default function AdminSocietesPage() {
   async function handleDelete(id) {
     await supabase.from('societes').delete().eq('id', id)
     setDeleteConfirm(null)
-    fetchSocietes()
+    fetchAll()
   }
 
   const SQL_CREATE = `-- Table sociétés
