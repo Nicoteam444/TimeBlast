@@ -596,7 +596,8 @@ export default function DashboardPage() {
           if (data.length < pageSize) break
           from += pageSize
         }
-        if (allViews.length === 0) return
+        console.log('[Leaderboard] Total page_views 7j:', allViews.length)
+        if (allViews.length === 0) { console.log('[Leaderboard] Aucune vue trouvée'); return }
         // Agréger par user
         const counts = {}
         for (const v of allViews) {
@@ -604,8 +605,11 @@ export default function DashboardPage() {
         }
         // Récupérer les noms
         const userIds = Object.keys(counts)
+        console.log('[Leaderboard] Users distincts:', userIds.length, 'Counts:', JSON.stringify(counts))
         if (userIds.length === 0) return
-        const { data: profiles } = await supabase.from('profiles').select('id, full_name').in('id', userIds)
+        const { data: profiles, error: profErr } = await supabase.from('profiles').select('id, full_name').in('id', userIds)
+        if (profErr) console.error('[Leaderboard] Erreur profiles:', profErr.message)
+        console.log('[Leaderboard] Profiles trouvés:', profiles?.length, profiles?.map(p => p.full_name))
         const board = userIds.map(uid => {
           const p = (profiles || []).find(pr => pr.id === uid)
           const name = p?.full_name || 'Utilisateur'
