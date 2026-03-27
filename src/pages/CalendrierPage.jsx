@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../contexts/AuthContext'
+import { getOutlookEvents, createOutlookEvent, updateOutlookEvent, deleteOutlookEvent } from '../lib/microsoftGraph'
 import Spinner from '../components/Spinner'
 
 // ── Constantes ─────────────────────────────────────────────
@@ -223,6 +224,9 @@ export default function CalendrierPage() {
   const [selectedCollabs, setSelectedCollabs] = useState(new Set())
   const [events, setEvents] = useState([])
   const [saisies, setSaisies] = useState([])
+  const [outlookEvents, setOutlookEvents] = useState([])
+  const [outlookSyncOn, setOutlookSyncOn] = useState(() => localStorage.getItem('tb_outlook_sync') === 'true')
+  const [outlookLoading, setOutlookLoading] = useState(false)
   const [modal, setModal] = useState(null)
   const [loading, setLoading] = useState(true)
   const [filterSearch, setFilterSearch] = useState('')
@@ -267,6 +271,72 @@ export default function CalendrierPage() {
     if (days.length > 0) load()
   }, [selectedCollabs, baseDate, view])
 
+  // ── Sync Outlook ─────────────────────────────────────────────
+  useEffect(() => {
+    if (!outlookSyncOn || !days.length) { setOutlookEvents([]); return }
+    async function syncOutlook() {
+      try {
+        setOutlookLoading(true)
+        const { data: { session } } = await supabase.auth.getSession()
+        const token = session?.provider_token
+        if (!token) { console.warn('[Outlook] Pas de provider_token — reconnectez-vous via Microsoft'); setOutlookLoading(false); return }
+        const startDate = days[0].toISOString()
+        const endDate = addDays(days[days.length - 1] || days[0], 1).toISOString()
+        const evts = await getOutlookEvents(token, startDate, endDate)
+        // Convertir en format compatible CalendrierPage
+        setOutlookEvents(evts.map(ev => ({
+          id: `outlook_${ev.outlookId}`,
+          outlookId: ev.outlookId,
+          title: ev.title,
+          startMin: ev.start ? ev.start.getHours() * 60 + ev.start.getMinutes() : 540,
+          endMin: ev.end ? ev.end.getHours() * 60 + ev.end.getMinutes() : 600,
+          date: ev.start ? toISO(ev.start) : toISO(new Date()),
+          color: '#0078D4', // bleu Microsoft
+          source: 'outlook',
+          location: ev.location,
+          description: ev.description,
+          user_id: user?.id,
+          isAllDay: ev.isAllDay,
+        })))
+      } catch (err) {
+        console.error('[Outlook] Erreur sync:', err.message)
+      } finally {
+        setOutlookLoading(false)
+      }
+    }
+    syncOutlook()
+  }, [outlookSyncOn, baseDate, view, days.length])
+
+  function toggleOutlookSync() {
+    const next = !outlookSyncOn
+    setOutlookSyncOn(next)
+    localStorage.setItem('tb_outlook_sync', next ? 'true' : 'false')
+    if (!next) setOutlookEvents([])
+  }
+
+  // ── Push event vers Outlook ──────────────────────────────────
+  async function pushToOutlook(event) {
+    try {
+      const { data: { session } } = await supabase.auth.getSession()
+      const token = session?.provider_token
+      if (!token) { alert('Reconnectez-vous via Microsoft pour synchroniser'); return }
+      const startDt = new Date(event.date || event.start_time)
+      if (event.startMin) { startDt.setHours(Math.floor(event.startMin / 60), event.startMin % 60) }
+      const endDt = new Date(event.date || event.end_time)
+      if (event.endMin) { endDt.setHours(Math.floor(event.endMin / 60), event.endMin % 60) }
+      await createOutlookEvent(token, {
+        title: event.title,
+        start: startDt,
+        end: endDt,
+        description: event.description || '',
+        location: event.location || '',
+      })
+      alert('✅ Événement synchronisé vers Outlook !')
+    } catch (err) {
+      alert('Erreur sync Outlook: ' + err.message)
+    }
+  }
+
   // All displayable events
   const allEvents = useMemo(() => {
     const evs = [...events]
@@ -274,8 +344,12 @@ export default function CalendrierPage() {
     saisies.forEach(s => {
       if (!events.find(e => e.id === s.id)) evs.push(s)
     })
+    // Add Outlook events
+    outlookEvents.forEach(o => {
+      evs.push(o)
+    })
     return evs
-  }, [events, saisies])
+  }, [events, saisies, outlookEvents])
 
   // Navigation
   function navigate(dir) {
@@ -488,23 +562,37 @@ export default function CalendrierPage() {
                   {positioned.map(ev => {
                     const top = minToY(ev.startMin)
                     const height = Math.max(minToY(ev.endMin) - top, 20)
-                    const color = userColor(ev.user_id)
+                    const isOutlook = ev.source === 'outlook'
+                    const color = isOutlook ? '#0078D4' : userColor(ev.user_id)
                     const totalCols = ev._maxCols || 1
                     const width = `${85 / totalCols}%`
                     const left = `${(ev._col / totalCols) * 85 + 2}%`
 
                     return (
-                      <div key={ev.id} title={`${userName(ev.user_id)} - ${ev.title}\n${fmtTime(ev.startMin)} - ${fmtTime(ev.endMin)}`}
+                      <div key={ev.id} title={`${isOutlook ? '📅 Outlook · ' : ''}${userName(ev.user_id)} - ${ev.title}\n${fmtTime(ev.startMin)} - ${fmtTime(ev.endMin)}`}
                         style={{
                           position: 'absolute', top, height, left, width, zIndex: 3,
-                          background: color + '18', borderLeft: `3px solid ${color}`,
+                          background: isOutlook ? '#0078D412' : color + '18',
+                          borderLeft: `3px solid ${color}`,
                           borderRadius: '0 6px 6px 0', padding: '3px 6px',
                           cursor: 'pointer', overflow: 'hidden', fontSize: 11,
-                          transition: 'box-shadow .15s'}}
+                          transition: 'box-shadow .15s',
+                          borderStyle: isOutlook ? 'dashed' : undefined,
+                          borderRightStyle: isOutlook ? 'dashed' : undefined,
+                          borderTopStyle: isOutlook ? 'dashed' : undefined,
+                          borderBottomStyle: isOutlook ? 'dashed' : undefined,
+                          borderRightWidth: isOutlook ? 1 : undefined,
+                          borderTopWidth: isOutlook ? 1 : undefined,
+                          borderBottomWidth: isOutlook ? 1 : undefined,
+                          borderColor: isOutlook ? '#0078D450' : undefined,
+                        }}
                         onClick={e => e.stopPropagation()}
                         onMouseEnter={e => e.currentTarget.style.boxShadow = '0 2px 8px rgba(0,0,0,.15)'}
                         onMouseLeave={e => e.currentTarget.style.boxShadow = 'none'}>
-                        {selectedCollabs.size > 1 && (
+                        {isOutlook && (
+                          <span style={{ fontSize: 9, marginRight: 3, opacity: .7 }}>📅</span>
+                        )}
+                        {!isOutlook && selectedCollabs.size > 1 && (
                           <div style={{
                             width: 18, height: 18, borderRadius: '50%', background: color,
                             color: '#fff', fontSize: 9, fontWeight: 700, display: 'inline-flex',
@@ -513,14 +601,14 @@ export default function CalendrierPage() {
                             {userInitials(ev.user_id)}
                           </div>
                         )}
-                        <span style={{ fontWeight: 600, color: '#1e293b' }}>{ev.title}</span>
+                        <span style={{ fontWeight: 600, color: isOutlook ? '#0078D4' : '#1e293b' }}>{ev.title}</span>
                         {height > 30 && (
                           <div style={{ fontSize: 10, color: '#64748b', marginTop: 1 }}>
                             {fmtTime(ev.startMin)} - {fmtTime(ev.endMin)}
-                            {ev.location ? ` · ${ev.location}` : ''}
+                            {ev.location ? ` · 📍${ev.location}` : ''}
                           </div>
                         )}
-                        {height > 50 && ev.is_time_entry && (
+                        {height > 50 && ev.is_time_entry && !isOutlook && (
                           <div style={{ fontSize: 10, color: color, fontWeight: 600, marginTop: 2 }}>
                             ⏱ {ev.heures || ev.duree_heures || ''}h
                           </div>
@@ -630,6 +718,16 @@ export default function CalendrierPage() {
                 }}>{v}</button>
               ))}
             </div>
+            {/* Bouton sync Outlook */}
+            <button onClick={toggleOutlookSync} title={outlookSyncOn ? 'Désactiver la sync Outlook' : 'Activer la sync Outlook'}
+              style={{
+                padding: '6px 12px', borderRadius: 6, border: outlookSyncOn ? '2px solid #0078D4' : '1px solid #e2e8f0',
+                background: outlookSyncOn ? '#0078D410' : '#fff', cursor: 'pointer', fontSize: 13,
+                color: outlookSyncOn ? '#0078D4' : '#64748b', fontWeight: 500, display: 'flex', alignItems: 'center', gap: 6
+              }}>
+              <span style={{ fontSize: 16 }}>📅</span>
+              {outlookLoading ? '⟳' : outlookSyncOn ? 'Outlook ✓' : 'Outlook'}
+            </button>
             <button onClick={() => setModal({ date: toISO(new Date()), startMin: 9 * 60, endMin: 10 * 60, user_id: user?.id })}
               style={{
                 padding: '6px 14px', borderRadius: 6, border: 'none', cursor: 'pointer', fontSize: 13,

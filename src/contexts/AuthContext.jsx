@@ -44,10 +44,15 @@ export function AuthProvider({ children }) {
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'azure',
       options: {
-        scopes: 'openid email profile',
+        scopes: 'openid email profile Calendars.ReadWrite',
         redirectTo: window.location.origin + '/'}
     })
     return { error }
+  }
+
+  // Récupérer le provider_token Microsoft (pour API Graph)
+  function getMicrosoftToken() {
+    return supabase.auth.getSession().then(({ data }) => data?.session?.provider_token || null)
   }
 
   async function signOut() {
@@ -57,7 +62,7 @@ export function AuthProvider({ children }) {
   const hasRole = (...roles) => profile && roles.includes(profile.role)
 
   return (
-    <AuthContext.Provider value={{ user, profile, loading, signIn, signInWithMicrosoft, signOut, hasRole }}>
+    <AuthContext.Provider value={{ user, profile, loading, signIn, signInWithMicrosoft, signOut, hasRole, getMicrosoftToken }}>
       {children}
     </AuthContext.Provider>
   )
