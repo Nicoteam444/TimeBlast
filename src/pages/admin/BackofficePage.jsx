@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useAuth } from '../../contexts/AuthContext'
-import { supabase } from '../../lib/supabase'
-import { switchSupabaseClient, getCurrentSupabaseUrl } from '../../lib/supabase'
+import { supabase, defaultUrl, defaultKey, switchSupabaseClient, getCurrentSupabaseUrl } from '../../lib/supabase'
 import Spinner from '../../components/Spinner'
 import useSortableTable from '../../hooks/useSortableTable'
 import SortableHeader from '../../components/SortableHeader'
@@ -364,6 +363,19 @@ function BackupTab() {
 // ── Page principale ──
 export default function BackofficePage() {
   const [tab, setTab] = useState('envs')
+
+  // Toujours forcer le client Supabase master (base principale)
+  // Le backoffice est hors scope environnement, il doit lire la base master
+  useEffect(() => {
+    const prevUrl = getCurrentSupabaseUrl()
+    if (prevUrl !== defaultUrl) {
+      switchSupabaseClient(defaultUrl, defaultKey)
+    }
+    return () => {
+      // Remettre le client précédent si on quitte le backoffice
+      // (le EnvRouteWrapper se chargera de reswitcher au bon env)
+    }
+  }, [])
 
   return (
     <div className="admin-page">

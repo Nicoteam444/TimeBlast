@@ -5,6 +5,7 @@ import { useLayout } from '../contexts/LayoutContext'
 import { useAppearance } from '../contexts/AppearanceContext'
 import { isModuleEnabled } from '../config/modules'
 import { useFavorites } from '../contexts/FavoritesContext'
+import { usePermissions } from '../contexts/PermissionsContext'
 
 function useEnvPrefix() {
   const { envId } = useParams()
@@ -18,6 +19,7 @@ const SECTIONS = [
     label: 'Calendrier',
     landingTo: '/activite/saisie',
     directLink: true,
+    perm: 'calendrier:saisie',
     roles: ['admin', 'manager', 'collaborateur'],
     items: []},
   {
@@ -27,10 +29,10 @@ const SECTIONS = [
     landingTo: '/activite',
     roles: ['admin', 'manager', 'collaborateur'],
     items: [
-      { to: '/activite/planification', icon: '📅', label: 'Planification',      roles: ['admin', 'manager'] },
-      { to: '/activite/projets',       icon: '📁', label: 'Gestion de projet' },
-      { to: '/activite/reporting',     icon: '📊', label: 'Reporting temps',    roles: ['admin', 'manager'] },
-      { to: '/activite/rentabilite',   icon: '💹', label: 'Rentabilité',        roles: ['admin', 'manager'] },
+      { to: '/activite/planification', icon: '📅', label: 'Planification',      roles: ['admin', 'manager'], perm: 'activite:planification' },
+      { to: '/activite/projets',       icon: '📁', label: 'Gestion de projet',  perm: 'activite:projets' },
+      { to: '/activite/reporting',     icon: '📊', label: 'Reporting temps',    roles: ['admin', 'manager'], perm: 'activite:reporting' },
+      { to: '/activite/rentabilite',   icon: '💹', label: 'Rentabilité',        roles: ['admin', 'manager'], perm: 'activite:rentabilite' },
     ]},
   {
     id: 'equipe',
@@ -39,13 +41,13 @@ const SECTIONS = [
     landingTo: '/equipe',
     roles: ['admin', 'manager', 'collaborateur'],
     items: [
-      { to: '/activite/equipe',        icon: '📋', label: 'Collaborateurs',  roles: ['admin', 'manager'] },
-      { to: '/activite/absences',      icon: '🏖',  label: 'Absences' },
-      { to: '/activite/validation',    icon: '✅',  label: 'Validations',    roles: ['admin', 'manager'] },
-      { to: '/equipe/notes-de-frais',  icon: '🧾',  label: 'Notes de frais' },
-      { to: '/equipe/trombinoscope',   icon: '🪪',  label: 'Trombinoscope',  roles: ['admin', 'manager'] },
-      { to: '/equipe/organigramme',    icon: '🏢',  label: 'Organigramme',   roles: ['admin', 'manager'] },
-      { to: '/equipe/competences',     icon: '🎯',  label: 'Compétences',    roles: ['admin', 'manager'] },
+      { to: '/activite/equipe',        icon: '📋', label: 'Collaborateurs',  roles: ['admin', 'manager'], perm: 'equipe:collaborateurs' },
+      { to: '/activite/absences',      icon: '🏖',  label: 'Absences',       perm: 'equipe:absences' },
+      { to: '/activite/validation',    icon: '✅',  label: 'Validations',    roles: ['admin', 'manager'], perm: 'equipe:validations' },
+      { to: '/equipe/notes-de-frais',  icon: '🧾',  label: 'Notes de frais', perm: 'equipe:notes-de-frais' },
+      { to: '/equipe/trombinoscope',   icon: '🪪',  label: 'Trombinoscope',  roles: ['admin', 'manager'], perm: 'equipe:trombinoscope' },
+      { to: '/equipe/organigramme',    icon: '🏢',  label: 'Organigramme',   roles: ['admin', 'manager'], perm: 'equipe:organigramme' },
+      { to: '/equipe/competences',     icon: '🎯',  label: 'Compétences',    roles: ['admin', 'manager'], perm: 'equipe:competences' },
     ]},
   {
     id: 'gestion',
@@ -54,11 +56,11 @@ const SECTIONS = [
     landingTo: '/gestion',
     roles: ['admin', 'comptable', 'manager'],
     items: [
-      { to: '/gestion/tableau-de-bord',        icon: '📊', label: 'Tableau de bord' },
-      { to: '/gestion/transactions',           icon: '🏦', label: 'Transactions' },
-      { to: '/finance/facturation',            icon: '📤', label: 'Ventes' },
-      { to: '/gestion/achats',  icon: '📥', label: 'Achats' },
-      { to: '/commerce/stock',                 icon: '📦', label: 'Stock' },
+      { to: '/gestion/tableau-de-bord',        icon: '📊', label: 'Tableau de bord', perm: 'gestion:tableau-de-bord' },
+      { to: '/gestion/transactions',           icon: '🏦', label: 'Transactions',    perm: 'gestion:transactions' },
+      { to: '/finance/facturation',            icon: '📤', label: 'Ventes',          perm: 'gestion:ventes' },
+      { to: '/gestion/achats',  icon: '📥', label: 'Achats',                         perm: 'gestion:achats' },
+      { to: '/commerce/stock',                 icon: '📦', label: 'Stock',            perm: 'gestion:stock' },
     ]},
   {
     id: 'crm',
@@ -67,13 +69,13 @@ const SECTIONS = [
     landingTo: '/crm',
     roles: ['admin', 'manager', 'collaborateur'],
     items: [
-      { to: '/crm/contacts',          icon: '👤', label: 'Contacts' },
-      { to: '/crm/entreprises',       icon: '🏢', label: 'Entreprises' },
-      { to: '/commerce/clients',      icon: '👥', label: 'Clients' },
-      { to: '/commerce/transactions', icon: '💼', label: 'Opportunités',   roles: ['admin', 'manager'] },
-      { to: '/commerce/devis',        icon: '📝', label: 'Devis',          roles: ['admin', 'manager', 'comptable'] },
-      { to: '/commerce/produits',     icon: '🏷️', label: 'Produits',       roles: ['admin', 'manager', 'comptable'] },
-      { to: '/commerce/abonnements',  icon: '🔄', label: 'Abonnements',    roles: ['admin', 'manager', 'comptable'] },
+      { to: '/crm/contacts',          icon: '👤', label: 'Contacts',       perm: 'crm:contacts' },
+      { to: '/crm/entreprises',       icon: '🏢', label: 'Entreprises',    perm: 'crm:entreprises' },
+      { to: '/commerce/clients',      icon: '👥', label: 'Clients',        perm: 'crm:clients' },
+      { to: '/commerce/transactions', icon: '💼', label: 'Opportunités',   roles: ['admin', 'manager'], perm: 'crm:opportunites' },
+      { to: '/commerce/devis',        icon: '📝', label: 'Devis',          roles: ['admin', 'manager', 'comptable'], perm: 'crm:devis' },
+      { to: '/commerce/produits',     icon: '🏷️', label: 'Produits',       roles: ['admin', 'manager', 'comptable'], perm: 'crm:produits' },
+      { to: '/commerce/abonnements',  icon: '🔄', label: 'Abonnements',    roles: ['admin', 'manager', 'comptable'], perm: 'crm:abonnements' },
     ]},
   {
     id: 'marketing',
@@ -82,8 +84,8 @@ const SECTIONS = [
     landingTo: '/marketing',
     roles: ['admin', 'manager'],
     items: [
-      { to: '/marketing/campagnes', icon: '🎯', label: 'Campagnes' },
-      { to: '/marketing/leads',     icon: '🚀', label: 'Leads' },
+      { to: '/marketing/campagnes', icon: '🎯', label: 'Campagnes', perm: 'marketing:campagnes' },
+      { to: '/marketing/leads',     icon: '🚀', label: 'Leads',     perm: 'marketing:leads' },
     ]},
   {
     id: 'finance',
@@ -92,11 +94,11 @@ const SECTIONS = [
     landingTo: '/finance',
     roles: ['admin', 'comptable'],
     items: [
-      { to: '/finance/business-intelligence', icon: '📊', label: 'Business Intelligence' },
-      { to: '/finance/saisie-ecriture',      icon: '✍️', label: 'Comptabilité' },
-      { to: '/finance/previsionnel',    icon: '📈', label: 'Prévisionnel' },
-      { to: '/finance/immobilisations', icon: '🏢', label: 'Immobilisations' },
-      { to: '/finance/rapprochement',   icon: '🔗', label: 'Rapprochement' },
+      { to: '/finance/business-intelligence', icon: '📊', label: 'Business Intelligence', perm: 'finance:business-intelligence' },
+      { to: '/finance/saisie-ecriture',      icon: '✍️', label: 'Comptabilité',           perm: 'finance:comptabilite' },
+      { to: '/finance/previsionnel',    icon: '📈', label: 'Prévisionnel',                perm: 'finance:previsionnel' },
+      { to: '/finance/immobilisations', icon: '🏢', label: 'Immobilisations',             perm: 'finance:immobilisations' },
+      { to: '/finance/rapprochement',   icon: '🔗', label: 'Rapprochement',               perm: 'finance:rapprochement' },
     ]},
   {
     id: 'documents',
@@ -105,7 +107,7 @@ const SECTIONS = [
     directTo: '/documents/archives',
     roles: ['admin', 'manager', 'collaborateur', 'comptable'],
     items: [
-      { to: '/documents/archives', icon: '🗄️', label: 'Archives' },
+      { to: '/documents/archives', icon: '🗄️', label: 'Archives', perm: 'documents:archives' },
     ]},
   {
     id: 'workflows',
@@ -113,6 +115,7 @@ const SECTIONS = [
     label: 'Workflows',
     directLink: true,
     landingTo: '/automatisation/workflows',
+    perm: 'workflows:automatisation',
     roles: ['admin', 'manager'],
     items: []},
 ]
@@ -126,8 +129,8 @@ const ADMIN_SECTION = {
   roles: ['admin'],
   items: [
     { to: '/admin',              icon: '🏠', label: 'Vue d\'ensemble',   roles: ['admin'] },
-    { to: '/admin/utilisateurs', icon: '👥', label: 'Utilisateurs',      roles: ['admin'], superAdminOnly: true },
-    { to: '/admin/societes',     icon: '🏢', label: 'Sociétés',          roles: ['admin'], superAdminOnly: true },
+    { to: '/admin/utilisateurs', icon: '👥', label: 'Utilisateurs',      roles: ['admin'] },
+    { to: '/admin/societes',     icon: '🏢', label: 'Sociétés',          roles: ['admin'] },
     { to: '/admin/groupes',      icon: '🏛', label: 'Groupes',           roles: ['admin'] },
     { to: '/admin/organigramme', icon: '🗂', label: 'Organigramme',      roles: ['admin'] },
     { to: '/admin/audit',        icon: '📋', label: "Journal d'audit",   roles: ['admin'] },
@@ -135,7 +138,7 @@ const ADMIN_SECTION = {
     { to: '/admin/historique',   icon: '👁', label: 'Historique',            roles: ['admin'], superAdminOnly: true },
     { to: '/admin/analytics',    icon: '📊', label: 'Analytics',         roles: ['admin', 'manager'] },
     { to: '/parametres',         icon: '🔧', label: 'Paramètres',        roles: ['admin'] },
-    { to: '/admin/backoffice',   icon: '🛡', label: 'Backoffice',        roles: ['admin'], superAdminOnly: true },
+    { to: '/backoffice',          icon: '🛡', label: 'Backoffice',        roles: ['admin'], superAdminOnly: true, absolute: true },
   ]}
 
 export default function Sidebar() {
@@ -144,6 +147,7 @@ export default function Sidebar() {
   const { sidebarOpen, toggleSidebar } = useLayout()
   const { settings } = useAppearance()
   const { favorites, favLabels, toggleFavorite, syncing } = useFavorites()
+  const { canView } = usePermissions()
   const envPrefix = useEnvPrefix()
   const navigate = useNavigate()
   const location = useLocation()
@@ -194,13 +198,20 @@ export default function Sidebar() {
   function filterItems(items) {
     return items.filter(i => {
       if (i.superAdminOnly && !isSuperAdmin) return false
-      return !i.roles || i.roles.includes(userRole)
+      if (i.roles && !i.roles.includes(userRole)) return false
+      // Vérifier les permissions dynamiques depuis role_permissions
+      if (i.perm && !canView(i.perm)) return false
+      return true
     })
   }
 
-  const visibleSections = SECTIONS.filter(s =>
-    isModuleEnabled(s.id) && s.roles.includes(userRole) && (s.directLink || s.directTo || filterItems(s.items).length > 0)
-  )
+  const visibleSections = SECTIONS.filter(s => {
+    if (!isModuleEnabled(s.id)) return false
+    if (!s.roles.includes(userRole)) return false
+    // Vérifier la perm de la section elle-même (pour directLink sans items)
+    if (s.perm && !canView(s.perm)) return false
+    return s.directLink || s.directTo || filterItems(s.items).length > 0
+  })
 
   function showFlyout(id, e) {
     clearTimeout(hideTimer.current)
@@ -349,7 +360,7 @@ export default function Sidebar() {
           {filterItems(flyoutSection.items).map(item => (
             <div key={item.to} className="rail-flyout-link-wrap">
               <NavLink
-                to={envPrefix + item.to}
+                to={item.absolute ? item.to : envPrefix + item.to}
                 className={({ isActive }) => `rail-flyout-link ${isActive ? 'rail-flyout-link--active' : ''}`}
                 onClick={() => {
                   setHoveredId(null)

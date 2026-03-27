@@ -1,7 +1,7 @@
 import { createClient } from '@supabase/supabase-js'
 
-const defaultUrl = import.meta.env.VITE_SUPABASE_URL
-const defaultKey = import.meta.env.VITE_SUPABASE_ANON_KEY
+export const defaultUrl = import.meta.env.VITE_SUPABASE_URL
+export const defaultKey = import.meta.env.VITE_SUPABASE_ANON_KEY
 
 // Client Supabase mutable — peut être reconfiguré pour pointer vers un autre env
 let _client = createClient(defaultUrl, defaultKey)

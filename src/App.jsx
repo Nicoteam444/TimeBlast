@@ -6,8 +6,10 @@ import { AppearanceProvider } from './contexts/AppearanceContext'
 import { NotificationsProvider } from './contexts/NotificationsContext'
 import { SocieteProvider } from './contexts/SocieteContext'
 import { FavoritesProvider } from './contexts/FavoritesContext'
+import { PermissionsProvider } from './contexts/PermissionsContext'
 import ProtectedRoute from './components/ProtectedRoute'
 import Layout from './components/Layout'
+import BackofficeLayout from './components/BackofficeLayout'
 import OnboardingTour from './components/OnboardingTour'
 import EnvRouteWrapper from './components/EnvRouteWrapper'
 import { EnvProvider, useEnv } from './contexts/EnvContext'
@@ -131,6 +133,11 @@ function AppRoutes() {
       <Route path="/client/invoice/:id" element={<ClientInvoicePortal />} />
       <Route path="/set-password" element={<SetPasswordPage />} />
       <Route path="/unauthorized" element={<UnauthorizedPage />} />
+
+      {/* Backoffice — hors scope environnement, toujours sur la base master */}
+      <Route path="/backoffice" element={
+        <ProtectedRoute roles={['admin']} superAdminOnly><BackofficeLayout><BackofficePage /></BackofficeLayout></ProtectedRoute>
+      } />
 
       {/* Redirect racine vers le premier env */}
       <Route path="/" element={<EnvDefaultRedirect />} />
@@ -348,9 +355,7 @@ function AppRoutes() {
       <Route path="admin/analytics" element={
         <ProtectedRoute roles={['admin','manager']}><Layout><AnalyticsPage /></Layout></ProtectedRoute>
       } />
-      <Route path="admin/backoffice" element={
-        <ProtectedRoute roles={['admin']} superAdminOnly><Layout><BackofficePage /></Layout></ProtectedRoute>
-      } />
+      {/* Backoffice déplacé hors /:envId — voir route /backoffice */}
       <Route path="parametres" element={
         <ProtectedRoute roles={['admin']}><Layout><ParametresPage /></Layout></ProtectedRoute>
       } />
@@ -390,6 +395,7 @@ export default function App() {
   return (
     <AppearanceProvider>
       <AuthProvider>
+        <PermissionsProvider>
         <FavoritesProvider>
           <SocieteProvider>
             <DemoProvider>
@@ -404,6 +410,7 @@ export default function App() {
             </DemoProvider>
           </SocieteProvider>
         </FavoritesProvider>
+        </PermissionsProvider>
       </AuthProvider>
     </AppearanceProvider>
   )

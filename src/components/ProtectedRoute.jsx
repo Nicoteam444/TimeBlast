@@ -1,12 +1,64 @@
 import { Navigate, useLocation } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
+import { usePermissions } from '../contexts/PermissionsContext'
 import { isRouteEnabled } from '../config/modules'
 import Spinner from './Spinner'
 
 const SUPER_ADMIN_EMAIL = 'nicolas.nabhan@groupe-sra.fr'
 
-export default function ProtectedRoute({ children, roles, superAdminOnly }) {
+// Mapping route pathname → permission key (module:sub_module)
+const ROUTE_PERM_MAP = {
+  '/activite/saisie':             'calendrier:saisie',
+  '/activite/planification':      'activite:planification',
+  '/activite/projets':            'activite:projets',
+  '/activite/reporting':          'activite:reporting',
+  '/activite/rentabilite':        'activite:rentabilite',
+  '/activite/equipe':             'equipe:collaborateurs',
+  '/activite/absences':           'equipe:absences',
+  '/activite/validation':         'equipe:validations',
+  '/equipe/notes-de-frais':       'equipe:notes-de-frais',
+  '/equipe/trombinoscope':        'equipe:trombinoscope',
+  '/equipe/organigramme':         'equipe:organigramme',
+  '/equipe/competences':          'equipe:competences',
+  '/gestion/tableau-de-bord':     'gestion:tableau-de-bord',
+  '/gestion/transactions':        'gestion:transactions',
+  '/finance/facturation':         'gestion:ventes',
+  '/gestion/achats':              'gestion:achats',
+  '/commerce/stock':              'gestion:stock',
+  '/crm/contacts':                'crm:contacts',
+  '/crm/entreprises':             'crm:entreprises',
+  '/commerce/clients':            'crm:clients',
+  '/commerce/transactions':       'crm:opportunites',
+  '/commerce/devis':              'crm:devis',
+  '/commerce/produits':           'crm:produits',
+  '/commerce/abonnements':        'crm:abonnements',
+  '/marketing/campagnes':         'marketing:campagnes',
+  '/marketing/leads':             'marketing:leads',
+  '/finance/business-intelligence': 'finance:business-intelligence',
+  '/finance/saisie-ecriture':     'finance:comptabilite',
+  '/finance/previsionnel':        'finance:previsionnel',
+  '/finance/immobilisations':     'finance:immobilisations',
+  '/finance/rapprochement':       'finance:rapprochement',
+  '/documents/archives':          'documents:archives',
+  '/automatisation/workflows':    'workflows:automatisation',
+}
+
+function getPermKeyFromPath(pathname) {
+  // Essayer le match exact d'abord
+  if (ROUTE_PERM_MAP[pathname]) return ROUTE_PERM_MAP[pathname]
+  // Essayer en enlevant le préfixe env (ex: /1924635/activite/saisie → /activite/saisie)
+  const withoutEnv = pathname.replace(/^\/[0-9]+/, '')
+  if (ROUTE_PERM_MAP[withoutEnv]) return ROUTE_PERM_MAP[withoutEnv]
+  // Essayer un match par préfixe (pour les sous-routes comme /crm/contacts/123)
+  for (const [route, perm] of Object.entries(ROUTE_PERM_MAP)) {
+    if (withoutEnv.startsWith(route + '/') || withoutEnv === route) return perm
+  }
+  return null
+}
+
+export default function ProtectedRoute({ children, roles, superAdminOnly, perm }) {
   const { user, profile, loading } = useAuth()
+  const { canView } = usePermissions()
   const location = useLocation()
 
   if (loading) return <Spinner />
@@ -15,6 +67,10 @@ export default function ProtectedRoute({ children, roles, superAdminOnly }) {
   if (roles && profile && !roles.includes(profile.role)) return <Navigate to="/unauthorized" replace />
   // Bloquer les routes de modules masqués en production
   if (!isRouteEnabled(location.pathname)) return <Navigate to="/" replace />
+
+  // Vérifier les permissions dynamiques (role_permissions)
+  const permKey = perm || getPermKeyFromPath(location.pathname)
+  if (permKey && !canView(permKey)) return <Navigate to="/unauthorized" replace />
 
   return children
 }

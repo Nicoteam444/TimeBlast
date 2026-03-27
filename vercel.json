@@ -1,3 +1,18 @@
 {
-  "rewrites": [{ "source": "/(.*)", "destination": "/index.html" }]
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "has": [{ "type": "host", "value": "admin.timeblast.ai" }],
+      "destination": "/index.html"
+    },
+    { "source": "/(.*)", "destination": "/index.html" }
+  ],
+  "redirects": [
+    {
+      "source": "/:path((?!backoffice).*)",
+      "has": [{ "type": "host", "value": "admin.timeblast.ai" }],
+      "destination": "https://admin.timeblast.ai/backoffice",
+      "permanent": false
+    }
+  ]
 }
