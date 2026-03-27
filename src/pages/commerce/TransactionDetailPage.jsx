@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
-import { useParams, useNavigate } from 'react-router-dom'
+import { useParams } from 'react-router-dom'
+import useEnvNavigate from '../../hooks/useEnvNavigate'
 import { supabase } from '../../lib/supabase'
 import { useBreadcrumb } from '../../contexts/BreadcrumbContext'
 import ClientAutocomplete from '../../components/ClientAutocomplete'
@@ -16,7 +17,7 @@ const PHASES = [
 
 export default function TransactionDetailPage() {
   const { id } = useParams()
-  const navigate = useNavigate()
+  const navigate = useEnvNavigate()
   const { setSegments, clearSegments } = useBreadcrumb() || {}
   const [transaction, setTransaction] = useState(null)
   const [loading, setLoading] = useState(true)

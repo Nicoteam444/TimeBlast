@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo, useCallback } from 'react'
-import { useNavigate } from 'react-router-dom'
+import useEnvNavigate from '../../hooks/useEnvNavigate'
 import { supabase } from '../../lib/supabase'
 import Spinner from '../../components/Spinner'
 import {
@@ -179,7 +179,7 @@ async function fetchAllEcritures(importId, signal) {
 
 // ── Page principale ───────────────────────────────────────────
 export default function ComptaPage() {
-  const navigate = useNavigate()
+  const navigate = useEnvNavigate()
 
   const [activeTab, setActiveTab]     = useState('analyse')
   const [imports, setImports]         = useState([])

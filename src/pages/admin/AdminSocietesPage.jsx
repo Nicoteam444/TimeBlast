@@ -1,12 +1,12 @@
 import { useState, useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
+import useEnvNavigate from '../../hooks/useEnvNavigate'
 import { supabase } from '../../lib/supabase'
 import useSortableTable from '../../hooks/useSortableTable'
 import SortableHeader from '../../components/SortableHeader'
 import Spinner from '../../components/Spinner'
 
 export default function AdminSocietesPage() {
-  const navigate = useNavigate()
+  const navigate = useEnvNavigate()
   const [societes, setSocietes]       = useState([])
   const [groupes, setGroupes]         = useState([])
   const [loading, setLoading]         = useState(true)

@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
-import { useParams, useNavigate } from 'react-router-dom'
+import { useParams } from 'react-router-dom'
+import useEnvNavigate from '../../hooks/useEnvNavigate'
 import { supabase } from '../../lib/supabase'
 import ProjetsPage from '../temps/ProjetsPage'
 import ProjetDetailPage from '../temps/ProjetDetailPage'
@@ -8,7 +9,7 @@ import Spinner from '../../components/Spinner'
 
 export default function ProjetsWrapper() {
   const { projetId } = useParams()
-  const navigate = useNavigate()
+  const navigate = useEnvNavigate()
   const { setSegments, clearSegments } = useBreadcrumb()
   const [projet, setProjet] = useState(null)
   const [loading, setLoading] = useState(!!projetId)

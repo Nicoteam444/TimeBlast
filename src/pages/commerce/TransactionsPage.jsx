@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo, useRef } from 'react'
-import { useNavigate } from 'react-router-dom'
+import useEnvNavigate from '../../hooks/useEnvNavigate'
 import { supabase } from '../../lib/supabase'
 import ClientAutocomplete from '../../components/ClientAutocomplete'
 import { useAuth } from '../../contexts/AuthContext'
@@ -97,7 +97,7 @@ function KanbanColumn({ phase, cards, onDragStart, onDrop, onClick }) {
 
 // ── Main Page ─────────────────────────────────────────────────────────────────
 export default function TransactionsPage() {
-  const navigate = useNavigate()
+  const navigate = useEnvNavigate()
   const { user } = useAuth()
   const [transactions, setTransactions] = useState([])
   const [loading, setLoading] = useState(true)

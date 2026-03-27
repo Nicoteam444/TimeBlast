@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from 'react'
-import { useNavigate } from 'react-router-dom'
+import useEnvNavigate from '../../hooks/useEnvNavigate'
 import { supabase } from '../../lib/supabase'
 import useSortableTable from '../../hooks/useSortableTable'
 import SortableHeader from '../../components/SortableHeader'
@@ -14,7 +14,7 @@ const EMPTY_FORM = {
   linkedin_url: '', entreprise_id: '', notes: '', statut: 'actif'}
 
 export default function ContactsPage() {
-  const navigate = useNavigate()
+  const navigate = useEnvNavigate()
 
   const [contacts, setContacts] = useState([])
   const [clients, setClients] = useState([])

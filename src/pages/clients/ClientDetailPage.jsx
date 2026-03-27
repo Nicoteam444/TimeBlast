@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
-import { useParams, useNavigate } from 'react-router-dom'
+import { useParams } from 'react-router-dom'
+import useEnvNavigate from '../../hooks/useEnvNavigate'
 import { supabase } from '../../lib/supabase'
 import { useBreadcrumb } from '../../contexts/BreadcrumbContext'
 import Spinner from '../../components/Spinner'
@@ -11,7 +12,7 @@ const STATUT_COLORS = {
 
 export default function ClientDetailPage() {
   const { id } = useParams()
-  const navigate = useNavigate()
+  const navigate = useEnvNavigate()
   const { setSegments, clearSegments } = useBreadcrumb() || {}
   const [client, setClient] = useState(null)
   const [projets, setProjets] = useState([])

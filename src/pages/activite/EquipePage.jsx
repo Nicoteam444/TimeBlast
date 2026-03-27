@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from 'react'
-import { useNavigate } from 'react-router-dom'
+import useEnvNavigate from '../../hooks/useEnvNavigate'
 import { supabase } from '../../lib/supabase'
 import useSortableTable from '../../hooks/useSortableTable'
 import SortableHeader from '../../components/SortableHeader'
@@ -25,7 +25,7 @@ function fmtDate(iso) {
 }
 
 export default function EquipePage() {
-  const navigate = useNavigate()
+  const navigate = useEnvNavigate()
   const [equipe, setEquipe]       = useState([])
   const [loading, setLoading]     = useState(true)
   const [search, setSearch]       = useState('')

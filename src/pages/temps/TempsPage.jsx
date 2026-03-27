@@ -1,9 +1,9 @@
-import { useNavigate } from 'react-router-dom'
+import useEnvNavigate from '../../hooks/useEnvNavigate'
 import { useAuth } from '../../contexts/AuthContext'
 
 export default function TempsPage() {
   const { hasRole } = useAuth()
-  const navigate = useNavigate()
+  const navigate = useEnvNavigate()
 
   return (
     <div className="home-page">

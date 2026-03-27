@@ -1,5 +1,6 @@
 import { useState, useEffect, useMemo } from 'react'
-import { useParams, useNavigate } from 'react-router-dom'
+import { useParams } from 'react-router-dom'
+import useEnvNavigate from '../../hooks/useEnvNavigate'
 import { supabase } from '../../lib/supabase'
 import { useBreadcrumb } from '../../contexts/BreadcrumbContext'
 import useSortableTable from '../../hooks/useSortableTable'
@@ -14,7 +15,7 @@ const PRIORITY_CONFIG = {
 
 export default function TaskDetailPage() {
   const { projetId, taskId } = useParams()
-  const navigate = useNavigate()
+  const navigate = useEnvNavigate()
   const { setSegments, clearSegments } = useBreadcrumb() || {}
 
   const [projet, setProjet] = useState(null)

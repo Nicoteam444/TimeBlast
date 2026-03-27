@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from 'react'
-import { useNavigate } from 'react-router-dom'
+import useEnvNavigate from '../../hooks/useEnvNavigate'
 import { supabase } from '../../lib/supabase'
 import { useDemo } from '../../contexts/DemoContext'
 import { DEMO_IMPORTS, DEMO_ECRITURES } from '../../data/demoData'
@@ -10,7 +10,7 @@ function fmtNum(n) {
 }
 
 export default function ComptaEcrituresPage() {
-  const navigate = useNavigate()
+  const navigate = useEnvNavigate()
   const { isDemoMode } = useDemo()
   const [imports, setImports] = useState([])
   const [selectedImportId, setSelectedImportId] = useState(null)

@@ -1,10 +1,10 @@
 import { useState, useEffect, useMemo } from 'react'
-import { useNavigate } from 'react-router-dom'
+import useEnvNavigate from '../../hooks/useEnvNavigate'
 import { supabase } from '../../lib/supabase'
 import Spinner from '../../components/Spinner'
 
 export default function ClientsPage() {
-  const navigate = useNavigate()
+  const navigate = useEnvNavigate()
   const [clients, setClients] = useState([])
   const [loading, setLoading] = useState(true)
   const [showForm, setShowForm] = useState(false)

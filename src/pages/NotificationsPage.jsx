@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react'
-import { useNavigate } from 'react-router-dom'
+import useEnvNavigate from '../hooks/useEnvNavigate'
 import { useNotifications } from '../contexts/NotificationsContext'
 import Spinner from '../components/Spinner'
 
@@ -36,7 +36,7 @@ function fmtNotifDate(iso) {
 
 export default function NotificationsPage() {
   const { notifications, unreadCount, loading, markRead, markUnread, markAllRead, refreshNotifications } = useNotifications()
-  const navigate = useNavigate()
+  const navigate = useEnvNavigate()
   const [activeTab, setActiveTab] = useState('toutes')
   const [showUnreadOnly, setShowUnreadOnly] = useState(false)
 

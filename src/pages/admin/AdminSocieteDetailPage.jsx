@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
-import { useParams, useNavigate } from 'react-router-dom'
+import { useParams } from 'react-router-dom'
+import useEnvNavigate from '../../hooks/useEnvNavigate'
 import { supabase } from '../../lib/supabase'
 import { useBreadcrumb } from '../../contexts/BreadcrumbContext'
 import Spinner from '../../components/Spinner'
@@ -107,7 +108,7 @@ function HoldingOrgChart({ holding, groupes, societes }) {
 
 export default function AdminSocieteDetailPage() {
   const { id } = useParams()
-  const navigate = useNavigate()
+  const navigate = useEnvNavigate()
   const { setSegments, clearSegments } = useBreadcrumb() || {}
 
   const [societe, setSociete] = useState(null)

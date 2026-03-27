@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from 'react'
-import { useNavigate } from 'react-router-dom'
+import useEnvNavigate from '../../hooks/useEnvNavigate'
 import { supabase } from '../../lib/supabase'
 import Spinner from '../../components/Spinner'
 
@@ -43,7 +43,7 @@ function getColor(poste) {
 }
 
 export default function TrombinosccopePage() {
-  const navigate = useNavigate()
+  const navigate = useEnvNavigate()
   const [equipe, setEquipe] = useState([])
   const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState('')

@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo, useRef } from 'react'
 import { supabase } from '../../lib/supabase'
-import { useNavigate } from 'react-router-dom'
+import useEnvNavigate from '../../hooks/useEnvNavigate'
 import useSortableTable from '../../hooks/useSortableTable'
 import SortableHeader from '../../components/SortableHeader'
 import Spinner from '../../components/Spinner'
@@ -13,7 +13,7 @@ function fmtK(n) {
 }
 
 export default function EntreprisesPage() {
-  const navigate = useNavigate()
+  const navigate = useEnvNavigate()
   const [entreprises, setEntreprises] = useState([])
   const [contacts, setContacts] = useState([])
   const [leads, setLeads] = useState([])

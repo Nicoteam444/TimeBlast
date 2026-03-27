@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from 'react'
-import { useNavigate } from 'react-router-dom'
+import useEnvNavigate from '../../hooks/useEnvNavigate'
 import { supabase } from '../../lib/supabase'
 import { useAuth } from '../../contexts/AuthContext'
 import ConfirmDeleteModal from '../../components/ConfirmDeleteModal'
@@ -21,7 +21,7 @@ const PRIORITY_CONFIG = {
 
 export default function ProjetDetailPage({ projet, onBack }) {
   const { user } = useAuth()
-  const navigate = useNavigate()
+  const navigate = useEnvNavigate()
   const [columns, setColumns] = useState([])
   const [tasks, setTasks] = useState([])
   const [timeEntries, setTimeEntries] = useState([])

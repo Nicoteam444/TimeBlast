@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
-import { useNavigate } from 'react-router-dom'
+import useEnvNavigate from '../../hooks/useEnvNavigate'
 import { supabase } from '../../lib/supabase'
 import Spinner from '../../components/Spinner'
 
@@ -700,7 +700,7 @@ function SqlHintBlock({ onClose }) {
 // ─── Main Page ────────────────────────────────────────────────────────────────
 
 export default function AdminOrganigrammePage() {
-  const navigate = useNavigate()
+  const navigate = useEnvNavigate()
   const canvasRef = useRef(null)
   const wrapRef = useRef(null)
 

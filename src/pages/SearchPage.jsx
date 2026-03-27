@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
-import { useSearchParams, useNavigate } from 'react-router-dom'
+import { useSearchParams } from 'react-router-dom'
+import useEnvNavigate from '../hooks/useEnvNavigate'
 import { supabase } from '../lib/supabase'
 import Spinner from '../components/Spinner'
 
@@ -53,7 +54,7 @@ const SECTIONS = [
 
 export default function SearchPage() {
   const [searchParams] = useSearchParams()
-  const navigate = useNavigate()
+  const navigate = useEnvNavigate()
   const q = searchParams.get('q') || ''
   const [results, setResults] = useState({})
   const [loading, setLoading] = useState(false)

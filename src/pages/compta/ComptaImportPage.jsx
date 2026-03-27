@@ -1,5 +1,5 @@
 import { useState, useRef } from 'react'
-import { useNavigate } from 'react-router-dom'
+import useEnvNavigate from '../../hooks/useEnvNavigate'
 import { supabase } from '../../lib/supabase'
 import { useAuth } from '../../contexts/AuthContext'
 import * as XLSX from 'xlsx'
@@ -218,7 +218,7 @@ CREATE POLICY "fec_ecritures_all" ON fec_ecritures FOR ALL
 // ── Page ─────────────────────────────────────────────────────
 export default function ComptaImportPage() {
   const { profile } = useAuth()
-  const navigate = useNavigate()
+  const navigate = useEnvNavigate()
   const fileRef = useRef()
 
   const [step, setStep] = useState(1)

@@ -1,4 +1,5 @@
 import { useNavigate, useParams } from 'react-router-dom'
+import useEnvNavigate from '../hooks/useEnvNavigate'
 
 const CATEGORY_DATA = {
   crm: {
@@ -85,9 +86,7 @@ const CATEGORY_DATA = {
     ]}}
 
 export default function CategoryLandingPage({ categoryId }) {
-  const navigate = useNavigate()
-  const { envId } = useParams()
-  const envPrefix = envId ? `/${envId}` : ''
+  const navigate = useEnvNavigate()
   const cat = CATEGORY_DATA[categoryId]
 
   if (!cat) return <div className="admin-page"><p>Catégorie non trouvée.</p></div>
@@ -101,7 +100,7 @@ export default function CategoryLandingPage({ categoryId }) {
 
       <div className="category-grid">
         {cat.items.map((item, i) => (
-          <div key={i} className="category-card" onClick={() => navigate(envPrefix + item.to)}>
+          <div key={i} className="category-card" onClick={() => navigate(item.to)}>
             <div className="category-card-icon">{item.icon}</div>
             <div>
               <h3 className="category-card-title">{item.label}</h3>
