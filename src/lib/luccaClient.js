@@ -47,14 +47,24 @@ export async function syncUsersToSupabase() {
     const mapped = {
       nom: u.lastName || '',
       prenom: u.firstName || '',
+      email: u.mail || '',
+      login: u.login || '',
       poste: u.jobTitle || '',
       departement: u.department?.name || '',
-      date_embauche: u.dtContractStart || null,
-      date_naissance: u.birthDate || null,
-      telephone: u.address?.phone || '',
-      adresse: u.address?.street ? `${u.address.street}, ${u.address.zipCode || ''} ${u.address.city || ''}`.trim() : '',
+      date_embauche: u.dtContractStart ? u.dtContractStart.split('T')[0] : null,
+      date_naissance: u.birthDate ? u.birthDate.split('T')[0] : null,
+      date_fin_contrat: u.dtContractEnd ? u.dtContractEnd.split('T')[0] : null,
+      adresse: typeof u.address === 'string' ? u.address : '',
+      photo_url: u.picture?.href || u.picture?.url || null,
       statut: (!u.dtContractEnd || new Date(u.dtContractEnd) > new Date()) ? 'actif' : 'inactif',
       lucca_id: String(u.id),
+      lucca_department_id: u.department?.id || null,
+      lucca_department_name: u.department?.name || '',
+      lucca_legal_entity_id: u.legalEntity?.id || null,
+      lucca_legal_entity_name: u.legalEntity?.name || '',
+      lucca_manager_id: u.manager?.id || null,
+      lucca_manager_name: u.manager?.name || '',
+      lucca_role: u.rolePrincipal?.name || '',
     }
 
     // Check if user already exists by lucca_id
