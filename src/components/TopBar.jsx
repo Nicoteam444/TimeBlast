@@ -232,7 +232,7 @@ export default function TopBar() {
 
   function handleSelectResult(item) {
     setSearchQuery(''); setSearchResults([]); setSearchOpen(false)
-    navigate(item.path)
+    navigate(envPrefix + item.path)
   }
 
   function handleSearchSubmit(e) {
