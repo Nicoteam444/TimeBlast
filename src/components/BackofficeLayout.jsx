@@ -3,52 +3,50 @@ import { useAuth } from '../contexts/AuthContext'
 
 export default function BackofficeLayout({ children }) {
   const navigate = useNavigate()
-  const { user, signOut } = useAuth()
+  const { user } = useAuth()
 
   return (
-    <div style={{ minHeight: '100vh', background: '#f1f5f9' }}>
+    <div style={{ minHeight: '100vh', background: '#f8fafc' }}>
       {/* Header */}
       <header style={{
-        background: 'linear-gradient(135deg, #1e293b 0%, #334155 100%)',
+        background: '#0f172a',
         color: '#fff',
         padding: '0 2rem',
-        height: 56,
+        height: 52,
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'space-between',
-        boxShadow: '0 2px 8px rgba(0,0,0,.15)',
+        borderBottom: '1px solid rgba(255,255,255,.08)',
       }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-          <span style={{ fontSize: 22, fontWeight: 800, letterSpacing: -1 }}>TimeBlast</span>
-          <span style={{
-            background: '#dc2626',
-            color: '#fff',
-            fontSize: 10,
-            fontWeight: 700,
-            padding: '2px 8px',
-            borderRadius: 4,
-            textTransform: 'uppercase',
-            letterSpacing: 1,
-          }}>Backoffice</span>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+          <span style={{ fontSize: 18, fontWeight: 800, letterSpacing: -.5, background: 'linear-gradient(135deg, #60a5fa, #a78bfa)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>TimeBlast</span>
+          <span style={{ width: 1, height: 20, background: 'rgba(255,255,255,.15)' }} />
+          <span style={{ fontSize: 12, fontWeight: 600, color: 'rgba(255,255,255,.5)', textTransform: 'uppercase', letterSpacing: 1.5 }}>Backoffice</span>
         </div>
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+          <span style={{ fontSize: 12, color: 'rgba(255,255,255,.4)', fontFamily: 'monospace' }}>admin.timeblast.ai</span>
           <button
             onClick={() => navigate('/')}
             style={{
-              background: 'rgba(255,255,255,.15)',
-              color: '#fff',
-              border: 'none',
+              background: 'rgba(255,255,255,.08)',
+              color: 'rgba(255,255,255,.7)',
+              border: '1px solid rgba(255,255,255,.1)',
               borderRadius: 6,
-              padding: '6px 14px',
+              padding: '5px 14px',
               cursor: 'pointer',
-              fontSize: 13,
-              fontWeight: 500,
+              fontSize: 12,
+              fontWeight: 600,
+              transition: 'all .15s',
             }}
+            onMouseEnter={e => { e.target.style.background = 'rgba(255,255,255,.15)'; e.target.style.color = '#fff' }}
+            onMouseLeave={e => { e.target.style.background = 'rgba(255,255,255,.08)'; e.target.style.color = 'rgba(255,255,255,.7)' }}
           >
-            Retour à l'app
+            &larr; Retour a l'app
           </button>
-          <span style={{ fontSize: 13, opacity: .7 }}>{user?.email}</span>
+          <div style={{ width: 28, height: 28, borderRadius: '50%', background: 'linear-gradient(135deg, #2B4C7E, #60a5fa)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, fontWeight: 700 }}>
+            {(user?.email || '?')[0].toUpperCase()}
+          </div>
         </div>
       </header>
 
