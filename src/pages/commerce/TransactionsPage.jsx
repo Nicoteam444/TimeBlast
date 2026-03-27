@@ -107,12 +107,18 @@ export default function TransactionsPage() {
   const [error, setError] = useState(null)
   const [filter, setFilter] = useState('')
   const [filterSociete, setFilterSociete] = useState('')
+  const [societes, setSocietes] = useState([])
   const [pageSize, setPageSize] = useState(20)
   const [page, setPage] = useState(1)
   const [view, setView] = useState('kanban')
   const dragCard = useRef(null)
 
-  useEffect(() => { fetchTransactions() }, [])
+  useEffect(() => { fetchTransactions(); fetchSocietes() }, [])
+
+  async function fetchSocietes() {
+    const { data } = await supabase.from('societes').select('id, name').order('name')
+    setSocietes(data || [])
+  }
 
   async function fetchTransactions() {
     setLoading(true)
