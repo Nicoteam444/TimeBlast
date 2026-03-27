@@ -5169,7 +5169,7 @@ button:disabled { opacity: .6; cursor: not-allowed; }
   overflow: hidden;
 }
 @media (max-width: 900px) { .fac-main-layout { grid-template-columns: 1fr 380px; } }
-@media (max-width: 650px) { .fac-main-layout { grid-template-columns: 1fr; } }
+@media (max-width: 650px) { .fac-main-layout { grid-template-columns: 1fr; } .fac-right-col { display: none; } }
 
 .fac-left-col {
   display: flex; flex-direction: column; gap: .75rem;
@@ -5997,8 +5997,8 @@ button:disabled { opacity: .6; cursor: not-allowed; }
   .kpi-grid { grid-template-columns: repeat(2, 1fr); }
   .kanban-board { gap: .75rem; }
   .kanban-column { min-width: 220px; }
-  .fac-main-layout { grid-template-columns: 1fr; }
-  .fac-right-col { display: none; }
+  .fac-main-layout { grid-template-columns: 1fr 340px; }
+  .fac-right-col { /* visible même sur écrans moyens */ }
 }
 
 @media (max-width: 768px) {
