@@ -52,7 +52,6 @@ export async function syncUsersToSupabase() {
       date_embauche: u.dtContractStart || null,
       date_naissance: u.birthDate || null,
       lucca_id: String(u.id),
-      actif: !u.dtContractEnd || new Date(u.dtContractEnd) > new Date(),
     }
 
     // Check if user already exists by lucca_id
