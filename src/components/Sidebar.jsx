@@ -198,8 +198,9 @@ export default function Sidebar() {
   function filterItems(items) {
     return items.filter(i => {
       if (i.superAdminOnly && !isSuperAdmin) return false
+      // Super admin voit tout
+      if (isSuperAdmin) return true
       if (i.roles && !i.roles.includes(userRole)) return false
-      // Vérifier les permissions dynamiques depuis role_permissions
       if (i.perm && !canView(i.perm)) return false
       return true
     })
@@ -207,8 +208,9 @@ export default function Sidebar() {
 
   const visibleSections = SECTIONS.filter(s => {
     if (!isModuleEnabled(s.id)) return false
+    // Super admin voit toutes les sections
+    if (isSuperAdmin) return true
     if (!s.roles.includes(userRole)) return false
-    // Vérifier la perm de la section elle-même (pour directLink sans items)
     if (s.perm && !canView(s.perm)) return false
     return s.directLink || s.directTo || filterItems(s.items).length > 0
   })
