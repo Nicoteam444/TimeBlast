@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo, useRef } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
 import { supabase } from '../lib/supabase'
 import {
@@ -113,7 +113,10 @@ function SectionHeader({ icon, title, linkLabel, onLink }) {
 // ── Main Dashboard ──
 export default function DashboardPage() {
   const { user, profile } = useAuth()
-  const navigate = useNavigate()
+  const _nav = useNavigate()
+  const { envId } = useParams()
+  const _p = envId ? `/${envId}` : ''
+  const navigate = (path) => _nav(path?.startsWith('/') ? _p + path : path)
   const [loading, setLoading] = useState(true)
   const [raw, setRaw] = useState({})
 

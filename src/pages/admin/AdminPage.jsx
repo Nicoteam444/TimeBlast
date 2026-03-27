@@ -1,4 +1,4 @@
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import { useAuth } from '../../contexts/AuthContext'
 
 const SUPER_ADMIN_EMAIL = 'nicolas.nabhan@groupe-sra.fr'
@@ -65,6 +65,8 @@ const ADMIN_CARDS = [
 
 export default function AdminPage() {
   const navigate = useNavigate()
+  const { envId } = useParams()
+  const envPrefix = envId ? `/${envId}` : ''
   const { user } = useAuth()
   const isSuperAdmin = (user?.email || '').toLowerCase().trim() === SUPER_ADMIN_EMAIL
 
@@ -86,7 +88,7 @@ export default function AdminPage() {
           <button
             key={card.to}
             className="admin-hub-card"
-            onClick={() => navigate(card.to)}
+            onClick={() => navigate(envPrefix + card.to)}
             style={{ '--card-color': card.color }}
           >
             <div className="admin-hub-card-bar" />
