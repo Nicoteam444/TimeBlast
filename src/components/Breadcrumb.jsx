@@ -85,7 +85,8 @@ const PATH_OVERRIDES = {
   // /commerce/* n'a pas de landing → redirige vers la catégorie parente
   '/commerce':              '/crm',
   // /equipe/* sous-pages qui sont dans le sidebar sous Équipe
-  '/equipe':                '/equipe'}
+  '/equipe':                '/equipe',
+  '/equipe/collaborateurs': '/activite/equipe'}
 
 /**
  * Breadcrumb dynamique.
@@ -131,7 +132,9 @@ export default function Breadcrumb() {
     const label = ROUTE_LABELS[seg]
     if (label) {
       // Use override path if the constructed path doesn't have a direct route
-      const navPath = PATH_OVERRIDES[currentPath] || currentPath
+      const pathWithoutEnv = currentPath.replace(envPrefix, '')
+      const override = PATH_OVERRIDES[pathWithoutEnv]
+      const navPath = override ? envPrefix + override : currentPath
       crumbs.push({ label, path: navPath })
     }
   }
