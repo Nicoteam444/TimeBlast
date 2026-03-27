@@ -27,38 +27,47 @@ function fmtDate(iso) {
 export default function EquipePage() {
   const navigate = useEnvNavigate()
   const [equipe, setEquipe]       = useState([])
+  const [societes, setSocietes]   = useState([])
   const [loading, setLoading]     = useState(true)
   const [search, setSearch]       = useState('')
   const [filterPoste, setFilterPoste] = useState('')
+  const [filterSociete, setFilterSociete] = useState('')
   const [page, setPage]           = useState(1)
   const [pageSize, setPageSize]   = useState(20)
 
   useEffect(() => {
     setPage(1)
     fetchEquipe()
+    fetchSocietes()
   }, [])
 
   async function fetchEquipe() {
     setLoading(true)
-    let query = supabase.from('equipe').select('*')
-    const { data } = await query
+    const { data } = await supabase.from('equipe').select('*, societes(id, name)')
     setEquipe(data || [])
     setLoading(false)
   }
 
-  const postes = useMemo(() => [...new Set(equipe.map(e => e.poste))].sort(), [equipe])
+  async function fetchSocietes() {
+    const { data } = await supabase.from('societes').select('id, name').order('name')
+    setSocietes(data || [])
+  }
+
+  const postes = useMemo(() => [...new Set(equipe.map(e => e.poste).filter(Boolean))].sort(), [equipe])
 
   const filtered = useMemo(() => {
     const q = search.toLowerCase()
     return equipe.filter(e => {
       const matchSearch = !q ||
-        e.nom.toLowerCase().includes(q) ||
-        e.prenom.toLowerCase().includes(q) ||
-        e.poste.toLowerCase().includes(q)
+        (e.nom || '').toLowerCase().includes(q) ||
+        (e.prenom || '').toLowerCase().includes(q) ||
+        (e.poste || '').toLowerCase().includes(q) ||
+        (e.societes?.name || '').toLowerCase().includes(q)
       const matchPoste = !filterPoste || e.poste === filterPoste
-      return matchSearch && matchPoste
+      const matchSociete = !filterSociete || e.societe_id === filterSociete
+      return matchSearch && matchPoste && matchSociete
     })
-  }, [equipe, search, filterPoste])
+  }, [equipe, search, filterPoste, filterSociete])
 
   const { sortedData: sorted, sortKey, sortDir, requestSort } = useSortableTable(filtered, 'nom')
 
@@ -75,9 +84,17 @@ export default function EquipePage() {
       'Commercial': '#0ea5e9', 'Responsable commercial': '#0ea5e9',
       'Comptable': '#8b5cf6', 'Contrôleur': '#8b5cf6'}
     for (const [k, v] of Object.entries(map)) {
-      if (poste.includes(k)) return v
+      if ((poste || '').includes(k)) return v
     }
     return '#64748b'
+  }
+
+  // Couleur de pastille pour la société
+  const SOCIETE_COLORS = ['#2563eb', '#7c3aed', '#0891b2', '#dc2626', '#059669', '#d97706', '#6366f1', '#0ea5e9']
+  function societeColor(societeId) {
+    if (!societeId) return '#94a3b8'
+    const idx = societes.findIndex(s => s.id === societeId)
+    return SOCIETE_COLORS[idx % SOCIETE_COLORS.length] || '#94a3b8'
   }
 
   return (
@@ -87,7 +104,7 @@ export default function EquipePage() {
           <h1>Équipe</h1>
           <p>
             {filtered.length} collaborateur{filtered.length > 1 ? 's' : ''}
-            {(search || filterPoste) ? ` sur ${equipe.length}` : ''}
+            {(search || filterPoste || filterSociete) ? ` sur ${equipe.length}` : ''}
           </p>
         </div>
       </div>
@@ -97,10 +114,18 @@ export default function EquipePage() {
         <input
           className="table-search"
           type="text"
-          placeholder="Rechercher nom, prénom, poste…"
+          placeholder="Rechercher nom, prénom, poste, société…"
           value={search}
           onChange={e => { setSearch(e.target.value); setPage(1) }}
         />
+        <select
+          className="table-filter-select"
+          value={filterSociete}
+          onChange={e => { setFilterSociete(e.target.value); setPage(1) }}
+        >
+          <option value="">Toutes les sociétés</option>
+          {societes.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
+        </select>
         <select
           className="table-filter-select"
           value={filterPoste}
@@ -130,6 +155,7 @@ export default function EquipePage() {
                 <tr>
                   <SortableHeader label="Nom" field="nom" sortKey={sortKey} sortDir={sortDir} onSort={requestSort} />
                   <SortableHeader label="Prénom" field="prenom" sortKey={sortKey} sortDir={sortDir} onSort={requestSort} />
+                  <SortableHeader label="Société" field="societes.name" sortKey={sortKey} sortDir={sortDir} onSort={requestSort} />
                   <SortableHeader label="Poste" field="poste" sortKey={sortKey} sortDir={sortDir} onSort={requestSort} />
                   <SortableHeader label="Ancienneté" field="date_embauche" sortKey={sortKey} sortDir={sortDir} onSort={requestSort} />
                   <SortableHeader label="Date de naissance" field="date_naissance" sortKey={sortKey} sortDir={sortDir} onSort={requestSort} />
@@ -137,8 +163,9 @@ export default function EquipePage() {
               </thead>
               <tbody>
                 {paginated.map(e => {
-                  const initials = `${e.prenom[0] || ''}${e.nom[0] || ''}`.toUpperCase()
+                  const initials = `${(e.prenom || '')[0] || ''}${(e.nom || '')[0] || ''}`.toUpperCase()
                   const anc = calcAnciennete(e.date_embauche)
+                  const sName = e.societes?.name || '—'
                   return (
                     <tr key={e.id} style={{ cursor: 'pointer' }} onClick={() => navigate(`/equipe/collaborateurs/${e.id}`)}>
                       <td>
@@ -151,8 +178,17 @@ export default function EquipePage() {
                       </td>
                       <td style={{ color: 'var(--text)' }}>{e.prenom}</td>
                       <td>
+                        <span className="status-badge" style={{
+                          color: societeColor(e.societe_id),
+                          background: societeColor(e.societe_id) + '15',
+                          fontSize: '.78rem'
+                        }}>
+                          🏛 {sName}
+                        </span>
+                      </td>
+                      <td>
                         <span className="status-badge" style={{ color: avatarColor(e.poste), background: avatarColor(e.poste) + '18' }}>
-                          {e.poste}
+                          {e.poste || '—'}
                         </span>
                       </td>
                       <td className="date-cell">
@@ -164,7 +200,7 @@ export default function EquipePage() {
                 })}
                 {paginated.length === 0 && (
                   <tr>
-                    <td colSpan={5} style={{ textAlign: 'center', color: 'var(--text-muted)', padding: '3rem' }}>
+                    <td colSpan={6} style={{ textAlign: 'center', color: 'var(--text-muted)', padding: '3rem' }}>
                       Aucun collaborateur trouvé.
                     </td>
                   </tr>

@@ -320,6 +320,12 @@ function AppRoutes() {
       <Route path="equipe/competences" element={
         <ProtectedRoute roles={['admin','manager']}><Layout><CompetencesPage /></Layout></ProtectedRoute>
       } />
+      <Route path="equipe/societes" element={
+        <ProtectedRoute roles={['admin','manager']}><Layout><AdminSocietesPage /></Layout></ProtectedRoute>
+      } />
+      <Route path="equipe/societes/:id" element={
+        <ProtectedRoute roles={['admin','manager']}><Layout><AdminSocieteDetailPage /></Layout></ProtectedRoute>
+      } />
 
       {/* Admin */}
       <Route path="admin" element={

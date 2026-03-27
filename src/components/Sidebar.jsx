@@ -48,6 +48,7 @@ const SECTIONS = [
       { to: '/equipe/trombinoscope',   icon: '🪪',  label: 'Trombinoscope',  roles: ['admin', 'manager'], perm: 'equipe:trombinoscope' },
       { to: '/equipe/organigramme',    icon: '🏢',  label: 'Organigramme',   roles: ['admin', 'manager'], perm: 'equipe:organigramme' },
       { to: '/equipe/competences',     icon: '🎯',  label: 'Compétences',    roles: ['admin', 'manager'], perm: 'equipe:competences' },
+      { to: '/equipe/societes',        icon: '🏛',  label: 'Sociétés',       roles: ['admin', 'manager'] },
     ]},
   {
     id: 'gestion',
