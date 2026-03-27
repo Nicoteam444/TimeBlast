@@ -505,6 +505,10 @@ button:disabled { opacity: .6; cursor: not-allowed; }
   flex: 1;
   overflow-y: auto;
   padding: 2rem 2.5rem;
+  max-width: 1600px;
+  margin: 0 auto;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 /* ── Breadcrumb ── */
@@ -1362,7 +1366,8 @@ button:disabled { opacity: .6; cursor: not-allowed; }
 
 .admin-page {
   padding: 0;
-  max-width: 960px;
+  max-width: 1400px;
+  margin: 0 auto;
 }
 .admin-page--full {
   max-width: 100%;
@@ -1463,8 +1468,9 @@ button:disabled { opacity: .6; cursor: not-allowed; }
 
 .users-table {
   width: 100%;
-  min-width: 750px;
+  min-width: 900px;
   border-collapse: collapse;
+  table-layout: auto;
 }
 
 .users-table th {
