@@ -134,9 +134,9 @@ function AppRoutes() {
       <Route path="/set-password" element={<SetPasswordPage />} />
       <Route path="/unauthorized" element={<UnauthorizedPage />} />
 
-      {/* Backoffice — hors scope environnement, toujours sur la base master */}
+      {/* Backoffice — hors scope environnement, auth geree par BackofficeLayout */}
       <Route path="/backoffice" element={
-        <ProtectedRoute roles={['admin']} superAdminOnly><BackofficeLayout><BackofficePage /></BackofficeLayout></ProtectedRoute>
+        <BackofficeLayout><BackofficePage /></BackofficeLayout>
       } />
 
       {/* Redirect racine vers le premier env */}
