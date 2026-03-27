@@ -213,12 +213,14 @@ export default function TopBar() {
     clearTimeout(searchDebounce.current)
     if (!q.trim()) { setSearchResults([]); setSearchOpen(false); return }
     searchDebounce.current = setTimeout(async () => {
-      const [{ data: clients }, { data: transactions }, { data: projets }] = await Promise.all([
+      const [{ data: collabs }, { data: clients }, { data: transactions }, { data: projets }] = await Promise.all([
+        supabase.from('equipe').select('id, nom, prenom, poste, lucca_legal_entity_name').or(`nom.ilike.%${q}%,prenom.ilike.%${q}%,poste.ilike.%${q}%`).limit(5),
         supabase.from('clients').select('id, name').ilike('name', `%${q}%`).limit(3),
         supabase.from('transactions').select('id, name').ilike('name', `%${q}%`).limit(3),
         supabase.from('projets').select('id, name').ilike('name', `%${q}%`).limit(3),
       ])
       const results = [
+        ...(collabs      || []).map(r => ({ ...r, name: `${r.prenom || ''} ${r.nom || ''}`.trim(), type: 'collaborateur', icon: '🧑‍💼', path: `/equipe/collaborateurs/${r.id}`, sub: `${r.poste || ''} · ${r.lucca_legal_entity_name || ''}` })),
         ...(clients      || []).map(r => ({ ...r, type: 'client',      icon: '👥', path: `/clients/${r.id}` })),
         ...(transactions || []).map(r => ({ ...r, type: 'transaction', icon: '💼', path: `/commerce/transactions/${r.id}` })),
         ...(projets      || []).map(r => ({ ...r, type: 'projet',      icon: '📁', path: `/activite/projets` })),
@@ -269,7 +271,7 @@ export default function TopBar() {
           <input
             type="text"
             className="topbar-search-input"
-            placeholder="Rechercher clients, projets, factures..."
+            placeholder="Rechercher collaborateurs, clients, projets..."
             value={searchQuery}
             onChange={handleSearchInput}
             onFocus={() => setSearchOpen(true)}
@@ -303,7 +305,7 @@ export default function TopBar() {
                 <span style={{ fontSize: 14 }}>{r.icon}</span>
                 <div style={{ flex: 1 }}>
                   <div style={{ fontSize: '.85rem', fontWeight: 600, color: '#1a2332' }}>{r.name}</div>
-                  <div style={{ fontSize: '.7rem', color: '#94a3b8' }}>{r.type}</div>
+                  <div style={{ fontSize: '.7rem', color: '#94a3b8' }}>{r.sub || r.type}</div>
                 </div>
                 <span style={{ fontSize: '.65rem', color: '#94a3b8' }}>↵</span>
               </div>
