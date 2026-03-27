@@ -38,16 +38,17 @@ async function luccaFetch(endpoint, options = {}) {
 
 async function luccaFetchAll(endpoint) {
   let allItems = []
-  let pageNum = 1
+  let offset = 0
+  const limit = 50
   const sep = endpoint.includes('?') ? '&' : '?'
   while (true) {
-    const url = `${endpoint}${sep}limit=50&page=${pageNum}`
+    const url = `${endpoint}${sep}paging=${offset},${limit}`
     const result = await luccaFetch(url)
     const items = result?.data?.items || result?.items || result?.data || []
     if (!Array.isArray(items) || items.length === 0) break
     allItems = allItems.concat(items)
-    if (items.length < 50) break
-    pageNum++
+    if (items.length < limit) break
+    offset += limit
   }
   return allItems
 }
