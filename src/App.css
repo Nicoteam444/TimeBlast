@@ -5184,7 +5184,7 @@ button:disabled { opacity: .6; cursor: not-allowed; }
   display: flex; flex-direction: column; gap: .5rem;
   min-width: 0; overflow: hidden;
   position: sticky; top: 1rem; align-self: start;
-  max-height: calc(100vh - 5rem);
+  height: calc(100vh - 5rem);
 }
 
 /* Zone grise : flex: 1 pour remplir la hauteur restante */
