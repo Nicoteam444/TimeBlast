@@ -579,13 +579,27 @@ export default function DashboardPage() {
     async function loadLeaderboard() {
       try {
         // Compter les page_views par user ces 7 derniers jours
+        // On récupère TOUTES les lignes (pas de limite Supabase par défaut de 1000)
         const weekAgo = new Date(Date.now() - 7 * 86400000).toISOString()
-        let q = supabase.from('page_views').select('user_id, created_at').gte('created_at', weekAgo)
-        const { data: views } = await q
-        if (!views) return
+        let allViews = []
+        let from = 0
+        const pageSize = 1000
+        while (true) {
+          const { data, error } = await supabase
+            .from('page_views')
+            .select('user_id')
+            .gte('created_at', weekAgo)
+            .range(from, from + pageSize - 1)
+          if (error) { console.error('[Leaderboard] Erreur page_views:', error.message); break }
+          if (!data || data.length === 0) break
+          allViews = allViews.concat(data)
+          if (data.length < pageSize) break
+          from += pageSize
+        }
+        if (allViews.length === 0) return
         // Agréger par user
         const counts = {}
-        for (const v of views) {
+        for (const v of allViews) {
           counts[v.user_id] = (counts[v.user_id] || 0) + 1
         }
         // Récupérer les noms
@@ -600,7 +614,7 @@ export default function DashboardPage() {
           return { uid, name, initials, count: counts[uid], isMe: uid === user.id }
         }).sort((a, b) => b.count - a.count).slice(0, 6)
         setLeaderboard(board)
-      } catch {}
+      } catch (err) { console.error('[Leaderboard] Erreur:', err) }
     }
     loadLeaderboard()
   }, [user?.id])
