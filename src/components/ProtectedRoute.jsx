@@ -68,9 +68,11 @@ export default function ProtectedRoute({ children, roles, superAdminOnly, perm }
   // Bloquer les routes de modules masqués en production
   if (!isRouteEnabled(location.pathname)) return <Navigate to="/" replace />
 
-  // Vérifier les permissions dynamiques (role_permissions)
-  const permKey = perm || getPermKeyFromPath(location.pathname)
-  if (permKey && !canView(permKey)) return <Navigate to="/unauthorized" replace />
+  // Permissions dynamiques — pour l'instant on ne bloque PAS la navigation
+  // (le Sidebar masque les liens, mais on ne redirige pas si l'URL est tapée directement)
+  // TODO: activer le blocage une fois la matrice de permissions validée en production
+  // const permKey = perm || getPermKeyFromPath(location.pathname)
+  // if (permKey && !canView(permKey)) return <Navigate to="/unauthorized" replace />
 
   return children
 }
