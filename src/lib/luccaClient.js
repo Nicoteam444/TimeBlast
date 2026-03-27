@@ -47,10 +47,13 @@ export async function syncUsersToSupabase() {
     const mapped = {
       nom: u.lastName || '',
       prenom: u.firstName || '',
-      email: u.mail || '',
       poste: u.jobTitle || '',
+      departement: u.department?.name || '',
       date_embauche: u.dtContractStart || null,
       date_naissance: u.birthDate || null,
+      telephone: u.address?.phone || '',
+      adresse: u.address?.street ? `${u.address.street}, ${u.address.zipCode || ''} ${u.address.city || ''}`.trim() : '',
+      statut: (!u.dtContractEnd || new Date(u.dtContractEnd) > new Date()) ? 'actif' : 'inactif',
       lucca_id: String(u.id),
     }
 
