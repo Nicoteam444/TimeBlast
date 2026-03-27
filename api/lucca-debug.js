@@ -6,6 +6,8 @@ export default async function handler(req, res) {
     hasKey: !!process.env.LUCCA_API_KEY,
     keyLength: (process.env.LUCCA_API_KEY || '').length,
     totalEnvVars: envKeys.length,
-    sampleKeys: envKeys.slice(0, 20),
+    allKeys: envKeys,
+    vercelEnv: process.env.VERCEL_ENV || 'NOT_SET',
+    nodeEnv: process.env.NODE_ENV || 'NOT_SET',
   })
 }
