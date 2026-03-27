@@ -63,10 +63,15 @@ export default function ProtectedRoute({ children, roles, superAdminOnly, perm }
 
   if (loading) return <Spinner />
   if (!user) return <Navigate to="/login" replace />
-  if (superAdminOnly && user?.email !== SUPER_ADMIN_EMAIL) return <Navigate to="/" replace />
-  if (roles && profile && !roles.includes(profile.role)) return <Navigate to="/unauthorized" replace />
-  // Bloquer les routes de modules masqués en production
-  if (!isRouteEnabled(location.pathname)) return <Navigate to="/" replace />
+
+  // Super admin bypass toutes les restrictions de role et de module
+  const isSuperAdmin = (user?.email || '').toLowerCase().trim() === SUPER_ADMIN_EMAIL
+  if (!isSuperAdmin) {
+    if (superAdminOnly) return <Navigate to="/" replace />
+    if (roles && profile && !roles.includes(profile.role)) return <Navigate to="/unauthorized" replace />
+    // Bloquer les routes de modules masqués en production
+    if (!isRouteEnabled(location.pathname)) return <Navigate to="/" replace />
+  }
 
   // Permissions dynamiques — pour l'instant on ne bloque PAS la navigation
   // (le Sidebar masque les liens, mais on ne redirige pas si l'URL est tapée directement)
