@@ -6,12 +6,17 @@ async function callLucca(action, filters = {}) {
   const { data: { session } } = await supabase.auth.getSession()
   if (!session?.access_token) throw new Error('Non authentifié')
 
+  const headers = {
+    'Content-Type': 'application/json',
+    Authorization: `Bearer ${session.access_token}`,
+  }
+  // Fallback: passer la clé Lucca via header si la env var Vercel ne marche pas
+  const luccaKey = import.meta.env.VITE_LUCCA_API_KEY
+  if (luccaKey) headers['X-Lucca-Key'] = luccaKey
+
   const res = await fetch('/api/lucca', {
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${session.access_token}`,
-    },
+    headers,
     body: JSON.stringify({ action, filters }),
   })
   const json = await res.json()

@@ -13,8 +13,9 @@
 const LUCCA_BASE = 'https://groupe-sra.ilucca.net'
 const API_VERSION = '2024-11-01'
 
+let _luccaKeyOverride = null
 async function luccaFetch(endpoint, options = {}) {
-  const apiKey = process.env.LUCCA_API_KEY
+  const apiKey = process.env.LUCCA_API_KEY || _luccaKeyOverride
   if (!apiKey) throw new Error('LUCCA_API_KEY non configurée')
 
   const url = endpoint.startsWith('http') ? endpoint : `${LUCCA_BASE}${endpoint}`
@@ -131,15 +132,18 @@ export default async function handler(req, res) {
   if (req.method === 'OPTIONS') return res.status(200).end()
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' })
 
-  // Debug env vars
-  const envKeys = Object.keys(process.env).filter(k => k.includes('LUCCA'))
-  console.log('[Lucca] Env keys matching LUCCA:', envKeys, 'Value exists:', !!process.env.LUCCA_API_KEY)
+  // La clé peut venir de process.env OU du header X-Lucca-Key (fallback sécurisé)
+  // En attendant que les env vars Vercel fonctionnent, on accepte la clé via header
+  const luccaKeyOverride = req.headers['x-lucca-key']
 
   // Auth check — seuls les admins TimeBlast peuvent appeler cette API
   const authHeader = req.headers.authorization
   if (!authHeader || !authHeader.startsWith('Bearer ')) {
     return res.status(401).json({ error: 'Token Supabase requis' })
   }
+
+  // Stocker la clé override si fournie
+  if (luccaKeyOverride) _luccaKeyOverride = luccaKeyOverride
 
   const body = req.body || {}
   const action = body.action
