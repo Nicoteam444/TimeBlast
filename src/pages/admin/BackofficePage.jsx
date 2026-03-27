@@ -2,6 +2,7 @@ import { useState, useEffect, useMemo } from 'react'
 import { useAuth } from '../../contexts/AuthContext'
 import { supabase, defaultUrl, defaultKey, switchSupabaseClient, getCurrentSupabaseUrl } from '../../lib/supabase'
 import { createClient } from '@supabase/supabase-js'
+import { luccaTest, luccaFullSync, syncUsersToSupabase, syncLeavesToSupabase, syncTimeEntriesToSupabase } from '../../lib/luccaClient'
 import Spinner from '../../components/Spinner'
 
 // ── Helpers ──
@@ -562,10 +563,146 @@ function DeployTab() {
   )
 }
 
+// ── Onglet Intégrations ──
+function IntegrationsTab() {
+  const [luccaStatus, setLuccaStatus] = useState(null)
+  const [syncing, setSyncing] = useState(null)
+  const [results, setResults] = useState({})
+  const [luccaStats, setLuccaStats] = useState(null)
+
+  async function testLucca() {
+    setLuccaStatus('testing')
+    try {
+      const res = await luccaTest()
+      const count = res?.sample?.data?.items?.length || 0
+      setLuccaStatus('ok')
+      setLuccaStats({ users: count > 0 ? 'Connecté' : '0' })
+    } catch (err) {
+      setLuccaStatus('error')
+      setLuccaStats({ error: err.message })
+    }
+  }
+
+  async function runSync(type) {
+    setSyncing(type)
+    setResults(prev => ({ ...prev, [type]: null }))
+    try {
+      let res
+      if (type === 'users') res = await syncUsersToSupabase()
+      else if (type === 'leaves') res = await syncLeavesToSupabase()
+      else if (type === 'time') res = await syncTimeEntriesToSupabase()
+      setResults(prev => ({ ...prev, [type]: res }))
+    } catch (err) {
+      setResults(prev => ({ ...prev, [type]: { errors: [err.message] } }))
+    } finally {
+      setSyncing(null)
+    }
+  }
+
+  const INTEGRATIONS = [
+    {
+      id: 'lucca', name: 'Lucca SIRH', icon: '🟣', color: '#7c3aed',
+      desc: 'Synchronisation des collaborateurs, absences, temps et notes de frais depuis groupe-sra.ilucca.net',
+      status: luccaStatus,
+      actions: [
+        { id: 'users', label: 'Collaborateurs', icon: '👥', desc: 'Sync fiches collaborateurs → table equipe' },
+        { id: 'leaves', label: 'Absences', icon: '🏖', desc: 'Sync congés/absences → table absences' },
+        { id: 'time', label: 'Temps', icon: '⏱', desc: 'Sync saisies temps → table saisies_temps' },
+      ]
+    },
+    {
+      id: 'outlook', name: 'Microsoft Outlook', icon: '📅', color: '#0078D4',
+      desc: 'Synchronisation bidirectionnelle du calendrier via Microsoft Graph API',
+      status: 'configured',
+      actions: []
+    },
+  ]
+
+  function renderResult(type) {
+    const r = results[type]
+    if (!r) return null
+    const hasErrors = r.errors?.length > 0
+    return (
+      <div style={{ marginTop: 8, padding: '8px 12px', borderRadius: 6, fontSize: '.8rem',
+        background: hasErrors ? '#fef2f2' : '#f0fdf4',
+        border: `1px solid ${hasErrors ? '#fecaca' : '#bbf7d0'}`,
+        color: hasErrors ? '#991b1b' : '#166534' }}>
+        {r.created !== undefined && `✅ ${r.created} créé(s), ${r.updated} mis à jour. `}
+        {r.synced !== undefined && `✅ ${r.synced} synchronisé(s). `}
+        {hasErrors && `⚠️ ${r.errors.length} erreur(s): ${r.errors[0]}`}
+      </div>
+    )
+  }
+
+  return (
+    <div>
+      <div style={{ display: 'grid', gap: 20 }}>
+        {INTEGRATIONS.map(integ => (
+          <div key={integ.id} style={{ ...S.card }}>
+            <div style={{ height: 4, background: integ.color }} />
+            <div style={{ padding: '1.5rem' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 16 }}>
+                <div style={{ display: 'flex', gap: 14, alignItems: 'center' }}>
+                  <div style={{ width: 48, height: 48, borderRadius: 12, background: integ.color + '15', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 24 }}>
+                    {integ.icon}
+                  </div>
+                  <div>
+                    <h3 style={{ margin: 0, fontSize: '1.15rem', fontWeight: 700 }}>{integ.name}</h3>
+                    <p style={{ margin: '4px 0 0', fontSize: '.85rem', color: '#64748b' }}>{integ.desc}</p>
+                  </div>
+                </div>
+                <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+                  {integ.status === 'ok' && <span style={S.badge('#f0fdf4', '#16a34a')}>✓ Connecté</span>}
+                  {integ.status === 'error' && <span style={S.badge('#fef2f2', '#dc2626')}>✗ Erreur</span>}
+                  {integ.status === 'configured' && <span style={S.badge('#eff6ff', '#2563eb')}>Configuré</span>}
+                  {integ.status === 'testing' && <span style={S.badge('#f1f5f9', '#64748b')}>Test...</span>}
+                  {integ.id === 'lucca' && (
+                    <button onClick={testLucca} style={S.btn} disabled={luccaStatus === 'testing'}>
+                      🔌 Tester la connexion
+                    </button>
+                  )}
+                </div>
+              </div>
+
+              {luccaStats?.error && (
+                <div style={{ padding: '8px 12px', borderRadius: 6, background: '#fef2f2', border: '1px solid #fecaca', color: '#991b1b', fontSize: '.8rem', marginBottom: 12 }}>
+                  {luccaStats.error}
+                </div>
+              )}
+
+              {integ.actions.length > 0 && (
+                <div style={{ display: 'grid', gridTemplateColumns: `repeat(${integ.actions.length}, 1fr)`, gap: 12 }}>
+                  {integ.actions.map(action => (
+                    <div key={action.id} style={{ padding: '1rem', borderRadius: 10, border: '1px solid #e2e8f0', background: '#fafbfc' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
+                        <span style={{ fontSize: 20 }}>{action.icon}</span>
+                        <span style={{ fontWeight: 700, fontSize: '.9rem' }}>{action.label}</span>
+                      </div>
+                      <p style={{ fontSize: '.78rem', color: '#64748b', margin: '0 0 12px' }}>{action.desc}</p>
+                      <button
+                        onClick={() => runSync(action.id)}
+                        disabled={syncing === action.id}
+                        style={{ ...S.btnPrimary, width: '100%', opacity: syncing === action.id ? .6 : 1, fontSize: '.8rem', padding: '8px 16px' }}>
+                        {syncing === action.id ? '⟳ Synchronisation...' : '🔄 Synchroniser'}
+                      </button>
+                      {renderResult(action.id)}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+}
+
 // ── Tabs config ──
 const TABS = [
   { id: 'envs', label: 'Environnements', icon: '🌐' },
   { id: 'users', label: 'Utilisateurs & Acces', icon: '👥' },
+  { id: 'integrations', label: 'Intégrations', icon: '🔌' },
   { id: 'monitoring', label: 'Monitoring', icon: '📊' },
   { id: 'deploy', label: 'Infrastructure', icon: '🏗' },
 ]
@@ -621,6 +758,7 @@ export default function BackofficePage() {
 
       {tab === 'envs' && <EnvsTab />}
       {tab === 'users' && <UsersTab />}
+      {tab === 'integrations' && <IntegrationsTab />}
       {tab === 'monitoring' && <MonitoringTab />}
       {tab === 'deploy' && <DeployTab />}
     </div>

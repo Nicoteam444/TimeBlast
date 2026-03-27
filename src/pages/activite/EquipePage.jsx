@@ -1,7 +1,6 @@
 import { useState, useEffect, useMemo } from 'react'
 import useEnvNavigate from '../../hooks/useEnvNavigate'
 import { supabase } from '../../lib/supabase'
-import { syncUsersToSupabase } from '../../lib/luccaClient'
 import useSortableTable from '../../hooks/useSortableTable'
 import SortableHeader from '../../components/SortableHeader'
 import Spinner from '../../components/Spinner'
@@ -35,8 +34,6 @@ export default function EquipePage() {
   const [filterSociete, setFilterSociete] = useState('')
   const [page, setPage]           = useState(1)
   const [pageSize, setPageSize]   = useState(20)
-  const [syncing, setSyncing]     = useState(false)
-  const [syncResult, setSyncResult] = useState(null)
 
   useEffect(() => {
     setPage(1)
@@ -110,38 +107,7 @@ export default function EquipePage() {
             {(search || filterPoste || filterSociete) ? ` sur ${equipe.length}` : ''}
           </p>
         </div>
-        <button
-          disabled={syncing}
-          onClick={async () => {
-            setSyncing(true); setSyncResult(null)
-            try {
-              const res = await syncUsersToSupabase()
-              setSyncResult(res)
-              fetchEquipe() // Recharger la liste
-            } catch (err) {
-              setSyncResult({ errors: [err.message] })
-            } finally { setSyncing(false) }
-          }}
-          style={{
-            padding: '8px 16px', borderRadius: 8, border: 'none', cursor: syncing ? 'wait' : 'pointer',
-            background: '#0078D4', color: '#fff', fontWeight: 600, fontSize: 13,
-            display: 'flex', alignItems: 'center', gap: 8, opacity: syncing ? .6 : 1
-          }}>
-          {syncing ? '⟳ Synchronisation...' : '🔄 Sync Lucca'}
-        </button>
       </div>
-      {syncResult && (
-        <div style={{
-          padding: '10px 16px', borderRadius: 8, marginBottom: 12, fontSize: 13,
-          background: syncResult.errors?.length ? '#fef2f2' : '#f0fdf4',
-          border: `1px solid ${syncResult.errors?.length ? '#fecaca' : '#bbf7d0'}`,
-          color: syncResult.errors?.length ? '#991b1b' : '#166534'
-        }}>
-          {syncResult.created !== undefined && `✅ ${syncResult.created} créé(s), ${syncResult.updated} mis à jour. `}
-          {syncResult.errors?.length > 0 && `⚠️ ${syncResult.errors.length} erreur(s): ${syncResult.errors[0]}`}
-          <button onClick={() => setSyncResult(null)} style={{ marginLeft: 12, background: 'none', border: 'none', cursor: 'pointer', fontSize: 13 }}>✕</button>
-        </div>
-      )}
 
       {/* Barre de filtres */}
       <div className="table-toolbar">
