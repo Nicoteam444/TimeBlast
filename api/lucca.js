@@ -123,7 +123,7 @@ async function handleSync(filters = {}) {
 }
 
 // ── Export handler ──────────────────────────────────────────────────
-module.exports = async function handler(req, res) {
+export default async function handler(req, res) {
   // CORS
   res.setHeader('Access-Control-Allow-Origin', '*')
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS')
@@ -131,13 +131,19 @@ module.exports = async function handler(req, res) {
   if (req.method === 'OPTIONS') return res.status(200).end()
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' })
 
+  // Debug env vars
+  const envKeys = Object.keys(process.env).filter(k => k.includes('LUCCA'))
+  console.log('[Lucca] Env keys matching LUCCA:', envKeys, 'Value exists:', !!process.env.LUCCA_API_KEY)
+
   // Auth check — seuls les admins TimeBlast peuvent appeler cette API
   const authHeader = req.headers.authorization
-  if (!authHeader?.startsWith('Bearer ')) {
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
     return res.status(401).json({ error: 'Token Supabase requis' })
   }
 
-  const { action, filters } = req.body || {}
+  const body = req.body || {}
+  const action = body.action
+  const filters = body.filters || {}
 
   try {
     let data
