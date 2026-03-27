@@ -101,6 +101,12 @@ export default function CommandPalette() {
       const results = []
 
       try {
+        // Search collaborateurs (equipe)
+        const { data: collabs } = await supabase.from('equipe').select('id, nom, prenom, poste, lucca_legal_entity_name').or(`nom.ilike.%${q}%,prenom.ilike.%${q}%,poste.ilike.%${q}%`).limit(5)
+        if (collabs) collabs.forEach(c => results.push({
+          label: `${c.prenom || ''} ${c.nom || ''}`.trim(), icon: '🧑‍💼', path: `/equipe/collaborateurs/${c.id}`, cat: c.lucca_legal_entity_name || 'Collaborateur', sub: c.poste || ''
+        }))
+
         // Search contacts
         let cq = supabase.from('contacts').select('id, nom, prenom').or(`nom.ilike.%${q}%,prenom.ilike.%${q}%`).limit(3)
         if (socId) cq = cq.eq('societe_id', socId)
