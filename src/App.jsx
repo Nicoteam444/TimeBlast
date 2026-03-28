@@ -65,6 +65,7 @@ const PrevisionnelPage = lazy(() => import('./pages/finance/PrevisionnelPage'))
 const ImmobilisationsPage = lazy(() => import('./pages/finance/ImmobilisationsPage'))
 const RapprochementPage = lazy(() => import('./pages/finance/RapprochementPage'))
 const AutomationWorkflowsPage = lazy(() => import('./pages/finance/AutomationWorkflowsPage'))
+const PredictionsIAPage = lazy(() => import('./pages/PredictionsIAPage'))
 const TrombinosccopePage = lazy(() => import('./pages/equipe/TrombinosccopePage'))
 const CollaborateurPage = lazy(() => import('./pages/equipe/CollaborateurPage'))
 const OrganigrammePage = lazy(() => import('./pages/equipe/OrganigrammePage'))
@@ -310,6 +311,9 @@ function AppRoutes() {
       } />
       <Route path="automatisation/workflows" element={
         <ProtectedRoute roles={['admin','manager']}><Layout><AutomationWorkflowsPage /></Layout></ProtectedRoute>
+      } />
+      <Route path="intelligence/predictions" element={
+        <ProtectedRoute roles={['admin','manager']}><Layout><PredictionsIAPage /></Layout></ProtectedRoute>
       } />
 
       {/* Équipe */}

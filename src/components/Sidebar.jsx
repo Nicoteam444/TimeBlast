@@ -111,6 +111,15 @@ const SECTIONS = [
       { to: '/documents/archives', icon: '🗄️', label: 'Archives', perm: 'documents:archives' },
     ]},
   {
+    id: 'intelligence',
+    icon: '🧠',
+    label: 'Intelligence',
+    directLink: true,
+    landingTo: '/intelligence/predictions',
+    perm: 'intelligence:predictions',
+    roles: ['admin', 'manager'],
+    items: []},
+  {
     id: 'workflows',
     icon: '🔀',
     label: 'Workflows',
