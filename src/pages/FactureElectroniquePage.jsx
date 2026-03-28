@@ -161,6 +161,197 @@ export default function FactureElectroniquePage() {
       </section>
 
       {/* ══════════════════════════════════════════════════════════════════
+          MOCKUP E-FACTURE — Dashboard conformité + Chat IA + Outils
+      ══════════════════════════════════════════════════════════════════ */}
+      <section style={{ padding: '2rem 2rem 4rem', background: '#fff' }}>
+        <div style={{ maxWidth: 1060, margin: '0 auto', perspective: '1200px' }}>
+          <div className="mockup-browser" style={{ transform: 'rotateX(1.5deg)', transformOrigin: 'bottom center', boxShadow: '0 25px 60px rgba(0,0,0,0.2), 0 0 0 1px rgba(0,0,0,.06)' }}>
+            <div className="mockup-browser-bar">
+              <div className="mockup-dots"><span style={{ background: '#ff5f57' }} /><span style={{ background: '#ffbd2e' }} /><span style={{ background: '#28c840' }} /></div>
+              <div style={{ flex: 1, display: 'flex', justifyContent: 'center' }}>
+                <div className="mockup-url"><span style={{ fontSize: 10 }}>🔒</span> app.timeblast.ai/e-facture</div>
+              </div>
+            </div>
+            <div className="mockup-content" style={{ minHeight: 360 }}>
+              {/* Sidebar */}
+              <div className="mockup-sidebar" style={{ width: 52, background: '#0f2b42', padding: '12px 10px', gap: 2, borderRight: 'none' }}>
+                <img src="/logo-icon.svg" alt="TB" style={{ width: 28, height: 28, marginBottom: 12, filter: 'brightness(0) invert(1)' }} />
+                {['🧾','📊','🔍','📋','🔗','⚙️'].map((ic, i) => (
+                  <div key={i} style={{ width: 32, height: 32, display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: 8, fontSize: 14, background: i === 0 ? 'rgba(255,255,255,.12)' : 'transparent', position: 'relative' }}>
+                    {ic}{i === 0 && <div style={{ position: 'absolute', left: -10, width: 3, height: 16, background: '#F8B35A', borderRadius: '0 2px 2px 0' }} />}
+                  </div>
+                ))}
+              </div>
+              {/* Main — 3 colonnes */}
+              <div style={{ flex: 1, display: 'flex', flexDirection: 'column', background: '#f8fafc' }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '8px 16px', background: '#fff', borderBottom: '1px solid #f1f5f9' }}>
+                  <span style={{ fontSize: '.7rem', fontWeight: 700, color: '#195C82' }}>🧾 Conformité e-facture</span>
+                  <span style={{ fontSize: '.5rem', color: '#16a34a', background: '#f0fdf4', padding: '2px 8px', borderRadius: 4, fontWeight: 600 }}>✅ 87% conforme</span>
+                </div>
+                <div style={{ padding: '12px 16px', display: 'grid', gridTemplateColumns: '1.3fr 1fr .9fr', gap: 10, flex: 1 }}>
+                  {/* COL 1 — Score maturité data */}
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                    <div style={{ background: '#fff', borderRadius: 8, padding: '10px 12px', border: '1px solid #e2e8f0' }}>
+                      <div style={{ fontSize: '.55rem', fontWeight: 700, color: '#1a2332', marginBottom: 8 }}>📊 Score de maturité data</div>
+                      {[
+                        { label: 'Fiches tiers complètes', pct: 87, color: '#16a34a' },
+                        { label: 'SIRET vérifiés (API SIRENE)', pct: 92, color: '#16a34a' },
+                        { label: 'Adresses normalisées (BAN)', pct: 78, color: '#f59e0b' },
+                        { label: 'Codes TVA valides', pct: 95, color: '#16a34a' },
+                        { label: 'Format XML UBL prêt', pct: 100, color: '#16a34a' },
+                      ].map((item, i) => (
+                        <div key={i} style={{ marginBottom: 5 }}>
+                          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '.4rem', marginBottom: 2 }}>
+                            <span style={{ color: '#64748b' }}>{item.label}</span>
+                            <span style={{ fontWeight: 700, color: item.color }}>{item.pct}%</span>
+                          </div>
+                          <div style={{ height: 5, borderRadius: 3, background: '#f1f5f9' }}>
+                            <div style={{ height: '100%', width: `${item.pct}%`, background: item.color, borderRadius: 3 }} />
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                    {/* Mini facture */}
+                    <div style={{ background: '#fff', borderRadius: 8, padding: '10px 12px', border: '1px solid #e2e8f0' }}>
+                      <div style={{ fontSize: '.5rem', fontWeight: 700, color: '#1a2332', marginBottom: 6 }}>🧾 Dernières factures émises</div>
+                      {[
+                        { ref: 'F-2026-0851', client: 'BatiGroup', montant: '22 400 €', status: '✅ Conforme' },
+                        { ref: 'F-2026-0850', client: 'Greentech SA', montant: '8 500 €', status: '✅ Envoyée' },
+                        { ref: 'F-2026-0849', client: 'LogiPro', montant: '15 200 €', status: '⚠️ SIRET manquant' },
+                      ].map((f, i) => (
+                        <div key={i} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '4px 0', borderBottom: i < 2 ? '1px solid #f8fafc' : 'none', fontSize: '.42rem' }}>
+                          <div>
+                            <span style={{ fontWeight: 700, color: '#1a2332' }}>{f.ref}</span>
+                            <span style={{ color: '#94a3b8', marginLeft: 6 }}>{f.client}</span>
+                          </div>
+                          <div style={{ textAlign: 'right' }}>
+                            <span style={{ fontWeight: 700, color: '#1a2332' }}>{f.montant}</span>
+                            <span style={{ marginLeft: 6, fontSize: '.38rem' }}>{f.status}</span>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* COL 2 — Chat IA e-facture */}
+                  <div style={{ background: '#fff', borderRadius: 8, border: '1px solid #e2e8f0', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+                    <div style={{ background: 'linear-gradient(135deg, #0f2b42, #195C82)', padding: '8px 12px', color: '#fff', display: 'flex', alignItems: 'center', gap: 6 }}>
+                      <div style={{ width: 18, height: 18, borderRadius: '50%', background: 'rgba(255,255,255,.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 9 }}>🤖</div>
+                      <div style={{ fontSize: '.5rem', fontWeight: 700 }}>Agent IA conformité</div>
+                    </div>
+                    <div style={{ flex: 1, padding: '8px 10px', display: 'flex', flexDirection: 'column', gap: 5, background: '#fafbfc' }}>
+                      <div style={{ alignSelf: 'flex-end', background: '#195C82', color: '#fff', borderRadius: '8px 8px 2px 8px', padding: '5px 8px', fontSize: '.44rem', maxWidth: '85%' }}>
+                        Quelles fiches ne sont pas conformes ?
+                      </div>
+                      <div style={{ alignSelf: 'flex-start', background: '#fff', border: '1px solid #e2e8f0', borderRadius: '8px 8px 8px 2px', padding: '6px 8px', fontSize: '.44rem', color: '#475569', maxWidth: '90%' }}>
+                        <div style={{ fontWeight: 700, color: '#195C82', marginBottom: 3 }}>📊 Analyse conformité</div>
+                        <div style={{ marginBottom: 3 }}><strong>3 fiches</strong> à corriger :</div>
+                        <div style={{ background: '#fef2f2', borderRadius: 4, padding: '3px 6px', marginBottom: 2, fontSize: '.4rem' }}>
+                          🔴 <strong>LogiPro</strong> — SIRET manquant<br />
+                          <span style={{ color: '#94a3b8' }}>→ Enrichissement auto via API SIRENE...</span>
+                        </div>
+                        <div style={{ background: '#fffbeb', borderRadius: 4, padding: '3px 6px', fontSize: '.4rem' }}>
+                          🟡 <strong>TechVision</strong> — Adresse non normalisée<br />
+                          <span style={{ color: '#94a3b8' }}>→ Correction via API BAN en cours</span>
+                        </div>
+                      </div>
+                      <div style={{ alignSelf: 'flex-end', background: '#195C82', color: '#fff', borderRadius: '8px 8px 2px 8px', padding: '5px 8px', fontSize: '.44rem' }}>
+                        Corrige et génère les factures XML
+                      </div>
+                      <div style={{ alignSelf: 'flex-start', background: '#fff', border: '1px solid #e2e8f0', borderRadius: '8px 8px 8px 2px', padding: '6px 8px', fontSize: '.44rem', color: '#475569' }}>
+                        <div style={{ fontWeight: 700, color: '#16a34a', marginBottom: 2 }}>✅ 3 fiches corrigées</div>
+                        <div>Factures XML UBL générées et envoyées via Chorus Pro.</div>
+                      </div>
+                    </div>
+                    <div style={{ padding: '6px 10px', borderTop: '1px solid #f1f5f9', display: 'flex', gap: 6, background: '#fff' }}>
+                      <div style={{ flex: 1, background: '#f8fafc', borderRadius: 6, padding: '4px 8px', fontSize: '.42rem', color: '#94a3b8', border: '1px solid #e2e8f0' }}>
+                        Vérifier la conformité de mes factures...
+                      </div>
+                      <div style={{ width: 20, height: 20, borderRadius: 6, background: '#195C82', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontSize: 9 }}>→</div>
+                    </div>
+                  </div>
+
+                  {/* COL 3 — Connecteurs & API */}
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                    <div style={{ fontSize: '.5rem', fontWeight: 700, color: '#1a2332', display: 'flex', alignItems: 'center', gap: 4 }}>
+                      🔗 API & connecteurs actifs
+                      <span style={{ width: 5, height: 5, borderRadius: '50%', background: '#22c55e' }} />
+                    </div>
+                    {[
+                      { name: 'Chorus Pro', cat: 'Portail public', status: 'Émission & réception', color: '#1D4ED8', time: 'temps réel' },
+                      { name: 'API SIRENE', cat: 'INSEE', status: 'Vérification tiers', color: '#0891b2', time: 'il y a 5 min' },
+                      { name: 'API BAN', cat: 'Adresse gouv.fr', status: 'Normalisation adresses', color: '#059669', time: 'il y a 10 min' },
+                      { name: 'Sage', cat: 'Comptabilité', status: '412 écritures sync.', color: '#00DC82', time: 'il y a 2 min' },
+                      { name: 'Pennylane', cat: 'Comptabilité', status: 'Export FEC actif', color: '#6C5CE7', time: 'il y a 15 min' },
+                      { name: 'Stripe', cat: 'Paiements', status: 'Rapprochement auto', color: '#635BFF', time: 'il y a 12 min' },
+                      { name: 'Qonto', cat: 'Banque', status: 'Solde 62 812 €', color: '#2A2A2A', time: 'temps réel' },
+                      { name: 'Factur-X', cat: 'Format hybride', status: 'PDF + XML intégré', color: '#dc2626', time: 'actif' },
+                    ].map((tool, i) => (
+                      <div key={i} style={{ background: '#fff', borderRadius: 6, padding: '5px 8px', border: '1px solid #e2e8f0', display: 'flex', alignItems: 'center', gap: 6 }}>
+                        <div style={{ width: 20, height: 20, borderRadius: 5, background: tool.color + '15', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                          <div style={{ width: 7, height: 7, borderRadius: 2, background: tool.color }} />
+                        </div>
+                        <div style={{ flex: 1, minWidth: 0 }}>
+                          <div style={{ fontSize: '.42rem', fontWeight: 700, color: '#1a2332', display: 'flex', justifyContent: 'space-between' }}>
+                            <span>{tool.name}</span>
+                            <span style={{ width: 4, height: 4, borderRadius: '50%', background: '#22c55e', marginTop: 2 }} />
+                          </div>
+                          <div style={{ fontSize: '.36rem', color: '#64748b' }}>{tool.status}</div>
+                          <div style={{ fontSize: '.3rem', color: '#cbd5e1' }}>{tool.time}</div>
+                        </div>
+                      </div>
+                    ))}
+                    <div style={{ background: '#f0fdf4', borderRadius: 6, padding: '4px 8px', border: '1px solid #bbf7d0', textAlign: 'center' }}>
+                      <div style={{ fontSize: '.4rem', fontWeight: 700, color: '#16a34a' }}>✅ 8 connecteurs actifs</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div style={{ height: 20, background: 'radial-gradient(ellipse at center, rgba(0,0,0,.08) 0%, transparent 70%)', marginTop: -2 }} />
+        </div>
+      </section>
+
+      {/* ══════════════════════════════════════════════════════════════════
+          CONNECTEURS FACTURATION & API PUBLIQUES
+      ══════════════════════════════════════════════════════════════════ */}
+      <section className="landing-connectors" id="connecteurs">
+        <h2 className="landing-section-title">Connecteurs facturation & API publiques</h2>
+        <p className="landing-section-subtitle">
+          TimeBlast se branche sur vos outils comptables et les API officielles pour garantir la conformité.
+        </p>
+        <div className="landing-connectors-grid">
+          {[
+            { name: 'Chorus Pro', color: '#1D4ED8' },
+            { name: 'API SIRENE (INSEE)', color: '#0891b2' },
+            { name: 'API BAN (adresses)', color: '#059669' },
+            { name: 'Factur-X', color: '#dc2626' },
+            { name: 'XML UBL', color: '#7c3aed' },
+            { name: 'Sage', color: '#00DC82' },
+            { name: 'Pennylane', color: '#6C5CE7' },
+            { name: 'Cegid', color: '#E74C3C' },
+            { name: 'QuickBooks', color: '#2CA01C' },
+            { name: 'Import FEC', color: '#3498DB' },
+            { name: 'Stripe', color: '#635BFF' },
+            { name: 'Qonto', color: '#2A2A2A' },
+            { name: 'GoCardless', color: '#1A1A2E' },
+            { name: 'API REST', color: '#FF6B6B' },
+            { name: 'Excel / CSV', color: '#217346' },
+            { name: 'Zapier', color: '#FF4A00' },
+          ].map((c, i) => (
+            <div key={i} className="landing-connector-chip" style={{ '--chip-color': c.color }}>
+              <span className="landing-connector-dot" style={{ background: c.color }} />
+              <span>{c.name}</span>
+            </div>
+          ))}
+        </div>
+        <p style={{ textAlign: 'center', color: '#94a3b8', fontSize: '.85rem', marginTop: '1.5rem' }}>
+          Toutes les API publiques françaises + 30 connecteurs métier via notre <strong>API REST</strong> ouverte.
+        </p>
+      </section>
+
+      {/* ══════════════════════════════════════════════════════════════════
           LE VRAI PROBLÈME — données pas prêtes
       ══════════════════════════════════════════════════════════════════ */}
       <section className="landing-features" id="probleme">
