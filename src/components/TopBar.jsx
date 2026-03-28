@@ -290,7 +290,7 @@ export default function TopBar() {
           <input
             type="text"
             className="topbar-search-input"
-            placeholder="Rechercher collaborateurs, clients, projets..."
+            placeholder="Rechercher..."
             value={searchQuery}
             onChange={handleSearchInput}
             onFocus={() => setSearchOpen(true)}
