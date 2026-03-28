@@ -315,7 +315,7 @@ export default function LoginPage() {
           <div className="landing-hero-text">
             <div className="landing-hero-badge">📊 Business Intelligence nouvelle génération</div>
             <h1 className="landing-hero-title">
-              TimeBlast
+              <img src="/logo-full.svg" alt="TimeBlast" style={{ height: '3.2rem' }} />
             </h1>
             <h2 style={{ fontSize: '1.6rem', fontWeight: 700, color: '#475569', marginBottom: '1.25rem', marginTop: '-.5rem', lineHeight: 1.3 }}>
               La BI à l'ère de l'IA
