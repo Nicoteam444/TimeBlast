@@ -98,6 +98,17 @@ function EnvsTab() {
     else alert('Erreur: ' + error.message)
   }
 
+  async function handleDeleteEnv() {
+    if (!editEnv) return
+    if (!confirm(`Supprimer définitivement l'environnement "${editEnv.name}" (${editEnv.env_code}) ? Cette action est irréversible.`)) return
+    // Supprimer les accès utilisateurs liés
+    await supabase.from('user_environments').delete().eq('environment_id', editEnv.id)
+    // Supprimer l'environnement
+    const { error } = await supabase.from('environments').delete().eq('id', editEnv.id)
+    if (!error) { setEditEnv(null); loadEnvs() }
+    else alert('Erreur: ' + error.message)
+  }
+
   async function toggleActive(env) {
     await supabase.from('environments').update({ is_active: !env.is_active }).eq('id', env.id)
     loadEnvs()
@@ -185,12 +196,12 @@ function EnvsTab() {
       {showCreate && <EnvModal title="Nouvel environnement" form={form} setForm={setForm} onSubmit={handleCreate} onClose={() => setShowCreate(false)} submitLabel="Creer" />}
 
       {/* Modal Edition */}
-      {editEnv && <EnvModal title={`Modifier ${editEnv.name}`} form={editEnv} setForm={setEditEnv} onSubmit={handleUpdate} onClose={() => setEditEnv(null)} submitLabel="Enregistrer" isEdit />}
+      {editEnv && <EnvModal title={`Modifier ${editEnv.name}`} form={editEnv} setForm={setEditEnv} onSubmit={handleUpdate} onDelete={handleDeleteEnv} onClose={() => setEditEnv(null)} submitLabel="Enregistrer" isEdit />}
     </div>
   )
 }
 
-function EnvModal({ title, form, setForm, onSubmit, onClose, submitLabel, isEdit }) {
+function EnvModal({ title, form, setForm, onSubmit, onClose, onDelete, submitLabel, isEdit }) {
   return (
     <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 9999 }} onClick={onClose}>
       <div style={{ background: '#fff', borderRadius: 16, width: 520, maxHeight: '90vh', overflow: 'auto', boxShadow: '0 25px 50px rgba(0,0,0,.25)' }} onClick={e => e.stopPropagation()}>
@@ -233,6 +244,9 @@ function EnvModal({ title, form, setForm, onSubmit, onClose, submitLabel, isEdit
             )}
           </div>
           <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end', borderTop: '1px solid #e2e8f0', paddingTop: 16 }}>
+            {isEdit && onDelete && (
+              <button type="button" onClick={onDelete} style={{ ...S.btnDanger, marginRight: 'auto' }}>🗑 Supprimer</button>
+            )}
             <button type="button" onClick={onClose} style={S.btn}>Annuler</button>
             <button type="submit" style={S.btnPrimary}>{submitLabel}</button>
           </div>
