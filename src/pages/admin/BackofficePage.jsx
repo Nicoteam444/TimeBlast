@@ -744,6 +744,7 @@ const BO_MODULES = [
   { id: 'finance', label: 'Finance', icon: '💰' },
   { id: 'documents', label: 'Documents', icon: '📁' },
   { id: 'workflows', label: 'Workflows', icon: '🔀' },
+  { id: 'wiki', label: 'Wiki', icon: '📖' },
   { id: 'documentation', label: 'Documentation', icon: '📚' },
 ]
 

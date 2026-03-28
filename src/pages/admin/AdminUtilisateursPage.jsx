@@ -102,7 +102,7 @@ export default function AdminUtilisateursPage() {
       setFormError(data?.error || error.message); return
     }
     if (data?.user?.id) {
-      const profileUpdate = { role: form.role }
+      const profileUpdate = { role: form.role, modules: form.modules || [] }
       if (form.societe_id) profileUpdate.societe_id = form.societe_id
       if (form.telephone) profileUpdate.telephone = form.telephone
       if (form.poste) profileUpdate.poste = form.poste
@@ -131,7 +131,8 @@ export default function AdminUtilisateursPage() {
       telephone: user.telephone || '',
       poste: user.poste || '',
       date_embauche: user.date_embauche ? user.date_embauche.split('T')[0] : '',
-      actif: user.actif !== false})
+      actif: user.actif !== false,
+      modules: user.modules || []})
     setEditError(null)
   }
 
@@ -141,7 +142,8 @@ export default function AdminUtilisateursPage() {
     setEditError(null)
     const update = {
       full_name: [editForm.prenom, editForm.nom].filter(Boolean).join(' '),
-      role: editForm.role,}
+      role: editForm.role,
+      modules: editForm.modules || [],}
     // Optional fields — may not exist in profiles yet
     if (editForm.telephone !== undefined) update.telephone = editForm.telephone || null
     if (editForm.poste !== undefined) update.poste = editForm.poste || null
@@ -748,6 +750,9 @@ const MODULES = [
   ]},
   { id: 'workflows', label: 'Workflows', icon: '🔀', subs: [
     { id: 'automatisation', label: 'Automatisation' },
+  ]},
+  { id: 'wiki', label: 'Wiki', icon: '📖', subs: [
+    { id: 'articles', label: 'Articles' },
   ]},
   { id: 'documentation', label: 'Documentation', icon: '📚', subs: [
     { id: 'histoire', label: 'Histoire TimeBlast' },

@@ -166,6 +166,7 @@ export default function ProfilePage() {
             { id: 'finance', label: 'Finance', icon: '💰' },
             { id: 'documents', label: 'Documents', icon: '📁' },
             { id: 'workflows', label: 'Workflows', icon: '🔀' },
+            { id: 'wiki', label: 'Wiki', icon: '📖' },
             { id: 'documentation', label: 'Documentation', icon: '📚' },
           ].map(m => {
             const userModules = profile?.modules || []
