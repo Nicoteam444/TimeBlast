@@ -680,9 +680,8 @@ function TabScore() {
   const total = CONNECTORS.length
   const score = Math.round((connected / total) * 100)
   const scoreColor = score >= 75 ? '#16a34a' : score >= 50 ? '#f59e0b' : '#dc2626'
-
-  const R = 130 // radius of connector circle
-  const CX = 160, CY = 160 // center
+  const B = '#2B4C7E'
+  const cx = 250, cy = 240, R = 165
 
   return (
     <>
@@ -705,60 +704,84 @@ function TabScore() {
       </div>
 
       <div style={{ display: 'flex', gap: 32, alignItems: 'flex-start' }}>
-        {/* SVG Animation */}
-        <div style={{ flexShrink: 0, width: 320, height: 320, position: 'relative' }}>
-          <svg width="320" height="320" viewBox="0 0 320 320">
-            {/* Branches + connectors */}
-            {CONNECTORS.map(c => {
-              const rad = (c.angle - 90) * Math.PI / 180
-              const x2 = CX + R * Math.cos(rad)
-              const y2 = CY + R * Math.sin(rad)
-              const bx = CX + (R + 35) * Math.cos(rad)
-              const by = CY + (R + 35) * Math.sin(rad)
+        {/* SVG identique à la landing */}
+        <div style={{ flexShrink: 0, width: 500, height: 480 }}>
+          <svg viewBox="0 0 500 480" style={{ width: '100%', height: '100%' }}>
+            <defs>
+              <linearGradient id="hubGrad2" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stopColor="#142d4c" />
+                <stop offset="100%" stopColor="#2B4C7E" />
+              </linearGradient>
+              <filter id="bGlow2"><feGaussianBlur stdDeviation="2" /><feMerge><feMergeNode /><feMergeNode in="SourceGraphic" /></feMerge></filter>
+              <filter id="shadow2"><feDropShadow dx="0" dy="2" stdDeviation="3" floodOpacity="0.1" /></filter>
+              <mask id="hubMask2"><rect x="0" y="0" width="500" height="480" fill="white" /><circle cx={cx} cy={cy} r="60" fill="black" /></mask>
+            </defs>
+
+            {/* Cercles concentriques */}
+            <circle cx={cx} cy={cy} r={R + 40} fill="none" stroke={B} strokeWidth="0.5" opacity="0.05" />
+            <circle cx={cx} cy={cy} r={R + 20} fill="none" stroke={B} strokeWidth="0.5" opacity="0.08" strokeDasharray="4 4" />
+
+            {/* Connexions + billes animées — masquées derrière le logo */}
+            <g mask="url(#hubMask2)">
+              {CONNECTORS.map((src, i) => {
+                const a = (src.angle - 90) * Math.PI / 180
+                const ax = cx + R * Math.cos(a)
+                const ay = cy + R * Math.sin(a)
+                const dur = (2 + (i % 3) * 0.4).toFixed(1)
+                const delay = (i * 0.35).toFixed(1)
+                return (
+                  <g key={src.id + '-conn'}>
+                    <line x1={cx} y1={cy} x2={ax} y2={ay} stroke={src.connected ? B : '#cbd5e1'} strokeWidth="1" opacity={src.connected ? 0.1 : 0.05} />
+                    {src.connected ? (
+                      <line x1={cx} y1={cy} x2={ax} y2={ay} stroke={src.color} strokeWidth="0.8" opacity="0.3" strokeDasharray="3 5">
+                        <animate attributeName="strokeDashoffset" values="0;-16" dur="2s" repeatCount="indefinite" />
+                      </line>
+                    ) : (
+                      <line x1={cx} y1={cy} x2={ax} y2={ay} stroke="#cbd5e1" strokeWidth="0.5" opacity="0.15" strokeDasharray="4 6" />
+                    )}
+                    {src.connected && (
+                      <>
+                        <circle r="4" fill={B} filter="url(#bGlow2)" opacity="0.85">
+                          <animateMotion dur={dur + 's'} repeatCount="indefinite" begin={delay + 's'}>
+                            <mpath xlinkHref={`#spath-${i}`} />
+                          </animateMotion>
+                        </circle>
+                        <circle r="2.5" fill={B} opacity="0.5">
+                          <animateMotion dur={dur + 's'} repeatCount="indefinite" begin={(parseFloat(delay) + 1) + 's'} keyPoints="1;0" keyTimes="0;1" calcMode="linear">
+                            <mpath xlinkHref={`#spath-${i}`} />
+                          </animateMotion>
+                        </circle>
+                      </>
+                    )}
+                    <path id={`spath-${i}`} d={`M${cx},${cy} L${ax},${ay}`} fill="none" />
+                  </g>
+                )
+              })}
+            </g>
+
+            {/* Sources en cercle */}
+            {CONNECTORS.map((src) => {
+              const a = (src.angle - 90) * Math.PI / 180
+              const ax = cx + R * Math.cos(a)
+              const ay = cy + R * Math.sin(a)
               return (
-                <g key={c.id}>
-                  {/* Branch line */}
-                  <line x1={CX} y1={CY} x2={x2} y2={y2}
-                    stroke={c.connected ? c.color : '#d1d5db'} strokeWidth={c.connected ? 3 : 2}
-                    strokeDasharray={c.connected ? 'none' : '6 4'} opacity={c.connected ? 1 : 0.4} />
-                  {/* Connector dot */}
-                  <circle cx={bx} cy={by} r={16}
-                    fill={c.connected ? c.color + '20' : '#f1f5f9'}
-                    stroke={c.connected ? c.color : '#d1d5db'} strokeWidth={2} />
-                  <text x={bx} y={by + 1} textAnchor="middle" dominantBaseline="central"
-                    fontSize="14">{c.icon}</text>
-                  {/* Animated pulse for connected */}
-                  {c.connected && (
-                    <circle cx={bx} cy={by} r={16} fill="none"
-                      stroke={c.color} strokeWidth={1} opacity={0.4}>
-                      <animate attributeName="r" values="16;24;16" dur="2s" repeatCount="indefinite" />
-                      <animate attributeName="opacity" values="0.4;0;0.4" dur="2s" repeatCount="indefinite" />
-                    </circle>
-                  )}
+                <g key={src.id} filter="url(#shadow2)">
+                  <circle cx={ax} cy={ay} r={30}
+                    fill={src.connected ? '#fff' : '#f8fafc'}
+                    stroke={src.connected ? src.color : '#d1d5db'}
+                    strokeWidth={src.connected ? 2 : 1} />
+                  <text x={ax} y={ay} textAnchor="middle" dominantBaseline="central"
+                    fill={src.connected ? '#1a2332' : '#94a3b8'}
+                    fontSize="11" fontWeight="700"
+                    opacity={src.connected ? 1 : 0.5}>
+                    {src.label.split('/')[0].trim()}
+                  </text>
                 </g>
               )
             })}
 
-            {/* Central gear */}
-            <circle cx={CX} cy={CY} r={40} fill="#0F4C75" />
-            <g transform={`translate(${CX},${CY}) scale(0.08) rotate(22.5)`} fill="#fff">
-              {Array.from({ length: 8 }).map((_, i) => {
-                const a = (i * 45) * Math.PI / 180
-                return (
-                  <rect key={i} x={-25} y={-220} width={50} height={100} rx={20}
-                    transform={`rotate(${i * 45})`} />
-                )
-              })}
-              <circle cx={0} cy={0} r={120} fill="#fff" />
-              <circle cx={0} cy={0} r={70} fill="#0F4C75" />
-            </g>
-
-            {/* Score text */}
-            <text x={CX} y={CY - 6} textAnchor="middle" dominantBaseline="central"
-              fontSize="22" fontWeight="800" fill="#fff">{score}%</text>
-            <text x={CX} y={CY + 14} textAnchor="middle" fontSize="8" fill="rgba(255,255,255,.7)">
-              CONNECTÉ
-            </text>
+            {/* Hub central — logo gear */}
+            <image href="/logo-icon.svg" x={cx - 55} y={cy - 55} width="110" height="110" />
           </svg>
         </div>
 
@@ -771,7 +794,7 @@ function TabScore() {
                 display: 'flex', alignItems: 'center', gap: 12, padding: '12px 16px',
                 borderRadius: 10, border: '1px solid ' + (c.connected ? c.color + '30' : '#e2e8f0'),
                 background: c.connected ? c.color + '08' : '#fafbfc',
-                opacity: c.connected ? 1 : 0.6,
+                opacity: c.connected ? 1 : 0.5,
               }}>
                 <span style={{ fontSize: 24 }}>{c.icon}</span>
                 <div style={{ flex: 1 }}>
