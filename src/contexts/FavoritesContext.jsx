@@ -36,9 +36,10 @@ export function FavoritesProvider({ children }) {
             await migrateLocalFavoritesToDB(profile.id)
           }
 
-          // Load from database
+          // Load from database and clean orphan routes
           const dbFavs = await loadFavoritesFromDB(profile.id)
-          setFavorites(dbFavs)
+          const EXCLUDED = ['/backoffice', '/admin/backoffice']
+          setFavorites(dbFavs.filter(f => !EXCLUDED.some(ex => f.includes(ex))))
         } else {
           // Not logged in, use localStorage
           const localFavs = loadFavoritesLocal()
