@@ -290,7 +290,7 @@ export default function LoginPage() {
       <nav className="landing-nav">
         <div className="landing-nav-inner">
           <div className="landing-logo">
-            <img src="/logo-full.svg" alt="TimeBlast" style={{ height: 32 }} />
+            <img src="/logo-full.svg" alt="TimeBlast" style={{ height: 64 }} />
           </div>
           <div className="landing-nav-links">
             <a href="#modules">Modules</a>
@@ -315,11 +315,8 @@ export default function LoginPage() {
           <div className="landing-hero-text">
             <div className="landing-hero-badge">📊 Business Intelligence nouvelle génération</div>
             <h1 className="landing-hero-title">
-              <img src="/logo-full.svg" alt="TimeBlast" style={{ height: '3.2rem' }} />
-            </h1>
-            <h2 style={{ fontSize: '1.6rem', fontWeight: 700, color: '#475569', marginBottom: '1.25rem', marginTop: '-.5rem', lineHeight: 1.3 }}>
               La BI à l'ère de l'IA
-            </h2>
+            </h1>
             <p className="landing-hero-subtitle" style={{ fontSize: '1.05rem', fontWeight: 600, color: '#64748b', marginBottom: '1rem' }}>
               Tous vos indicateurs. Toutes vos données. Un seul outil décisionnel.
             </p>
