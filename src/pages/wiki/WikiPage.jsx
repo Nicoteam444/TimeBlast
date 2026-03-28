@@ -101,14 +101,16 @@ export default function WikiPage() {
   function getDemoItems() {
     const base = { created_by: profile?.id, updated_at: new Date().toISOString(), profiles: { full_name: 'Admin' }, file_type: 'article' }
     return [
-      { id: 'd1', title: 'Roadmap IA — 3 phases', category: 'roadmap', content: '## Phase 1 : Agrégateur interne\nHub qui discute avec un LLM.\n\n## Phase 2 : IA SRA native\nIntégration directe.\n\n## Phase 3 : MCP Client + Agents IT\nAgents orchestrateurs.', visibility: 'public', pinned: true, ...base },
-      { id: 'd2', title: 'Offre Diagnostic IA', category: 'offres_ia', content: '## Diagnostic IA\nÉvaluation maturité IA.\n\n- Audit outils\n- Cas d\'usage IA\n- Recommandations\n- Plan 90 jours', visibility: 'public', pinned: true, ...base },
-      { id: 'd3', title: 'Offre Agrégateur interne', category: 'offres_ia', content: '## Agrégateur intelligent\nMultiprise intelligente.\n\n- Sync multi-outils\n- Dashboard unifié\n- Alertes\n- Rapports auto', visibility: 'public', pinned: false, ...base },
-      { id: 'd4', title: 'Process de vente', category: 'commerce', content: '1. Qualification lead\n2. Découverte besoins\n3. Proposition\n4. Négociation\n5. Closing\n6. Onboarding', visibility: 'managers', pinned: false, ...base },
-      { id: 'd5', title: 'Catalogue prestations 2026.pdf', category: 'commerce', content: '', visibility: 'public', pinned: false, file_type: 'file', file_size: 2450000, ...base },
-      { id: 'd6', title: 'Template proposition commerciale.docx', category: 'templates', content: '', visibility: 'managers', pinned: false, file_type: 'file', file_size: 185000, ...base },
-      { id: 'd7', title: 'Onboarding nouveau collaborateur', category: 'rh', content: '## Checklist onboarding\n- Création comptes\n- Remise matériel\n- Formation outils\n- Parrainage\n- Point J+30', visibility: 'public', pinned: false, ...base },
-      { id: 'd8', title: 'Guide utilisation TimeBlast', category: 'documentation', content: '## Prise en main\n1. Se connecter\n2. Découvrir le dashboard\n3. Naviguer les modules\n4. Créer son premier rapport', visibility: 'public', pinned: true, ...base },
+      { id: 'd1', title: 'Guide de prise en main TimeBlast', category: 'documentation', content: '## Bienvenue sur TimeBlast\n\n### 1. Se connecter\nRendez-vous sur **timeblast.ai** et connectez-vous avec vos identifiants.\n\n### 2. Découvrir le tableau de bord\nLe dashboard affiche vos KPI principaux : CA, pipeline, marge, trésorerie.\n\n### 3. Naviguer les modules\nUtilisez le menu latéral pour accéder aux différents modules.\n\n### 4. Personnaliser votre profil\nCliquez sur votre avatar en haut à droite → Mon profil.', visibility: 'public', pinned: true, ...base },
+      { id: 'd2', title: 'Comment saisir ses temps', category: 'documentation', content: '## Saisie des temps\n\n### Accès\nMenu **Activité** → **Saisie des temps**\n\n### Saisir une journée\n1. Sélectionnez la date\n2. Choisissez le projet et le lot\n3. Indiquez le nombre d\'heures\n4. Ajoutez un commentaire si nécessaire\n5. Cliquez **Enregistrer**\n\n### Validation\nVotre manager valide vos temps chaque semaine.', visibility: 'public', pinned: true, ...base },
+      { id: 'd3', title: 'Utiliser le calendrier', category: 'documentation', content: '## Calendrier TimeBlast\n\n### Vues disponibles\n- **Jour** : planning détaillé\n- **Semaine de travail** : lundi à vendredi\n- **Semaine complète** : 7 jours\n- **Mois** : vue mensuelle\n\n### Créer un événement\nCliquez sur un créneau horaire ou sur **+ Nouvel événement**.\n\n### Multi-calendrier\nActivez/désactivez les sources dans le panneau **Calendriers** (TimeBlast, Outlook, Saisies temps).', visibility: 'public', pinned: false, ...base },
+      { id: 'd4', title: 'Créer un devis ou une facture', category: 'documentation', content: '## Devis & Facturation\n\n### Créer un devis\n1. Menu **Commerce** → **Devis**\n2. Cliquez **+ Nouveau devis**\n3. Sélectionnez le client\n4. Ajoutez les lignes (produits/services)\n5. Validez et envoyez\n\n### Transformer en facture\nUn devis accepté peut être converti en facture en un clic.', visibility: 'public', pinned: false, ...base },
+      { id: 'd5', title: 'Gérer les clients et contacts', category: 'documentation', content: '## CRM — Clients & Contacts\n\n### Ajouter un client\nMenu **CRM** → **Clients** → **+ Nouveau client**\n\n### Fiche client\nChaque client a une fiche avec :\n- Informations générales (SIRET, adresse)\n- Contacts associés\n- Historique des transactions\n- Devis et factures\n\n### Recherche\nUtilisez la barre de recherche en haut pour trouver un client rapidement.', visibility: 'public', pinned: false, ...base },
+      { id: 'd6', title: 'Roadmap IA — 3 phases', category: 'roadmap', content: '## Phase 1 : Agrégateur interne\nHub qui discute avec un LLM pour synthétiser les données de l\'entreprise.\n\n## Phase 2 : IA SRA native\nIntégration directe de l\'IA dans le produit TimeBlast.\n\n## Phase 3 : MCP Client + Agents IT\nAgents orchestrateurs connectés aux outils clients via le protocole MCP.', visibility: 'public', pinned: true, ...base },
+      { id: 'd7', title: 'Offre Diagnostic IA', category: 'offres_ia', content: '## Diagnostic IA\nÉvaluation de la maturité IA de l\'entreprise.\n\n### Contenu\n- Audit des outils existants\n- Identification des cas d\'usage IA\n- Recommandations personnalisées\n- Plan d\'action 90 jours', visibility: 'public', pinned: false, ...base },
+      { id: 'd8', title: 'Process de vente', category: 'commerce', content: '## Process de vente groupe SRA\n\n1. **Qualification** du lead\n2. **Découverte** des besoins\n3. **Proposition** commerciale\n4. **Négociation**\n5. **Closing**\n6. **Onboarding** client', visibility: 'managers', pinned: false, ...base },
+      { id: 'd9', title: 'Onboarding nouveau collaborateur', category: 'rh', content: '## Checklist onboarding\n\n- Création des comptes (email, TimeBlast, outils)\n- Remise du matériel\n- Formation aux outils internes\n- Attribution d\'un parrain\n- Point de suivi J+30', visibility: 'public', pinned: false, ...base },
+      { id: 'd10', title: 'FAQ — Questions fréquentes', category: 'documentation', content: '## FAQ\n\n### Comment réinitialiser mon mot de passe ?\nCliquez sur "Mot de passe oublié" sur la page de connexion.\n\n### Je ne vois pas certains modules\nVos accès dépendent de votre profil métier. Contactez votre administrateur.\n\n### Comment exporter des données ?\nChaque tableau dispose d\'un bouton **Export CSV** en haut à droite.\n\n### Le calendrier Outlook ne se synchronise pas\nVérifiez que vous êtes connecté via Microsoft SSO.', visibility: 'public', pinned: false, ...base },
     ]
   }
 
@@ -345,16 +347,9 @@ export default function WikiPage() {
               }}>☰</button>
             </div>
 
-            {/* Upload */}
+            {/* Actions */}
             {canEdit() && (
               <>
-                <button onClick={() => fileInputRef.current?.click()} style={{
-                  padding: '6px 12px', borderRadius: 6, border: '1px solid #e2e8f0', background: '#fff',
-                  cursor: 'pointer', fontSize: '.82rem', fontWeight: 500, color: '#475569'
-                }}>
-                  📤 Importer
-                </button>
-                <input ref={fileInputRef} type="file" multiple hidden onChange={e => uploadFiles(Array.from(e.target.files || []))} />
                 <button onClick={openCreate} style={{
                   padding: '6px 14px', borderRadius: 6, border: 'none', background: '#0F4C75',
                   color: '#fff', cursor: 'pointer', fontSize: '.82rem', fontWeight: 700
@@ -367,14 +362,7 @@ export default function WikiPage() {
         </div>
 
         {/* Content area with drag & drop */}
-        <div style={{ flex: 1, overflowY: 'auto', ...S.dropzone(dragOver) }}
-          onDragOver={handleDragOver} onDragLeave={handleDragLeave} onDrop={handleDrop}>
-
-          {uploading && (
-            <div style={{ padding: '12px 16px', background: '#eff6ff', borderRadius: 8, marginBottom: 12, fontSize: '.85rem', color: '#2563eb' }}>
-              ⟳ Upload en cours...
-            </div>
-          )}
+        <div style={{ flex: 1, overflowY: 'auto', borderRadius: 12, padding: 4 }}>
 
           {loading ? (
             <div style={{ textAlign: 'center', padding: '4rem', color: '#94a3b8' }}>Chargement...</div>
@@ -512,18 +500,6 @@ export default function WikiPage() {
             </table>
           )}
 
-          {/* Drop overlay */}
-          {dragOver && (
-            <div style={{
-              position: 'absolute', inset: 0, background: 'rgba(15,76,117,.08)', display: 'flex',
-              alignItems: 'center', justifyContent: 'center', borderRadius: 12, zIndex: 10, pointerEvents: 'none'
-            }}>
-              <div style={{ padding: '2rem 3rem', background: '#fff', borderRadius: 12, boxShadow: '0 4px 20px rgba(0,0,0,.1)', textAlign: 'center' }}>
-                <div style={{ fontSize: 48, marginBottom: 8 }}>📥</div>
-                <p style={{ fontWeight: 700, color: '#0F4C75' }}>Déposez vos fichiers ici</p>
-              </div>
-            </div>
-          )}
         </div>
       </div>
 
