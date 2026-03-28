@@ -700,7 +700,7 @@ export default function CalendrierPage() {
       `${days[0]?.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' })} - ${days[days.length - 1]?.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: 'numeric' })}`
 
   return (
-    <div className="admin-page" style={{ display: 'flex', gap: 0, height: 'calc(100vh - 110px)', overflow: 'hidden', margin: '5px 0 20px 0' }}>
+    <div className="admin-page" style={{ display: 'flex', gap: 0, height: 'calc(100vh - 140px)', overflow: 'hidden', margin: '5px 0 40px 0' }}>
       {/* ── Sidebar gauche : collaborateurs ── */}
       <div style={{
         width: 240, flexShrink: 0, background: '#fff', borderRight: '1px solid #e2e8f0',
