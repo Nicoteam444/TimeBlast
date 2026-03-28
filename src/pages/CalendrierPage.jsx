@@ -6,7 +6,6 @@ import { getOutlookEvents, createOutlookEvent, updateOutlookEvent, deleteOutlook
 import Spinner from '../components/Spinner'
 
 // ── Constantes ─────────────────────────────────────────────
-const HOUR_H = 60
 const START_H = 7
 const END_H = 21
 const SNAP = 15
@@ -34,8 +33,8 @@ function addDays(d, n) { const r = new Date(d); r.setDate(r.getDate() + n); retu
 function toISO(d) { return d.toISOString().slice(0, 10) }
 function isToday(d) { return toISO(d) === toISO(new Date()) }
 function fmtTime(min) { const h = Math.floor(min / 60); const m = min % 60; return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}` }
-function minToY(min) { return ((min - START_H * 60) / 60) * HOUR_H }
-function yToMin(y) { const raw = (y / HOUR_H) * 60 + START_H * 60; return Math.round(raw / SNAP) * SNAP }
+function minToY(min, hourH = 60) { return ((min - START_H * 60) / 60) * hourH }
+function yToMin(y, hourH = 60) { const raw = (y / hourH) * 60 + START_H * 60; return Math.round(raw / SNAP) * SNAP }
 function clampMin(m) { return Math.max(START_H * 60, Math.min(END_H * 60, m)) }
 function fmtMonthYear(d) { return d.toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' }) }
 function fmtDayHeader(d) {
@@ -233,6 +232,21 @@ export default function CalendrierPage() {
   const [loading, setLoading] = useState(true)
   const [filterSearch, setFilterSearch] = useState('')
   const gridRef = useRef()
+  const calBodyRef = useRef()
+  const [hourH, setHourH] = useState(60)
+
+  // Dynamic hour height to fit in viewport
+  useEffect(() => {
+    function calcHourH() {
+      if (!calBodyRef.current) return
+      const available = calBodyRef.current.clientHeight - 10 // minus small padding
+      const h = Math.max(30, Math.floor(available / (END_H - START_H)))
+      setHourH(h)
+    }
+    calcHourH()
+    window.addEventListener('resize', calcHourH)
+    return () => window.removeEventListener('resize', calcHourH)
+  }, [])
 
   // Multi-calendrier toggles
   const [calSources, setCalSources] = useState(() => {
@@ -450,7 +464,7 @@ export default function CalendrierPage() {
   function handleGridClick(e, dayDate) {
     const rect = e.currentTarget.getBoundingClientRect()
     const y = e.clientY - rect.top + (e.currentTarget.scrollTop || 0)
-    const startMin = clampMin(yToMin(y))
+    const startMin = clampMin(yToMin(y, hourH))
     const endMin = clampMin(startMin + 60)
     setModal({ date: toISO(dayDate), startMin, endMin, user_id: user?.id })
   }
@@ -521,7 +535,7 @@ export default function CalendrierPage() {
 
   // ── WEEK/DAY VIEW ─────────────────────────────────────────
   function renderWeekDay() {
-    const totalH = (END_H - START_H) * HOUR_H
+    const totalH = (END_H - START_H) * hourH
     const colWidth = days.length === 1 ? '100%' : `${100 / days.length}%`
 
     return (
@@ -550,12 +564,12 @@ export default function CalendrierPage() {
         </div>
 
         {/* Grid body */}
-        <div ref={gridRef} style={{ flex: 1, overflow: 'auto', position: 'relative' }}>
+        <div ref={(el) => { gridRef.current = el; calBodyRef.current = el }} style={{ flex: 1, overflow: 'hidden', position: 'relative' }}>
           <div style={{ display: 'flex', position: 'relative', minHeight: totalH }}>
             {/* Hour labels */}
             <div style={{ width: 56, flexShrink: 0 }}>
               {HOURS.map(h => (
-                <div key={h} style={{ height: HOUR_H, fontSize: 11, color: '#94a3b8', textAlign: 'right', paddingRight: 8, paddingTop: -6 }}>
+                <div key={h} style={{ height: hourH, fontSize: 11, color: '#94a3b8', textAlign: 'right', paddingRight: 8, paddingTop: -6 }}>
                   {String(h).padStart(2, '0')}:00
                 </div>
               ))}
@@ -588,8 +602,8 @@ export default function CalendrierPage() {
                   {/* Hour lines */}
                   {HOURS.map(h => (
                     <div key={h} className="hour-line" style={{
-                      position: 'absolute', top: (h - START_H) * HOUR_H, left: 0, right: 0,
-                      borderTop: '1px solid #f1f5f9', height: HOUR_H, pointerEvents: 'none'
+                      position: 'absolute', top: (h - START_H) * hourH, left: 0, right: 0,
+                      borderTop: '1px solid #f1f5f9', height: hourH, pointerEvents: 'none'
                     }} />
                   ))}
 
@@ -600,7 +614,7 @@ export default function CalendrierPage() {
                     if (nowMin >= START_H * 60 && nowMin <= END_H * 60) {
                       return (
                         <div style={{
-                          position: 'absolute', top: minToY(nowMin), left: 0, right: 0,
+                          position: 'absolute', top: minToY(nowMin, hourH), left: 0, right: 0,
                           height: 2, background: '#dc2626', zIndex: 5
                         }}>
                           <div style={{
@@ -615,8 +629,8 @@ export default function CalendrierPage() {
 
                   {/* Events */}
                   {positioned.map(ev => {
-                    const top = minToY(ev.startMin)
-                    const height = Math.max(minToY(ev.endMin) - top, 20)
+                    const top = minToY(ev.startMin, hourH)
+                    const height = Math.max(minToY(ev.endMin, hourH) - top, 16)
                     const isOutlook = ev.source === 'outlook'
                     const color = isOutlook ? '#0078D4' : userColor(ev.user_id)
                     const totalCols = ev._maxCols || 1
@@ -686,7 +700,7 @@ export default function CalendrierPage() {
       `${days[0]?.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' })} - ${days[days.length - 1]?.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: 'numeric' })}`
 
   return (
-    <div className="admin-page" style={{ display: 'flex', gap: 0, height: 'calc(100vh - 80px)', overflow: 'hidden' }}>
+    <div className="admin-page" style={{ display: 'flex', gap: 0, height: 'calc(100vh - 110px)', overflow: 'hidden', margin: '5px 0 20px 0' }}>
       {/* ── Sidebar gauche : collaborateurs ── */}
       <div style={{
         width: 240, flexShrink: 0, background: '#fff', borderRight: '1px solid #e2e8f0',
