@@ -266,10 +266,12 @@ export default function LoginPage() {
           <div className="landing-hero-text">
             <div className="landing-hero-badge">📊 Business Intelligence nouvelle génération</div>
             <h1 className="landing-hero-title">
-              La BI intelligente<br />
-              <span style={{ color: '#1D9BF0' }}>pour les PME</span>
+              TimeBlast
             </h1>
-            <p className="landing-hero-subtitle" style={{ fontSize: '1.15rem', fontWeight: 600, color: '#475569', marginBottom: '1rem' }}>
+            <h2 style={{ fontSize: '1.6rem', fontWeight: 700, color: '#475569', marginBottom: '1.25rem', marginTop: '-.5rem', lineHeight: 1.3 }}>
+              La BI intelligente<br />pour les PME
+            </h2>
+            <p className="landing-hero-subtitle" style={{ fontSize: '1.05rem', fontWeight: 600, color: '#64748b', marginBottom: '1rem' }}>
               Tous vos indicateurs. Toutes vos données. Un seul outil décisionnel.
             </p>
             <p className="landing-hero-subtitle">
@@ -300,6 +302,105 @@ export default function LoginPage() {
             <span className="landing-stat-label">{s.label}</span>
           </div>
         ))}
+      </section>
+
+      {/* ══════════════════════════════════════════════════════════════════
+          ILS NOUS FONT CONFIANCE + MOCKUP DASHBOARD
+      ══════════════════════════════════════════════════════════════════ */}
+      <section style={{ padding: '4rem 2rem 0', background: '#fff', textAlign: 'center' }}>
+        <p style={{ fontSize: '.9rem', color: '#94a3b8', fontWeight: 600, letterSpacing: '.5px', textTransform: 'uppercase', marginBottom: '2rem' }}>
+          La solution décisionnelle préférée des PME & ETI
+        </p>
+        {/* Logos clients */}
+        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '3rem', flexWrap: 'wrap', maxWidth: 1000, margin: '0 auto 3rem', opacity: 0.7 }}>
+          {[
+            { name: 'Everial', initials: 'EV' },
+            { name: 'Irrijardin', initials: 'IJ' },
+            { name: 'Vinovalie', initials: 'VN' },
+            { name: 'Eveno', initials: 'EV' },
+            { name: 'Thievin', initials: 'TH' },
+            { name: 'Duobat', initials: 'DB' },
+            { name: 'FULL ACE', initials: 'FA' },
+            { name: 'Azura Recyclage', initials: 'AZ' },
+          ].map((client, i) => (
+            <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              <div style={{
+                width: 36, height: 36, borderRadius: 8, background: '#f1f5f9',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                fontSize: '.7rem', fontWeight: 800, color: '#64748b', border: '1px solid #e2e8f0'
+              }}>{client.initials}</div>
+              <span style={{ fontSize: '.9rem', fontWeight: 700, color: '#475569' }}>{client.name}</span>
+            </div>
+          ))}
+        </div>
+
+        {/* Mockup Dashboard */}
+        <div style={{ maxWidth: 960, margin: '0 auto', position: 'relative' }}>
+          {/* Cadre navigateur */}
+          <div className="mockup-browser">
+            <div className="mockup-browser-bar">
+              <div className="mockup-dots">
+                <span style={{ background: '#ff5f57' }} />
+                <span style={{ background: '#ffbd2e' }} />
+                <span style={{ background: '#28c840' }} />
+              </div>
+              <div className="mockup-url">
+                <span>🔒</span> app.timeblast.ai
+              </div>
+            </div>
+            <div className="mockup-content">
+              {/* Sidebar mini */}
+              <div className="mockup-sidebar">
+                <img src="/logo-icon.svg" alt="TB" style={{ width: 28, height: 28, marginBottom: 12 }} />
+                {['📊', '⏱', '💼', '📋', '👥', '⚙️'].map((icon, i) => (
+                  <div key={i} className="mockup-sidebar-icon" style={{ background: i === 0 ? '#eef6fb' : 'transparent', color: i === 0 ? '#195C82' : '#94a3b8' }}>{icon}</div>
+                ))}
+              </div>
+              {/* Contenu dashboard */}
+              <div className="mockup-main">
+                <div style={{ fontSize: '.85rem', fontWeight: 700, color: '#1a2332', marginBottom: 16 }}>📊 Tableau de bord</div>
+                {/* KPI row */}
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 10, marginBottom: 16 }}>
+                  {[
+                    { label: 'CA Mars', value: '72 450 €', trend: '+18%', color: '#16a34a' },
+                    { label: 'Pipeline', value: '343 000 €', trend: '8 deals', color: '#1D9BF0' },
+                    { label: 'Marge brute', value: '68%', trend: '+3pts', color: '#16a34a' },
+                    { label: 'Trésorerie', value: '62 812 €', trend: '-5%', color: '#ef4444' },
+                  ].map((kpi, i) => (
+                    <div key={i} style={{ background: '#f8fafc', borderRadius: 8, padding: '10px 12px', border: '1px solid #f1f5f9' }}>
+                      <div style={{ fontSize: '.55rem', color: '#94a3b8', marginBottom: 2 }}>{kpi.label}</div>
+                      <div style={{ fontSize: '.95rem', fontWeight: 800, color: '#1a2332' }}>{kpi.value}</div>
+                      <div style={{ fontSize: '.55rem', fontWeight: 700, color: kpi.color }}>{kpi.trend}</div>
+                    </div>
+                  ))}
+                </div>
+                {/* Chart area */}
+                <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: 12 }}>
+                  <div style={{ background: '#f8fafc', borderRadius: 8, padding: 12, border: '1px solid #f1f5f9' }}>
+                    <div style={{ fontSize: '.6rem', fontWeight: 700, color: '#475569', marginBottom: 8 }}>Évolution CA & Marge</div>
+                    <svg viewBox="0 0 300 80" style={{ width: '100%' }}>
+                      <polyline points="0,60 30,55 60,50 90,40 120,45 150,35 180,30 210,25 240,28 270,20 300,15" fill="none" stroke="#195C82" strokeWidth="2" />
+                      <polyline points="0,65 30,62 60,58 90,55 120,52 150,48 180,50 210,45 240,42 270,38 300,35" fill="none" stroke="#1D9BF0" strokeWidth="1.5" strokeDasharray="4 2" />
+                      <polyline points="0,70 30,68 60,72 90,65 120,60 150,58 180,55 210,52 240,48 270,50 300,45" fill="none" stroke="#f59e0b" strokeWidth="1.5" opacity="0.6" />
+                    </svg>
+                  </div>
+                  <div style={{ background: '#f8fafc', borderRadius: 8, padding: 12, border: '1px solid #f1f5f9' }}>
+                    <div style={{ fontSize: '.6rem', fontWeight: 700, color: '#475569', marginBottom: 8 }}>Alertes IA</div>
+                    {[
+                      { dot: '🔴', text: 'Facture en retard 22k€' },
+                      { dot: '🟡', text: 'Budget projet à 92%' },
+                      { dot: '🟢', text: 'Marge en hausse +3pts' },
+                    ].map((a, i) => (
+                      <div key={i} style={{ display: 'flex', gap: 6, alignItems: 'center', marginBottom: 6, fontSize: '.5rem', color: '#475569' }}>
+                        <span style={{ fontSize: 8 }}>{a.dot}</span> {a.text}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </section>
 
       {/* ══════════════════════════════════════════════════════════════════

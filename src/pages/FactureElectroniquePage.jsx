@@ -1,99 +1,61 @@
-import { useState } from 'react'
+import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
-const OBLIGATIONS = [
+const PAIN_POINTS = [
+  { icon: '😰', title: 'Données incomplètes', desc: 'SIRET manquant, adresses erronées, codes TVA absents — vos fiches clients ne sont pas prêtes pour l\'e-facture.' },
+  { icon: '🔀', title: 'Systèmes fragmentés', desc: 'Compta, CRM, facturation dans 3 outils différents. Aucune donnée n\'est synchronisée.' },
+  { icon: '📋', title: 'Saisie manuelle', desc: 'Copier-coller entre Excel, votre ERP et Chorus Pro. Erreurs garanties.' },
+  { icon: '⏰', title: 'Deadline qui approche', desc: 'Sept. 2026 : réception obligatoire. Sept. 2027 : émission pour les PME. Le temps presse.' },
+]
+
+const BI_SOLUTION = [
   {
-    icon: '📅',
-    title: 'Dates clés de la réforme',
-    items: [
-      { date: '✓ Depuis mars 2024', desc: 'Obligation de réception pour le secteur public via Chorus Pro' },
-      { date: '📌 1er septembre 2026', desc: 'Obligation de réception pour TOUTES les entreprises + émission pour les grandes entreprises et ETI' },
-      { date: '⚠️ 1er septembre 2027', desc: 'Obligation d\'émission pour les PME et micro-entreprises' },
-    ]
+    num: '1', icon: '🔌',
+    title: 'Connectez vos sources',
+    desc: 'TimeBlast agrège vos données de Sage, Pennylane, QuickBooks, CRM, banque — 30+ connecteurs natifs. Fini les silos.',
+  },
+  {
+    num: '2', icon: '📊',
+    title: 'La BI enrichit vos données',
+    desc: 'Détection automatique des champs manquants (SIRET, code TVA, adresse). L\'IA complète, normalise et valide vos fiches tiers via l\'API SIRENE.',
+  },
+  {
+    num: '3', icon: '✅',
+    title: 'Conformité automatique',
+    desc: 'Vos données sont propres → vos factures sont conformes. Génération XML UBL, Factur-X, envoi Chorus Pro — tout est automatisé.',
+  },
+  {
+    num: '4', icon: '🤖',
+    title: 'L\'IA agit pour vous',
+    desc: 'Relances clients automatiques, alertes trésorerie, rapprochement bancaire. De la donnée propre à l\'action autonome.',
   },
 ]
 
-const BENEFITS = [
-  {
-    icon: '⚡',
-    title: 'Zéro perte de temps',
-    desc: 'Générez vos factures électroniques automatiquement. TimeBlast le fait pour vous.'
-  },
-  {
-    icon: '📊',
-    title: 'Conformité garantie',
-    desc: 'Respect des normes Chorus Pro, Factur-X et UBL. Audit trail complet pour les contrôles.'
-  },
-  {
-    icon: '🔄',
-    title: 'Données unifiées nativement',
-    desc: 'CRM, compta, facturation — tout est connecté. Pas besoin d\'intégrateur pour relier vos outils.'
-  },
-  {
-    icon: '💰',
-    title: 'Prix PME accessible',
-    desc: 'Pas de licence à 150€/user/mois. Une plateforme convergente pensée pour les PME/ETI.'
-  },
-  {
-    icon: '🤖',
-    title: 'IA agentique intégrée',
-    desc: 'L\'IA ne suggère pas, elle agit : relances automatiques, détection d\'anomalies, validation intelligente.'
-  },
-  {
-    icon: '🤝',
-    title: 'Portail client intégré',
-    desc: 'Vos clients accèdent à leurs factures via un lien sécurisé. Sans créer de compte, sans complication.'
-  },
+const ENRICHMENT_FEATURES = [
+  { icon: '🏢', title: 'Vérification SIRENE', desc: 'Chaque tiers est vérifié via l\'API publique INSEE. SIRET, NAF, adresse — tout est contrôlé.' },
+  { icon: '🔍', title: 'Détection d\'anomalies', desc: 'L\'IA détecte les doublons, les champs vides, les incohérences. Score de qualité par fiche.' },
+  { icon: '📐', title: 'Normalisation', desc: 'Adresses normalisées (BAN), codes TVA validés, formats unifiés. Prêt pour le XML.' },
+  { icon: '📊', title: 'Score de maturité data', desc: 'Tableau de bord BI : % de fiches complètes, champs manquants par catégorie, progression.' },
+  { icon: '⚡', title: 'Enrichissement en masse', desc: 'Import CSV, enrichissement automatique, export conforme. Traitez 1000 fiches en 5 minutes.' },
+  { icon: '🔄', title: 'Synchronisation continue', desc: 'Les données enrichies sont synchronisées avec votre compta et CRM en temps réel.' },
 ]
 
-const HOW_WORKS = [
-  {
-    num: '1',
-    title: 'Branchez vos outils',
-    desc: 'TimeBlast se connecte à vos logiciels existants (Sage, Cegid, QuickBooks, Pennylane...) en un clic. 30+ connecteurs natifs.'
-  },
-  {
-    num: '2',
-    title: 'L\'IA structure vos données',
-    desc: 'Vos données deviennent propres, connectées et exploitables. Validation SIRENE, détection d\'anomalies, enrichissement automatique.'
-  },
-  {
-    num: '3',
-    title: 'Distribution multi-canal',
-    desc: 'Envoyez vos factures par email, XML UBL, portail client ou Chorus Pro. Tout depuis une seule interface.'
-  },
-  {
-    num: '4',
-    title: 'Les agents IA agissent',
-    desc: 'Relances client automatiques, alertes trésorerie, rapprochement bancaire IA. De la donnée propre à l\'action autonome.'
-  },
+const COMPARE = [
+  { process: 'Qualité des données', before: 'Vérification manuelle dans Excel', after: 'Score BI automatique + correction IA' },
+  { process: 'Fiches tiers', before: 'SIRET manquant, adresses erronées', after: 'Vérifié SIRENE, normalisé, complet' },
+  { process: 'Format facture', before: 'PDF non structuré par email', after: 'XML UBL / Factur-X automatique' },
+  { process: 'Distribution', before: 'Email manuel, pas de traçabilité', after: 'Multi-canal : email, Chorus Pro, portail client' },
+  { process: 'Suivi', before: 'Pas de visibilité sur les retards', after: 'Dashboard BI + alertes IA temps réel' },
+  { process: 'Coût', before: '150€/user/mois par outil × 5 outils', after: 'Une seule plateforme BI, prix PME' },
 ]
 
 const FAQ = [
-  {
-    q: 'Qu\'est-ce que la facture électronique ?',
-    a: 'La facture électronique est un document dématérialisé transmis en format structuré (XML UBL, Factur-X). Elle remplace la facture papier et PDF simple pour les transactions B2B en France.'
-  },
-  {
-    q: 'Quelles sont les vraies dates de la réforme ?',
-    a: 'Au 1er septembre 2026, toutes les entreprises devront pouvoir recevoir des e-factures, et les grandes entreprises/ETI devront émettre. Au 1er septembre 2027, l\'obligation d\'émission s\'étend aux PME et micro-entreprises.'
-  },
-  {
-    q: 'Qui est concerné ?',
-    a: 'TOUTES les entreprises assujetties à la TVA en France sont concernées, quelle que soit leur taille : grandes entreprises, ETI, PME, TPE et micro-entreprises.'
-  },
-  {
-    q: 'Qu\'est-ce que Chorus Pro et les PDP ?',
-    a: 'Chorus Pro est le portail public de facturation. Les Plateformes de Dématérialisation Partenaires (PDP) sont des intermédiaires privés agréés. TimeBlast s\'intègre aux deux.'
-  },
-  {
-    q: 'TimeBlast s\'intègre à mon logiciel comptable ?',
-    a: 'Oui, TimeBlast se connecte à Sage, Cegid, QuickBooks, Pennylane et 30+ autres outils. Pas besoin d\'intégrateur, tout est natif.'
-  },
-  {
-    q: 'Pourquoi TimeBlast plutôt qu\'un autre outil ?',
-    a: 'TimeBlast est la plateforme convergente : CRM, compta, facturation, RH — tout dans un seul outil. Vos données sont unifiées nativement, prêtes pour l\'IA agentique. Pas 10 logiciels à connecter.'
-  },
+  { q: 'Qu\'est-ce que la facture électronique ?', a: 'Un document dématérialisé transmis en format structuré (XML UBL, Factur-X). Elle remplace la facture PDF simple pour les transactions B2B en France.' },
+  { q: 'Quelles sont les dates de la réforme ?', a: '1er septembre 2026 : réception obligatoire pour toutes les entreprises + émission pour les grandes entreprises/ETI. 1er septembre 2027 : émission obligatoire pour les PME et micro-entreprises.' },
+  { q: 'Quel rapport entre la BI et l\'e-facture ?', a: 'La conformité e-facture exige des données propres (SIRET, TVA, adresses normalisées). Un outil de BI comme TimeBlast détecte les lacunes, enrichit vos données et génère automatiquement des factures conformes.' },
+  { q: 'TimeBlast remplace mon logiciel comptable ?', a: 'Non, TimeBlast s\'y connecte. Il agrège vos données de Sage, Pennylane, QuickBooks etc., les enrichit, et renvoie les écritures conformes. C\'est une couche décisionnelle au-dessus de vos outils.' },
+  { q: 'Combien de temps pour être conforme ?', a: 'Avec TimeBlast : quelques jours. Connectez vos sources, laissez l\'IA analyser et enrichir vos données, et vous êtes prêt pour l\'e-facture.' },
+  { q: 'Qu\'est-ce que Chorus Pro et les PDP ?', a: 'Chorus Pro est le portail public de facturation. Les PDP (Plateformes de Dématérialisation Partenaires) sont des intermédiaires privés agréés. TimeBlast s\'intègre aux deux.' },
 ]
 
 export default function FactureElectroniquePage() {
@@ -111,9 +73,9 @@ export default function FactureElectroniquePage() {
           </div>
           <div className="landing-nav-links">
             <a href="/login">Accueil</a>
-            <a href="#obligations">La réforme</a>
-            <a href="#benefices">Avantages</a>
-            <a href="#comment">Comment</a>
+            <a href="#probleme">Le problème</a>
+            <a href="#solution">La solution BI</a>
+            <a href="#enrichissement">Enrichissement</a>
             <a href="#faq">FAQ</a>
           </div>
           <button className="landing-nav-btn" onClick={() => setShowLogin(true)}>
@@ -122,76 +84,68 @@ export default function FactureElectroniquePage() {
         </div>
       </nav>
 
-      {/* ── Hero ── */}
+      {/* ══════════════════════════════════════════════════════════════════
+          HERO — TimeBlast BI + e-facture
+      ══════════════════════════════════════════════════════════════════ */}
       <section className="landing-hero">
         <div className="landing-hero-bg" />
         <div className="landing-hero-grid">
           <div className="landing-hero-text">
-            <div className="landing-hero-badge">🤖 La donnée propre, le socle de l'IA agentique</div>
+            <div className="landing-hero-badge">📊 Business Intelligence + E-Facture 2026</div>
             <h1 className="landing-hero-title">
-              E-Facture 2026 :<br />
-              Soyez conforme<br />
-              <span className="landing-hero-accent">sans tout changer.</span>
+              TimeBlast<span style={{ color: '#1D9BF0' }}>.ai</span>
             </h1>
+            <h2 style={{ fontSize: '1.5rem', fontWeight: 700, color: '#475569', marginBottom: '1.25rem', marginTop: '-.5rem', lineHeight: 1.3 }}>
+              La BI qui rend vos données<br />
+              <span style={{ color: '#16a34a' }}>conformes à l'e-facture</span>
+            </h2>
             <p className="landing-hero-subtitle">
-              <strong>68% des PME sont immatures en données.</strong> La réforme e-facture arrive en septembre 2026.
-              TimeBlast est la plateforme convergente qui rend vos données propres, connectées et conformes — en quelques jours.
+              <strong>La réforme e-facture exige des données propres.</strong> TimeBlast est la plateforme
+              décisionnelle qui enrichit, normalise et valide vos données — pour que vos factures soient
+              conformes automatiquement.
             </p>
             <div className="landing-hero-actions">
-              <button className="landing-btn-primary" onClick={() => setShowLogin(true)}>
-                Lancer votre e-facturation →
+              <button className="landing-btn-primary" onClick={() => navigate('/login#contact')}>
+                Diagnostic data gratuit →
               </button>
-              <a href="#comment" className="landing-btn-secondary">
-                Voir comment ça marche
+              <a href="#solution" className="landing-btn-secondary">
+                Comment ça marche
               </a>
             </div>
           </div>
           <div className="landing-hero-visual" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <div style={{
-              fontSize: '6rem',
-              textAlign: 'center',
-              opacity: 0.15,
-              letterSpacing: '-0.1em'
-            }}>
-              📋<br />✅
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ── Obligations / Timeline ── */}
-      <section className="landing-obligations" id="obligations">
-        <h2 className="landing-section-title">Le vrai calendrier de la réforme</h2>
-        <p className="landing-section-subtitle">
-          Les dates officielles de la facturation électronique obligatoire (Loi de Finances 2024).
-        </p>
-        <div className="landing-timeline">
-          <div className="timeline-item">
-            <div className="timeline-marker" style={{ background: '#10b981' }}>✓</div>
-            <div className="timeline-content">
-              <h3>Depuis 2020</h3>
-              <p>Obligation de facturation électronique pour les fournisseurs du <strong>secteur public</strong> via Chorus Pro.</p>
-            </div>
-          </div>
-          <div className="timeline-item">
-            <div className="timeline-marker" style={{ background: '#1D9BF0' }}>📌</div>
-            <div className="timeline-content">
-              <h3>1er septembre 2026</h3>
-              <p><strong>Toutes les entreprises</strong> doivent pouvoir <strong>recevoir</strong> des e-factures. Les grandes entreprises et ETI doivent aussi <strong>émettre</strong>.</p>
-            </div>
-          </div>
-          <div className="timeline-item">
-            <div className="timeline-marker" style={{ background: '#ef4444' }}>⏰</div>
-            <div className="timeline-content">
-              <h3>1er septembre 2027 (Deadline finale)</h3>
-              <p>Les <strong>PME et micro-entreprises</strong> doivent également émettre en e-facture. Plus aucune exception.</p>
+            {/* Mini dashboard conformité */}
+            <div style={{ background: '#fff', borderRadius: 16, boxShadow: '0 20px 50px rgba(0,0,0,0.1)', padding: 24, width: 320, border: '1px solid #e2e8f0' }}>
+              <div style={{ fontSize: '.75rem', fontWeight: 700, color: '#195C82', marginBottom: 16, display: 'flex', alignItems: 'center', gap: 8 }}>
+                📊 Score de maturité data
+              </div>
+              {[
+                { label: 'Fiches tiers complètes', pct: 72, color: '#f59e0b' },
+                { label: 'SIRET vérifiés', pct: 45, color: '#ef4444' },
+                { label: 'Adresses normalisées', pct: 88, color: '#16a34a' },
+                { label: 'Codes TVA valides', pct: 91, color: '#16a34a' },
+              ].map((item, i) => (
+                <div key={i} style={{ marginBottom: 12 }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '.7rem', marginBottom: 4 }}>
+                    <span style={{ color: '#475569' }}>{item.label}</span>
+                    <span style={{ fontWeight: 700, color: item.color }}>{item.pct}%</span>
+                  </div>
+                  <div style={{ height: 6, borderRadius: 3, background: '#f1f5f9', overflow: 'hidden' }}>
+                    <div style={{ height: '100%', borderRadius: 3, background: item.color, width: `${item.pct}%`, transition: 'width 1s ease' }} />
+                  </div>
+                </div>
+              ))}
+              <div style={{ marginTop: 16, padding: '10px 12px', background: '#fef3c7', borderRadius: 8, fontSize: '.65rem', color: '#92400e', display: 'flex', gap: 8, alignItems: 'flex-start' }}>
+                <span>⚠️</span>
+                <span><strong>28% de fiches incomplètes</strong> — risque de rejet e-facture. TimeBlast peut enrichir automatiquement.</span>
+              </div>
             </div>
           </div>
         </div>
       </section>
 
       {/* ── Stats ── */}
-      <section className="landing-stats" style={{ marginTop: '3rem' }}>
+      <section className="landing-stats">
         <div className="landing-stat">
           <span className="landing-stat-value">68%</span>
           <span className="landing-stat-label">des PME immatures en données</span>
@@ -205,165 +159,147 @@ export default function FactureElectroniquePage() {
           <span className="landing-stat-label">d'amende par facture non-conforme</span>
         </div>
         <div className="landing-stat">
-          <span className="landing-stat-value">1</span>
-          <span className="landing-stat-label">seul outil pour tout gérer</span>
+          <span className="landing-stat-value">Sept. 2026</span>
+          <span className="landing-stat-label">deadline réception obligatoire</span>
         </div>
       </section>
 
-      {/* ── Obligations détail ── */}
-      <section className="landing-what-is" id="obligations-detail">
-        <div style={{ maxWidth: '900px', margin: '0 auto' }}>
-          <h2 className="landing-section-title">Qu'est-ce que la facture électronique ?</h2>
-          <div className="obligations-grid">
-            <div className="obligation-card">
-              <h3>📄 Format standardisé</h3>
-              <p>Fichier XML au format UBL ou Factur-X, reconnu internationalement. Fini les PDF non exploitables.</p>
+      {/* ══════════════════════════════════════════════════════════════════
+          LE VRAI PROBLÈME — données pas prêtes
+      ══════════════════════════════════════════════════════════════════ */}
+      <section className="landing-features" id="probleme">
+        <h2 className="landing-section-title">Le vrai problème : vos données ne sont pas prêtes</h2>
+        <p className="landing-section-subtitle">
+          La réforme e-facture ne demande pas juste un nouveau format — elle exige des données complètes, normalisées, vérifiées.
+        </p>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '1.5rem', maxWidth: 1100, margin: '0 auto' }}>
+          {PAIN_POINTS.map((p, i) => (
+            <div key={i} className="landing-feature-card" style={{ borderColor: '#fecaca', background: '#fffbfb' }}>
+              <span className="landing-feature-icon">{p.icon}</span>
+              <h3 style={{ color: '#dc2626' }}>{p.title}</h3>
+              <p>{p.desc}</p>
             </div>
-            <div className="obligation-card">
-              <h3>🔐 Sécurisée & traçable</h3>
-              <p>Signature électronique, audit trail complet. Chaque facture a un historique inviolable.</p>
+          ))}
+        </div>
+      </section>
+
+      {/* ── Timeline réforme ── */}
+      <section className="landing-obligations" id="timeline">
+        <h2 className="landing-section-title">Le calendrier officiel</h2>
+        <p className="landing-section-subtitle">
+          Loi de Finances 2024 — dates définitives de la facturation électronique obligatoire.
+        </p>
+        <div className="landing-timeline">
+          <div className="timeline-item">
+            <div className="timeline-marker" style={{ background: '#10b981' }}>✓</div>
+            <div className="timeline-content">
+              <h3>Depuis 2020</h3>
+              <p>Obligation pour les fournisseurs du <strong>secteur public</strong> via Chorus Pro.</p>
             </div>
-            <div className="obligation-card">
-              <h3>🏛️ Chorus Pro & PDP</h3>
-              <p>Transmission via le portail public (Chorus Pro) ou une Plateforme de Dématérialisation Partenaire agréée.</p>
+          </div>
+          <div className="timeline-item">
+            <div className="timeline-marker" style={{ background: '#1D9BF0' }}>📌</div>
+            <div className="timeline-content">
+              <h3>1er septembre 2026</h3>
+              <p><strong>Toutes les entreprises</strong> doivent pouvoir <strong>recevoir</strong> des e-factures. Les grandes entreprises et ETI doivent aussi <strong>émettre</strong>.</p>
             </div>
-            <div className="obligation-card">
-              <h3>💡 E-reporting obligatoire</h3>
-              <p>En plus de l'e-facture, le e-reporting des transactions B2C et internationales devient obligatoire.</p>
+          </div>
+          <div className="timeline-item">
+            <div className="timeline-marker" style={{ background: '#ef4444' }}>⏰</div>
+            <div className="timeline-content">
+              <h3>1er septembre 2027</h3>
+              <p>Les <strong>PME et micro-entreprises</strong> doivent également émettre. Plus aucune exception.</p>
             </div>
           </div>
         </div>
       </section>
 
-      {/* ── Comment TimeBlast aide ── */}
-      <section className="landing-how" id="comment">
-        <h2 className="landing-section-title">Comment TimeBlast vous rend conforme</h2>
+      {/* ══════════════════════════════════════════════════════════════════
+          LA SOLUTION BI — 4 étapes
+      ══════════════════════════════════════════════════════════════════ */}
+      <section className="landing-how" id="solution">
+        <h2 className="landing-section-title">La solution : la BI qui enrichit vos données</h2>
         <p className="landing-section-subtitle">
-          De la donnée brute à l'action automatisée — 4 étapes.
+          TimeBlast ne génère pas juste des factures — il rend vos données exploitables et conformes.
         </p>
         <div className="landing-how-grid">
-          {HOW_WORKS.map((item, i) => (
+          {BI_SOLUTION.map((item, i) => (
             <div key={i} className="how-card">
               <div className="how-number">{item.num}</div>
-              <h3>{item.title}</h3>
+              <h3>{item.icon} {item.title}</h3>
               <p>{item.desc}</p>
-              {i < HOW_WORKS.length - 1 && <div className="how-arrow">→</div>}
+              {i < BI_SOLUTION.length - 1 && <div className="how-arrow">→</div>}
             </div>
           ))}
         </div>
       </section>
 
-      {/* ── Bénéfices ── */}
-      <section className="landing-benefits" id="benefices">
-        <h2 className="landing-section-title">Pourquoi TimeBlast pour l'e-facture ?</h2>
+      {/* ══════════════════════════════════════════════════════════════════
+          ENRICHISSEMENT DATA — 6 features
+      ══════════════════════════════════════════════════════════════════ */}
+      <section className="landing-benefits" id="enrichissement">
+        <h2 className="landing-section-title">Enrichissement de données intelligent</h2>
         <p className="landing-section-subtitle">
-          Une plateforme convergente — pas juste un outil de facturation.
+          La BI de TimeBlast analyse, détecte les lacunes et enrichit automatiquement vos fiches tiers.
         </p>
         <div className="landing-benefits-grid">
-          {BENEFITS.map((b, i) => (
+          {ENRICHMENT_FEATURES.map((f, i) => (
             <div key={i} className="benefit-card">
-              <span className="benefit-icon">{b.icon}</span>
-              <h3>{b.title}</h3>
-              <p>{b.desc}</p>
+              <span className="benefit-icon">{f.icon}</span>
+              <h3>{f.title}</h3>
+              <p>{f.desc}</p>
             </div>
           ))}
         </div>
       </section>
 
-      {/* ── Comparaison Avant/Après ── */}
+      {/* ══════════════════════════════════════════════════════════════════
+          COMPARAISON Avant / Après
+      ══════════════════════════════════════════════════════════════════ */}
       <section className="landing-comparison">
         <h2 className="landing-section-title">Avant vs. Après TimeBlast</h2>
         <div className="comparison-table">
           <div className="comparison-row header">
             <div className="comparison-col">Processus</div>
-            <div className="comparison-col">❌ Avant</div>
-            <div className="comparison-col">✅ Après TimeBlast</div>
+            <div className="comparison-col">❌ Sans BI</div>
+            <div className="comparison-col">✅ Avec TimeBlast</div>
           </div>
-
-          <div className="comparison-row">
-            <div className="comparison-col label">Outils</div>
-            <div className="comparison-col">10 logiciels fragmentés</div>
-            <div className="comparison-col">1 seule plateforme convergente</div>
-          </div>
-
-          <div className="comparison-row">
-            <div className="comparison-col label">Données</div>
-            <div className="comparison-col">Silos, doublons, erreurs</div>
-            <div className="comparison-col">Propres, connectées, exploitables</div>
-          </div>
-
-          <div className="comparison-row">
-            <div className="comparison-col label">E-facture</div>
-            <div className="comparison-col">Reconfiguration complète nécessaire</div>
-            <div className="comparison-col">Conforme en quelques jours</div>
-          </div>
-
-          <div className="comparison-row">
-            <div className="comparison-col label">Distribution</div>
-            <div className="comparison-col">Email manuel, PDF non-conforme</div>
-            <div className="comparison-col">Email, XML, portail client, Chorus Pro</div>
-          </div>
-
-          <div className="comparison-row">
-            <div className="comparison-col label">Intelligence</div>
-            <div className="comparison-col">Reporting manuel dans Excel</div>
-            <div className="comparison-col">IA agentique : relances, alertes, validation</div>
-          </div>
-
-          <div className="comparison-row">
-            <div className="comparison-col label">Prix</div>
-            <div className="comparison-col">150€/user/mois par outil</div>
-            <div className="comparison-col">Prix PME accessible</div>
-          </div>
+          {COMPARE.map((row, i) => (
+            <div key={i} className="comparison-row">
+              <div className="comparison-col label">{row.process}</div>
+              <div className="comparison-col">{row.before}</div>
+              <div className="comparison-col">{row.after}</div>
+            </div>
+          ))}
         </div>
       </section>
 
       {/* ── Roadmap ── */}
-      <section className="landing-roadmap" id="roadmap-efacture">
-        <h2 className="landing-section-title">Notre vision : de la conformité à l'IA agentique</h2>
+      <section className="landing-roadmap" id="roadmap">
+        <h2 className="landing-section-title">De la conformité à l'IA décisionnelle</h2>
         <p className="landing-section-subtitle">
-          L'e-facture n'est que le début. TimeBlast prépare vos données pour l'ère de l'IA.
+          L'e-facture est le point de départ. TimeBlast prépare vos données pour le pilotage intelligent.
         </p>
         <div className="landing-roadmap-grid">
-          <div className="landing-roadmap-card" style={{ '--phase-color': '#16a34a' }}>
-            <div className="landing-roadmap-header">
-              <span className="landing-roadmap-badge" style={{ background: '#16a34a' }}>Phase 1</span>
-              <span className="landing-roadmap-timing">Maintenant</span>
+          {[
+            { phase: 'Phase 1', timing: 'Disponible', color: '#16a34a', title: 'Données propres & conformes',
+              items: ['Conformité e-facture 2026', 'Enrichissement SIRENE automatique', '30+ connecteurs natifs', 'Score de maturité data'] },
+            { phase: 'Phase 2', timing: '3–6 mois', color: '#1D9BF0', title: 'BI prédictive',
+              items: ['Prévisions trésorerie & CA', 'Détection d\'anomalies comptables', 'Assistant IA en langage naturel', 'Rapprochement bancaire IA'] },
+            { phase: 'Phase 3', timing: '6–12 mois', color: '#7c3aed', title: 'Agents IA autonomes',
+              items: ['Relances clients automatiques', 'Validation notes de frais par IA', 'Alertes trésorerie intelligentes', 'Workflows décisionnels sur mesure'] },
+          ].map((p, i) => (
+            <div key={i} className="landing-roadmap-card" style={{ '--phase-color': p.color }}>
+              <div className="landing-roadmap-header">
+                <span className="landing-roadmap-badge" style={{ background: p.color }}>{p.phase}</span>
+                <span className="landing-roadmap-timing">{p.timing}</span>
+              </div>
+              <h3 className="landing-roadmap-title">{p.title}</h3>
+              <ul className="landing-roadmap-list">
+                {p.items.map((item, j) => <li key={j}>{item}</li>)}
+              </ul>
             </div>
-            <h3 className="landing-roadmap-title">Données propres & conformes</h3>
-            <ul className="landing-roadmap-list">
-              <li>Conformité e-facture 2026</li>
-              <li>Qualité des données & normalisation</li>
-              <li>30+ connecteurs natifs</li>
-              <li>API ouvertes & exports structurés</li>
-            </ul>
-          </div>
-          <div className="landing-roadmap-card" style={{ '--phase-color': '#1D9BF0' }}>
-            <div className="landing-roadmap-header">
-              <span className="landing-roadmap-badge" style={{ background: '#1D9BF0' }}>Phase 2</span>
-              <span className="landing-roadmap-timing">3-6 mois</span>
-            </div>
-            <h3 className="landing-roadmap-title">Assistant IA contextuel</h3>
-            <ul className="landing-roadmap-list">
-              <li>ChatWidget IA qui agit sur vos données</li>
-              <li>Créer une facture en langage naturel</li>
-              <li>Analyser la rentabilité en 1 question</li>
-              <li>Rapprochement bancaire automatisé</li>
-            </ul>
-          </div>
-          <div className="landing-roadmap-card" style={{ '--phase-color': '#7c3aed' }}>
-            <div className="landing-roadmap-header">
-              <span className="landing-roadmap-badge" style={{ background: '#7c3aed' }}>Phase 3</span>
-              <span className="landing-roadmap-timing">6-12 mois</span>
-            </div>
-            <h3 className="landing-roadmap-title">Agents IA autonomes</h3>
-            <ul className="landing-roadmap-list">
-              <li>Relance client automatique</li>
-              <li>Alertes trésorerie intelligentes</li>
-              <li>Validation de notes de frais par IA</li>
-              <li>Workflows IA sur mesure</li>
-            </ul>
-          </div>
+          ))}
         </div>
       </section>
 
@@ -373,34 +309,30 @@ export default function FactureElectroniquePage() {
         <div className="faq-grid">
           {FAQ.map((item, i) => (
             <div key={i} className="faq-item">
-              <button
-                className="faq-question"
-                onClick={() => setExpandedFaq(expandedFaq === i ? null : i)}
-              >
+              <button className="faq-question" onClick={() => setExpandedFaq(expandedFaq === i ? null : i)}>
                 <span>{item.q}</span>
                 <span className={`faq-toggle ${expandedFaq === i ? 'open' : ''}`}>▼</span>
               </button>
-              {expandedFaq === i && (
-                <div className="faq-answer">{item.a}</div>
-              )}
+              {expandedFaq === i && <div className="faq-answer">{item.a}</div>}
             </div>
           ))}
         </div>
       </section>
 
-      {/* ── CTA Final ── */}
-      <section className="landing-cta" id="cta">
+      {/* ── CTA ── */}
+      <section className="landing-cta">
         <div className="landing-cta-inner">
-          <span className="landing-cta-icon">🤖</span>
-          <h2>Préparez votre entreprise à l'ère de l'IA agentique</h2>
-          <p>La conformité e-facture n'est que le début. Activez vos données avec TimeBlast.</p>
+          <span className="landing-cta-icon">📊</span>
+          <h2>Vos données sont-elles prêtes pour l'e-facture ?</h2>
+          <p>Diagnostic gratuit en 30 minutes — on évalue votre maturité data et votre niveau de conformité.</p>
           <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', flexWrap: 'wrap' }}>
-            <button className="landing-btn-primary landing-btn-lg" onClick={() => setShowLogin(true)}>
-              Commencer maintenant →
+            <button className="landing-btn-primary landing-btn-lg" onClick={() => navigate('/login#contact')}>
+              Diagnostic data gratuit →
             </button>
-            <a href="/login#contact" className="landing-btn-secondary landing-btn-lg" style={{ color: '#fff', borderColor: 'rgba(255,255,255,0.4)' }}>
-              Demander une démo
-            </a>
+            <button className="landing-btn-secondary landing-btn-lg" onClick={() => setShowLogin(true)}
+              style={{ color: '#fff', borderColor: 'rgba(255,255,255,0.4)' }}>
+              Se connecter
+            </button>
           </div>
         </div>
       </section>
@@ -410,7 +342,7 @@ export default function FactureElectroniquePage() {
         <div className="landing-footer-inner">
           <img src="/logo4.png" alt="TimeBlast" style={{ height: 24 }} />
           <span style={{ color: 'rgba(255,255,255,0.4)', fontSize: '.82rem' }}>
-            © {new Date().getFullYear()} TimeBlast — La plateforme IA qui active vos données
+            © {new Date().getFullYear()} TimeBlast.ai — Plateforme décisionnelle intelligente pour PME
           </span>
         </div>
       </footer>
@@ -421,20 +353,20 @@ export default function FactureElectroniquePage() {
           <div className="landing-login-card" onClick={e => e.stopPropagation()}>
             <button className="landing-login-close" onClick={() => setShowLogin(false)}>✕</button>
             <div style={{ textAlign: 'center', marginBottom: '1.5rem' }}>
-              <span style={{ fontSize: '2rem' }}>⚡</span>
+              <span style={{ fontSize: '2rem' }}>📊</span>
               <h2 style={{ margin: '.25rem 0 0' }}>Connexion</h2>
               <p style={{ color: '#64748b', fontSize: '.88rem', margin: '.25rem 0 0' }}>
-                Accédez à votre espace TimeBlast
+                Accédez à votre espace décisionnel
               </p>
             </div>
             <form>
               <div className="field">
-                <label htmlFor="email">Email</label>
-                <input id="email" type="email" placeholder="nom@entreprise.com" autoFocus />
+                <label htmlFor="email-ef">Email</label>
+                <input id="email-ef" type="email" placeholder="nom@entreprise.com" autoFocus />
               </div>
               <div className="field">
-                <label htmlFor="password">Mot de passe</label>
-                <input id="password" type="password" placeholder="••••••••" />
+                <label htmlFor="password-ef">Mot de passe</label>
+                <input id="password-ef" type="password" placeholder="••••••••" />
               </div>
               <button type="button" className="landing-btn-primary" style={{ width: '100%', marginTop: '.75rem' }}>
                 Se connecter →

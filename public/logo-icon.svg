@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" fill="none">
+  <!-- Cercle extérieur -->
+  <circle cx="100" cy="100" r="90" fill="#195C82"/>
+  <!-- Forme intérieure : éclair/bolt stylisé façon vague -->
+  <path d="
+    M 120 40
+    C 85 40, 50 65, 55 95
+    C 58 115, 75 120, 90 115
+    C 105 110, 115 115, 118 130
+    C 125 160, 95 165, 75 160
+  " stroke="#fff" stroke-width="18" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+  <!-- Point d'énergie en haut -->
+  <circle cx="120" cy="42" r="5" fill="#F8B35A"/>
+</svg>
