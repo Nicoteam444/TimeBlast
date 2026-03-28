@@ -289,7 +289,7 @@ export default function LoginPage() {
       {/* ── Navbar ── */}
       <nav className="landing-nav">
         <div className="landing-nav-inner">
-          <div className="landing-logo">
+          <div className="landing-logo" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })} style={{ cursor: 'pointer' }}>
             <img src="/logo-full.svg" alt="TimeBlast" style={{ height: 64 }} />
           </div>
           <div className="landing-nav-links">
