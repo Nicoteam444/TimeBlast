@@ -61,8 +61,8 @@ function buildSystemPrompt(societe, ctx) {
     // --- Équipe ---
     `=== ÉQUIPE (${ctx.equipe?.length || 0} collaborateurs) ===`,
     ctx.equipe?.length > 0
-      ? ctx.equipe.slice(0, 10).map(e =>
-          `• ${e.full_name || '—'} | ${e.poste || '—'}`
+      ? ctx.equipe.map(e =>
+          `• ${e.full_name || '—'} | poste: ${e.poste || '—'} | dept: ${e.departement || '—'} | email: ${e.email || '—'} | tel: ${e.telephone || '—'}${e.lucca_legal_entity_name ? ' | société: ' + e.lucca_legal_entity_name : ''}${e.role ? ' | rôle: ' + e.role : ''}`
         ).join('\n')
       : `Aucun collaborateur.`,
     ``,
@@ -236,7 +236,17 @@ export default function ChatWidget() {
         safeQuery(filter(supabase.from('transactions').select('name, montant, phase, clients(name)').order('created_at', { ascending: false }).limit(50))),
         safeQuery(filter(supabase.from('projets').select('name, statut, clients(name)').order('name').limit(50))),
         safeQuery(filter(supabase.from('factures').select('num_facture, total_ttc, statut, date_emission, client_nom, objet').order('date_emission', { ascending: false }).limit(30))),
-        safeQuery(filter(supabase.from('equipe').select('nom, prenom, poste').order('nom').limit(50))),
+        (async () => {
+          // Charger depuis equipe ET profiles pour avoir tous les collaborateurs
+          const eq = await safeQuery(filter(supabase.from('equipe').select('nom, prenom, poste, email, lucca_legal_entity_name, departement, telephone').order('nom').limit(100)))
+          const pr = await safeQuery(supabase.rpc('get_users_with_auth'))
+          // Fusionner : equipe prioritaire, profiles en complément
+          const seen = new Set()
+          const merged = []
+          eq.forEach(e => { const n = [e.prenom, e.nom].filter(Boolean).join(' '); seen.add(n.toLowerCase()); merged.push(e) })
+          pr.forEach(p => { if (!seen.has((p.full_name || '').toLowerCase())) merged.push({ nom: '', prenom: '', poste: p.poste || '', email: p.email || '', full_name: p.full_name, role: p.role, departement: p.departement || '', telephone: p.telephone || '' }) })
+          return merged
+        })(),
         safeQuery(filter(supabase.from('immobilisations').select('libelle, categorie, valeur_brute, statut').order('libelle').limit(30))),
         safeQuery(filter(supabase.from('achats').select('fournisseur, reference, montant, categorie').order('created_at', { ascending: false }).limit(20))),
         safeQuery(filter(supabase.from('fec_imports').select('meta').order('created_at', { ascending: false }).limit(5))),
@@ -252,7 +262,7 @@ export default function ChatWidget() {
         transactions: transactions.map(t => ({ ...t, client_name: t.clients?.name })),
         projets: projets.map(p => ({ ...p, client_name: p.clients?.name })),
         factures,
-        equipe: equipe.map(e => ({ ...e, full_name: [e.prenom, e.nom].filter(Boolean).join(' ') || '—' })),
+        equipe: equipe.map(e => ({ ...e, full_name: e.full_name || [e.prenom, e.nom].filter(Boolean).join(' ') || '—' })),
         immos,
         achats,
         fecImports,
