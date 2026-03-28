@@ -1,15 +1,20 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
-  <!-- TimeBlast — Nœud connecté, fond transparent -->
-  <!-- Anneau -->
-  <circle cx="100" cy="100" r="86" fill="none" stroke="#195C82" stroke-width="12"/>
-  <!-- Branches -->
-  <line x1="100" y1="52" x2="100" y2="148" stroke="#195C82" stroke-width="10" stroke-linecap="round"/>
-  <line x1="52" y1="100" x2="148" y2="100" stroke="#195C82" stroke-width="10" stroke-linecap="round"/>
-  <!-- Nœud central -->
-  <circle cx="100" cy="100" r="14" fill="#195C82"/>
-  <!-- Dots aux extrémités -->
-  <circle cx="100" cy="46" r="10" fill="#195C82"/>
-  <circle cx="100" cy="154" r="10" fill="#195C82"/>
-  <circle cx="46" cy="100" r="10" fill="#195C82"/>
-  <circle cx="154" cy="100" r="10" fill="#195C82"/>
+  <!-- TimeBlast — Engrenage 8 dents, rotation 22.5°, branches courtes -->
+  <defs>
+    <mask id="h">
+      <rect width="200" height="200" fill="white"/>
+      <circle cx="100" cy="100" r="28" fill="black"/>
+    </mask>
+  </defs>
+  <g fill="#195C82" mask="url(#h)" transform="rotate(22.5 100 100)">
+    <circle cx="100" cy="100" r="62"/>
+    <rect x="89" y="18" width="22" height="32" rx="11"/>
+    <rect x="89" y="150" width="22" height="32" rx="11"/>
+    <rect x="18" y="89" width="32" height="22" rx="11"/>
+    <rect x="150" y="89" width="32" height="22" rx="11"/>
+    <rect x="89" y="18" width="22" height="32" rx="11" transform="rotate(45 100 100)"/>
+    <rect x="89" y="150" width="22" height="32" rx="11" transform="rotate(45 100 100)"/>
+    <rect x="18" y="89" width="32" height="22" rx="11" transform="rotate(45 100 100)"/>
+    <rect x="150" y="89" width="32" height="22" rx="11" transform="rotate(45 100 100)"/>
+  </g>
 </svg>
