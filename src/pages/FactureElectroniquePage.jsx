@@ -176,7 +176,7 @@ export default function FactureElectroniquePage() {
             <div className="mockup-content" style={{ minHeight: 360 }}>
               {/* Sidebar */}
               <div className="mockup-sidebar" style={{ width: 52, background: '#0f2b42', padding: '12px 10px', gap: 2, borderRight: 'none' }}>
-                <img src="/logo-icon.svg" alt="TB" style={{ width: 28, height: 28, marginBottom: 12, filter: 'brightness(0) invert(1)' }} />
+                <img src="/logo-icon-white.svg" alt="TB" style={{ width: 28, height: 28, marginBottom: 12 }} />
                 {['🧾','📊','🔍','📋','🔗','⚙️'].map((ic, i) => (
                   <div key={i} style={{ width: 32, height: 32, display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: 8, fontSize: 14, background: i === 0 ? 'rgba(255,255,255,.12)' : 'transparent', position: 'relative' }}>
                     {ic}{i === 0 && <div style={{ position: 'absolute', left: -10, width: 3, height: 16, background: '#F8B35A', borderRadius: '0 2px 2px 0' }} />}

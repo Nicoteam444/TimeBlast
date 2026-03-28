@@ -310,18 +310,37 @@ export default function AdminUtilisateursPage() {
                     {ROLES.map(r => <option key={r} value={r}>{ROLE_LABELS[r]}</option>)}
                   </select>
                 </div>
-                <div className="field">
-                  <label>Profil métier</label>
-                  <select value={form.profil_metier || 'direction'} onChange={e => setForm(f => ({ ...f, profil_metier: e.target.value }))}>
-                    {Object.entries(PROFILS_METIER).map(([id, p]) => (
-                      <option key={id} value={id}>{p.icon} {p.label}</option>
-                    ))}
-                  </select>
-                  <div style={{ fontSize: '.7rem', color: '#94a3b8', marginTop: 2 }}>
-                    Modules : {(PROFILS_METIER[form.profil_metier || 'direction']?.modules || []).map(m => {
-                      const mod = MODULES.find(x => x.id === m)
-                      return mod ? mod.icon + ' ' + mod.label : m
-                    }).join(', ') || 'Personnalisé'}
+                <div className="field" style={{ gridColumn: '1 / -1' }}>
+                  <label style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                    <span>Modules accessibles</span>
+                    <button type="button" onClick={() => {
+                      const allOn = MODULES.filter(m => m.id !== 'administration').every(m => (form.modules || []).includes(m.id))
+                      setForm(f => ({ ...f, modules: allOn ? [] : MODULES.filter(m => m.id !== 'administration').map(m => m.id) }))
+                    }} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '.75rem', color: '#195C82', fontWeight: 600 }}>
+                      {MODULES.filter(m => m.id !== 'administration').every(m => (form.modules || []).includes(m.id)) ? '✕ Tout décocher' : '✓ Tout cocher'}
+                    </button>
+                  </label>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(150px, 1fr))', gap: 6, marginTop: 4 }}>
+                    {MODULES.filter(m => m.id !== 'administration').map(m => {
+                      const isOn = (form.modules || []).includes(m.id)
+                      return (
+                        <label key={m.id} style={{
+                          display: 'flex', alignItems: 'center', gap: 8, padding: '6px 10px',
+                          borderRadius: 8, border: '1.5px solid', cursor: 'pointer',
+                          borderColor: isOn ? '#195C82' : '#e2e8f0',
+                          background: isOn ? '#eef6fb' : '#fff', fontSize: '.8rem', fontWeight: 600,
+                          color: isOn ? '#195C82' : '#94a3b8', transition: 'all .15s'
+                        }}>
+                          <input type="checkbox" checked={isOn} onChange={() => {
+                            setForm(f => {
+                              const modules = f.modules || []
+                              return { ...f, modules: isOn ? modules.filter(id => id !== m.id) : [...modules, m.id] }
+                            })
+                          }} style={{ display: 'none' }} />
+                          <span>{m.icon}</span> {m.label}
+                        </label>
+                      )
+                    })}
                   </div>
                 </div>
                 <div className="field">
@@ -445,18 +464,37 @@ export default function AdminUtilisateursPage() {
                     {ROLES.map(r => <option key={r} value={r}>{ROLE_LABELS[r]}</option>)}
                   </select>
                 </div>
-                <div className="field">
-                  <label>Profil métier</label>
-                  <select value={editForm.profil_metier || 'direction'} onChange={e => setEditForm(f => ({ ...f, profil_metier: e.target.value }))}>
-                    {Object.entries(PROFILS_METIER).map(([id, p]) => (
-                      <option key={id} value={id}>{p.icon} {p.label}</option>
-                    ))}
-                  </select>
-                  <div style={{ fontSize: '.7rem', color: '#94a3b8', marginTop: 2 }}>
-                    Modules : {(PROFILS_METIER[editForm.profil_metier || 'direction']?.modules || []).map(m => {
-                      const mod = MODULES.find(x => x.id === m)
-                      return mod ? mod.icon + ' ' + mod.label : m
-                    }).join(', ') || 'Personnalisé'}
+                <div className="field" style={{ gridColumn: '1 / -1' }}>
+                  <label style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                    <span>Modules accessibles</span>
+                    <button type="button" onClick={() => {
+                      const allOn = MODULES.filter(m => m.id !== 'administration').every(m => (editForm.modules || []).includes(m.id))
+                      setEditForm(f => ({ ...f, modules: allOn ? [] : MODULES.filter(m => m.id !== 'administration').map(m => m.id) }))
+                    }} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '.75rem', color: '#195C82', fontWeight: 600 }}>
+                      {MODULES.filter(m => m.id !== 'administration').every(m => (editForm.modules || []).includes(m.id)) ? '✕ Tout décocher' : '✓ Tout cocher'}
+                    </button>
+                  </label>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(150px, 1fr))', gap: 6, marginTop: 4 }}>
+                    {MODULES.filter(m => m.id !== 'administration').map(m => {
+                      const isOn = (editForm.modules || []).includes(m.id)
+                      return (
+                        <label key={m.id} style={{
+                          display: 'flex', alignItems: 'center', gap: 8, padding: '6px 10px',
+                          borderRadius: 8, border: '1.5px solid', cursor: 'pointer',
+                          borderColor: isOn ? '#195C82' : '#e2e8f0',
+                          background: isOn ? '#eef6fb' : '#fff', fontSize: '.8rem', fontWeight: 600,
+                          color: isOn ? '#195C82' : '#94a3b8', transition: 'all .15s'
+                        }}>
+                          <input type="checkbox" checked={isOn} onChange={() => {
+                            setEditForm(f => {
+                              const modules = f.modules || []
+                              return { ...f, modules: isOn ? modules.filter(id => id !== m.id) : [...modules, m.id] }
+                            })
+                          }} style={{ display: 'none' }} />
+                          <span>{m.icon}</span> {m.label}
+                        </label>
+                      )
+                    })}
                   </div>
                 </div>
                 <div className="field">
