@@ -182,6 +182,11 @@ export default function WikiPage() {
 
   async function handleDelete(id) {
     if (!confirm('Supprimer cet élément ?')) return
+    // Delete file from storage if exists
+    const item = items.find(i => i.id === id)
+    if (item?.file_path) {
+      await supabase.storage.from('wiki-files').remove([item.file_path])
+    }
     await supabase.from('wiki_articles').delete().eq('id', id)
     setViewItem(null)
     fetchItems()
@@ -200,7 +205,17 @@ export default function WikiPage() {
   async function uploadFiles(files) {
     setUploading(true)
     for (const file of files) {
-      const ext = file.name.split('.').pop()?.toLowerCase()
+      const ts = Date.now()
+      const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_')
+      const path = `${currentFolder || 'documentation'}/${ts}_${safeName}`
+
+      // Upload to Supabase Storage
+      const { error: upErr } = await supabase.storage.from('wiki-files').upload(path, file, { upsert: true })
+      if (upErr) { console.error('Upload error:', upErr.message); continue }
+
+      // Get public URL
+      const { data: urlData } = supabase.storage.from('wiki-files').getPublicUrl(path)
+
       const payload = {
         title: file.name,
         category: currentFolder || 'documentation',
@@ -209,6 +224,8 @@ export default function WikiPage() {
         pinned: false,
         file_type: 'file',
         file_size: file.size,
+        file_path: path,
+        file_url: urlData?.publicUrl || '',
         created_by: profile?.id,
         updated_at: new Date().toISOString(),
       }
@@ -367,43 +384,83 @@ export default function WikiPage() {
               {/* Sub-folders when at root */}
               {!currentFolder && ROOT_FOLDERS.filter(f => folderCounts[f.id]).map(f => (
                 <div key={f.id} onClick={() => setCurrentFolder(f.id)} style={{
-                  padding: '16px 14px', borderRadius: 10, border: '1px solid #e2e8f0', cursor: 'pointer',
-                  background: '#fafbfc', transition: 'all .15s', display: 'flex', alignItems: 'center', gap: 12,
-                }} onMouseEnter={e => e.currentTarget.style.borderColor = f.color} onMouseLeave={e => e.currentTarget.style.borderColor = '#e2e8f0'}>
-                  <div style={{ width: 40, height: 40, borderRadius: 8, background: f.color + '15', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 22 }}>
-                    {f.icon}
+                  padding: '18px 16px', borderRadius: 12, border: '2px solid ' + f.color + '30', cursor: 'pointer',
+                  background: f.color + '08', transition: 'all .2s', display: 'flex', alignItems: 'center', gap: 14,
+                }} onMouseEnter={e => { e.currentTarget.style.borderColor = f.color; e.currentTarget.style.background = f.color + '15' }}
+                   onMouseLeave={e => { e.currentTarget.style.borderColor = f.color + '30'; e.currentTarget.style.background = f.color + '08' }}>
+                  <div style={{ width: 46, height: 46, borderRadius: 10, background: f.color + '20', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 24 }}>
+                    📁
                   </div>
                   <div>
-                    <div style={{ fontWeight: 700, fontSize: '.88rem', color: '#1e293b' }}>{f.label}</div>
-                    <div style={{ fontSize: '.75rem', color: '#94a3b8' }}>{folderCounts[f.id] || 0} éléments</div>
+                    <div style={{ fontWeight: 700, fontSize: '.9rem', color: '#1e293b' }}>{f.label}</div>
+                    <div style={{ fontSize: '.75rem', color: f.color, fontWeight: 500 }}>{folderCounts[f.id] || 0} éléments</div>
+                  </div>
+                </div>
+              ))}
+              {/* Empty folders (shown lighter) */}
+              {!currentFolder && ROOT_FOLDERS.filter(f => !folderCounts[f.id]).map(f => (
+                <div key={f.id} onClick={() => setCurrentFolder(f.id)} style={{
+                  padding: '18px 16px', borderRadius: 12, border: '1px dashed #d1d5db', cursor: 'pointer',
+                  background: '#fafbfc', transition: 'all .15s', display: 'flex', alignItems: 'center', gap: 14, opacity: .6,
+                }} onMouseEnter={e => { e.currentTarget.style.opacity = '1'; e.currentTarget.style.borderColor = '#94a3b8' }}
+                   onMouseLeave={e => { e.currentTarget.style.opacity = '.6'; e.currentTarget.style.borderColor = '#d1d5db' }}>
+                  <div style={{ width: 46, height: 46, borderRadius: 10, background: '#f1f5f9', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 24 }}>
+                    📁
+                  </div>
+                  <div>
+                    <div style={{ fontWeight: 600, fontSize: '.9rem', color: '#94a3b8' }}>{f.label}</div>
+                    <div style={{ fontSize: '.75rem', color: '#cbd5e1' }}>Vide</div>
                   </div>
                 </div>
               ))}
 
-              {/* Files */}
+              {/* Files & Articles */}
               {displayed.map(item => {
                 const isFile = item.file_type === 'file'
                 const icon = isFile ? getFileIcon(item.title) : '📝'
+                const ext = isFile ? item.title.split('.').pop()?.toUpperCase() : null
                 return (
                   <div key={item.id} onClick={() => setViewItem(item)} style={{
-                    padding: '14px', borderRadius: 10, border: '1px solid #e2e8f0', cursor: 'pointer',
-                    background: '#fff', transition: 'all .15s', position: 'relative',
-                  }} onMouseEnter={e => e.currentTarget.style.boxShadow = '0 2px 8px rgba(0,0,0,.08)'}
+                    borderRadius: 10, border: '1px solid #e2e8f0', cursor: 'pointer',
+                    background: '#fff', transition: 'all .15s', position: 'relative', overflow: 'hidden',
+                  }} onMouseEnter={e => e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,.1)'}
                     onMouseLeave={e => e.currentTarget.style.boxShadow = 'none'}>
-                    {item.pinned && <span style={{ position: 'absolute', top: 8, right: 8, fontSize: 12 }}>📌</span>}
-                    <div style={{ fontSize: 32, marginBottom: 8, textAlign: 'center' }}>{icon}</div>
-                    <div style={{ fontWeight: 600, fontSize: '.82rem', color: '#1e293b', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                      {item.title}
+                    {/* Preview area */}
+                    <div style={{
+                      height: 90, display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      background: isFile ? '#f8fafc' : '#eff6ff',
+                      borderBottom: '1px solid #f1f5f9', position: 'relative',
+                    }}>
+                      <span style={{ fontSize: 40 }}>{icon}</span>
+                      {ext && (
+                        <span style={{
+                          position: 'absolute', bottom: 6, right: 8, fontSize: '.65rem', fontWeight: 800,
+                          color: '#fff', background: isFile ? '#64748b' : '#0F4C75', padding: '2px 6px', borderRadius: 4,
+                        }}>{ext}</span>
+                      )}
+                      {!isFile && (
+                        <span style={{
+                          position: 'absolute', bottom: 6, right: 8, fontSize: '.65rem', fontWeight: 700,
+                          color: '#0F4C75', background: '#0F4C7515', padding: '2px 6px', borderRadius: 4,
+                        }}>ARTICLE</span>
+                      )}
                     </div>
-                    <div style={{ fontSize: '.72rem', color: '#94a3b8', marginTop: 4, display: 'flex', justifyContent: 'space-between' }}>
-                      <span>{new Date(item.updated_at).toLocaleDateString('fr-FR')}</span>
-                      <span>{isFile ? formatSize(item.file_size) : 'Article'}</span>
+                    {/* Info */}
+                    <div style={{ padding: '10px 12px' }}>
+                      {item.pinned && <span style={{ position: 'absolute', top: 6, right: 8, fontSize: 11 }}>📌</span>}
+                      {item.visibility !== 'public' && (
+                        <span style={{ position: 'absolute', top: 6, left: 8, fontSize: 11 }}>
+                          {item.visibility === 'managers' ? '🔒' : '🛡️'}
+                        </span>
+                      )}
+                      <div style={{ fontWeight: 600, fontSize: '.82rem', color: '#1e293b', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                        {item.title}
+                      </div>
+                      <div style={{ fontSize: '.72rem', color: '#94a3b8', marginTop: 4, display: 'flex', justifyContent: 'space-between' }}>
+                        <span>{new Date(item.updated_at).toLocaleDateString('fr-FR')}</span>
+                        <span>{isFile ? formatSize(item.file_size) : (item.content || '').length + ' car.'}</span>
+                      </div>
                     </div>
-                    {item.visibility !== 'public' && (
-                      <span style={{ fontSize: 10, position: 'absolute', top: 8, left: 8 }}>
-                        {item.visibility === 'managers' ? '🔒' : '🛡️'}
-                      </span>
-                    )}
                   </div>
                 )
               })}
@@ -553,8 +610,17 @@ export default function WikiPage() {
             ) : viewItem.file_type === 'file' ? (
               <div style={{ textAlign: 'center', padding: '3rem', color: '#64748b' }}>
                 <div style={{ fontSize: 64, marginBottom: 16 }}>{getFileIcon(viewItem.title)}</div>
-                <p style={{ fontWeight: 600 }}>Fichier : {viewItem.title}</p>
+                <p style={{ fontWeight: 600, fontSize: '1rem', color: '#1e293b' }}>{viewItem.title}</p>
                 <p style={{ fontSize: '.85rem' }}>{formatSize(viewItem.file_size)}</p>
+                {viewItem.file_url && (
+                  <a href={viewItem.file_url} target="_blank" rel="noopener noreferrer"
+                    style={{
+                      display: 'inline-block', marginTop: 12, padding: '10px 24px', borderRadius: 8,
+                      background: '#0F4C75', color: '#fff', textDecoration: 'none', fontWeight: 700, fontSize: '.9rem'
+                    }}>
+                    📥 Télécharger le fichier
+                  </a>
+                )}
               </div>
             ) : (
               <p style={{ color: '#94a3b8', fontStyle: 'italic', padding: '2rem 0' }}>Aucun contenu.</p>
