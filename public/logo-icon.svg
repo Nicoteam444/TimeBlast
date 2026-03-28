@@ -1,39 +1,15 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
-  <!-- TimeBlast — Monogramme TB monochrome
-       Cercle bleu SRA + forme blanche unique -->
-  <circle cx="100" cy="100" r="92" fill="#195C82"/>
-  <!-- T+B en un seul path blanc -->
-  <path d="
-    M 52 52
-    L 148 52
-    Q 155 52, 155 59.5
-    Q 155 67, 148 67
-    L 107 67
-    L 107 67
-    Q 130 67, 142 78
-    Q 154 89, 140 100
-    Q 154 100, 154 115
-    Q 154 132, 137 132
-    L 107 132
-    L 107 145
-    Q 107 152, 100 152
-    Q 92 152, 92 145
-    L 92 67
-    L 52 67
-    Q 45 67, 45 59.5
-    Q 45 52, 52 52
-    Z
-    M 107 73
-    L 107 95
-    L 130 95
-    Q 140 95, 140 84
-    Q 140 73, 130 73
-    Z
-    M 107 101
-    L 107 126
-    L 135 126
-    Q 146 126, 146 113.5
-    Q 146 101, 135 101
-    Z
-  " fill="#ffffff" fill-rule="evenodd"/>
+  <!-- TimeBlast — Nœud connecté, fond transparent -->
+  <!-- Anneau -->
+  <circle cx="100" cy="100" r="86" fill="none" stroke="#195C82" stroke-width="12"/>
+  <!-- Branches -->
+  <line x1="100" y1="52" x2="100" y2="148" stroke="#195C82" stroke-width="10" stroke-linecap="round"/>
+  <line x1="52" y1="100" x2="148" y2="100" stroke="#195C82" stroke-width="10" stroke-linecap="round"/>
+  <!-- Nœud central -->
+  <circle cx="100" cy="100" r="14" fill="#195C82"/>
+  <!-- Dots aux extrémités -->
+  <circle cx="100" cy="46" r="10" fill="#195C82"/>
+  <circle cx="100" cy="154" r="10" fill="#195C82"/>
+  <circle cx="46" cy="100" r="10" fill="#195C82"/>
+  <circle cx="154" cy="100" r="10" fill="#195C82"/>
 </svg>
