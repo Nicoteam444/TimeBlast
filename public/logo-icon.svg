@@ -1,16 +1,39 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
-  <!-- TimeBlast — Monogramme TB
-       T et B fusionnés dans un cercle bleu SRA
-       Style épuré, moderne, tech premium -->
+  <!-- TimeBlast — Monogramme TB monochrome
+       Cercle bleu SRA + forme blanche unique -->
   <circle cx="100" cy="100" r="92" fill="#195C82"/>
-  <!-- T — barre horizontale arrondie -->
-  <rect x="52" y="52" width="96" height="15" rx="7.5" fill="#ffffff"/>
-  <!-- T/B — fût vertical partagé -->
-  <rect x="92" y="52" width="15" height="100" rx="7.5" fill="#ffffff"/>
-  <!-- B — lobe supérieur -->
-  <rect x="107" y="60" width="32" height="30" rx="15" fill="#ffffff"/>
-  <!-- B — lobe inférieur (plus large) -->
-  <rect x="107" y="98" width="38" height="34" rx="17" fill="#ffffff"/>
-  <!-- Accent doré — énergie / IA -->
-  <circle cx="64" cy="59" r="6" fill="#F8B35A"/>
+  <!-- T+B en un seul path blanc -->
+  <path d="
+    M 52 52
+    L 148 52
+    Q 155 52, 155 59.5
+    Q 155 67, 148 67
+    L 107 67
+    L 107 67
+    Q 130 67, 142 78
+    Q 154 89, 140 100
+    Q 154 100, 154 115
+    Q 154 132, 137 132
+    L 107 132
+    L 107 145
+    Q 107 152, 100 152
+    Q 92 152, 92 145
+    L 92 67
+    L 52 67
+    Q 45 67, 45 59.5
+    Q 45 52, 52 52
+    Z
+    M 107 73
+    L 107 95
+    L 130 95
+    Q 140 95, 140 84
+    Q 140 73, 130 73
+    Z
+    M 107 101
+    L 107 126
+    L 135 126
+    Q 146 126, 146 113.5
+    Q 146 101, 135 101
+    Z
+  " fill="#ffffff" fill-rule="evenodd"/>
 </svg>
