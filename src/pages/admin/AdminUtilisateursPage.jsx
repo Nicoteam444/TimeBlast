@@ -41,10 +41,12 @@ function formatDateTime(date) {
   return new Date(date).toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' })
 }
 
+const ALL_MODULE_IDS = ['calendrier','activite','equipe','gestion','crm','marketing','finance','documents','workflows','wiki','documentation']
 const EMPTY_CREATE = {
   prenom: '', nom: '', email: '', password: '', role: 'collaborateur',
   societe_id: '', send_invite: true,
-  telephone: '', poste: '', date_embauche: '', date_naissance: ''}
+  telephone: '', poste: '', date_embauche: '', date_naissance: '',
+  modules: [...ALL_MODULE_IDS]}
 
 function splitFullName(fullName) {
   if (!fullName) return { prenom: '', nom: '' }
@@ -132,7 +134,7 @@ export default function AdminUtilisateursPage() {
       poste: user.poste || '',
       date_embauche: user.date_embauche ? user.date_embauche.split('T')[0] : '',
       actif: user.actif !== false,
-      modules: user.modules || []})
+      modules: (user.modules && user.modules.length > 0) ? user.modules : MODULES.filter(m => m.id !== 'administration').map(m => m.id)})
     setEditError(null)
   }
 
