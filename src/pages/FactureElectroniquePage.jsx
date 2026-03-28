@@ -93,7 +93,7 @@ export default function FactureElectroniquePage() {
           <div className="landing-hero-text">
             <div className="landing-hero-badge">📊 Business Intelligence + E-Facture 2026</div>
             <h1 className="landing-hero-title">
-              TimeBlast<span style={{ color: '#1D9BF0' }}>.ai</span>
+              TimeBlast
             </h1>
             <h2 style={{ fontSize: '1.5rem', fontWeight: 700, color: '#475569', marginBottom: '1.25rem', marginTop: '-.5rem', lineHeight: 1.3 }}>
               La BI qui rend vos données<br />

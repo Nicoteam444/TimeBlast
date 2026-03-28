@@ -46,6 +46,52 @@ const CONNECTORS_LIST = [
   'API REST', 'Supabase', 'ChatGPT', 'Claude AI', 'Mistral', 'Odoo',
 ]
 
+const CONNECTORS = [
+  { id: 'sage',        name: 'Sage',           cat: 'compta',   color: '#00DC82' },
+  { id: 'pennylane',   name: 'Pennylane',      cat: 'compta',   color: '#6C5CE7' },
+  { id: 'quickbooks',  name: 'QuickBooks',     cat: 'compta',   color: '#2CA01C' },
+  { id: 'cegid',       name: 'Cegid',          cat: 'compta',   color: '#E74C3C' },
+  { id: 'fec',         name: 'Import FEC',     cat: 'compta',   color: '#3498DB' },
+  { id: 'salesforce',  name: 'Salesforce',     cat: 'crm',      color: '#00A1E0' },
+  { id: 'hubspot',     name: 'HubSpot',        cat: 'crm',      color: '#FF7A59' },
+  { id: 'pipedrive',   name: 'Pipedrive',      cat: 'crm',      color: '#017737' },
+  { id: 'stripe',      name: 'Stripe',         cat: 'finance',  color: '#635BFF' },
+  { id: 'qonto',       name: 'Qonto',          cat: 'finance',  color: '#2A2A2A' },
+  { id: 'gocardless',  name: 'GoCardless',     cat: 'finance',  color: '#1A1A2E' },
+  { id: 'payfit',      name: 'PayFit',         cat: 'rh',       color: '#0066FF' },
+  { id: 'lucca',       name: 'Lucca',          cat: 'rh',       color: '#FF6B35' },
+  { id: 'silae',       name: 'Silae',          cat: 'rh',       color: '#4A90D9' },
+  { id: 'slack',       name: 'Slack',          cat: 'comm',     color: '#4A154B' },
+  { id: 'teams',       name: 'Teams',          cat: 'comm',     color: '#6264A7' },
+  { id: 'gmail',       name: 'Gmail',          cat: 'comm',     color: '#EA4335' },
+  { id: 'gcal',        name: 'Google Agenda',  cat: 'comm',     color: '#4285F4' },
+  { id: 'notion',      name: 'Notion',         cat: 'prod',     color: '#000000' },
+  { id: 'trello',      name: 'Trello',         cat: 'prod',     color: '#0079BF' },
+  { id: 'jira',        name: 'Jira',           cat: 'prod',     color: '#0052CC' },
+  { id: 'zapier',      name: 'Zapier',         cat: 'prod',     color: '#FF4A00' },
+  { id: 'make',        name: 'Make',           cat: 'prod',     color: '#6D00CC' },
+  { id: 'excel',       name: 'Excel / CSV',    cat: 'data',     color: '#217346' },
+  { id: 'gsheets',     name: 'Google Sheets',  cat: 'data',     color: '#0F9D58' },
+  { id: 'api',         name: 'API REST',       cat: 'data',     color: '#FF6B6B' },
+  { id: 'supabase',    name: 'Supabase',       cat: 'data',     color: '#3FCF8E' },
+  { id: 'chatgpt',     name: 'ChatGPT',        cat: 'ia',       color: '#10A37F' },
+  { id: 'claude',      name: 'Claude AI',      cat: 'ia',       color: '#D97706' },
+  { id: 'mistral',     name: 'Mistral',        cat: 'ia',       color: '#F97316' },
+  { id: 'odoo',        name: 'Odoo',           cat: 'prod',     color: '#714B67' },
+]
+
+const CATEGORIES = [
+  { id: 'all',     label: 'Tous',           icon: '⚡' },
+  { id: 'compta',  label: 'Comptabilité',   icon: '📊' },
+  { id: 'crm',     label: 'CRM',            icon: '🎯' },
+  { id: 'finance', label: 'Finance',        icon: '💳' },
+  { id: 'rh',      label: 'RH & Paie',     icon: '👥' },
+  { id: 'comm',    label: 'Communication',  icon: '💬' },
+  { id: 'prod',    label: 'Productivité',   icon: '🚀' },
+  { id: 'data',    label: 'Data & API',     icon: '🔗' },
+  { id: 'ia',      label: 'IA',             icon: '🤖' },
+]
+
 const ROADMAP = [
   {
     phase: 'Phase 1', timing: 'Disponible', color: '#16a34a',
@@ -108,7 +154,7 @@ function BiHubVisual() {
               <line x1={cx} y1={cy} x2={ax} y2={ay} stroke={src.color} strokeWidth="0.8" opacity="0.3" strokeDasharray="3 5">
                 <animate attributeName="strokeDashoffset" values="0;-16" dur="2s" repeatCount="indefinite" />
               </line>
-              <circle r="4" fill={src.color} filter="url(#bGlow)" opacity="0.85">
+              <circle r="4" fill={B} filter="url(#bGlow)" opacity="0.85">
                 <animateMotion dur={dur + 's'} repeatCount="indefinite" begin={delay + 's'}>
                   <mpath xlinkHref={`#path-${i}`} />
                 </animateMotion>
@@ -170,6 +216,9 @@ export default function LoginPage() {
   const [error, setError] = useState(null)
   const [loading, setLoading] = useState(false)
   const [showLogin, setShowLogin] = useState(false)
+  const [activeCat, setActiveCat] = useState('all')
+
+  const filteredConnectors = activeCat === 'all' ? CONNECTORS : CONNECTORS.filter(c => c.cat === activeCat)
 
   // Comptes récents
   const [recentAccounts, setRecentAccounts] = useState([])
@@ -305,102 +354,231 @@ export default function LoginPage() {
       </section>
 
       {/* ══════════════════════════════════════════════════════════════════
-          ILS NOUS FONT CONFIANCE + MOCKUP DASHBOARD
+          ILS NOUS FONT CONFIANCE
       ══════════════════════════════════════════════════════════════════ */}
-      <section style={{ padding: '4rem 2rem 0', background: '#fff', textAlign: 'center' }}>
-        <p style={{ fontSize: '.9rem', color: '#94a3b8', fontWeight: 600, letterSpacing: '.5px', textTransform: 'uppercase', marginBottom: '2rem' }}>
+      <section style={{ padding: '3rem 2rem 1rem', background: '#fff', textAlign: 'center' }}>
+        <p style={{ fontSize: '.85rem', color: '#94a3b8', fontWeight: 600, letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '2rem' }}>
           La solution décisionnelle préférée des PME & ETI
         </p>
-        {/* Logos clients */}
-        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '3rem', flexWrap: 'wrap', maxWidth: 1000, margin: '0 auto 3rem', opacity: 0.7 }}>
+        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '2.5rem', flexWrap: 'wrap', maxWidth: 1100, margin: '0 auto' }}>
           {[
-            { name: 'Everial', initials: 'EV' },
-            { name: 'Irrijardin', initials: 'IJ' },
-            { name: 'Vinovalie', initials: 'VN' },
-            { name: 'Eveno', initials: 'EV' },
-            { name: 'Thievin', initials: 'TH' },
-            { name: 'Duobat', initials: 'DB' },
-            { name: 'FULL ACE', initials: 'FA' },
-            { name: 'Azura Recyclage', initials: 'AZ' },
+            { name: 'Everial', color: '#2B4C7E' },
+            { name: 'Irrijardin', color: '#16a34a' },
+            { name: 'Vinovalie', color: '#7c3aed' },
+            { name: 'Eveno', color: '#dc2626' },
+            { name: 'Thievin', color: '#0891b2' },
+            { name: 'Duobat', color: '#ea580c' },
+            { name: 'FULL ACE', color: '#1D9BF0' },
+            { name: 'Azura', color: '#059669' },
+            { name: 'A.C.A', color: '#6366f1' },
+            { name: 'ADIS', color: '#be185d' },
           ].map((client, i) => (
-            <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-              <div style={{
-                width: 36, height: 36, borderRadius: 8, background: '#f1f5f9',
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                fontSize: '.7rem', fontWeight: 800, color: '#64748b', border: '1px solid #e2e8f0'
-              }}>{client.initials}</div>
-              <span style={{ fontSize: '.9rem', fontWeight: 700, color: '#475569' }}>{client.name}</span>
-            </div>
+            <span key={i} style={{ fontSize: '1.1rem', fontWeight: 800, color: client.color, opacity: 0.35, letterSpacing: '-.5px' }}>
+              {client.name}
+            </span>
           ))}
         </div>
+      </section>
 
-        {/* Mockup Dashboard */}
-        <div style={{ maxWidth: 960, margin: '0 auto', position: 'relative' }}>
-          {/* Cadre navigateur */}
-          <div className="mockup-browser">
+      {/* ══════════════════════════════════════════════════════════════════
+          MOCKUP DASHBOARD — Pro style
+      ══════════════════════════════════════════════════════════════════ */}
+      <section style={{ padding: '2rem 2rem 5rem', background: '#fff' }}>
+        <div style={{ maxWidth: 1000, margin: '0 auto', perspective: '1200px' }}>
+          <div className="mockup-browser" style={{ transform: 'rotateX(2deg)', transformOrigin: 'bottom center' }}>
+            {/* Barre navigateur macOS */}
             <div className="mockup-browser-bar">
               <div className="mockup-dots">
                 <span style={{ background: '#ff5f57' }} />
                 <span style={{ background: '#ffbd2e' }} />
                 <span style={{ background: '#28c840' }} />
               </div>
-              <div className="mockup-url">
-                <span>🔒</span> app.timeblast.ai
+              <div style={{ flex: 1, display: 'flex', justifyContent: 'center' }}>
+                <div className="mockup-url">
+                  <span style={{ fontSize: 10 }}>🔒</span> app.timeblast.ai/dashboard
+                </div>
+              </div>
+              <div style={{ display: 'flex', gap: 8, opacity: 0.4 }}>
+                <span style={{ fontSize: 12 }}>◀</span>
+                <span style={{ fontSize: 12 }}>▶</span>
+                <span style={{ fontSize: 12 }}>↻</span>
               </div>
             </div>
-            <div className="mockup-content">
-              {/* Sidebar mini */}
-              <div className="mockup-sidebar">
-                <img src="/logo-icon.svg" alt="TB" style={{ width: 28, height: 28, marginBottom: 12 }} />
-                {['📊', '⏱', '💼', '📋', '👥', '⚙️'].map((icon, i) => (
-                  <div key={i} className="mockup-sidebar-icon" style={{ background: i === 0 ? '#eef6fb' : 'transparent', color: i === 0 ? '#195C82' : '#94a3b8' }}>{icon}</div>
-                ))}
-              </div>
-              {/* Contenu dashboard */}
-              <div className="mockup-main">
-                <div style={{ fontSize: '.85rem', fontWeight: 700, color: '#1a2332', marginBottom: 16 }}>📊 Tableau de bord</div>
-                {/* KPI row */}
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 10, marginBottom: 16 }}>
-                  {[
-                    { label: 'CA Mars', value: '72 450 €', trend: '+18%', color: '#16a34a' },
-                    { label: 'Pipeline', value: '343 000 €', trend: '8 deals', color: '#1D9BF0' },
-                    { label: 'Marge brute', value: '68%', trend: '+3pts', color: '#16a34a' },
-                    { label: 'Trésorerie', value: '62 812 €', trend: '-5%', color: '#ef4444' },
-                  ].map((kpi, i) => (
-                    <div key={i} style={{ background: '#f8fafc', borderRadius: 8, padding: '10px 12px', border: '1px solid #f1f5f9' }}>
-                      <div style={{ fontSize: '.55rem', color: '#94a3b8', marginBottom: 2 }}>{kpi.label}</div>
-                      <div style={{ fontSize: '.95rem', fontWeight: 800, color: '#1a2332' }}>{kpi.value}</div>
-                      <div style={{ fontSize: '.55rem', fontWeight: 700, color: kpi.color }}>{kpi.trend}</div>
-                    </div>
-                  ))}
-                </div>
-                {/* Chart area */}
-                <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: 12 }}>
-                  <div style={{ background: '#f8fafc', borderRadius: 8, padding: 12, border: '1px solid #f1f5f9' }}>
-                    <div style={{ fontSize: '.6rem', fontWeight: 700, color: '#475569', marginBottom: 8 }}>Évolution CA & Marge</div>
-                    <svg viewBox="0 0 300 80" style={{ width: '100%' }}>
-                      <polyline points="0,60 30,55 60,50 90,40 120,45 150,35 180,30 210,25 240,28 270,20 300,15" fill="none" stroke="#195C82" strokeWidth="2" />
-                      <polyline points="0,65 30,62 60,58 90,55 120,52 150,48 180,50 210,45 240,42 270,38 300,35" fill="none" stroke="#1D9BF0" strokeWidth="1.5" strokeDasharray="4 2" />
-                      <polyline points="0,70 30,68 60,72 90,65 120,60 150,58 180,55 210,52 240,48 270,50 300,45" fill="none" stroke="#f59e0b" strokeWidth="1.5" opacity="0.6" />
-                    </svg>
+            {/* App content */}
+            <div className="mockup-content" style={{ minHeight: 340 }}>
+              {/* Sidebar */}
+              <div className="mockup-sidebar" style={{ width: 52, background: '#0f2b42', padding: '14px 10px', gap: 2, borderRight: 'none' }}>
+                <img src="/logo-icon.svg" alt="TB" style={{ width: 30, height: 30, marginBottom: 14 }} />
+                {[
+                  { icon: '📊', active: true, label: 'Dashboard' },
+                  { icon: '⏱', active: false, label: 'Temps' },
+                  { icon: '💼', active: false, label: 'Commerce' },
+                  { icon: '🧾', active: false, label: 'Finance' },
+                  { icon: '👥', active: false, label: 'Équipe' },
+                  { icon: '📋', active: false, label: 'Projets' },
+                ].map((item, i) => (
+                  <div key={i} style={{
+                    width: 34, height: 34, display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    borderRadius: 8, fontSize: 15, cursor: 'default',
+                    background: item.active ? 'rgba(255,255,255,0.12)' : 'transparent',
+                    position: 'relative',
+                  }}>
+                    {item.icon}
+                    {item.active && <div style={{ position: 'absolute', left: -10, width: 3, height: 18, background: '#F8B35A', borderRadius: '0 2px 2px 0' }} />}
                   </div>
-                  <div style={{ background: '#f8fafc', borderRadius: 8, padding: 12, border: '1px solid #f1f5f9' }}>
-                    <div style={{ fontSize: '.6rem', fontWeight: 700, color: '#475569', marginBottom: 8 }}>Alertes IA</div>
+                ))}
+                <div style={{ flex: 1 }} />
+                <div style={{ width: 34, height: 34, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 15 }}>⚙️</div>
+              </div>
+              {/* Main */}
+              <div style={{ flex: 1, display: 'flex', flexDirection: 'column', background: '#f8fafc' }}>
+                {/* Top bar */}
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 20px', background: '#fff', borderBottom: '1px solid #f1f5f9' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                    <span style={{ fontSize: '.75rem', fontWeight: 700, color: '#195C82' }}>📊 Tableau de bord</span>
+                    <span style={{ fontSize: '.6rem', color: '#94a3b8', background: '#f1f5f9', padding: '2px 8px', borderRadius: 4 }}>Mars 2026</span>
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                    <div style={{ fontSize: '.55rem', color: '#94a3b8' }}>🔔 3</div>
+                    <div style={{ width: 24, height: 24, borderRadius: '50%', background: '#195C82', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontSize: '.5rem', fontWeight: 700 }}>NN</div>
+                  </div>
+                </div>
+                {/* KPIs */}
+                <div style={{ padding: '16px 20px 0' }}>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 10, marginBottom: 14 }}>
                     {[
-                      { dot: '🔴', text: 'Facture en retard 22k€' },
-                      { dot: '🟡', text: 'Budget projet à 92%' },
-                      { dot: '🟢', text: 'Marge en hausse +3pts' },
-                    ].map((a, i) => (
-                      <div key={i} style={{ display: 'flex', gap: 6, alignItems: 'center', marginBottom: 6, fontSize: '.5rem', color: '#475569' }}>
-                        <span style={{ fontSize: 8 }}>{a.dot}</span> {a.text}
+                      { label: 'Chiffre d\'affaires', value: '72 450 €', trend: '+18%', icon: '💰', up: true },
+                      { label: 'Pipeline commercial', value: '343 000 €', trend: '8 deals actifs', icon: '🎯', up: true },
+                      { label: 'Marge brute', value: '68%', trend: '+3 points', icon: '📈', up: true },
+                      { label: 'Trésorerie', value: '62 812 €', trend: '-5%', icon: '🏦', up: false },
+                    ].map((kpi, i) => (
+                      <div key={i} style={{ background: '#fff', borderRadius: 10, padding: '12px 14px', border: '1px solid #e2e8f0', boxShadow: '0 1px 3px rgba(0,0,0,.04)' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 6 }}>
+                          <span style={{ fontSize: '.55rem', color: '#94a3b8', fontWeight: 600 }}>{kpi.label}</span>
+                          <span style={{ fontSize: 12 }}>{kpi.icon}</span>
+                        </div>
+                        <div style={{ fontSize: '1.1rem', fontWeight: 800, color: '#1a2332', marginBottom: 2 }}>{kpi.value}</div>
+                        <span style={{ fontSize: '.5rem', fontWeight: 700, color: kpi.up ? '#16a34a' : '#ef4444', background: kpi.up ? '#f0fdf4' : '#fef2f2', padding: '1px 6px', borderRadius: 6 }}>
+                          {kpi.up ? '↑' : '↓'} {kpi.trend}
+                        </span>
                       </div>
                     ))}
+                  </div>
+                </div>
+                {/* Charts + Sidebar */}
+                <div style={{ padding: '0 20px 16px', display: 'grid', gridTemplateColumns: '1.8fr 1fr', gap: 12, flex: 1 }}>
+                  {/* Chart principal */}
+                  <div style={{ background: '#fff', borderRadius: 10, padding: '14px 16px', border: '1px solid #e2e8f0', boxShadow: '0 1px 3px rgba(0,0,0,.04)' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
+                      <span style={{ fontSize: '.65rem', fontWeight: 700, color: '#1a2332' }}>Évolution CA & Marge</span>
+                      <div style={{ display: 'flex', gap: 10 }}>
+                        {[{ label: 'CA', color: '#195C82' }, { label: 'Marge', color: '#1D9BF0' }, { label: 'Objectif', color: '#f59e0b' }].map((l, i) => (
+                          <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: '.45rem', color: '#64748b' }}>
+                            <div style={{ width: 8, height: 3, borderRadius: 1, background: l.color }} />
+                            {l.label}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                    <svg viewBox="0 0 400 100" style={{ width: '100%' }}>
+                      {/* Grid lines */}
+                      {[20, 40, 60, 80].map(y => <line key={y} x1="0" y1={y} x2="400" y2={y} stroke="#f1f5f9" strokeWidth="0.5" />)}
+                      {/* Area fill */}
+                      <path d="M0,75 30,70 60,65 90,52 120,58 150,45 180,40 210,35 240,30 270,33 300,25 330,22 360,18 400,12 400,100 0,100 Z" fill="url(#areaGrad)" />
+                      <defs><linearGradient id="areaGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="#195C82" stopOpacity="0.08" /><stop offset="100%" stopColor="#195C82" stopOpacity="0" /></linearGradient></defs>
+                      {/* Lines */}
+                      <polyline points="0,75 30,70 60,65 90,52 120,58 150,45 180,40 210,35 240,30 270,33 300,25 330,22 360,18 400,12" fill="none" stroke="#195C82" strokeWidth="2.5" strokeLinejoin="round" />
+                      <polyline points="0,80 30,77 60,73 90,68 120,65 150,60 180,62 210,56 240,52 270,48 300,45 330,42 360,40 400,36" fill="none" stroke="#1D9BF0" strokeWidth="1.5" strokeLinejoin="round" opacity="0.7" />
+                      <line x1="0" y1="45" x2="400" y2="45" stroke="#f59e0b" strokeWidth="1" strokeDasharray="6 4" opacity="0.5" />
+                      {/* Dot actuel */}
+                      <circle cx="400" cy="12" r="4" fill="#195C82" />
+                      <circle cx="400" cy="12" r="7" fill="none" stroke="#195C82" strokeWidth="1" opacity="0.3" />
+                    </svg>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '.4rem', color: '#cbd5e1', marginTop: 4 }}>
+                      {['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Juin', 'Juil', 'Août', 'Sep', 'Oct', 'Nov', 'Déc'].map(m => <span key={m}>{m}</span>)}
+                    </div>
+                  </div>
+                  {/* Colonne droite : Alertes + Pipeline */}
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                    {/* Alertes IA */}
+                    <div style={{ background: '#fff', borderRadius: 10, padding: '12px 14px', border: '1px solid #e2e8f0', boxShadow: '0 1px 3px rgba(0,0,0,.04)' }}>
+                      <div style={{ fontSize: '.6rem', fontWeight: 700, color: '#1a2332', marginBottom: 8, display: 'flex', alignItems: 'center', gap: 6 }}>
+                        🤖 Alertes IA <span style={{ fontSize: '.45rem', background: '#fef2f2', color: '#ef4444', padding: '1px 5px', borderRadius: 4, fontWeight: 600 }}>3 nouvelles</span>
+                      </div>
+                      {[
+                        { dot: '#ef4444', text: 'BatiGroup : facture en retard 22k€', sub: 'Relance auto envoyée il y a 2h' },
+                        { dot: '#f59e0b', text: 'Projet ERP : 92% du budget consommé', sub: '460h / 500h planifiées' },
+                        { dot: '#16a34a', text: 'Lead Greentech qualifié (score 87%)', sub: 'Fiche client créée automatiquement' },
+                      ].map((a, i) => (
+                        <div key={i} style={{ display: 'flex', gap: 8, padding: '5px 0', borderBottom: i < 2 ? '1px solid #f8fafc' : 'none' }}>
+                          <div style={{ width: 6, height: 6, borderRadius: '50%', background: a.dot, flexShrink: 0, marginTop: 3 }} />
+                          <div>
+                            <div style={{ fontSize: '.5rem', fontWeight: 600, color: '#1a2332', lineHeight: 1.3 }}>{a.text}</div>
+                            <div style={{ fontSize: '.4rem', color: '#94a3b8' }}>{a.sub}</div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                    {/* Mini pipeline */}
+                    <div style={{ background: '#fff', borderRadius: 10, padding: '12px 14px', border: '1px solid #e2e8f0', boxShadow: '0 1px 3px rgba(0,0,0,.04)', flex: 1 }}>
+                      <div style={{ fontSize: '.6rem', fontWeight: 700, color: '#1a2332', marginBottom: 8 }}>🎯 Pipeline</div>
+                      {[
+                        { phase: 'Prospection', count: 12, width: '100%', color: '#e2e8f0' },
+                        { phase: 'Qualification', count: 8, width: '67%', color: '#bfdbfe' },
+                        { phase: 'Proposition', count: 5, width: '42%', color: '#93c5fd' },
+                        { phase: 'Négociation', count: 3, width: '25%', color: '#3b82f6' },
+                        { phase: 'Gagné', count: 2, width: '17%', color: '#16a34a' },
+                      ].map((p, i) => (
+                        <div key={i} style={{ marginBottom: 4 }}>
+                          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '.4rem', color: '#64748b', marginBottom: 1 }}>
+                            <span>{p.phase}</span><span style={{ fontWeight: 700 }}>{p.count}</span>
+                          </div>
+                          <div style={{ height: 4, borderRadius: 2, background: '#f1f5f9', overflow: 'hidden' }}>
+                            <div style={{ height: '100%', width: p.width, background: p.color, borderRadius: 2 }} />
+                          </div>
+                        </div>
+                      ))}
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
           </div>
+          {/* Ombre portée */}
+          <div style={{ height: 20, background: 'radial-gradient(ellipse at center, rgba(0,0,0,0.08) 0%, transparent 70%)', marginTop: -2 }} />
         </div>
+      </section>
+
+      {/* ══════════════════════════════════════════════════════════════════
+          CONNECTEURS — sélecteur par catégorie
+      ══════════════════════════════════════════════════════════════════ */}
+      <section className="landing-connectors" id="connecteurs">
+        <h2 className="landing-section-title">30+ connecteurs disponibles</h2>
+        <p className="landing-section-subtitle">
+          Comptabilité, CRM, paie, banque, productivité — branchez ce que vous voulez.
+        </p>
+        <div className="landing-cat-tabs">
+          {CATEGORIES.map(cat => (
+            <button
+              key={cat.id}
+              className={`landing-cat-tab ${activeCat === cat.id ? 'landing-cat-tab--active' : ''}`}
+              onClick={() => setActiveCat(cat.id)}
+            >
+              <span>{cat.icon}</span> {cat.label}
+            </button>
+          ))}
+        </div>
+        <div className="landing-connectors-grid">
+          {filteredConnectors.map(c => (
+            <div key={c.id} className="landing-connector-chip" style={{ '--chip-color': c.color }}>
+              <span className="landing-connector-dot" style={{ background: c.color }} />
+              <span>{c.name}</span>
+            </div>
+          ))}
+        </div>
+        <p style={{ textAlign: 'center', color: '#94a3b8', fontSize: '.85rem', marginTop: '1.5rem' }}>
+          … et bien d'autres via <strong>Zapier</strong>, <strong>Make</strong> et notre <strong>API REST</strong> ouverte.
+        </p>
       </section>
 
       {/* ══════════════════════════════════════════════════════════════════
