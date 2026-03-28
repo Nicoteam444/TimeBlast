@@ -583,6 +583,31 @@ function IntegrationsTab() {
   const [syncing, setSyncing] = useState(null)
   const [results, setResults] = useState({})
   const [luccaStats, setLuccaStats] = useState(null)
+  const [aiConfigs, setAiConfigs] = useState({})
+  const [editingConfig, setEditingConfig] = useState(null)
+  const [configForm, setConfigForm] = useState({})
+  const [savingConfig, setSavingConfig] = useState(false)
+
+  // Load AI configs from integrations table
+  useEffect(() => {
+    (async () => {
+      const { data } = await supabase.from('integrations').select('provider, config, status')
+      const map = {}
+      ;(data || []).forEach(r => { if (r.config) map[r.provider] = r.config })
+      setAiConfigs(map)
+    })()
+  }, [])
+
+  async function saveAiConfig(integId) {
+    setSavingConfig(true)
+    await supabase.from('integrations').upsert({
+      provider: integId, config: configForm, status: 'connected',
+      updated_at: new Date().toISOString()
+    }, { onConflict: 'provider' }).catch(() => {})
+    setAiConfigs(prev => ({ ...prev, [integId]: configForm }))
+    setSavingConfig(false)
+    setEditingConfig(null)
+  }
 
   async function testLucca() {
     setLuccaStatus('testing')
@@ -629,6 +654,26 @@ function IntegrationsTab() {
       desc: 'Synchronisation bidirectionnelle du calendrier via Microsoft Graph API',
       status: 'configured',
       actions: []
+    },
+    {
+      id: 'claude', name: 'Claude AI (Anthropic)', icon: '🧠', color: '#6366f1',
+      desc: 'Assistant IA, analyse de données, enrichissement automatique et chat intelligent',
+      status: aiConfigs.claude?.api_key ? 'ok' : 'disconnected',
+      actions: [],
+      configFields: [
+        { key: 'api_key', label: 'Clé API Anthropic', placeholder: 'sk-ant-api03-...', type: 'password' },
+        { key: 'model', label: 'Modèle', placeholder: 'claude-sonnet-4-20250514', type: 'text' },
+      ]
+    },
+    {
+      id: 'chatgpt', name: 'OpenAI / ChatGPT', icon: '🤖', color: '#10A37F',
+      desc: 'Enrichissement IA, résumés automatiques, extraction de données',
+      status: aiConfigs.chatgpt?.api_key ? 'ok' : 'disconnected',
+      actions: [],
+      configFields: [
+        { key: 'api_key', label: 'Clé API OpenAI', placeholder: 'sk-proj-...', type: 'password' },
+        { key: 'model', label: 'Modèle', placeholder: 'gpt-4o', type: 'text' },
+      ]
     },
   ]
 
@@ -703,6 +748,43 @@ function IntegrationsTab() {
                     </div>
                   ))}
                 </div>
+              )}
+
+              {/* Config fields for AI integrations */}
+              {integ.configFields && (
+                editingConfig === integ.id ? (
+                  <div style={{ marginTop: 12, padding: '1rem', borderRadius: 10, border: '1px solid #e2e8f0', background: '#fafbfc' }}>
+                    {integ.configFields.map(field => (
+                      <div key={field.key} style={{ marginBottom: 12 }}>
+                        <label style={{ display: 'block', fontWeight: 600, fontSize: '.82rem', marginBottom: 4 }}>{field.label}</label>
+                        <input
+                          type={field.type || 'text'}
+                          value={configForm[field.key] || ''}
+                          onChange={e => setConfigForm(prev => ({ ...prev, [field.key]: e.target.value }))}
+                          placeholder={field.placeholder}
+                          style={{ width: '100%', padding: '.5rem .75rem', borderRadius: 8, border: '1px solid #e2e8f0', fontSize: '.85rem', boxSizing: 'border-box' }}
+                        />
+                      </div>
+                    ))}
+                    <div style={{ display: 'flex', gap: 8, marginTop: 8 }}>
+                      <button onClick={() => setEditingConfig(null)} style={S.btn}>Annuler</button>
+                      <button onClick={() => saveAiConfig(integ.id)} disabled={savingConfig}
+                        style={{ ...S.btnPrimary, fontSize: '.82rem', padding: '8px 16px' }}>
+                        {savingConfig ? '⟳ ...' : '💾 Enregistrer'}
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <div style={{ marginTop: 12, display: 'flex', gap: 8, alignItems: 'center' }}>
+                    <button onClick={() => { setConfigForm(aiConfigs[integ.id] || {}); setEditingConfig(integ.id) }}
+                      style={S.btn}>
+                      ⚙️ {aiConfigs[integ.id]?.api_key ? 'Modifier la configuration' : 'Configurer le token API'}
+                    </button>
+                    {aiConfigs[integ.id]?.api_key && (
+                      <span style={{ fontSize: '.8rem', color: '#16a34a' }}>✓ Clé configurée · Modèle: {aiConfigs[integ.id]?.model || 'par défaut'}</span>
+                    )}
+                  </div>
+                )
               )}
             </div>
           </div>
