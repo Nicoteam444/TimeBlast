@@ -333,13 +333,13 @@ function AppRoutes() {
 
       {/* Admin */}
       <Route path="admin" element={
-        <ProtectedRoute roles={['admin']}><Layout><AdminPage /></Layout></ProtectedRoute>
+        <ProtectedRoute roles={['admin']} superAdminOnly><Layout><AdminPage /></Layout></ProtectedRoute>
       } />
       <Route path="admin/utilisateurs" element={
         <ProtectedRoute roles={['admin']} superAdminOnly><Layout><AdminUtilisateursPage /></Layout></ProtectedRoute>
       } />
       <Route path="admin/audit" element={
-        <ProtectedRoute roles={['admin']}><Layout><AdminAuditPage /></Layout></ProtectedRoute>
+        <ProtectedRoute roles={['admin']} superAdminOnly><Layout><AdminAuditPage /></Layout></ProtectedRoute>
       } />
       <Route path="admin/messages" element={
         <ProtectedRoute roles={['admin']} superAdminOnly><Layout><AdminMessagesPage /></Layout></ProtectedRoute>
@@ -351,26 +351,26 @@ function AppRoutes() {
         <ProtectedRoute roles={['admin']} superAdminOnly><Layout><AdminSocietesPage /></Layout></ProtectedRoute>
       } />
       <Route path="admin/societes/:id" element={
-        <ProtectedRoute roles={['admin']}><Layout><AdminSocieteDetailPage /></Layout></ProtectedRoute>
+        <ProtectedRoute roles={['admin']} superAdminOnly><Layout><AdminSocieteDetailPage /></Layout></ProtectedRoute>
       } />
       <Route path="admin/groupes" element={
-        <ProtectedRoute roles={['admin']}><Layout><AdminGroupesPage /></Layout></ProtectedRoute>
+        <ProtectedRoute roles={['admin']} superAdminOnly><Layout><AdminGroupesPage /></Layout></ProtectedRoute>
       } />
       <Route path="admin/organigramme" element={
-        <ProtectedRoute roles={['admin']}><Layout><AdminOrganigrammePage /></Layout></ProtectedRoute>
+        <ProtectedRoute roles={['admin']} superAdminOnly><Layout><AdminOrganigrammePage /></Layout></ProtectedRoute>
       } />
       <Route path="admin/workflows" element={
-        <ProtectedRoute roles={['admin','manager']}><Layout><WorkflowsPage /></Layout></ProtectedRoute>
+        <ProtectedRoute roles={['admin']} superAdminOnly><Layout><WorkflowsPage /></Layout></ProtectedRoute>
       } />
       <Route path="admin/analytics" element={
-        <ProtectedRoute roles={['admin','manager']}><Layout><AnalyticsPage /></Layout></ProtectedRoute>
+        <ProtectedRoute roles={['admin']} superAdminOnly><Layout><AnalyticsPage /></Layout></ProtectedRoute>
       } />
       <Route path="wiki" element={
         <ProtectedRoute roles={['admin','manager','collaborateur']}><Layout><WikiPage /></Layout></ProtectedRoute>
       } />
       {/* Backoffice déplacé hors /:envId — voir route /backoffice */}
       <Route path="parametres" element={
-        <ProtectedRoute roles={['admin']}><Layout><ParametresPage /></Layout></ProtectedRoute>
+        <ProtectedRoute roles={['admin']} superAdminOnly><Layout><ParametresPage /></Layout></ProtectedRoute>
       } />
       <Route path="infos" element={
         <ProtectedRoute><Layout><InfoPage /></Layout></ProtectedRoute>

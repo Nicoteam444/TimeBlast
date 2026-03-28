@@ -728,7 +728,7 @@ const DEFAULT_PERMS = {
   collaborateur: { calendrier: 'VCMS', activite: 'V', equipe: 'VC', gestion: '', crm: 'VC', marketing: '', finance: '', documents: 'V', administration: '' },
   manager: { calendrier: 'VCMS', activite: 'VCMS', equipe: 'VCMS', gestion: 'V', crm: 'VCMS', marketing: 'VCMS', finance: '', documents: 'VCMS', administration: '' },
   comptable: { calendrier: 'V', activite: '', equipe: '', gestion: 'VCMS', crm: '', marketing: '', finance: 'VCMS', documents: 'V', administration: '' },
-  admin: { calendrier: 'VCMS', activite: 'VCMS', equipe: 'VCMS', gestion: 'VCMS', crm: 'VCMS', marketing: 'VCMS', finance: 'VCMS', documents: 'VCMS', administration: 'V' },
+  admin: { calendrier: 'VCMS', activite: 'VCMS', equipe: 'VCMS', gestion: 'VCMS', crm: 'VCMS', marketing: 'VCMS', finance: 'VCMS', documents: 'VCMS', administration: '' },
   superadmin: { calendrier: 'VCMS', activite: 'VCMS', equipe: 'VCMS', gestion: 'VCMS', crm: 'VCMS', marketing: 'VCMS', finance: 'VCMS', documents: 'VCMS', administration: 'VCMS' }}
 
 function PermissionsMatrix() {

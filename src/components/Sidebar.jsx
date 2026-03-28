@@ -145,7 +145,7 @@ const ADMIN_SECTION = {
     { to: '/admin/audit',        icon: '📋', label: "Journal d'audit",   roles: ['admin'] },
     { to: '/admin/messages',     icon: '📬', label: 'Messages contact',  roles: ['admin'], superAdminOnly: true },
     { to: '/admin/historique',   icon: '👁', label: 'Historique',            roles: ['admin'], superAdminOnly: true },
-    { to: '/admin/analytics',    icon: '📊', label: 'Analytics',         roles: ['admin', 'manager'] },
+    { to: '/admin/analytics',    icon: '📊', label: 'Analytics',         roles: ['admin'] },
     { to: '/parametres',         icon: '🔧', label: 'Paramètres',        roles: ['admin'] },
     { to: '/backoffice',          icon: '🛡', label: 'Backoffice',        roles: ['admin'], superAdminOnly: true, absolute: true },
   ]}
@@ -319,8 +319,8 @@ export default function Sidebar() {
 
         {/* ── Info + Admin en bas ── */}
         <div className="sidebar-bottom">
-          {/* Administration — admin seulement */}
-          {userRole === 'admin' && (() => {
+          {/* Administration — super admin seulement */}
+          {isSuperAdmin && (() => {
             const adminPaths = ADMIN_SECTION.items.map(i => i.to)
             const isAdminActive = adminPaths.some(p => location.pathname.startsWith(p))
             return (
