@@ -807,7 +807,7 @@ export default function LoginPage() {
           <img src="/logo-sra.png" alt="Groupe SRA" style={{ width: 48, height: 48, borderRadius: 10, objectFit: 'contain', flexShrink: 0 }} />
           <div style={{ textAlign: 'left' }}>
             <div style={{ fontSize: '1rem', fontWeight: 700, color: '#195C82' }}>
-              Groupe SRA — Partenaire digital des PME
+              Groupe SRA — Partenaire digital des PME et ETI
             </div>
             <div style={{ fontSize: '.82rem', color: '#64748b', marginTop: 2 }}>
               Intégrateur Sage Diamond, Microsoft, HubSpot · 200+ collaborateurs · 17 sociétés
