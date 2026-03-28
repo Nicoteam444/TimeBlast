@@ -239,7 +239,7 @@ export default function AdminUtilisateursPage() {
       )}
 
       {activeTab === 'permissions' && isSuperAdmin ? (
-        <PermissionsMatrix />
+        <ModuleAccessPanel />
       ) : (
       <>
 
@@ -731,7 +731,155 @@ const DEFAULT_PERMS = {
   admin: { calendrier: 'VCMS', activite: 'VCMS', equipe: 'VCMS', gestion: 'VCMS', crm: 'VCMS', marketing: 'VCMS', finance: 'VCMS', documents: 'VCMS', administration: '' },
   superadmin: { calendrier: 'VCMS', activite: 'VCMS', equipe: 'VCMS', gestion: 'VCMS', crm: 'VCMS', marketing: 'VCMS', finance: 'VCMS', documents: 'VCMS', administration: 'VCMS' }}
 
-function PermissionsMatrix() {
+const PROFILS_METIER = {
+  commercial: { label: 'Commercial', icon: '🎯', modules: ['calendrier','crm','marketing','documents'] },
+  daf: { label: 'DAF / Comptable', icon: '💰', modules: ['finance','gestion','calendrier','documents'] },
+  chef_projet: { label: 'Chef de projet', icon: '📋', modules: ['activite','equipe','calendrier','crm','documents'] },
+  rh: { label: 'RH', icon: '👥', modules: ['equipe','calendrier','documents'] },
+  direction: { label: 'Direction', icon: '👔', modules: ['calendrier','activite','equipe','gestion','crm','marketing','finance','documents','workflows','documentation'] },
+  personnalise: { label: 'Personnalisé', icon: '⚙️', modules: [] },
+}
+
+function ModuleAccessPanel() {
+  const [selectedProfil, setSelectedProfil] = useState('direction')
+  const [moduleAccess, setModuleAccess] = useState({})
+  const [loading, setLoading] = useState(false)
+  const [saving, setSaving] = useState(false)
+  const [selectedRole, setSelectedRole] = useState('manager')
+
+  // Init modules from profil
+  useEffect(() => {
+    const profil = PROFILS_METIER[selectedProfil]
+    if (profil && selectedProfil !== 'personnalise') {
+      const access = {}
+      MODULES.forEach(m => { access[m.id] = profil.modules.includes(m.id) })
+      setModuleAccess(access)
+    }
+  }, [selectedProfil])
+
+  function toggleModule(moduleId) {
+    setModuleAccess(prev => {
+      const updated = { ...prev, [moduleId]: !prev[moduleId] }
+      setSelectedProfil('personnalise')
+      return updated
+    })
+  }
+
+  function selectProfil(profilId) {
+    setSelectedProfil(profilId)
+    if (profilId !== 'personnalise') {
+      const profil = PROFILS_METIER[profilId]
+      const access = {}
+      MODULES.forEach(m => { access[m.id] = profil.modules.includes(m.id) })
+      setModuleAccess(access)
+    }
+  }
+
+  const activeCount = Object.values(moduleAccess).filter(Boolean).length
+  const rolePerms = DEFAULT_PERMS[selectedRole] || {}
+
+  return (
+    <div style={{ padding: '1.5rem 0' }}>
+      {/* Profil métier selector */}
+      <div style={{ marginBottom: '1.5rem' }}>
+        <label style={{ fontSize: '.85rem', fontWeight: 700, color: '#1a2332', display: 'block', marginBottom: '.5rem' }}>
+          Profil métier
+        </label>
+        <div style={{ display: 'flex', gap: '.5rem', flexWrap: 'wrap' }}>
+          {Object.entries(PROFILS_METIER).map(([id, p]) => (
+            <button key={id} onClick={() => selectProfil(id)}
+              style={{
+                padding: '.5rem 1rem', borderRadius: 8, border: '2px solid', cursor: 'pointer',
+                borderColor: selectedProfil === id ? '#195C82' : '#e2e8f0',
+                background: selectedProfil === id ? '#eef6fb' : '#fff',
+                color: selectedProfil === id ? '#195C82' : '#64748b',
+                fontWeight: 600, fontSize: '.82rem', transition: 'all .15s',
+                display: 'flex', alignItems: 'center', gap: '.4rem'
+              }}>
+              <span>{p.icon}</span> {p.label}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Rôle selector */}
+      <div style={{ marginBottom: '1.5rem' }}>
+        <label style={{ fontSize: '.85rem', fontWeight: 700, color: '#1a2332', display: 'block', marginBottom: '.5rem' }}>
+          Rôle (détermine le niveau de droits V/C/M/S)
+        </label>
+        <select value={selectedRole} onChange={e => setSelectedRole(e.target.value)}
+          style={{ padding: '.5rem 1rem', borderRadius: 8, border: '1.5px solid #e2e8f0', fontSize: '.9rem', background: '#fff', cursor: 'pointer' }}>
+          {PERM_ROLES.filter(r => r !== 'superadmin').map(r => (
+            <option key={r} value={r}>{PERM_ROLE_LABELS[r]}</option>
+          ))}
+        </select>
+        <div style={{ fontSize: '.75rem', color: '#94a3b8', marginTop: '.3rem' }}>
+          Droits auto : {selectedRole === 'collaborateur' ? 'Voir + Créer (limité)' : selectedRole === 'manager' ? 'Voir + Créer + Modifier + Supprimer' : selectedRole === 'comptable' ? 'VCMS sur Finance/Gestion, Voir ailleurs' : 'Tout (VCMS)'}
+        </div>
+      </div>
+
+      {/* KPI */}
+      <div style={{ display: 'flex', gap: '1rem', marginBottom: '1.5rem' }}>
+        <div style={{ background: '#f0fdf4', border: '1px solid #bbf7d0', borderRadius: 8, padding: '.5rem 1rem', fontSize: '.82rem', fontWeight: 600, color: '#16a34a' }}>
+          {activeCount} modules activés
+        </div>
+        <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: 8, padding: '.5rem 1rem', fontSize: '.82rem', fontWeight: 600, color: '#64748b' }}>
+          {MODULES.length - activeCount} désactivés
+        </div>
+      </div>
+
+      {/* Module grid */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: '.75rem' }}>
+        {MODULES.filter(m => m.id !== 'administration').map(m => {
+          const isOn = !!moduleAccess[m.id]
+          const permLevel = rolePerms[m.id] || ''
+          return (
+            <div key={m.id} onClick={() => toggleModule(m.id)}
+              style={{
+                display: 'flex', alignItems: 'center', gap: '.75rem', padding: '.75rem 1rem',
+                borderRadius: 10, border: '1.5px solid', cursor: 'pointer', transition: 'all .15s',
+                borderColor: isOn ? '#195C82' : '#e2e8f0',
+                background: isOn ? '#eef6fb' : '#fff',
+              }}>
+              <span style={{ fontSize: '1.3rem' }}>{m.icon}</span>
+              <div style={{ flex: 1 }}>
+                <div style={{ fontSize: '.85rem', fontWeight: 700, color: isOn ? '#195C82' : '#94a3b8' }}>{m.label}</div>
+                <div style={{ fontSize: '.7rem', color: '#94a3b8' }}>
+                  {m.subs.length} sous-module{m.subs.length > 1 ? 's' : ''}
+                  {isOn && permLevel && <span style={{ marginLeft: 6, color: '#195C82', fontWeight: 600 }}>({permLevel})</span>}
+                </div>
+              </div>
+              <div style={{
+                width: 36, height: 20, borderRadius: 10, padding: 2,
+                background: isOn ? '#195C82' : '#e2e8f0', transition: 'background .2s',
+                display: 'flex', alignItems: 'center',
+              }}>
+                <div style={{
+                  width: 16, height: 16, borderRadius: '50%', background: '#fff',
+                  transform: isOn ? 'translateX(16px)' : 'translateX(0)',
+                  transition: 'transform .2s', boxShadow: '0 1px 3px rgba(0,0,0,.2)'
+                }} />
+              </div>
+            </div>
+          )
+        })}
+      </div>
+
+      {/* Légende */}
+      <div style={{ marginTop: '1.5rem', padding: '1rem', background: '#f8fafc', borderRadius: 8, border: '1px solid #e2e8f0' }}>
+        <div style={{ fontSize: '.75rem', fontWeight: 600, color: '#64748b', marginBottom: '.5rem' }}>Légende des droits</div>
+        <div style={{ display: 'flex', gap: '1.5rem', flexWrap: 'wrap', fontSize: '.75rem', color: '#94a3b8' }}>
+          <span><strong style={{ color: '#2563eb' }}>V</strong> = Voir</span>
+          <span><strong style={{ color: '#16a34a' }}>C</strong> = Créer</span>
+          <span><strong style={{ color: '#f59e0b' }}>M</strong> = Modifier</span>
+          <span><strong style={{ color: '#dc2626' }}>S</strong> = Supprimer</span>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+function PermissionsMatrixLegacy() {
   const [perms, setPerms] = useState({})
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)

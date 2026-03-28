@@ -183,25 +183,10 @@ function BiHubVisual() {
           )
         })}
 
-        {/* Hub central — octogone */}
-        {(() => {
-          const oct = (r) => Array.from({ length: 8 }, (_, i) => {
-            const a = (-22.5 + i * 45) * Math.PI / 180
-            return `${cx + r * Math.cos(a)},${cy + r * Math.sin(a)}`
-          }).join(' ')
-          return (
-            <>
-              <polygon points={oct(52)} fill="none" stroke={B} strokeWidth="0.8" opacity="0.12">
-                <animate attributeName="opacity" values="0.12;0.04;0.12" dur="3s" repeatCount="indefinite" />
-              </polygon>
-              <polygon points={oct(44)} fill="url(#hubGrad)" stroke="#5B9BD5" strokeWidth="1.5" />
-            </>
-          )
-        })()}
-        <text x={cx} y={cy - 14} textAnchor="middle" fill="#F8B35A" fontSize="7" fontWeight="700">📊 BI intelligent</text>
-        <text x={cx} y={cy + 1} textAnchor="middle" fill="#fff" fontSize="10" fontWeight="800">TimeBlast</text>
-        <text x={cx} y={cy + 13} textAnchor="middle" fill="#7ec8a0" fontSize="7" fontWeight="700">.ai</text>
-        <text x={cx} y={cy + 27} textAnchor="middle" fill="#98c1d9" fontSize="5" fontWeight="500">Décision · Action · IA</text>
+        {/* Hub central — logo */}
+        <image href="/logo-icon.svg" x={cx-30} y={cy-30} width="60" height="60" />
+        <text x={cx} y={cy + 42} textAnchor="middle" fill="#fff" fontSize="10" fontWeight="800">TimeBlast</text>
+        <text x={cx} y={cy + 54} textAnchor="middle" fill="#98c1d9" fontSize="5" fontWeight="500">Décision · Action · IA</text>
       </svg>
     </div>
   )

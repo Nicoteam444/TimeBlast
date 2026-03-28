@@ -6740,3 +6740,6 @@ button:disabled { opacity: .6; cursor: not-allowed; }
 .wiki-content ul { padding-left: 1.25rem; margin: .5rem 0; }
 .wiki-content li { margin-bottom: .25rem; }
 .wiki-content code { background: #f1f5f9; padding: .15rem .4rem; border-radius: 4px; font-size: .85em; }
+
+/* Module access toggle */
+.module-toggle-on { border-color: #195C82 !important; background: #eef6fb !important; }
