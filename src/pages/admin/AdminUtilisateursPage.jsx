@@ -167,12 +167,17 @@ export default function AdminUtilisateursPage() {
 
   async function handleDeletePermanent(userId) {
     try {
-      const { error } = await supabase.rpc('delete_user_cascade', { target_user_id: userId })
-      if (error) {
-        alert('Erreur: ' + error.message)
-      } else {
-        alert('Utilisateur supprimé définitivement')
+      // 1. Supprimer toutes les données public
+      const tables = ['activity_log','page_views','notifications','user_favorites','user_environments','absences','saisies_temps','assignations','calendar_events','kanban_time_entries','notes_de_frais','validation_semaines']
+      for (const t of tables) {
+        await supabase.from(t).delete().eq('user_id', userId)
       }
+      await supabase.from('profiles').delete().eq('id', userId)
+      // 2. Marquer comme supprimé via Edge Function (supprime auth.users)
+      try {
+        await supabase.functions.invoke('manage-user', { body: { action: 'delete', user_id: userId } })
+      } catch {}
+      alert('Utilisateur supprimé')
     } catch (err) { alert('Erreur: ' + err.message) }
     setDeleteConfirm(null)
     fetchUsers()
