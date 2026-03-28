@@ -834,19 +834,39 @@ function TabScore() {
             ))}
           </div>
 
-          {/* Recommendation */}
-          <div style={{
-            marginTop: 16, padding: '14px 18px', borderRadius: 10,
-            background: '#eff6ff', border: '1px solid #bfdbfe',
-          }}>
-            <div style={{ fontWeight: 700, fontSize: '.9rem', color: '#1e40af', marginBottom: 4 }}>
-              💡 Recommandation IA
-            </div>
-            <p style={{ margin: 0, fontSize: '.85rem', color: '#1e40af', lineHeight: 1.5 }}>
-              Connectez vos <strong>banques</strong> et l'<strong>IA Claude</strong> pour atteindre un score de 87%.
-              Cela débloquera les prévisions de trésorerie en temps réel et l'analyse automatique des données.
-            </p>
-          </div>
+          {/* Recommendation dynamique */}
+          {(() => {
+            const missing = CONNECTORS.filter(c => !c.connected)
+            const nextScore = total > 0 ? Math.round(((connected + Math.min(missing.length, 2)) / total) * 100) : 100
+            const benefits = {
+              erp: 'le suivi budgétaire et la rentabilité projet en temps réel',
+              crm: 'le pipeline commercial et la santé client automatisée',
+              banque: 'les prévisions de trésorerie et le rapprochement bancaire automatique',
+              rh: 'le taux d\'occupation et l\'optimisation du staffing',
+              mail: 'la synchronisation calendrier et le suivi des échanges client',
+              ia: 'l\'analyse automatique des données et les recommandations intelligentes',
+              compta: 'la détection des écarts comptables et les alertes de facturation',
+              storage: 'la centralisation documentaire et le partage sécurisé',
+            }
+            if (missing.length === 0) return (
+              <div style={{ marginTop: 16, padding: '14px 18px', borderRadius: 10, background: '#f0fdf4', border: '1px solid #bbf7d0' }}>
+                <div style={{ fontWeight: 700, fontSize: '.9rem', color: '#166534', marginBottom: 4 }}>🎉 Félicitations !</div>
+                <p style={{ margin: 0, fontSize: '.85rem', color: '#166534', lineHeight: 1.5 }}>
+                  Toutes vos sources de données sont connectées. TimeBlast exploite 100% de son potentiel d'analyse.
+                </p>
+              </div>
+            )
+            const top2 = missing.slice(0, 2)
+            return (
+              <div style={{ marginTop: 16, padding: '14px 18px', borderRadius: 10, background: '#eff6ff', border: '1px solid #bfdbfe' }}>
+                <div style={{ fontWeight: 700, fontSize: '.9rem', color: '#1e40af', marginBottom: 4 }}>💡 Recommandation IA</div>
+                <p style={{ margin: 0, fontSize: '.85rem', color: '#1e40af', lineHeight: 1.5 }}>
+                  Connectez {top2.map((c, i) => <span key={c.id}>{i > 0 && ' et '}<strong>{c.label}</strong></span>)} pour atteindre un score de <strong>{nextScore}%</strong>.
+                  {' '}Cela débloquera {top2.map(c => benefits[c.id]).filter(Boolean).join(' ainsi que ')}.
+                </p>
+              </div>
+            )
+          })()}
         </div>
       </div>
     </>
