@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../contexts/AuthContext'
+import { useSociete } from '../contexts/SocieteContext'
 import { getOutlookEvents, createOutlookEvent, updateOutlookEvent, deleteOutlookEvent } from '../lib/microsoftGraph'
 import Spinner from '../components/Spinner'
 
@@ -227,10 +228,27 @@ export default function CalendrierPage() {
   const [outlookEvents, setOutlookEvents] = useState([])
   const [outlookSyncOn, setOutlookSyncOn] = useState(() => localStorage.getItem('tb_outlook_sync') === 'true')
   const [outlookLoading, setOutlookLoading] = useState(false)
+  const [importingOutlook, setImportingOutlook] = useState(false)
   const [modal, setModal] = useState(null)
   const [loading, setLoading] = useState(true)
   const [filterSearch, setFilterSearch] = useState('')
   const gridRef = useRef()
+
+  // Multi-calendrier toggles
+  const [calSources, setCalSources] = useState(() => {
+    try { return JSON.parse(localStorage.getItem('tb_cal_sources') || '{}') } catch { return {} }
+  })
+  const showTB = calSources.tb !== false
+  const showOutlook = calSources.outlook !== false && outlookSyncOn
+  const showSaisies = calSources.saisies !== false
+
+  function toggleSource(key) {
+    setCalSources(prev => {
+      const next = { ...prev, [key]: prev[key] === false ? true : false }
+      localStorage.setItem('tb_cal_sources', JSON.stringify(next))
+      return next
+    })
+  }
 
   // Monday of current week
   const monday = getMonday(baseDate)
@@ -337,19 +355,53 @@ export default function CalendrierPage() {
     }
   }
 
-  // All displayable events
+  // All displayable events (filtered by source toggles)
   const allEvents = useMemo(() => {
-    const evs = [...events]
-    // Add saisies not already in calendar_events
-    saisies.forEach(s => {
-      if (!events.find(e => e.id === s.id)) evs.push(s)
-    })
-    // Add Outlook events
-    outlookEvents.forEach(o => {
-      evs.push(o)
-    })
+    const evs = []
+    if (showTB) events.forEach(e => evs.push(e))
+    if (showSaisies) saisies.forEach(s => { if (!events.find(e => e.id === s.id)) evs.push(s) })
+    if (showOutlook) outlookEvents.forEach(o => evs.push(o))
     return evs
-  }, [events, saisies, outlookEvents])
+  }, [events, saisies, outlookEvents, showTB, showOutlook, showSaisies])
+
+  // ── Import bulk Outlook → calendar_events ─────────────────
+  async function importOutlookEvents() {
+    if (!outlookEvents.length) { alert('Activez la sync Outlook et attendez le chargement des événements'); return }
+    if (!confirm(`Importer ${outlookEvents.length} événement(s) Outlook dans le calendrier TimeBlast ?`)) return
+    setImportingOutlook(true)
+    try {
+      let imported = 0
+      for (const ev of outlookEvents) {
+        if (ev.isAllDay) continue
+        const startDt = new Date(ev.date + 'T00:00')
+        startDt.setHours(Math.floor(ev.startMin / 60), ev.startMin % 60)
+        const endDt = new Date(ev.date + 'T00:00')
+        endDt.setHours(Math.floor(ev.endMin / 60), ev.endMin % 60)
+        // Skip if already imported (check by outlookId in description)
+        const marker = `[outlook:${ev.outlookId}]`
+        const { data: exists } = await supabase.from('calendar_events').select('id').ilike('description', `%${marker}%`).limit(1)
+        if (exists?.length) continue
+        await supabase.from('calendar_events').insert({
+          user_id: user?.id,
+          societe_id: societeId,
+          title: ev.title,
+          start_time: startDt.toISOString(),
+          end_time: endDt.toISOString(),
+          event_type: 'meeting',
+          location: ev.location || '',
+          description: `${ev.description || ''}\n${marker}`.trim(),
+          color: '#0078D4',
+        })
+        imported++
+      }
+      alert(`✅ ${imported} événement(s) importé(s) depuis Outlook`)
+      setBaseDate(new Date(baseDate)) // refresh
+    } catch (err) {
+      alert('Erreur import: ' + err.message)
+    } finally {
+      setImportingOutlook(false)
+    }
+  }
 
   // Navigation
   function navigate(dir) {
@@ -679,6 +731,46 @@ export default function CalendrierPage() {
             )
           })}
         </div>
+        {/* ── Multi-calendrier ── */}
+        <div style={{ padding: '10px 14px', borderTop: '1px solid #e2e8f0' }}>
+          <h3 style={{ margin: '0 0 8px', fontSize: 13, color: '#1e293b' }}>📅 Calendriers</h3>
+          {[
+            { key: 'tb', label: 'TimeBlast', color: '#6366f1', icon: '⚙️', count: events.length, active: showTB },
+            { key: 'outlook', label: 'Outlook', color: '#0078D4', icon: '📧', count: outlookEvents.length, active: showOutlook, needsSync: !outlookSyncOn },
+            { key: 'saisies', label: 'Saisies temps', color: '#16a34a', icon: '⏱', count: saisies.length, active: showSaisies },
+          ].map(cal => (
+            <label key={cal.key} style={{
+              display: 'flex', alignItems: 'center', gap: 8, padding: '5px 6px',
+              borderRadius: 6, cursor: 'pointer', fontSize: 12,
+              background: cal.active ? cal.color + '08' : 'transparent',
+              opacity: cal.needsSync ? 0.5 : 1,
+            }}>
+              <input type="checkbox"
+                checked={cal.key === 'outlook' ? outlookSyncOn && calSources.outlook !== false : calSources[cal.key] !== false}
+                onChange={() => {
+                  if (cal.key === 'outlook' && !outlookSyncOn) { toggleOutlookSync(); return }
+                  toggleSource(cal.key)
+                }}
+                style={{ accentColor: cal.color }} />
+              <div style={{
+                width: 8, height: 8, borderRadius: '50%', background: cal.color, flexShrink: 0
+              }} />
+              <span style={{ flex: 1 }}>{cal.icon} {cal.label}</span>
+              <span style={{ color: '#94a3b8', fontSize: 10 }}>{cal.count}</span>
+            </label>
+          ))}
+          {/* Import Outlook button */}
+          {outlookSyncOn && outlookEvents.length > 0 && (
+            <button onClick={importOutlookEvents} disabled={importingOutlook}
+              style={{
+                marginTop: 8, width: '100%', padding: '6px 10px', borderRadius: 6,
+                border: '1px solid #0078D4', background: '#0078D408', color: '#0078D4',
+                cursor: 'pointer', fontSize: 11, fontWeight: 500,
+              }}>
+              {importingOutlook ? '⟳ Import en cours...' : `📥 Importer ${outlookEvents.length} événements Outlook`}
+            </button>
+          )}
+        </div>
         {/* Stats */}
         <div style={{
           padding: '10px 14px', borderTop: '1px solid #f1f5f9', fontSize: 12, color: '#64748b',
@@ -718,16 +810,15 @@ export default function CalendrierPage() {
                 }}>{v}</button>
               ))}
             </div>
-            {/* Bouton sync Outlook */}
-            <button onClick={toggleOutlookSync} title={outlookSyncOn ? 'Désactiver la sync Outlook' : 'Activer la sync Outlook'}
-              style={{
-                padding: '6px 12px', borderRadius: 6, border: outlookSyncOn ? '2px solid #0078D4' : '1px solid #e2e8f0',
-                background: outlookSyncOn ? '#0078D410' : '#fff', cursor: 'pointer', fontSize: 13,
-                color: outlookSyncOn ? '#0078D4' : '#64748b', fontWeight: 500, display: 'flex', alignItems: 'center', gap: 6
+            {/* Indicateur Outlook */}
+            {outlookSyncOn && (
+              <div style={{
+                padding: '4px 10px', borderRadius: 6, background: '#0078D410', border: '1px solid #0078D430',
+                fontSize: 11, color: '#0078D4', fontWeight: 500, display: 'flex', alignItems: 'center', gap: 4
               }}>
-              <span style={{ fontSize: 16 }}>📅</span>
-              {outlookLoading ? '⟳' : outlookSyncOn ? 'Outlook ✓' : 'Outlook'}
-            </button>
+                {outlookLoading ? '⟳ Sync...' : `📧 Outlook (${outlookEvents.length})`}
+              </div>
+            )}
             <button onClick={() => setModal({ date: toISO(new Date()), startMin: 9 * 60, endMin: 10 * 60, user_id: user?.id })}
               style={{
                 padding: '6px 14px', borderRadius: 6, border: 'none', cursor: 'pointer', fontSize: 13,
