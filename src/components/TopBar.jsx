@@ -217,12 +217,27 @@ export default function TopBar() {
     clearTimeout(searchDebounce.current)
     if (!q.trim()) { setSearchResults([]); setSearchOpen(false); return }
     searchDebounce.current = setTimeout(async () => {
-      const [{ data: collabs }, { data: clients }, { data: transactions }, { data: projets }] = await Promise.all([
-        supabase.from('equipe').select('id, nom, prenom, poste, lucca_legal_entity_name').or(`nom.ilike.%${q}%,prenom.ilike.%${q}%,poste.ilike.%${q}%`).limit(5),
-        supabase.from('clients').select('id, name').ilike('name', `%${q}%`).limit(3),
-        supabase.from('transactions').select('id, name').ilike('name', `%${q}%`).limit(3),
-        supabase.from('projets').select('id, name').ilike('name', `%${q}%`).limit(3),
-      ])
+      const um = profile?.modules || []
+      const restricted = um.length > 0
+      const queries = []
+      // Collaborateurs → module equipe
+      if (!restricted || um.includes('equipe'))
+        queries.push(supabase.from('equipe').select('id, nom, prenom, poste, lucca_legal_entity_name').or(`nom.ilike.%${q}%,prenom.ilike.%${q}%,poste.ilike.%${q}%`).limit(5))
+      else queries.push(Promise.resolve({ data: null }))
+      // Clients → module crm
+      if (!restricted || um.includes('crm'))
+        queries.push(supabase.from('clients').select('id, name').ilike('name', `%${q}%`).limit(3))
+      else queries.push(Promise.resolve({ data: null }))
+      // Transactions → module crm
+      if (!restricted || um.includes('crm'))
+        queries.push(supabase.from('transactions').select('id, name').ilike('name', `%${q}%`).limit(3))
+      else queries.push(Promise.resolve({ data: null }))
+      // Projets → module activite
+      if (!restricted || um.includes('activite'))
+        queries.push(supabase.from('projets').select('id, name').ilike('name', `%${q}%`).limit(3))
+      else queries.push(Promise.resolve({ data: null }))
+
+      const [{ data: collabs }, { data: clients }, { data: transactions }, { data: projets }] = await Promise.all(queries)
       const results = [
         ...(collabs      || []).map(r => ({ ...r, name: `${r.prenom || ''} ${r.nom || ''}`.trim(), type: 'collaborateur', icon: '🧑‍💼', path: `/equipe/collaborateurs/${r.id}`, sub: `${r.poste || ''} · ${r.lucca_legal_entity_name || ''}` })),
         ...(clients      || []).map(r => ({ ...r, type: 'client',      icon: '👥', path: `/clients/${r.id}` })),
