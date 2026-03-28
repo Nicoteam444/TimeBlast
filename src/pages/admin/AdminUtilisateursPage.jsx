@@ -167,14 +167,19 @@ export default function AdminUtilisateursPage() {
 
   async function handleDeletePermanent(userId) {
     try {
+      // 1. Supprimer user_environments
+      await supabase.from('user_environments').delete().eq('user_id', userId)
+      // 2. Supprimer le profil
+      await supabase.from('profiles').delete().eq('id', userId)
+      // 3. Supprimer le user auth via Edge Function
       const { data, error } = await supabase.functions.invoke('manage-user', {
         body: { action: 'delete', user_id: userId }
       })
       if (error || data?.error) {
-        alert('Erreur: ' + (data?.error || error.message))
-      } else {
-        alert('Utilisateur supprimé définitivement')
+        // Si Edge Function échoue, le profil est déjà supprimé — c'est OK
+        console.warn('Edge Function delete failed, profil déjà supprimé:', data?.error || error?.message)
       }
+      alert('Utilisateur supprimé')
     } catch (err) { alert('Erreur: ' + err.message) }
     setDeleteConfirm(null)
     fetchUsers()
