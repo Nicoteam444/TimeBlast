@@ -81,6 +81,32 @@ export default function ProtectedRoute({ children, roles, superAdminOnly, perm }
     if (roles && profile && !roles.includes(profile.role)) return <Navigate to="/unauthorized" replace />
     // Bloquer les routes de modules masqués en production
     if (!isRouteEnabled(location.pathname)) return <Navigate to="/" replace />
+    // Bloquer les routes de modules non autorisés pour cet utilisateur
+    const userModules = profile?.modules || []
+    if (userModules.length > 0) {
+      const path = location.pathname.replace(/^\/[0-9]+/, '')
+      const ROUTE_MODULE_MAP = {
+        '/activite/saisie': 'calendrier', '/calendrier': 'calendrier',
+        '/activite': 'activite', '/activite/planification': 'activite', '/activite/projets': 'activite', '/activite/reporting': 'activite', '/activite/rentabilite': 'activite',
+        '/activite/equipe': 'equipe', '/activite/absences': 'equipe', '/activite/validation': 'equipe', '/equipe': 'equipe',
+        '/gestion': 'gestion', '/gestion/achats': 'gestion', '/gestion/tableau-de-bord': 'gestion', '/gestion/transactions': 'gestion',
+        '/crm': 'crm', '/crm/contacts': 'crm', '/crm/entreprises': 'crm', '/crm/leads': 'crm',
+        '/commerce': 'crm', '/commerce/clients': 'crm', '/commerce/transactions': 'crm', '/commerce/devis': 'crm', '/commerce/produits': 'crm', '/commerce/abonnements': 'crm', '/commerce/stock': 'crm',
+        '/marketing': 'marketing', '/marketing/campagnes': 'marketing', '/marketing/leads': 'marketing',
+        '/finance': 'finance', '/finance/facturation': 'finance', '/finance/saisie-ecriture': 'finance', '/finance/previsionnel': 'finance', '/finance/immobilisations': 'finance', '/finance/rapprochement': 'finance', '/finance/business-intelligence': 'finance',
+        '/documents': 'documents', '/documents/archives': 'documents',
+        '/automatisation': 'workflows', '/automatisation/workflows': 'workflows',
+        '/wiki': 'wiki',
+      }
+      // Trouver le module de la route (match exact ou par préfixe)
+      let routeModule = ROUTE_MODULE_MAP[path]
+      if (!routeModule) {
+        for (const [route, mod] of Object.entries(ROUTE_MODULE_MAP)) {
+          if (path.startsWith(route + '/') || path === route) { routeModule = mod; break }
+        }
+      }
+      if (routeModule && !userModules.includes(routeModule)) return <Navigate to="/" replace />
+    }
   }
 
   // Permissions dynamiques — pour l'instant on ne bloque PAS la navigation
