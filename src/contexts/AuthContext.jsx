@@ -27,13 +27,11 @@ export function AuthProvider({ children }) {
   async function fetchProfile(userId, retries = 3) {
     const { data } = await supabase.from('profiles').select('*').eq('id', userId).single()
     if (!data && retries > 0) {
-      // Retry pour laisser le trigger handle_new_user créer le profil (OAuth)
       await new Promise(r => setTimeout(r, 500))
       return fetchProfile(userId, retries - 1)
     }
     setProfile(data)
-    // Ne passer loading à false que si on a trouvé un profil ou qu'on a épuisé les retries
-    if (data || retries <= 0) setLoading(false)
+    setLoading(false)
   }
 
   async function signIn(email, password) {

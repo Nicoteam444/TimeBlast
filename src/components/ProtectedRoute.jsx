@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react'
 import { Navigate, useLocation } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
 import { usePermissions } from '../contexts/PermissionsContext'
@@ -60,10 +61,19 @@ export default function ProtectedRoute({ children, roles, superAdminOnly, perm }
   const { user, profile, loading } = useAuth()
   const { canView } = usePermissions()
   const location = useLocation()
+  const [waitedForProfile, setWaitedForProfile] = useState(false)
+
+  useEffect(() => {
+    if (!loading && user && !profile && !waitedForProfile) {
+      const t = setTimeout(() => setWaitedForProfile(true), 3000)
+      return () => clearTimeout(t)
+    }
+  }, [loading, user, profile, waitedForProfile])
 
   if (loading) return <Spinner />
   if (!user) return <Navigate to="/login" replace />
-  if (!profile) return <Spinner />
+  if (!profile && !waitedForProfile) return <Spinner />
+  if (!profile && waitedForProfile) return <Navigate to="/login" replace />
 
   // Super admin bypass toutes les restrictions de role et de module
   const isSuperAdmin = (user?.email || '').toLowerCase().trim() === SUPER_ADMIN_EMAIL
