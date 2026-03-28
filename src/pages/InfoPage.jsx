@@ -13,10 +13,10 @@ const STATIC_STATS = [
 
 // Stats mises à jour manuellement à chaque push
 const STATS = [
-  { value: '6', label: 'Jours de dev', icon: '⚡' },
-  { value: '235', label: 'Commits', icon: '📦' },
-  { value: '77', label: 'Pages', icon: '📄' },
-  { value: '25', label: 'Tables BD', icon: '🗄️' },
+  { value: '8', label: 'Jours de dev', icon: '⚡' },
+  { value: '350+', label: 'Commits', icon: '📦' },
+  { value: '90+', label: 'Pages', icon: '📄' },
+  { value: '30+', label: 'Tables BD', icon: '🗄️' },
 ]
 
 const TIMELINE = [
@@ -91,6 +91,40 @@ const TIMELINE = [
       'Landing page avec schema connecteurs',
       'Schema flux metier interactif',
       'Formulaire de contact avec stockage en base',
+    ]
+  },
+  {
+    date: '27 mars 2026', day: 'Jour 6', title: 'Module CRM & Commerce avance', color: '#0891b2', icon: '🎯',
+    summary: 'CRM complet, devis, rentabilite, workflows',
+    details: [
+      'Module CRM complet : Contacts, Entreprises, Leads avec scoring',
+      'Module Devis avec generation PDF',
+      'Rentabilite par projet avec marges et taux',
+      'Immobilisations et rapprochement bancaire',
+      'Workflows et automatisation',
+      'Analytics et Business Intelligence',
+      'Competences collaborateurs',
+      'Systeme de notifications',
+      'Favoris dans la sidebar avec personnalisation',
+    ]
+  },
+  {
+    date: '28 mars 2026', day: 'Jour 7', title: 'Rebrand BI & Droits utilisateurs', color: '#7c3aed', icon: '📊',
+    summary: 'Positionnement BI intelligent, logo, droits par module',
+    details: [
+      'Rebrand complet : "La BI a l\'ere de l\'IA"',
+      'Logo iconique TimeBlast (engrenage 8 dents)',
+      'Landing page avec mockup 3 colonnes (graphiques, chat IA, outils connectes)',
+      'Page E-Facture repositionnee sous l\'angle BI + enrichissement donnees',
+      'Section connecteurs avec 30+ integrations',
+      'Profils metier (Commercial, DAF, Chef de projet, RH, Direction)',
+      'Gestion des modules par utilisateur (switches ON/OFF)',
+      'Protection des routes par module (sidebar + recherche + URL)',
+      'Backoffice : onglet Droits & Profils',
+      'Suppression definitive d\'utilisateur (cascade toutes tables)',
+      'Blocage connexion comptes desactives',
+      'Menu burger responsive mobile',
+      'Encart Groupe SRA avec lien groupe-sra.fr',
     ]
   },
 ]
@@ -179,28 +213,28 @@ const PHASES = [
     title: 'Phase 1 — Fondations', icon: '🏗️', color: '#16a34a',
     items: [
       { s: 'done', t: 'Authentification et profils utilisateurs' },
-      { s: 'done', t: 'Dashboard personnalisable' },
-      { s: 'wip', t: 'CRM (Contacts, Entreprises, Leads)' },
-      { s: 'wip', t: 'Facturation (Ventes et Achats)' },
-      { s: 'wip', t: 'Gestion de projet et Kanban' },
-      { s: 'wip', t: 'Calendrier collaboratif' },
-      { s: 'todo', t: 'Gestion d\'equipe complete (RH, Absences, Competences)' },
-      { s: 'todo', t: 'Module Finance (Comptabilite, FEC, Previsionnel)' },
-      { s: 'todo', t: 'Documents et Archives avec OCR' },
-      { s: 'todo', t: 'Recherche universelle' },
+      { s: 'done', t: 'Dashboard personnalisable avec 12 widgets' },
+      { s: 'done', t: 'CRM complet (Contacts, Entreprises, Leads, scoring)' },
+      { s: 'done', t: 'Facturation (Ventes, Achats, Devis, E-facture XML UBL)' },
+      { s: 'done', t: 'Gestion de projet et Kanban drag & drop' },
+      { s: 'done', t: 'Calendrier collaboratif temps reel' },
+      { s: 'done', t: 'Gestion d\'equipe (RH, Absences, Competences, Notes de frais)' },
+      { s: 'done', t: 'Module Finance (Comptabilite, FEC, Previsionnel, Immobilisations)' },
+      { s: 'done', t: 'Documents et Archives' },
+      { s: 'done', t: 'Recherche universelle (Cmd+K)' },
     ]
   },
   {
-    title: 'Phase 2 — Collaboration', icon: '🤝', color: '#2B4C7E',
+    title: 'Phase 2 — Collaboration & BI', icon: '📊', color: '#2B4C7E',
     items: [
-      { s: 'wip', t: 'Widgets collaboratifs (Humeur, Presence, Fil d\'equipe)' },
-      { s: 'todo', t: 'Score de sante entreprise' },
-      { s: 'todo', t: 'Classement d\'utilisation' },
-      { s: 'todo', t: 'Conseils du jour' },
-      { s: 'todo', t: 'Assistant contextuel' },
-      { s: 'todo', t: 'Automatisation workflows' },
-      { s: 'todo', t: 'Alertes intelligentes (retards paiement, depassement budget)' },
-      { s: 'todo', t: 'Rapprochement bancaire automatise' },
+      { s: 'done', t: 'Widgets collaboratifs (Humeur, Presence, Fil d\'equipe)' },
+      { s: 'done', t: 'Score de sante entreprise' },
+      { s: 'done', t: 'Automatisation workflows' },
+      { s: 'done', t: 'Reporting temps (heures par projet, taux occupation, ecarts)' },
+      { s: 'done', t: 'Rentabilite par projet' },
+      { s: 'done', t: 'Rapprochement bancaire' },
+      { s: 'wip', t: 'Alertes intelligentes (retards paiement, depassement budget)' },
+      { s: 'todo', t: 'Assistant IA contextuel' },
       { s: 'todo', t: 'Actions rapides depuis le chatbot' },
       { s: 'todo', t: 'Suggestions proactives' },
     ]
@@ -209,24 +243,28 @@ const PHASES = [
     title: 'Phase 3 — Connecteurs et Integrations', icon: '🔗', color: '#7c3aed',
     items: [
       { s: 'done', t: 'Connexion Microsoft SSO (Azure AD)' },
-      { s: 'wip', t: 'Architecture connecteurs' },
-      { s: 'wip', t: 'Calendrier Outlook synchronise' },
-      { s: 'todo', t: 'Import/Sync Sage et Pennylane' },
+      { s: 'done', t: 'Architecture connecteurs (30+ integrations)' },
+      { s: 'done', t: 'Calendrier Outlook synchronise' },
+      { s: 'done', t: 'Verification tiers API SIRENE' },
+      { s: 'wip', t: 'Import/Sync Sage et Pennylane' },
+      { s: 'wip', t: 'API Chorus Pro (facture electronique)' },
       { s: 'todo', t: 'Sync HubSpot et Salesforce (CRM bidirectionnel)' },
       { s: 'todo', t: 'Connexion bancaire temps reel' },
       { s: 'todo', t: 'Sync Google Workspace' },
-      { s: 'todo', t: 'API Chorus Pro (facture electronique)' },
       { s: 'todo', t: 'Webhooks et API publique' },
     ]
   },
   {
-    title: 'Phase 4 — Multi-tenant et Scalabilite', icon: '🏢', color: '#ea580c',
+    title: 'Phase 4 — Multi-tenant et Securite', icon: '🏢', color: '#ea580c',
     items: [
-      { s: 'wip', t: 'Multi-societes avec selecteur' },
-      { s: 'todo', t: 'Gestion des droits par role' },
-      { s: 'todo', t: 'Portail Super Admin multi-environnement' },
+      { s: 'done', t: 'Multi-societes avec selecteur' },
+      { s: 'done', t: 'Gestion des droits par role et profils metier' },
+      { s: 'done', t: 'Modules par utilisateur (switches ON/OFF)' },
+      { s: 'done', t: 'Portail Super Admin (backoffice)' },
+      { s: 'done', t: 'Protection des routes par module' },
+      { s: 'done', t: 'Suppression cascade utilisateurs' },
+      { s: 'wip', t: 'White-label (personnalisation logo/couleurs)' },
       { s: 'todo', t: 'Deploiement client en 1 clic' },
-      { s: 'todo', t: 'White-label (personnalisation logo/couleurs par client)' },
       { s: 'todo', t: 'Facturation SaaS (abonnements)' },
       { s: 'todo', t: 'Marketplace d\'extensions' },
     ]
@@ -234,22 +272,25 @@ const PHASES = [
   {
     title: 'Phase 5 — Mobile et Performance', icon: '📱', color: '#0891b2',
     items: [
+      { s: 'done', t: 'Responsive design (landing + app)' },
+      { s: 'done', t: 'Menu burger mobile' },
       { s: 'wip', t: 'Optimisation des performances' },
       { s: 'todo', t: 'PWA (Progressive Web App)' },
-      { s: 'todo', t: 'Application mobile' },
+      { s: 'todo', t: 'Application mobile native' },
       { s: 'todo', t: 'Mode hors ligne' },
       { s: 'todo', t: 'Notifications push' },
-      { s: 'todo', t: 'Responsive design complet' },
     ]
   },
   {
-    title: 'Phase 6 — Automatisation avancee', icon: '🧠', color: '#dc2626',
+    title: 'Phase 6 — IA Agentique', icon: '🧠', color: '#dc2626',
     items: [
+      { s: 'wip', t: 'Agregateur interne connecte a un LLM' },
+      { s: 'todo', t: 'Integration native IA SRA dans le produit' },
+      { s: 'todo', t: 'Integration MCP Client + agents IT orchestrateur' },
       { s: 'todo', t: 'Agents autonomes (relance client, validation frais, alertes tresorerie)' },
       { s: 'todo', t: 'Generation automatique de rapports' },
       { s: 'todo', t: 'Prediction de tresorerie' },
       { s: 'todo', t: 'Scoring leads automatique' },
-      { s: 'todo', t: 'Analyse des echanges clients' },
       { s: 'todo', t: 'Tableaux de bord predictifs' },
     ]
   },
@@ -365,10 +406,10 @@ export default function InfoPage() {
         background: 'linear-gradient(135deg, #2B4C7E 0%, #1a3a5c 50%, #0f2942 100%)',
         borderRadius: 16, padding: '2.5rem 2rem 1.5rem', textAlign: 'center', marginBottom: 24}}>
         <h1 style={{ color: '#fff', fontSize: '1.8rem', fontWeight: 800, margin: '0 0 .5rem' }}>
-          TimeBlast.ai
+          <img src="/logo-full-white.svg" alt="TimeBlast" style={{ height: 40 }} />
         </h1>
         <p style={{ color: 'rgba(255,255,255,0.7)', fontSize: '1rem', margin: 0 }}>
-          La plateforme qui active vos donnees
+          Votre plateforme decisionnelle a l'ere de l'IA
         </p>
       </div>
 
