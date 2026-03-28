@@ -215,10 +215,15 @@ export default function Sidebar() {
     })
   }
 
+  const userModules = profile?.modules || []
+  const hasModuleRestriction = userModules.length > 0
+
   const visibleSections = SECTIONS.filter(s => {
     if (!isModuleEnabled(s.id)) return false
     // Super admin voit toutes les sections
     if (isSuperAdmin) return true
+    // Filtrer par modules accessibles (si définis)
+    if (hasModuleRestriction && !userModules.includes(s.id)) return false
     if (!s.roles.includes(userRole)) return false
     if (s.perm && !canView(s.perm)) return false
     return s.directLink || s.directTo || filterItems(s.items).length > 0
