@@ -344,9 +344,9 @@ export default function LoginPage() {
       </section>
 
       {/* ── Stats + Mockup à cheval (style Kolus) ── */}
-      <section style={{ background: '#195C82', paddingBottom: 0, position: 'relative' }} id="stats">
+      <section style={{ background: 'linear-gradient(to bottom, #195C82 55%, #fff 55%)', position: 'relative', padding: '0 2rem 5rem' }} id="stats">
         {/* Stats */}
-        <div style={{ display: 'flex', justifyContent: 'center', gap: '3rem', padding: '3rem 2rem 6rem', flexWrap: 'wrap' }}>
+        <div style={{ display: 'flex', justifyContent: 'center', gap: '3rem', padding: '3rem 2rem 2.5rem', flexWrap: 'wrap', maxWidth: 1060, margin: '0 auto' }}>
           {STATS.map((s, i) => (
             <div key={i} style={{ textAlign: 'center' }}>
               <span style={{ display: 'block', fontSize: '2.4rem', fontWeight: 800, color: '#fff' }}>{s.value}</span>
@@ -354,11 +354,9 @@ export default function LoginPage() {
             </div>
           ))}
         </div>
-      </section>
-      {/* Mockup qui chevauche — margin-top négatif */}
-      <section style={{ padding: '0 2rem 5rem', background: '#fff', marginTop: '-3rem', position: 'relative', zIndex: 2 }}>
+        {/* Mockup centré, à cheval sur la transition bleu → blanc */}
         <div style={{ maxWidth: 1060, margin: '0 auto', perspective: '1200px' }}>
-          <div className="mockup-browser" style={{ transform: 'rotateX(2deg)', transformOrigin: 'bottom center' }}>
+          <div className="mockup-browser" style={{ transform: 'rotateX(1.5deg)', transformOrigin: 'bottom center', boxShadow: '0 25px 60px rgba(0,0,0,0.2), 0 0 0 1px rgba(0,0,0,.06)' }}>
             {/* macOS bar */}
             <div className="mockup-browser-bar">
               <div className="mockup-dots">
