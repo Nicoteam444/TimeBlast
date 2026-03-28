@@ -108,6 +108,12 @@ export default function AdminUtilisateursPage() {
       if (form.poste) profileUpdate.poste = form.poste
       if (form.date_embauche) profileUpdate.date_embauche = form.date_embauche
       await supabase.from('profiles').update(profileUpdate).eq('id', data.user.id)
+      // Ajouter l'utilisateur à tous les environnements actifs
+      const { data: envs } = await supabase.from('environments').select('id').eq('is_active', true)
+      if (envs?.length) {
+        const inserts = envs.map(env => ({ user_id: data.user.id, environment_id: env.id }))
+        await supabase.from('user_environments').upsert(inserts, { onConflict: 'user_id,environment_id' })
+      }
     }
     setShowForm(false)
     setForm(EMPTY_CREATE)
