@@ -1,5 +1,6 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useAuth } from '../contexts/AuthContext'
+import { supabase } from '../lib/supabase'
 
 // ─── DEMO DATA ───────────────────────────────────────────────────────
 
@@ -330,15 +331,16 @@ const TABS = [
 ]
 
 // ─── CONNEXION SCORE DATA ───────────────────────────────────────────
-const CONNECTORS = [
-  { id: 'erp', label: 'ERP / Sage', icon: '💚', color: '#16a34a', connected: true, angle: 0 },
-  { id: 'crm', label: 'CRM / HubSpot', icon: '🟠', color: '#f59e0b', connected: true, angle: 45 },
-  { id: 'banque', label: 'Banques', icon: '🏦', color: '#2563eb', connected: false, angle: 90 },
-  { id: 'rh', label: 'SIRH / Lucca', icon: '👥', color: '#7c3aed', connected: true, angle: 135 },
-  { id: 'mail', label: 'Outlook / Mail', icon: '📧', color: '#0078D4', connected: true, angle: 180 },
-  { id: 'ia', label: 'IA / Claude', icon: '🧠', color: '#6366f1', connected: false, angle: 225 },
-  { id: 'compta', label: 'Comptabilité', icon: '📊', color: '#0891b2', connected: true, angle: 270 },
-  { id: 'storage', label: 'Stockage / Drive', icon: '☁️', color: '#64748b', connected: false, angle: 315 },
+// Mapping: connector id → integration provider(s) in DB
+const CONNECTOR_DEFS = [
+  { id: 'erp', label: 'ERP / Sage', icon: '💚', color: '#16a34a', angle: 0, providers: ['sage', 'cegid'] },
+  { id: 'crm', label: 'CRM / HubSpot', icon: '🟠', color: '#f59e0b', angle: 45, providers: ['hubspot'] },
+  { id: 'banque', label: 'Banques', icon: '🏦', color: '#2563eb', angle: 90, providers: ['stripe', 'qonto'] },
+  { id: 'rh', label: 'SIRH / Lucca', icon: '👥', color: '#7c3aed', angle: 135, providers: ['lucca'] },
+  { id: 'mail', label: 'Outlook / Mail', icon: '📧', color: '#0078D4', angle: 180, providers: ['outlook', 'gmail'] },
+  { id: 'ia', label: 'IA / Claude', icon: '🧠', color: '#6366f1', angle: 225, providers: ['claude', 'chatgpt'] },
+  { id: 'compta', label: 'Comptabilité', icon: '📊', color: '#0891b2', angle: 270, providers: ['pennylane'] },
+  { id: 'storage', label: 'Stockage / Drive', icon: '☁️', color: '#64748b', angle: 315, providers: ['gsheets'] },
 ]
 
 // ─── TAB COMPONENTS ──────────────────────────────────────────────────
@@ -676,6 +678,25 @@ function TabAlertes() {
 // ─── TAB SCORE CONNEXION ─────────────────────────────────────────────
 
 function TabScore() {
+  const [integStatuses, setIntegStatuses] = useState({})
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    (async () => {
+      const { data } = await supabase.from('integrations').select('provider, status')
+      const map = {}
+      ;(data || []).forEach(r => { map[r.provider] = r.status })
+      setIntegStatuses(map)
+      setLoading(false)
+    })()
+  }, [])
+
+  // Build CONNECTORS with real connected status
+  const CONNECTORS = CONNECTOR_DEFS.map(def => ({
+    ...def,
+    connected: def.providers.some(p => integStatuses[p] === 'connected')
+  }))
+
   const connected = CONNECTORS.filter(c => c.connected).length
   const total = CONNECTORS.length
   const score = Math.round((connected / total) * 100)
