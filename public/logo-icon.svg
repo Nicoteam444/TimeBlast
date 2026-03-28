@@ -1,16 +1,16 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
-  <!-- Cercle extérieur -->
+  <!-- TimeBlast — Monogramme TB
+       T et B fusionnés dans un cercle bleu SRA
+       Style épuré, moderne, tech premium -->
   <circle cx="100" cy="100" r="92" fill="#195C82"/>
-  <!-- Forme intérieure : flux de données / onde stylisée
-       Inspirée du logo Kolus — courbe organique en S inversé
-       qui évoque le mouvement de données + l'éclair (blast) -->
-  <path d="
-    M 65 55
-    C 65 55, 110 45, 130 65
-    C 150 85, 100 95, 85 100
-    C 60 108, 55 125, 80 140
-    C 105 155, 140 140, 140 140
-  " stroke="#ffffff" stroke-width="22" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
-  <!-- Petit cercle accent en haut = point de donnée / énergie -->
-  <circle cx="132" cy="63" r="7" fill="#F8B35A"/>
+  <!-- T — barre horizontale arrondie -->
+  <rect x="52" y="52" width="96" height="15" rx="7.5" fill="#ffffff"/>
+  <!-- T/B — fût vertical partagé -->
+  <rect x="92" y="52" width="15" height="100" rx="7.5" fill="#ffffff"/>
+  <!-- B — lobe supérieur -->
+  <rect x="107" y="60" width="32" height="30" rx="15" fill="#ffffff"/>
+  <!-- B — lobe inférieur (plus large) -->
+  <rect x="107" y="98" width="38" height="34" rx="17" fill="#ffffff"/>
+  <!-- Accent doré — énergie / IA -->
+  <circle cx="64" cy="59" r="6" fill="#F8B35A"/>
 </svg>
