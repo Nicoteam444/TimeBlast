@@ -1,14 +1,16 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" fill="none">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
   <!-- Cercle extérieur -->
-  <circle cx="100" cy="100" r="90" fill="#195C82"/>
-  <!-- Forme intérieure : éclair/bolt stylisé façon vague -->
+  <circle cx="100" cy="100" r="92" fill="#195C82"/>
+  <!-- Forme intérieure : flux de données / onde stylisée
+       Inspirée du logo Kolus — courbe organique en S inversé
+       qui évoque le mouvement de données + l'éclair (blast) -->
   <path d="
-    M 120 40
-    C 85 40, 50 65, 55 95
-    C 58 115, 75 120, 90 115
-    C 105 110, 115 115, 118 130
-    C 125 160, 95 165, 75 160
-  " stroke="#fff" stroke-width="18" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
-  <!-- Point d'énergie en haut -->
-  <circle cx="120" cy="42" r="5" fill="#F8B35A"/>
+    M 65 55
+    C 65 55, 110 45, 130 65
+    C 150 85, 100 95, 85 100
+    C 60 108, 55 125, 80 140
+    C 105 155, 140 140, 140 140
+  " stroke="#ffffff" stroke-width="22" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+  <!-- Petit cercle accent en haut = point de donnée / énergie -->
+  <circle cx="132" cy="63" r="7" fill="#F8B35A"/>
 </svg>
