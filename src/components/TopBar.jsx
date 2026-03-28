@@ -459,7 +459,7 @@ export default function TopBar() {
       {/* Barre de favoris — style Chrome (masquée sur petit écran) */}
       {favorites.length > 0 && (
         <div className="topbar-favbar" style={{ display: 'flex', alignItems: 'center', gap: 3, marginLeft: 8, marginRight: 4 }}>
-          {favorites.slice(0, 6).map(path => {
+          {[...new Set(favorites)].slice(0, 6).map(path => {
             const label = favLabels?.[path]?.slice(0, 15) || path.split('/').pop() || 'Page'
             if (editingFav === path) {
               return (
@@ -491,7 +491,9 @@ export default function TopBar() {
               <button key={path}
                 onClick={() => {
                   if (favClickTimer.current) { clearTimeout(favClickTimer.current); favClickTimer.current = null; setEditingFav(path); return }
-                  favClickTimer.current = setTimeout(() => { favClickTimer.current = null; navigate(envPrefix + path) }, 250)
+                  const ABSOLUTE_ROUTES = ['/backoffice', '/login', '/facture-electronique']
+                  const isAbsolute = ABSOLUTE_ROUTES.some(r => path === r || path.startsWith(r + '/'))
+                  favClickTimer.current = setTimeout(() => { favClickTimer.current = null; navigate(isAbsolute ? path : envPrefix + path) }, 250)
                 }}
                 title={`${favLabels?.[path] || path}\nDouble-clic pour renommer`}
                 style={{

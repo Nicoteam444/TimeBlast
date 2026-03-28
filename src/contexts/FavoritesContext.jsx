@@ -36,9 +36,9 @@ export function FavoritesProvider({ children }) {
             await migrateLocalFavoritesToDB(profile.id)
           }
 
-          // Load from database
+          // Load from database (deduplicate)
           const dbFavs = await loadFavoritesFromDB(profile.id)
-          setFavorites(dbFavs)
+          setFavorites([...new Set(dbFavs)])
         } else {
           // Not logged in, use localStorage
           const localFavs = loadFavoritesLocal()
