@@ -343,53 +343,20 @@ export default function LoginPage() {
         </div>
       </section>
 
-      {/* ── Stats ── */}
-      <section className="landing-stats" id="stats">
-        {STATS.map((s, i) => (
-          <div key={i} className="landing-stat">
-            <span className="landing-stat-value">{s.value}</span>
-            <span className="landing-stat-label">{s.label}</span>
-          </div>
-        ))}
+      {/* ── Stats + Mockup à cheval (style Kolus) ── */}
+      <section style={{ background: '#195C82', paddingBottom: 0, position: 'relative' }} id="stats">
+        {/* Stats */}
+        <div style={{ display: 'flex', justifyContent: 'center', gap: '3rem', padding: '3rem 2rem 6rem', flexWrap: 'wrap' }}>
+          {STATS.map((s, i) => (
+            <div key={i} style={{ textAlign: 'center' }}>
+              <span style={{ display: 'block', fontSize: '2.4rem', fontWeight: 800, color: '#fff' }}>{s.value}</span>
+              <span style={{ display: 'block', fontSize: '.85rem', color: 'rgba(255,255,255,0.6)', marginTop: '.2rem' }}>{s.label}</span>
+            </div>
+          ))}
+        </div>
       </section>
-
-      {/* ══════════════════════════════════════════════════════════════════
-          GROUPE SRA — Encart lien
-      ══════════════════════════════════════════════════════════════════ */}
-      <section style={{ padding: '3rem 2rem 1rem', background: '#fff', textAlign: 'center' }}>
-        <p style={{ fontSize: '.85rem', color: '#94a3b8', fontWeight: 600, letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '1.5rem' }}>
-          Un produit du Groupe SRA
-        </p>
-        <a href="https://www.groupe-sra.fr" target="_blank" rel="noopener noreferrer"
-          style={{
-            display: 'inline-flex', alignItems: 'center', gap: 16, background: 'linear-gradient(135deg, #f8fafc, #eef6fb)',
-            border: '2px solid #e2e8f0', borderRadius: 14, padding: '1.25rem 2.5rem', textDecoration: 'none',
-            transition: 'all .2s', maxWidth: 600, margin: '0 auto', boxShadow: '0 4px 16px rgba(0,0,0,.04)',
-          }}
-          onMouseEnter={e => { e.currentTarget.style.borderColor = '#195C82'; e.currentTarget.style.boxShadow = '0 8px 24px rgba(25,92,130,.12)'; e.currentTarget.style.transform = 'translateY(-2px)' }}
-          onMouseLeave={e => { e.currentTarget.style.borderColor = '#e2e8f0'; e.currentTarget.style.boxShadow = '0 4px 16px rgba(0,0,0,.04)'; e.currentTarget.style.transform = 'none' }}
-        >
-          <div style={{ width: 48, height: 48, borderRadius: 10, background: '#195C82', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontSize: '1.2rem', fontWeight: 800, flexShrink: 0 }}>
-            SRA
-          </div>
-          <div style={{ textAlign: 'left' }}>
-            <div style={{ fontSize: '1rem', fontWeight: 700, color: '#195C82' }}>
-              Groupe SRA — Partenaire digital des PME
-            </div>
-            <div style={{ fontSize: '.82rem', color: '#64748b', marginTop: 2 }}>
-              Intégrateur Sage Diamond, Microsoft, HubSpot · 200+ collaborateurs · 17 sociétés
-            </div>
-            <div style={{ fontSize: '.75rem', color: '#1D9BF0', fontWeight: 600, marginTop: 4, display: 'flex', alignItems: 'center', gap: 4 }}>
-              Découvrir le groupe → groupe-sra.fr
-            </div>
-          </div>
-        </a>
-      </section>
-
-      {/* ══════════════════════════════════════════════════════════════════
-          MOCKUP DASHBOARD — Graphiques + Chat IA + Outils connectés
-      ══════════════════════════════════════════════════════════════════ */}
-      <section style={{ padding: '2rem 2rem 5rem', background: '#fff' }}>
+      {/* Mockup qui chevauche — margin-top négatif */}
+      <section style={{ padding: '0 2rem 5rem', background: '#fff', marginTop: '-3rem', position: 'relative', zIndex: 2 }}>
         <div style={{ maxWidth: 1060, margin: '0 auto', perspective: '1200px' }}>
           <div className="mockup-browser" style={{ transform: 'rotateX(2deg)', transformOrigin: 'bottom center' }}>
             {/* macOS bar */}
@@ -831,6 +798,37 @@ export default function LoginPage() {
             </div>
           ))}
         </div>
+      </section>
+
+      {/* ── Groupe SRA ── */}
+      <section style={{ padding: '4rem 2rem', background: '#f8fafc', textAlign: 'center' }}>
+        <p style={{ fontSize: '.85rem', color: '#94a3b8', fontWeight: 600, letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '1.5rem' }}>
+          Un produit du Groupe SRA
+        </p>
+        <a href="https://www.groupe-sra.fr" target="_blank" rel="noopener noreferrer"
+          style={{
+            display: 'inline-flex', alignItems: 'center', gap: 16, background: '#fff',
+            border: '2px solid #e2e8f0', borderRadius: 14, padding: '1.25rem 2.5rem', textDecoration: 'none',
+            transition: 'all .2s', maxWidth: 600, margin: '0 auto', boxShadow: '0 4px 16px rgba(0,0,0,.04)',
+          }}
+          onMouseEnter={e => { e.currentTarget.style.borderColor = '#195C82'; e.currentTarget.style.boxShadow = '0 8px 24px rgba(25,92,130,.12)'; e.currentTarget.style.transform = 'translateY(-2px)' }}
+          onMouseLeave={e => { e.currentTarget.style.borderColor = '#e2e8f0'; e.currentTarget.style.boxShadow = '0 4px 16px rgba(0,0,0,.04)'; e.currentTarget.style.transform = 'none' }}
+        >
+          <div style={{ width: 48, height: 48, borderRadius: 10, background: '#195C82', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontSize: '1.2rem', fontWeight: 800, flexShrink: 0 }}>
+            SRA
+          </div>
+          <div style={{ textAlign: 'left' }}>
+            <div style={{ fontSize: '1rem', fontWeight: 700, color: '#195C82' }}>
+              Groupe SRA — Partenaire digital des PME
+            </div>
+            <div style={{ fontSize: '.82rem', color: '#64748b', marginTop: 2 }}>
+              Intégrateur Sage Diamond, Microsoft, HubSpot · 200+ collaborateurs · 17 sociétés
+            </div>
+            <div style={{ fontSize: '.75rem', color: '#1D9BF0', fontWeight: 600, marginTop: 4 }}>
+              Découvrir le groupe → groupe-sra.fr
+            </div>
+          </div>
+        </a>
       </section>
 
       {/* ── Contact ── */}
