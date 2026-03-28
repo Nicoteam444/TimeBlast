@@ -326,6 +326,19 @@ const TABS = [
   { id: 'tresorerie', label: 'Trésorerie', icon: '🏦' },
   { id: 'occupation', label: 'Occupation', icon: '👥' },
   { id: 'alertes', label: 'Alertes IA', icon: '🚨' },
+  { id: 'score', label: 'Score connexion', icon: '⚙️' },
+]
+
+// ─── CONNEXION SCORE DATA ───────────────────────────────────────────
+const CONNECTORS = [
+  { id: 'erp', label: 'ERP / Sage', icon: '💚', color: '#16a34a', connected: true, angle: 0 },
+  { id: 'crm', label: 'CRM / HubSpot', icon: '🟠', color: '#f59e0b', connected: true, angle: 45 },
+  { id: 'banque', label: 'Banques', icon: '🏦', color: '#2563eb', connected: false, angle: 90 },
+  { id: 'rh', label: 'SIRH / Lucca', icon: '👥', color: '#7c3aed', connected: true, angle: 135 },
+  { id: 'mail', label: 'Outlook / Mail', icon: '📧', color: '#0078D4', connected: true, angle: 180 },
+  { id: 'ia', label: 'IA / Claude', icon: '🧠', color: '#6366f1', connected: false, angle: 225 },
+  { id: 'compta', label: 'Comptabilité', icon: '📊', color: '#0891b2', connected: true, angle: 270 },
+  { id: 'storage', label: 'Stockage / Drive', icon: '☁️', color: '#64748b', connected: false, angle: 315 },
 ]
 
 // ─── TAB COMPONENTS ──────────────────────────────────────────────────
@@ -660,6 +673,142 @@ function TabAlertes() {
   )
 }
 
+// ─── TAB SCORE CONNEXION ─────────────────────────────────────────────
+
+function TabScore() {
+  const connected = CONNECTORS.filter(c => c.connected).length
+  const total = CONNECTORS.length
+  const score = Math.round((connected / total) * 100)
+  const scoreColor = score >= 75 ? '#16a34a' : score >= 50 ? '#f59e0b' : '#dc2626'
+
+  const R = 130 // radius of connector circle
+  const CX = 160, CY = 160 // center
+
+  return (
+    <>
+      <div style={styles.kpiRow}>
+        <div style={styles.kpiCard('#0F4C75')}>
+          <div style={styles.kpiLabel}>Score de connexion</div>
+          <div style={{ ...styles.kpiValue, color: scoreColor }}>{score}%</div>
+          <div style={styles.kpiSub}>{connected}/{total} connecteurs actifs</div>
+        </div>
+        <div style={styles.kpiCard('#16a34a')}>
+          <div style={styles.kpiLabel}>Connectés</div>
+          <div style={styles.kpiValue}>{connected}</div>
+          <div style={styles.kpiSub}>sources de données actives</div>
+        </div>
+        <div style={styles.kpiCard('#dc2626')}>
+          <div style={styles.kpiLabel}>À connecter</div>
+          <div style={styles.kpiValue}>{total - connected}</div>
+          <div style={styles.kpiSub}>sources manquantes</div>
+        </div>
+      </div>
+
+      <div style={{ display: 'flex', gap: 32, alignItems: 'flex-start' }}>
+        {/* SVG Animation */}
+        <div style={{ flexShrink: 0, width: 320, height: 320, position: 'relative' }}>
+          <svg width="320" height="320" viewBox="0 0 320 320">
+            {/* Branches + connectors */}
+            {CONNECTORS.map(c => {
+              const rad = (c.angle - 90) * Math.PI / 180
+              const x2 = CX + R * Math.cos(rad)
+              const y2 = CY + R * Math.sin(rad)
+              const bx = CX + (R + 35) * Math.cos(rad)
+              const by = CY + (R + 35) * Math.sin(rad)
+              return (
+                <g key={c.id}>
+                  {/* Branch line */}
+                  <line x1={CX} y1={CY} x2={x2} y2={y2}
+                    stroke={c.connected ? c.color : '#d1d5db'} strokeWidth={c.connected ? 3 : 2}
+                    strokeDasharray={c.connected ? 'none' : '6 4'} opacity={c.connected ? 1 : 0.4} />
+                  {/* Connector dot */}
+                  <circle cx={bx} cy={by} r={16}
+                    fill={c.connected ? c.color + '20' : '#f1f5f9'}
+                    stroke={c.connected ? c.color : '#d1d5db'} strokeWidth={2} />
+                  <text x={bx} y={by + 1} textAnchor="middle" dominantBaseline="central"
+                    fontSize="14">{c.icon}</text>
+                  {/* Animated pulse for connected */}
+                  {c.connected && (
+                    <circle cx={bx} cy={by} r={16} fill="none"
+                      stroke={c.color} strokeWidth={1} opacity={0.4}>
+                      <animate attributeName="r" values="16;24;16" dur="2s" repeatCount="indefinite" />
+                      <animate attributeName="opacity" values="0.4;0;0.4" dur="2s" repeatCount="indefinite" />
+                    </circle>
+                  )}
+                </g>
+              )
+            })}
+
+            {/* Central gear */}
+            <circle cx={CX} cy={CY} r={40} fill="#0F4C75" />
+            <g transform={`translate(${CX},${CY}) scale(0.08) rotate(22.5)`} fill="#fff">
+              {Array.from({ length: 8 }).map((_, i) => {
+                const a = (i * 45) * Math.PI / 180
+                return (
+                  <rect key={i} x={-25} y={-220} width={50} height={100} rx={20}
+                    transform={`rotate(${i * 45})`} />
+                )
+              })}
+              <circle cx={0} cy={0} r={120} fill="#fff" />
+              <circle cx={0} cy={0} r={70} fill="#0F4C75" />
+            </g>
+
+            {/* Score text */}
+            <text x={CX} y={CY - 6} textAnchor="middle" dominantBaseline="central"
+              fontSize="22" fontWeight="800" fill="#fff">{score}%</text>
+            <text x={CX} y={CY + 14} textAnchor="middle" fontSize="8" fill="rgba(255,255,255,.7)">
+              CONNECTÉ
+            </text>
+          </svg>
+        </div>
+
+        {/* Connector list */}
+        <div style={{ flex: 1 }}>
+          <h3 style={{ margin: '0 0 16px', fontSize: '1rem', fontWeight: 700 }}>Détail des connexions</h3>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+            {CONNECTORS.map(c => (
+              <div key={c.id} style={{
+                display: 'flex', alignItems: 'center', gap: 12, padding: '12px 16px',
+                borderRadius: 10, border: '1px solid ' + (c.connected ? c.color + '30' : '#e2e8f0'),
+                background: c.connected ? c.color + '08' : '#fafbfc',
+                opacity: c.connected ? 1 : 0.6,
+              }}>
+                <span style={{ fontSize: 24 }}>{c.icon}</span>
+                <div style={{ flex: 1 }}>
+                  <div style={{ fontWeight: 700, fontSize: '.9rem', color: c.connected ? '#1e293b' : '#94a3b8' }}>
+                    {c.label}
+                  </div>
+                </div>
+                <span style={{
+                  padding: '4px 12px', borderRadius: 20, fontSize: '.78rem', fontWeight: 700,
+                  background: c.connected ? '#dcfce7' : '#f1f5f9',
+                  color: c.connected ? '#16a34a' : '#94a3b8',
+                }}>
+                  {c.connected ? '✓ Connecté' : 'Non connecté'}
+                </span>
+              </div>
+            ))}
+          </div>
+
+          {/* Recommendation */}
+          <div style={{
+            marginTop: 16, padding: '14px 18px', borderRadius: 10,
+            background: '#eff6ff', border: '1px solid #bfdbfe',
+          }}>
+            <div style={{ fontWeight: 700, fontSize: '.9rem', color: '#1e40af', marginBottom: 4 }}>
+              💡 Recommandation IA
+            </div>
+            <p style={{ margin: 0, fontSize: '.85rem', color: '#1e40af', lineHeight: 1.5 }}>
+              Connectez vos <strong>banques</strong> et l'<strong>IA Claude</strong> pour atteindre un score de 87%.
+              Cela débloquera les prévisions de trésorerie en temps réel et l'analyse automatique des données.
+            </p>
+          </div>
+        </div>
+      </div>
+    </>
+  )
+}
+
 // ─── MAIN COMPONENT ──────────────────────────────────────────────────
 
 export default function PredictionsIAPage() {
@@ -672,6 +821,7 @@ export default function PredictionsIAPage() {
       case 'tresorerie': return <TabTresorerie />
       case 'occupation': return <TabOccupation />
       case 'alertes': return <TabAlertes />
+      case 'score': return <TabScore />
       default: return null
     }
   }
