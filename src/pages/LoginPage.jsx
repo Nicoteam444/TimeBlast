@@ -135,6 +135,7 @@ function BiHubVisual() {
           </linearGradient>
           <filter id="bGlow"><feGaussianBlur stdDeviation="2" /><feMerge><feMergeNode /><feMergeNode in="SourceGraphic" /></feMerge></filter>
           <filter id="shadow"><feDropShadow dx="0" dy="2" stdDeviation="3" floodOpacity="0.1" /></filter>
+          <clipPath id="hubClip"><path d={`M0,0 H500 V${cy-60} H${cx+60} V${cy+60} H0 Z M${cx-60},${cy-60} V${cy+60} H${cx+60} V${cy-60} Z`} clipRule="evenodd" /></clipPath>
         </defs>
 
         {/* Cercles de fond concentriques */}
@@ -150,16 +151,16 @@ function BiHubVisual() {
           const delay = (i * 0.35).toFixed(1)
           return (
             <g key={src.label + '-conn'}>
-              <line x1={cx} y1={cy} x2={ax} y2={ay} stroke={B} strokeWidth="1" opacity="0.1" />
-              <line x1={cx} y1={cy} x2={ax} y2={ay} stroke={src.color} strokeWidth="0.8" opacity="0.3" strokeDasharray="3 5">
+              <line x1={cx} y1={cy} x2={ax} y2={ay} stroke={B} strokeWidth="1" opacity="0.1" clipPath="url(#hubClip)" />
+              <line x1={cx} y1={cy} x2={ax} y2={ay} stroke={src.color} strokeWidth="0.8" opacity="0.3" strokeDasharray="3 5" clipPath="url(#hubClip)">
                 <animate attributeName="strokeDashoffset" values="0;-16" dur="2s" repeatCount="indefinite" />
               </line>
-              <circle r="4" fill={B} filter="url(#bGlow)" opacity="0.85">
+              <circle r="4" fill={B} filter="url(#bGlow)" opacity="0.85" clipPath="url(#hubClip)">
                 <animateMotion dur={dur + 's'} repeatCount="indefinite" begin={delay + 's'}>
                   <mpath xlinkHref={`#path-${i}`} />
                 </animateMotion>
               </circle>
-              <circle r="2.5" fill={B} opacity="0.5">
+              <circle r="2.5" fill={B} opacity="0.5" clipPath="url(#hubClip)">
                 <animateMotion dur={dur + 's'} repeatCount="indefinite" begin={(parseFloat(delay) + 1) + 's'} keyPoints="1;0" keyTimes="0;1" calcMode="linear">
                   <mpath xlinkHref={`#path-${i}`} />
                 </animateMotion>
@@ -183,10 +184,8 @@ function BiHubVisual() {
           )
         })}
 
-        {/* Hub central — logo */}
-        <image href="/logo-icon.svg" x={cx-30} y={cy-30} width="60" height="60" />
-        <text x={cx} y={cy + 42} textAnchor="middle" fill="#fff" fontSize="10" fontWeight="800">TimeBlast</text>
-        <text x={cx} y={cy + 54} textAnchor="middle" fill="#98c1d9" fontSize="5" fontWeight="500">Décision · Action · IA</text>
+        {/* Hub central — logo gear */}
+        <image href="/logo-icon.svg" x={cx-55} y={cy-55} width="110" height="110" />
       </svg>
     </div>
   )
