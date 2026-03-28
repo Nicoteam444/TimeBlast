@@ -28,7 +28,7 @@ const QUICK_ADD_ITEMS = [
 ]
 
 export default function TopBar() {
-  const { profile, signOut } = useAuth()
+  const { user, profile, signOut } = useAuth()
   const { isDemoMode } = useDemo()
   const { notifications, unreadCount, markRead, markAllRead } = useNotifications()
   const { toggleSidebar } = useLayout()
@@ -271,6 +271,11 @@ export default function TopBar() {
     setNotifOpen(false)
     if (notif.link) navigate(notif.link)
   }
+
+  const { currentEnv } = useEnv() || {}
+  const SUPER_ADMIN_EMAIL = 'nicolas.nabhan@groupe-sra.fr'
+  const isSuperAdmin = (user?.email || '').toLowerCase().trim() === SUPER_ADMIN_EMAIL
+  const displayRole = isSuperAdmin ? 'SUPER ADMIN' : (profile?.role || '').toUpperCase()
 
   const initials = profile?.full_name
     ? profile.full_name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2)
@@ -581,8 +586,8 @@ export default function TopBar() {
         <button className="topbar-user-btn" onClick={() => { setUserMenuOpen(v => !v); setShowSocietes(false) }}>
           <span className="topbar-avatar">{initials}</span>
           <div className="topbar-user-info">
-            <span className="topbar-user-name">{profile?.full_name || 'Utilisateur'}</span>
-            <span className="topbar-user-role">{profile?.role}</span>
+            <span className="topbar-user-name">{currentEnv?.name || profile?.full_name || 'Utilisateur'}</span>
+            <span className="topbar-user-role">{displayRole}</span>
           </div>
           <span className="topbar-chevron">{userMenuOpen ? '▲' : '▼'}</span>
         </button>
@@ -594,7 +599,7 @@ export default function TopBar() {
                 <span className="topbar-avatar topbar-avatar--lg">{initials}</span>
                 <div>
                   <p className="topbar-dropdown-name">{profile?.full_name}</p>
-                  <p className="topbar-dropdown-role">{profile?.role}</p>
+                  <p className="topbar-dropdown-role">{displayRole}</p>
                 </div>
               </div>
               <hr className="topbar-dropdown-divider" />
