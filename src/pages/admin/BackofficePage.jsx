@@ -915,6 +915,8 @@ const TABS = [
 export default function BackofficePage() {
   const [tab, setTab] = useState('envs')
 
+  useEffect(() => { document.title = 'Admin TimeBlast' }, [])
+
   useEffect(() => {
     const prevUrl = getCurrentSupabaseUrl()
     if (prevUrl !== defaultUrl) {
