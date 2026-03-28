@@ -800,9 +800,7 @@ export default function LoginPage() {
           onMouseEnter={e => { e.currentTarget.style.borderColor = '#195C82'; e.currentTarget.style.boxShadow = '0 8px 24px rgba(25,92,130,.12)'; e.currentTarget.style.transform = 'translateY(-2px)' }}
           onMouseLeave={e => { e.currentTarget.style.borderColor = '#e2e8f0'; e.currentTarget.style.boxShadow = '0 4px 16px rgba(0,0,0,.04)'; e.currentTarget.style.transform = 'none' }}
         >
-          <div style={{ width: 48, height: 48, borderRadius: 10, background: '#195C82', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontSize: '1.2rem', fontWeight: 800, flexShrink: 0 }}>
-            SRA
-          </div>
+          <img src="/logo-sra.png" alt="Groupe SRA" style={{ width: 48, height: 48, borderRadius: 10, objectFit: 'contain', flexShrink: 0 }} />
           <div style={{ textAlign: 'left' }}>
             <div style={{ fontSize: '1rem', fontWeight: 700, color: '#195C82' }}>
               Groupe SRA — Partenaire digital des PME
