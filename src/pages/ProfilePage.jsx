@@ -148,6 +148,44 @@ export default function ProfilePage() {
           )}
         </div>
       </form>
+
+      {/* Modules accessibles */}
+      <div style={{ marginTop: '2rem', padding: '1.5rem', background: '#fff', borderRadius: 12, border: '1px solid #e2e8f0' }}>
+        <h3 style={{ fontSize: '1rem', fontWeight: 700, color: '#1a2332', marginBottom: '.75rem' }}>📋 Modules accessibles</h3>
+        <p style={{ fontSize: '.82rem', color: '#94a3b8', marginBottom: '1rem' }}>
+          Vos accès sont définis par votre administrateur.
+        </p>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))', gap: 8 }}>
+          {[
+            { id: 'calendrier', label: 'Calendrier', icon: '📆' },
+            { id: 'activite', label: 'Activité', icon: '⏱' },
+            { id: 'equipe', label: 'Équipe', icon: '👥' },
+            { id: 'gestion', label: 'Gestion', icon: '🧾' },
+            { id: 'crm', label: 'CRM', icon: '🎯' },
+            { id: 'marketing', label: 'Marketing', icon: '📣' },
+            { id: 'finance', label: 'Finance', icon: '💰' },
+            { id: 'documents', label: 'Documents', icon: '📁' },
+            { id: 'workflows', label: 'Workflows', icon: '🔀' },
+            { id: 'documentation', label: 'Documentation', icon: '📚' },
+          ].map(m => {
+            const userModules = profile?.modules || []
+            const hasAccess = userModules.length === 0 || userModules.includes(m.id)
+            return (
+              <div key={m.id} style={{
+                display: 'flex', alignItems: 'center', gap: 8, padding: '8px 12px',
+                borderRadius: 8, border: '1.5px solid',
+                borderColor: hasAccess ? '#195C82' : '#e2e8f0',
+                background: hasAccess ? '#eef6fb' : '#f8fafc',
+                fontSize: '.82rem', fontWeight: 600,
+                color: hasAccess ? '#195C82' : '#cbd5e1',
+              }}>
+                <span>{m.icon}</span> {m.label}
+                <span style={{ marginLeft: 'auto', fontSize: '.7rem' }}>{hasAccess ? '✅' : '🔒'}</span>
+              </div>
+            )
+          })}
+        </div>
+      </div>
     </div>
   )
 }
