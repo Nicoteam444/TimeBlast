@@ -32,7 +32,8 @@ export function AuthProvider({ children }) {
       return fetchProfile(userId, retries - 1)
     }
     setProfile(data)
-    setLoading(false)
+    // Ne passer loading à false que si on a trouvé un profil ou qu'on a épuisé les retries
+    if (data || retries <= 0) setLoading(false)
   }
 
   async function signIn(email, password) {

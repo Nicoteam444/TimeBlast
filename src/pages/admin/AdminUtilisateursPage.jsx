@@ -156,20 +156,26 @@ export default function AdminUtilisateursPage() {
     fetchUsers()
   }
 
-  async function handleDelete(userId) {
+  async function handleDeactivate(userId) {
     try {
-      // Désactiver le compte (plus sûr que supprimer)
-      const { error: updateErr } = await supabase.from('profiles').update({ actif: false }).eq('id', userId)
-      if (updateErr) {
-        console.error('Erreur désactivation:', updateErr)
-        alert(`Erreur: ${updateErr.message}`)
+      await supabase.from('profiles').update({ actif: false }).eq('id', userId)
+      alert('Utilisateur désactivé')
+    } catch (err) { alert('Erreur: ' + err.message) }
+    setDeleteConfirm(null)
+    fetchUsers()
+  }
+
+  async function handleDeletePermanent(userId) {
+    try {
+      const { data, error } = await supabase.functions.invoke('manage-user', {
+        body: { action: 'delete', user_id: userId }
+      })
+      if (error || data?.error) {
+        alert('Erreur: ' + (data?.error || error.message))
       } else {
-        alert('Utilisateur désactivé avec succès')
+        alert('Utilisateur supprimé définitivement')
       }
-    } catch (err) {
-      console.error('Erreur:', err)
-      alert('Erreur lors de la désactivation')
-    }
+    } catch (err) { alert('Erreur: ' + err.message) }
     setDeleteConfirm(null)
     fetchUsers()
   }
@@ -552,15 +558,25 @@ export default function AdminUtilisateursPage() {
         <div className="modal-overlay" onClick={() => setDeleteConfirm(null)}>
           <div className="modal modal--sm" onClick={e => e.stopPropagation()}>
             <div className="modal-header">
-              <h2>Désactiver l'utilisateur</h2>
+              <h2>Gérer l'utilisateur</h2>
             </div>
-            <p style={{ padding: '0 0 1.5rem' }}>
-              Êtes-vous sûr de vouloir désactiver <strong>{deleteConfirm.full_name}</strong> ?<br />
-              <span style={{ color: '#64748b', fontSize: '.85rem' }}>L'utilisateur ne pourra plus se connecter. Ses données seront conservées.</span>
+            <p style={{ padding: '0 0 1rem' }}>
+              Que souhaitez-vous faire avec <strong>{deleteConfirm.full_name}</strong> ?
             </p>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 10, paddingBottom: '1rem' }}>
+              <button onClick={() => handleDeactivate(deleteConfirm.id)}
+                style={{ padding: '.75rem 1rem', borderRadius: 8, border: '1.5px solid #f59e0b', background: '#fffbeb', color: '#92400e', fontWeight: 600, cursor: 'pointer', textAlign: 'left' }}>
+                ⏸ Désactiver le compte
+                <div style={{ fontSize: '.75rem', fontWeight: 400, color: '#b45309', marginTop: 2 }}>L'utilisateur ne pourra plus se connecter. Ses données sont conservées.</div>
+              </button>
+              <button onClick={() => { if (confirm('⚠️ Cette action est IRRÉVERSIBLE. Supprimer définitivement ?')) handleDeletePermanent(deleteConfirm.id) }}
+                style={{ padding: '.75rem 1rem', borderRadius: 8, border: '1.5px solid #ef4444', background: '#fef2f2', color: '#dc2626', fontWeight: 600, cursor: 'pointer', textAlign: 'left' }}>
+                🗑 Supprimer définitivement
+                <div style={{ fontSize: '.75rem', fontWeight: 400, color: '#b91c1c', marginTop: 2 }}>Supprime le compte et toutes les données associées. Irréversible.</div>
+              </button>
+            </div>
             <div className="modal-actions">
               <button className="btn-secondary" onClick={() => setDeleteConfirm(null)}>Annuler</button>
-              <button className="btn-danger" onClick={() => handleDelete(deleteConfirm.id)}>Désactiver le compte</button>
             </div>
           </div>
         </div>
