@@ -27,6 +27,7 @@ const AdminPageViewsPage = lazy(() => import('./pages/admin/AdminPageViewsPage')
 const AdminSocietesPage = lazy(() => import('./pages/admin/AdminSocietesPage'))
 const AdminSocieteDetailPage = lazy(() => import('./pages/admin/AdminSocieteDetailPage'))
 const AdminGroupesPage = lazy(() => import('./pages/admin/AdminGroupesPage'))
+const EnvSettingsPage = lazy(() => import('./pages/admin/EnvSettingsPage'))
 const AdminOrganigrammePage = lazy(() => import('./pages/admin/AdminOrganigrammePage'))
 const WorkflowsPage = lazy(() => import('./pages/admin/WorkflowsPage'))
 const AnalyticsPage = lazy(() => import('./pages/admin/AnalyticsPage'))
@@ -354,7 +355,7 @@ function AppRoutes() {
         <ProtectedRoute roles={['admin']} superAdminOnly><Layout><AdminSocieteDetailPage /></Layout></ProtectedRoute>
       } />
       <Route path="admin/groupes" element={
-        <ProtectedRoute roles={['admin']} superAdminOnly><Layout><AdminGroupesPage /></Layout></ProtectedRoute>
+        <ProtectedRoute roles={['admin']} superAdminOnly><Layout><EnvSettingsPage /></Layout></ProtectedRoute>
       } />
       <Route path="admin/organigramme" element={
         <ProtectedRoute roles={['admin']} superAdminOnly><Layout><AdminOrganigrammePage /></Layout></ProtectedRoute>

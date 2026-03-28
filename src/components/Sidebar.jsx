@@ -140,7 +140,7 @@ const ADMIN_SECTION = {
     { to: '/admin',              icon: '🏠', label: 'Vue d\'ensemble',   roles: ['admin'] },
     { to: '/admin/utilisateurs', icon: '👥', label: 'Utilisateurs',      roles: ['admin'], superAdminOnly: true },
     { to: '/admin/societes',     icon: '🏢', label: 'Sociétés',          roles: ['admin'] },
-    { to: '/admin/groupes',      icon: '🏛', label: 'Groupes',           roles: ['admin'] },
+    { to: '/admin/groupes',      icon: '⚙️', label: 'Paramètres env.',   roles: ['admin'] },
     { to: '/admin/organigramme', icon: '🗂', label: 'Organigramme',      roles: ['admin'] },
     { to: '/admin/audit',        icon: '📋', label: "Journal d'audit",   roles: ['admin'] },
     { to: '/admin/messages',     icon: '📬', label: 'Messages contact',  roles: ['admin'], superAdminOnly: true },
