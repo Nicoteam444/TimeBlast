@@ -205,13 +205,13 @@ export default function ChatWidget() {
   async function loadContext() {
     setCtxLoading(true)
     try {
-      const filter = q => sid ? q.eq('societe_id', sid) : q
-
-      // Helper pour requêtes sécurisées (table peut ne pas exister)
+      // Helper pour requêtes sécurisées (table peut ne pas exister ou RLS bloque)
       const safeQuery = async (query) => {
-        try { const { data } = await query; return data || [] }
-        catch { return [] }
+        try { const { data, error } = await query; if (error) console.warn('[Chat ctx]', error.message); return data || [] }
+        catch(e) { console.warn('[Chat ctx] catch:', e.message); return [] }
       }
+      // Pas de filtre societe_id — on charge toutes les données accessibles
+      const filter = q => q
 
       // Semaine en cours pour saisies temps
       const now = new Date()
