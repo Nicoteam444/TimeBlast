@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, useLayoutEffect } from 'react'
+import { useLocation } from 'react-router-dom'
 
 // ══════════════════════════════════════════════════════════════════════════════
 // ONGLET 1 — HISTOIRE
@@ -393,6 +394,8 @@ function RoadmapTab() {
 
 export default function InfoPage() {
   const [tab, setTab] = useState('histoire')
+  const location = useLocation()
+  const isPublic = location.pathname === '/about'
 
   useLayoutEffect(() => {
     window.scrollTo(0, 0)
@@ -400,7 +403,27 @@ export default function InfoPage() {
   }, [])
 
   return (
-    <div className="admin-page">
+    <div className={isPublic ? 'landing' : 'admin-page'}>
+      {isPublic && (
+        <>
+          <nav className="landing-nav">
+            <div className="landing-nav-inner">
+              <div className="landing-logo" onClick={() => window.location.href = '/login'} style={{ cursor: 'pointer' }}>
+                <img src="/logo-full.svg" alt="TimeBlast" style={{ height: 64 }} />
+              </div>
+              <div className="landing-nav-links">
+                <a href="/login">Accueil</a>
+                <a href="/login#connecteurs">Connecteurs</a>
+                <a href="/login#roadmap">Roadmap IA</a>
+                <a href="https://www.groupe-sra.fr" target="_blank" rel="noopener noreferrer">Groupe SRA</a>
+                <a href="/login#contact">Contact</a>
+              </div>
+              <a href="/login" className="landing-nav-btn">Se connecter</a>
+            </div>
+          </nav>
+          <div style={{ height: 80 }} />
+        </>
+      )}
       {/* Hero */}
       <div style={{
         background: 'linear-gradient(135deg, #2B4C7E 0%, #1a3a5c 50%, #0f2942 100%)',
@@ -434,6 +457,17 @@ export default function InfoPage() {
       </div>
 
       {tab === 'histoire' ? <HistoryTab /> : <RoadmapTab />}
+
+      {isPublic && (
+        <footer className="landing-footer" style={{ marginTop: '3rem' }}>
+          <div className="landing-footer-inner">
+            <img src="/logo-full-white.svg" alt="TimeBlast" style={{ height: 24 }} />
+            <span style={{ color: 'rgba(255,255,255,0.4)', fontSize: '.82rem' }}>
+              © {new Date().getFullYear()} TimeBlast — Plateforme décisionnelle intelligente pour PME
+            </span>
+          </div>
+        </footer>
+      )}
     </div>
   )
 }

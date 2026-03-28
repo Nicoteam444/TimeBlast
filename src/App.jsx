@@ -139,6 +139,9 @@ function AppRoutes() {
       <Route path="/set-password" element={<SetPasswordPage />} />
       <Route path="/unauthorized" element={<UnauthorizedPage />} />
 
+      {/* À propos — page publique */}
+      <Route path="/about" element={<InfoPage />} />
+
       {/* Backoffice — hors scope environnement, auth geree par BackofficeLayout */}
       <Route path="/backoffice" element={
         <BackofficeLayout><BackofficePage /></BackofficeLayout>
