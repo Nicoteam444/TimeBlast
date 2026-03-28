@@ -53,24 +53,28 @@ export default function TopBar() {
   // Command palette state
   const [cmdIdx, setCmdIdx] = useState(0)
 
-  const CMD_PAGES = [
-    { label: 'Dashboard', icon: '🏠', path: '/' },
-    { label: 'Calendrier', icon: '📆', path: '/activite/saisie' },
-    { label: 'Contacts', icon: '👤', path: '/crm/contacts' },
-    { label: 'Leads', icon: '🚀', path: '/crm/leads' },
-    { label: 'Clients', icon: '👥', path: '/commerce/clients' },
-    { label: 'Opportunites', icon: '💼', path: '/commerce/transactions' },
-    { label: 'Devis', icon: '📝', path: '/commerce/devis' },
-    { label: 'Projets', icon: '📁', path: '/activite/projets' },
-    { label: 'Facturation', icon: '🧾', path: '/finance/facturation' },
-    { label: 'Achats', icon: '📥', path: '/gestion/achats' },
-    { label: 'Reporting', icon: '📊', path: '/activite/reporting' },
-    { label: 'Collaborateurs', icon: '📋', path: '/activite/equipe' },
-    { label: 'Absences', icon: '🏖️', path: '/activite/absences' },
-    { label: 'Campagnes', icon: '📣', path: '/marketing/campagnes' },
-    { label: 'Documents', icon: '🗄️', path: '/documents/archives' },
-    { label: 'Parametres', icon: '⚙️', path: '/parametres' },
+  const ALL_CMD_PAGES = [
+    { label: 'Dashboard', icon: '🏠', path: '/', module: null },
+    { label: 'Calendrier', icon: '📆', path: '/activite/saisie', module: 'calendrier' },
+    { label: 'Contacts', icon: '👤', path: '/crm/contacts', module: 'crm' },
+    { label: 'Leads', icon: '🚀', path: '/crm/leads', module: 'marketing' },
+    { label: 'Clients', icon: '👥', path: '/commerce/clients', module: 'crm' },
+    { label: 'Opportunites', icon: '💼', path: '/commerce/transactions', module: 'crm' },
+    { label: 'Devis', icon: '📝', path: '/commerce/devis', module: 'crm' },
+    { label: 'Projets', icon: '📁', path: '/activite/projets', module: 'activite' },
+    { label: 'Facturation', icon: '🧾', path: '/finance/facturation', module: 'finance' },
+    { label: 'Achats', icon: '📥', path: '/gestion/achats', module: 'gestion' },
+    { label: 'Reporting', icon: '📊', path: '/activite/reporting', module: 'activite' },
+    { label: 'Collaborateurs', icon: '📋', path: '/activite/equipe', module: 'equipe' },
+    { label: 'Absences', icon: '🏖️', path: '/activite/absences', module: 'equipe' },
+    { label: 'Campagnes', icon: '📣', path: '/marketing/campagnes', module: 'marketing' },
+    { label: 'Documents', icon: '🗄️', path: '/documents/archives', module: 'documents' },
+    { label: 'Wiki', icon: '📖', path: '/wiki', module: 'wiki' },
+    { label: 'Parametres', icon: '⚙️', path: '/parametres', module: null },
   ]
+  const userModules = profile?.modules || []
+  const hasModuleRestriction = userModules.length > 0
+  const CMD_PAGES = ALL_CMD_PAGES.filter(p => !p.module || !hasModuleRestriction || userModules.includes(p.module))
   const cmdSections = useMemo(() => {
     const q = searchQuery.toLowerCase()
     const sections = []
