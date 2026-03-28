@@ -280,9 +280,7 @@ export default function LoginPage() {
             <img src="/logo-full.svg" alt="TimeBlast" style={{ height: 64 }} />
           </div>
           <div className="landing-nav-links">
-            <a href="#modules">Modules</a>
             <a href="#connecteurs">Connecteurs</a>
-            <a href="#cas-usage">Cas d'usage</a>
             <a href="#roadmap">Roadmap IA</a>
             <a href="https://www.groupe-sra.fr" target="_blank" rel="noopener noreferrer">Groupe SRA</a>
             <a href="#contact">Contact</a>
