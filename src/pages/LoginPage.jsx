@@ -315,7 +315,7 @@ export default function LoginPage() {
           <div className="landing-hero-text">
             <div className="landing-hero-badge">📊 Business Intelligence nouvelle génération</div>
             <h1 className="landing-hero-title">
-              Votre plateforme décisionnelle connectée à l'ère de l'IA
+              Votre plateforme décisionnelle à l'ère de l'IA
             </h1>
             <p className="landing-hero-subtitle" style={{ fontSize: '1.05rem', fontWeight: 600, color: '#64748b', marginBottom: '1rem' }}>
               Tous vos indicateurs. Toutes vos données. Un seul outil décisionnel.
