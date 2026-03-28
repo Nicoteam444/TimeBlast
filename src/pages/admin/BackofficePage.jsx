@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react'
+import { useState, useEffect, useMemo, lazy, Suspense } from 'react'
 import { useAuth } from '../../contexts/AuthContext'
 import { supabase, defaultUrl, defaultKey, switchSupabaseClient, getCurrentSupabaseUrl } from '../../lib/supabase'
 import { createClient } from '@supabase/supabase-js'
@@ -698,11 +698,25 @@ function IntegrationsTab() {
   )
 }
 
+// ── Onglet Import données ──
+function ImportsTab() {
+  const Comp = lazy(() => import('./ImportsPage'))
+  return <Suspense fallback={<Spinner />}><Comp /></Suspense>
+}
+
+// ── Onglet Tables ──
+function TablesTab() {
+  const Comp = lazy(() => import('./TablesPage'))
+  return <Suspense fallback={<Spinner />}><Comp /></Suspense>
+}
+
 // ── Tabs config ──
 const TABS = [
   { id: 'envs', label: 'Environnements', icon: '🌐' },
   { id: 'users', label: 'Utilisateurs & Acces', icon: '👥' },
   { id: 'integrations', label: 'Intégrations', icon: '🔌' },
+  { id: 'imports', label: 'Import données', icon: '📥' },
+  { id: 'tables', label: 'Tables', icon: '🗄' },
   { id: 'monitoring', label: 'Monitoring', icon: '📊' },
   { id: 'deploy', label: 'Infrastructure', icon: '🏗' },
 ]
@@ -759,6 +773,8 @@ export default function BackofficePage() {
       {tab === 'envs' && <EnvsTab />}
       {tab === 'users' && <UsersTab />}
       {tab === 'integrations' && <IntegrationsTab />}
+      {tab === 'imports' && <ImportsTab />}
+      {tab === 'tables' && <TablesTab />}
       {tab === 'monitoring' && <MonitoringTab />}
       {tab === 'deploy' && <DeployTab />}
     </div>

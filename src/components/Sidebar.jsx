@@ -146,9 +146,6 @@ const ADMIN_SECTION = {
     { to: '/admin/messages',     icon: '📬', label: 'Messages contact',  roles: ['admin'], superAdminOnly: true },
     { to: '/admin/historique',   icon: '👁', label: 'Historique',            roles: ['admin'], superAdminOnly: true },
     { to: '/admin/analytics',    icon: '📊', label: 'Analytics',         roles: ['admin', 'manager'] },
-    { to: '/admin/imports',      icon: '📥', label: 'Import données',    roles: ['admin'] },
-    { to: '/admin/tables',       icon: '🗄', label: 'Tables',            roles: ['admin'] },
-    { to: '/admin/integrations', icon: '🔌', label: 'Intégrations',      roles: ['admin'] },
     { to: '/parametres',         icon: '🔧', label: 'Paramètres',        roles: ['admin'] },
     { to: '/backoffice',          icon: '🛡', label: 'Backoffice',        roles: ['admin'], superAdminOnly: true, absolute: true },
   ]}
