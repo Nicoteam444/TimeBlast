@@ -221,26 +221,6 @@ export default function AdminUtilisateursPage() {
         </div>
       </div>
 
-      {/* ── Onglets ── */}
-      {isSuperAdmin && (
-        <div style={{ display: 'flex', gap: 0, marginBottom: '1.5rem', borderBottom: '2px solid #e2e8f0' }}>
-          {[
-            { id: 'users', label: '👥 Utilisateurs' },
-            { id: 'permissions', label: '🔐 Gestion des droits' },
-          ].map(tab => (
-            <button key={tab.id} onClick={() => setActiveTab(tab.id)} style={{
-              padding: '.75rem 1.5rem', border: 'none', background: 'none', cursor: 'pointer',
-              fontSize: '.9rem', fontWeight: activeTab === tab.id ? 700 : 500,
-              color: activeTab === tab.id ? '#2B4C7E' : '#64748b',
-              borderBottom: activeTab === tab.id ? '3px solid #2B4C7E' : '3px solid transparent',
-              marginBottom: '-2px', transition: 'all .15s'}}>{tab.label}</button>
-          ))}
-        </div>
-      )}
-
-      {activeTab === 'permissions' && isSuperAdmin ? (
-        <ModuleAccessPanel />
-      ) : (
       <>
 
       {/* ── Proposition migration ── */}
@@ -329,6 +309,20 @@ export default function AdminUtilisateursPage() {
                   <select value={form.role} onChange={e => setForm(f => ({ ...f, role: e.target.value }))}>
                     {ROLES.map(r => <option key={r} value={r}>{ROLE_LABELS[r]}</option>)}
                   </select>
+                </div>
+                <div className="field">
+                  <label>Profil métier</label>
+                  <select value={form.profil_metier || 'direction'} onChange={e => setForm(f => ({ ...f, profil_metier: e.target.value }))}>
+                    {Object.entries(PROFILS_METIER).map(([id, p]) => (
+                      <option key={id} value={id}>{p.icon} {p.label}</option>
+                    ))}
+                  </select>
+                  <div style={{ fontSize: '.7rem', color: '#94a3b8', marginTop: 2 }}>
+                    Modules : {(PROFILS_METIER[form.profil_metier || 'direction']?.modules || []).map(m => {
+                      const mod = MODULES.find(x => x.id === m)
+                      return mod ? mod.icon + ' ' + mod.label : m
+                    }).join(', ') || 'Personnalisé'}
+                  </div>
                 </div>
                 <div className="field">
                   <label>Date de naissance</label>
@@ -450,6 +444,20 @@ export default function AdminUtilisateursPage() {
                   <select value={editForm.role} onChange={e => setEditForm(f => ({ ...f, role: e.target.value }))}>
                     {ROLES.map(r => <option key={r} value={r}>{ROLE_LABELS[r]}</option>)}
                   </select>
+                </div>
+                <div className="field">
+                  <label>Profil métier</label>
+                  <select value={editForm.profil_metier || 'direction'} onChange={e => setEditForm(f => ({ ...f, profil_metier: e.target.value }))}>
+                    {Object.entries(PROFILS_METIER).map(([id, p]) => (
+                      <option key={id} value={id}>{p.icon} {p.label}</option>
+                    ))}
+                  </select>
+                  <div style={{ fontSize: '.7rem', color: '#94a3b8', marginTop: 2 }}>
+                    Modules : {(PROFILS_METIER[editForm.profil_metier || 'direction']?.modules || []).map(m => {
+                      const mod = MODULES.find(x => x.id === m)
+                      return mod ? mod.icon + ' ' + mod.label : m
+                    }).join(', ') || 'Personnalisé'}
+                  </div>
                 </div>
                 <div className="field">
                   <label>Compte actif</label>
@@ -640,7 +648,6 @@ export default function AdminUtilisateursPage() {
         </div>
       )}
       </>
-      )}
     </div>
   )
 }

@@ -724,6 +724,181 @@ function TablesTab() {
   return <Suspense fallback={<Spinner />}><Comp /></Suspense>
 }
 
+// ── Droits & Profils ──
+const PROFILS_METIER_BO = {
+  commercial: { label: 'Commercial', icon: '🎯', modules: ['calendrier','crm','marketing','documents'] },
+  daf: { label: 'DAF / Comptable', icon: '💰', modules: ['finance','gestion','calendrier','documents'] },
+  chef_projet: { label: 'Chef de projet', icon: '📋', modules: ['activite','equipe','calendrier','crm','documents'] },
+  rh: { label: 'RH', icon: '👥', modules: ['equipe','calendrier','documents'] },
+  direction: { label: 'Direction', icon: '👔', modules: ['calendrier','activite','equipe','gestion','crm','marketing','finance','documents','workflows','documentation'] },
+  personnalise: { label: 'Personnalisé', icon: '⚙️', modules: [] },
+}
+
+const BO_MODULES = [
+  { id: 'calendrier', label: 'Calendrier', icon: '📆' },
+  { id: 'activite', label: 'Activité', icon: '⏱' },
+  { id: 'equipe', label: 'Équipe', icon: '👥' },
+  { id: 'gestion', label: 'Gestion', icon: '🧾' },
+  { id: 'crm', label: 'CRM', icon: '🎯' },
+  { id: 'marketing', label: 'Marketing', icon: '📣' },
+  { id: 'finance', label: 'Finance', icon: '💰' },
+  { id: 'documents', label: 'Documents', icon: '📁' },
+  { id: 'workflows', label: 'Workflows', icon: '🔀' },
+  { id: 'documentation', label: 'Documentation', icon: '📚' },
+]
+
+const BO_ROLES = ['collaborateur', 'manager', 'comptable', 'admin']
+const BO_ROLE_LABELS = { collaborateur: 'Collaborateur', manager: 'Manager', comptable: 'Comptable', admin: 'Admin' }
+
+function RightsTab() {
+  const [selectedProfil, setSelectedProfil] = useState('direction')
+  const [moduleAccess, setModuleAccess] = useState({})
+  const [selectedRole, setSelectedRole] = useState('manager')
+  const [saving, setSaving] = useState(false)
+  const [saved, setSaved] = useState(false)
+
+  useEffect(() => {
+    const profil = PROFILS_METIER_BO[selectedProfil]
+    if (profil && selectedProfil !== 'personnalise') {
+      const access = {}
+      BO_MODULES.forEach(m => { access[m.id] = profil.modules.includes(m.id) })
+      setModuleAccess(access)
+    }
+  }, [selectedProfil])
+
+  function toggleModule(moduleId) {
+    setModuleAccess(prev => ({ ...prev, [moduleId]: !prev[moduleId] }))
+    setSelectedProfil('personnalise')
+    setSaved(false)
+  }
+
+  function selectProfil(profilId) {
+    setSelectedProfil(profilId)
+    setSaved(false)
+  }
+
+  async function handleSave() {
+    setSaving(true)
+    try {
+      // Sauvegarde dans role_permissions de l'environnement
+      const records = []
+      BO_MODULES.forEach(m => {
+        const isOn = !!moduleAccess[m.id]
+        records.push({
+          role: selectedRole,
+          module: m.id,
+          sub_module: '*',
+          can_view: isOn,
+          can_create: isOn && ['manager','admin'].includes(selectedRole),
+          can_edit: isOn && ['manager','admin'].includes(selectedRole),
+          can_delete: isOn && ['admin'].includes(selectedRole),
+        })
+      })
+      // Upsert
+      for (const rec of records) {
+        await supabase.from('role_permissions').upsert(rec, { onConflict: 'role,module,sub_module' })
+      }
+      setSaved(true)
+      setTimeout(() => setSaved(false), 3000)
+    } catch (err) {
+      console.error('Erreur sauvegarde droits:', err)
+    } finally {
+      setSaving(false)
+    }
+  }
+
+  const activeCount = Object.values(moduleAccess).filter(Boolean).length
+
+  return (
+    <div>
+      <h2 style={{ fontSize: '1.2rem', fontWeight: 700, color: '#1e293b', marginBottom: 4 }}>🔐 Configuration des droits & profils métier</h2>
+      <p style={{ color: '#64748b', fontSize: '.85rem', marginBottom: '1.5rem' }}>
+        Configurez les profils métier et les modules accessibles par rôle. Ces paramètres s'appliquent à tous les environnements.
+      </p>
+
+      {/* Profil métier */}
+      <div style={{ marginBottom: '1.5rem' }}>
+        <label style={{ fontSize: '.85rem', fontWeight: 700, color: '#1a2332', display: 'block', marginBottom: '.5rem' }}>Profil métier à configurer</label>
+        <div style={{ display: 'flex', gap: '.5rem', flexWrap: 'wrap' }}>
+          {Object.entries(PROFILS_METIER_BO).map(([id, p]) => (
+            <button key={id} onClick={() => selectProfil(id)} style={{
+              padding: '.5rem 1rem', borderRadius: 8, border: '2px solid', cursor: 'pointer',
+              borderColor: selectedProfil === id ? '#195C82' : '#e2e8f0',
+              background: selectedProfil === id ? '#eef6fb' : '#fff',
+              color: selectedProfil === id ? '#195C82' : '#64748b',
+              fontWeight: 600, fontSize: '.82rem', transition: 'all .15s',
+              display: 'flex', alignItems: 'center', gap: '.4rem'
+            }}>
+              <span>{p.icon}</span> {p.label}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Rôle */}
+      <div style={{ marginBottom: '1.5rem' }}>
+        <label style={{ fontSize: '.85rem', fontWeight: 700, color: '#1a2332', display: 'block', marginBottom: '.5rem' }}>Rôle cible</label>
+        <select value={selectedRole} onChange={e => { setSelectedRole(e.target.value); setSaved(false) }}
+          style={{ padding: '.5rem 1rem', borderRadius: 8, border: '1.5px solid #e2e8f0', fontSize: '.9rem', background: '#fff' }}>
+          {BO_ROLES.map(r => <option key={r} value={r}>{BO_ROLE_LABELS[r]}</option>)}
+        </select>
+      </div>
+
+      {/* KPI */}
+      <div style={{ display: 'flex', gap: '1rem', marginBottom: '1.5rem', alignItems: 'center' }}>
+        <div style={{ background: '#f0fdf4', border: '1px solid #bbf7d0', borderRadius: 8, padding: '.5rem 1rem', fontSize: '.82rem', fontWeight: 600, color: '#16a34a' }}>
+          ✅ {activeCount} modules activés
+        </div>
+        <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: 8, padding: '.5rem 1rem', fontSize: '.82rem', fontWeight: 600, color: '#64748b' }}>
+          {BO_MODULES.length - activeCount} désactivés
+        </div>
+        <div style={{ flex: 1 }} />
+        <button onClick={handleSave} disabled={saving} style={{
+          padding: '.6rem 1.5rem', borderRadius: 8, border: 'none', cursor: 'pointer',
+          background: saved ? '#16a34a' : '#195C82', color: '#fff', fontWeight: 700, fontSize: '.85rem', transition: 'all .15s'
+        }}>
+          {saving ? '⏳ Sauvegarde...' : saved ? '✅ Enregistré !' : '💾 Enregistrer dans l\'environnement'}
+        </button>
+      </div>
+
+      {/* Module grid */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: '.75rem' }}>
+        {BO_MODULES.map(m => {
+          const isOn = !!moduleAccess[m.id]
+          return (
+            <div key={m.id} onClick={() => toggleModule(m.id)} style={{
+              display: 'flex', alignItems: 'center', gap: '.75rem', padding: '.75rem 1rem',
+              borderRadius: 10, border: '1.5px solid', cursor: 'pointer', transition: 'all .15s',
+              borderColor: isOn ? '#195C82' : '#e2e8f0', background: isOn ? '#eef6fb' : '#fff',
+            }}>
+              <span style={{ fontSize: '1.3rem' }}>{m.icon}</span>
+              <div style={{ flex: 1 }}>
+                <div style={{ fontSize: '.85rem', fontWeight: 700, color: isOn ? '#195C82' : '#94a3b8' }}>{m.label}</div>
+              </div>
+              <div style={{
+                width: 36, height: 20, borderRadius: 10, padding: 2,
+                background: isOn ? '#195C82' : '#e2e8f0', transition: 'background .2s',
+                display: 'flex', alignItems: 'center',
+              }}>
+                <div style={{
+                  width: 16, height: 16, borderRadius: '50%', background: '#fff',
+                  transform: isOn ? 'translateX(16px)' : 'translateX(0)',
+                  transition: 'transform .2s', boxShadow: '0 1px 3px rgba(0,0,0,.2)'
+                }} />
+              </div>
+            </div>
+          )
+        })}
+      </div>
+
+      {/* Note super admin */}
+      <div style={{ marginTop: '1.5rem', padding: '1rem', background: '#fef3c7', borderRadius: 8, border: '1px solid #fde68a', fontSize: '.82rem', color: '#92400e' }}>
+        ⚠️ <strong>Le rôle Super Admin</strong> ne peut être attribué que depuis ce backoffice. Il n'apparaît pas dans l'interface d'administration front-office.
+      </div>
+    </div>
+  )
+}
+
 // ── Tabs config ──
 const TABS = [
   { id: 'envs', label: 'Environnements', icon: '🌐' },
@@ -731,6 +906,7 @@ const TABS = [
   { id: 'integrations', label: 'Intégrations', icon: '🔌' },
   { id: 'imports', label: 'Import données', icon: '📥' },
   { id: 'tables', label: 'Tables', icon: '🗄' },
+  { id: 'rights', label: 'Droits & Profils', icon: '🔐' },
   { id: 'monitoring', label: 'Monitoring', icon: '📊' },
   { id: 'deploy', label: 'Infrastructure', icon: '🏗' },
 ]
@@ -789,6 +965,7 @@ export default function BackofficePage() {
       {tab === 'integrations' && <IntegrationsTab />}
       {tab === 'imports' && <ImportsTab />}
       {tab === 'tables' && <TablesTab />}
+      {tab === 'rights' && <RightsTab />}
       {tab === 'monitoring' && <MonitoringTab />}
       {tab === 'deploy' && <DeployTab />}
     </div>
