@@ -354,9 +354,6 @@ function AppRoutes() {
       <Route path="admin/societes/:id" element={
         <ProtectedRoute roles={['admin']} superAdminOnly><Layout><AdminSocieteDetailPage /></Layout></ProtectedRoute>
       } />
-      <Route path="admin/groupes" element={
-        <ProtectedRoute roles={['admin']} superAdminOnly><Layout><EnvSettingsPage /></Layout></ProtectedRoute>
-      } />
       <Route path="admin/organigramme" element={
         <ProtectedRoute roles={['admin']} superAdminOnly><Layout><AdminOrganigrammePage /></Layout></ProtectedRoute>
       } />
