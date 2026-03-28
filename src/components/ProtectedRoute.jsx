@@ -63,6 +63,16 @@ export default function ProtectedRoute({ children, roles, superAdminOnly, perm }
 
   if (loading) return <Spinner />
   if (!user) return <Navigate to="/login" replace />
+  if (!profile) return (
+    <div style={{ padding: '4rem 2rem', textAlign: 'center', maxWidth: 500, margin: '0 auto' }}>
+      <h2 style={{ color: '#dc2626', marginBottom: '1rem' }}>⚠️ Profil non trouvé</h2>
+      <p style={{ color: '#64748b', marginBottom: '1.5rem' }}>Votre compte existe mais votre profil n'a pas été créé correctement. Contactez l'administrateur.</p>
+      <button onClick={() => { import('../lib/supabase').then(m => m.supabase.auth.signOut()); window.location.href = '/login' }}
+        style={{ padding: '.75rem 1.5rem', background: '#195C82', color: '#fff', border: 'none', borderRadius: 8, cursor: 'pointer', fontWeight: 700 }}>
+        Retour à la connexion
+      </button>
+    </div>
+  )
 
   // Super admin bypass toutes les restrictions de role et de module
   const isSuperAdmin = (user?.email || '').toLowerCase().trim() === SUPER_ADMIN_EMAIL
