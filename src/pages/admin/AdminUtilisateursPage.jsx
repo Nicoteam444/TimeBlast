@@ -16,11 +16,11 @@ const ROLE_COLORS = {
   manager: '#0891b2',
   comptable: '#7c3aed',
   admin: '#dc2626',
-  superadmin: '#7c2d12'}
+  superadmin: '#7c3aed'}
 const SUPER_ADMIN_EMAIL = 'nicolas.nabhan@groupe-sra.fr'
 
 function getRoleDisplay(user) {
-  if (user.email === SUPER_ADMIN_EMAIL) return { label: 'Super Administrateur', color: '#7c2d12' }
+  if (user.email === SUPER_ADMIN_EMAIL) return { label: 'Super Administrateur', color: '#7c3aed' }
   return { label: ROLE_LABELS[user.role] || user.role, color: ROLE_COLORS[user.role] || '#64748b' }
 }
 
@@ -785,7 +785,7 @@ const MODULES = [
 
 const PERM_ROLES = ['collaborateur', 'manager', 'comptable', 'admin', 'superadmin']
 const PERM_ROLE_LABELS = { collaborateur: 'Collaborateur', manager: 'Manager', comptable: 'Comptable', admin: 'Admin', superadmin: 'Super Admin' }
-const PERM_ROLE_COLORS = { collaborateur: '#64748b', manager: '#0891b2', comptable: '#7c3aed', admin: '#dc2626', superadmin: '#7c2d12' }
+const PERM_ROLE_COLORS = { collaborateur: '#64748b', manager: '#0891b2', comptable: '#7c3aed', admin: '#dc2626', superadmin: '#7c3aed' }
 const ACTIONS = ['can_view', 'can_create', 'can_edit', 'can_delete']
 const ACTION_LABELS = { can_view: 'V', can_create: 'C', can_edit: 'M', can_delete: 'S' }
 const ACTION_COLORS = { can_view: '#2563eb', can_create: '#16a34a', can_edit: '#f59e0b', can_delete: '#dc2626' }
