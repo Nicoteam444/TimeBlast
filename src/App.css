@@ -6626,3 +6626,79 @@ button:disabled { opacity: .6; cursor: not-allowed; }
     grid-template-columns: 1fr;
   }
 }
+   IMPORT UNIVERSEL
+   ═══════════════════════════════════════════════════════════════ */
+.import-table-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: .75rem; margin-bottom: 1.5rem; }
+.import-table-card { display: flex; align-items: center; gap: .75rem; background: var(--surface); border: 1.5px solid var(--border); border-radius: 10px; padding: 1rem; cursor: pointer; transition: all .15s; }
+.import-table-card:hover { border-color: #0F4C75; transform: translateY(-2px); box-shadow: 0 4px 16px rgba(0,0,0,.06); }
+.import-table-card--selected { border-color: #0F4C75; background: #eef6fb; }
+.import-table-icon { font-size: 1.5rem; }
+.import-table-cols { display: block; font-size: .75rem; color: var(--text-muted); }
+
+.import-selected-info { background: var(--surface); border: 1.5px solid var(--border); border-radius: 10px; padding: 1.25rem; margin-bottom: 1.5rem; }
+.import-selected-header { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: .75rem; margin-bottom: 1rem; font-size: .95rem; }
+.import-cols-list { display: flex; flex-wrap: wrap; gap: .5rem; }
+.import-col-chip { display: inline-flex; align-items: center; gap: .4rem; background: #f1f5f9; border: 1px solid #e2e8f0; border-radius: 6px; padding: .3rem .6rem; font-size: .78rem; }
+.import-col-chip code { color: #0F4C75; font-weight: 600; }
+.import-col-chip span { color: var(--text-muted); }
+.import-col-req { color: #dc2626; font-weight: 700; font-size: .7rem; }
+
+.import-upload-zone { border: 2px dashed var(--border); border-radius: 14px; padding: 3rem 2rem; text-align: center; background: #fafbfc; margin-bottom: 1.5rem; }
+.import-upload-inner h3 { margin: .75rem 0 .25rem; color: var(--text); }
+.btn-link { background: none; border: none; color: #0F4C75; text-decoration: underline; cursor: pointer; font-size: inherit; }
+
+.import-mapping-header { margin-bottom: 1rem; }
+.import-mapping-grid { display: flex; flex-direction: column; gap: .5rem; }
+.import-mapping-row { display: flex; align-items: center; gap: .75rem; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: .5rem .75rem; }
+.import-mapping-file-col { font-weight: 600; font-size: .85rem; min-width: 150px; color: #0F4C75; }
+.import-mapping-arrow { color: var(--text-muted); font-size: 1.1rem; }
+.import-mapping-select { flex: 1; padding: .35rem .5rem; border: 1px solid var(--border); border-radius: 6px; font-size: .82rem; }
+
+.import-result { text-align: center; padding: 3rem 2rem; background: var(--surface); border: 1.5px solid var(--border); border-radius: 14px; }
+.import-result-icon { font-size: 3rem; margin-bottom: .5rem; }
+.import-result-stats { display: flex; justify-content: center; gap: 2rem; margin-top: 1.5rem; }
+.import-result-stat { text-align: center; }
+.import-result-value { display: block; font-size: 2rem; font-weight: 800; }
+.import-result-stat span:last-child { color: var(--text-muted); font-size: .85rem; }
+
+/* ═══════════════════════════════════════════════════════════════
+   TABLES EXPLORER
+   ═══════════════════════════════════════════════════════════════ */
+.tables-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: .75rem; }
+.tables-card { display: flex; align-items: center; gap: .75rem; background: var(--surface); border: 1.5px solid var(--border); border-radius: 10px; padding: 1rem; cursor: pointer; transition: all .15s; }
+.tables-card:hover { border-color: #0F4C75; transform: translateY(-2px); box-shadow: 0 4px 16px rgba(0,0,0,.06); }
+.tables-card-icon { font-size: 1.4rem; }
+.tables-card-id { display: block; font-size: .72rem; color: var(--text-muted); font-family: monospace; }
+
+/* ═══════════════════════════════════════════════════════════════
+   INTEGRATIONS ADMIN
+   ═══════════════════════════════════════════════════════════════ */
+.integ-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 1rem; }
+.integ-card { background: var(--surface); border: 1.5px solid var(--border); border-radius: 12px; padding: 1.25rem; transition: all .15s; }
+.integ-card--connected { border-color: #bbf7d0; background: #f0fdf4; }
+.integ-card:hover { box-shadow: 0 4px 16px rgba(0,0,0,.06); }
+.integ-card-top { display: flex; align-items: flex-start; gap: .75rem; margin-bottom: .75rem; }
+.integ-card-icon { font-size: 1.5rem; flex-shrink: 0; }
+.integ-card-cat { display: block; font-size: .72rem; color: var(--text-muted); }
+.integ-card-desc { font-size: .85rem; color: var(--text-muted); line-height: 1.5; margin-bottom: .75rem; }
+.integ-card-actions { display: flex; gap: .5rem; }
+
+/* ═══════════════════════════════════════════════════════════════
+   WIKI — BASE DE CONNAISSANCES
+   ═══════════════════════════════════════════════════════════════ */
+.wiki-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1rem; }
+.wiki-card { background: var(--surface); border: 1.5px solid var(--border); border-radius: 12px; padding: 1.25rem; cursor: pointer; transition: all .15s; }
+.wiki-card:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,.06); border-color: #0F4C75; }
+.wiki-card--pinned { border-color: #F8B35A; background: #fffdf5; }
+.wiki-card-header { display: flex; align-items: center; gap: .5rem; margin-bottom: .5rem; }
+.wiki-card-cat { font-size: .72rem; font-weight: 600; padding: .2rem .5rem; border-radius: 4px; }
+.wiki-card-title { font-size: 1rem; font-weight: 700; color: var(--text); margin: 0 0 .5rem; line-height: 1.3; }
+.wiki-card-excerpt { font-size: .82rem; color: var(--text-muted); line-height: 1.5; margin-bottom: .75rem; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+.wiki-card-meta { display: flex; justify-content: space-between; font-size: .75rem; color: var(--text-muted); }
+.wiki-content { line-height: 1.7; font-size: .92rem; }
+.wiki-content h2 { font-size: 1.3rem; font-weight: 700; color: #0F4C75; margin: 1.5rem 0 .5rem; }
+.wiki-content h3 { font-size: 1.1rem; font-weight: 700; color: var(--text); margin: 1.25rem 0 .4rem; }
+.wiki-content h4 { font-size: .95rem; font-weight: 600; margin: 1rem 0 .3rem; }
+.wiki-content ul { padding-left: 1.25rem; margin: .5rem 0; }
+.wiki-content li { margin-bottom: .25rem; }
+.wiki-content code { background: #f1f5f9; padding: .15rem .4rem; border-radius: 4px; font-size: .85em; }

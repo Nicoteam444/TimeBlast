@@ -84,6 +84,10 @@ const TaskDetailPage = lazy(() => import('./pages/temps/TaskDetailPage'))
 const BackofficePage = lazy(() => import('./pages/admin/BackofficePage'))
 const InfoPage = lazy(() => import('./pages/InfoPage'))
 const ProfilePage = lazy(() => import('./pages/ProfilePage'))
+const ImportsPage = lazy(() => import('./pages/admin/ImportsPage'))
+const TablesPage = lazy(() => import('./pages/admin/TablesPage'))
+const IntegrationsAdminPage = lazy(() => import('./pages/admin/IntegrationsAdminPage'))
+const WikiPage = lazy(() => import('./pages/wiki/WikiPage'))
 
 // Spinner global pour lazy loading
 function LazySpinner() {
@@ -360,6 +364,18 @@ function AppRoutes() {
       } />
       <Route path="admin/analytics" element={
         <ProtectedRoute roles={['admin','manager']}><Layout><AnalyticsPage /></Layout></ProtectedRoute>
+      } />
+      <Route path="admin/imports" element={
+        <ProtectedRoute roles={['admin']}><Layout><ImportsPage /></Layout></ProtectedRoute>
+      } />
+      <Route path="admin/tables" element={
+        <ProtectedRoute roles={['admin']}><Layout><TablesPage /></Layout></ProtectedRoute>
+      } />
+      <Route path="admin/integrations" element={
+        <ProtectedRoute roles={['admin']}><Layout><IntegrationsAdminPage /></Layout></ProtectedRoute>
+      } />
+      <Route path="wiki" element={
+        <ProtectedRoute roles={['admin','manager','collaborateur']}><Layout><WikiPage /></Layout></ProtectedRoute>
       } />
       {/* Backoffice déplacé hors /:envId — voir route /backoffice */}
       <Route path="parametres" element={
