@@ -352,7 +352,7 @@ export default function LoginPage() {
           ))}
         </div>
         {/* Mockup centré, à cheval sur la transition bleu → blanc */}
-        <div style={{ maxWidth: 1060, margin: '0 auto', perspective: '1200px' }}>
+        <div className="mockup-wrapper" style={{ maxWidth: 1060, margin: '0 auto', perspective: '1200px' }}>
           <div className="mockup-browser" style={{ transform: 'rotateX(1.5deg)', transformOrigin: 'bottom center', boxShadow: '0 25px 60px rgba(0,0,0,0.2), 0 0 0 1px rgba(0,0,0,.06)' }}>
             {/* macOS bar */}
             <div className="mockup-browser-bar">

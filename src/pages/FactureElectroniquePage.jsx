@@ -164,7 +164,7 @@ export default function FactureElectroniquePage() {
           MOCKUP E-FACTURE — Dashboard conformité + Chat IA + Outils
       ══════════════════════════════════════════════════════════════════ */}
       <section style={{ padding: '2rem 2rem 4rem', background: '#fff' }}>
-        <div style={{ maxWidth: 1060, margin: '0 auto', perspective: '1200px' }}>
+        <div className="mockup-wrapper" style={{ maxWidth: 1060, margin: '0 auto', perspective: '1200px' }}>
           <div className="mockup-browser" style={{ transform: 'rotateX(1.5deg)', transformOrigin: 'bottom center', boxShadow: '0 25px 60px rgba(0,0,0,0.2), 0 0 0 1px rgba(0,0,0,.06)' }}>
             <div className="mockup-browser-bar">
               <div className="mockup-dots"><span style={{ background: '#ff5f57' }} /><span style={{ background: '#ffbd2e' }} /><span style={{ background: '#28c840' }} /></div>
