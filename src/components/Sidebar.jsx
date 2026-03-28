@@ -17,7 +17,7 @@ const SECTIONS = [
     id: 'calendrier',
     icon: '📆',
     label: 'Calendrier',
-    landingTo: '/activite/saisie',
+    landingTo: '/calendrier',
     directLink: true,
     perm: 'calendrier:saisie',
     roles: ['admin', 'manager', 'collaborateur'],

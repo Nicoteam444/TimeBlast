@@ -258,10 +258,13 @@ export default function CalendrierPage() {
   // Load collaborateurs
   useEffect(() => {
     async function load() {
-      const { data } = await supabase.from('profiles').select('id, prenom, nom, email, role')
+      const { data } = await supabase.rpc('get_users_with_auth')
       if (data) {
-        setCollabs(data)
-        // Default: show current user
+        const parsed = data.filter(p => p.actif !== false).map(p => {
+          const parts = (p.full_name || '').trim().split(/\s+/)
+          return { ...p, prenom: parts[0] || '', nom: parts.slice(1).join(' ') || '' }
+        })
+        setCollabs(parsed)
         setSelectedCollabs(new Set([user?.id]))
       }
     }
