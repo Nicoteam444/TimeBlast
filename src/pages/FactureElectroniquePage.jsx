@@ -68,7 +68,7 @@ export default function FactureElectroniquePage() {
       {/* ── Navbar ── */}
       <nav className="landing-nav">
         <div className="landing-nav-inner">
-          <div className="landing-logo" onClick={() => navigate('/login')} style={{ cursor: 'pointer' }}>
+          <div className="landing-logo" onClick={() => { navigate('/login'); window.scrollTo({ top: 0 }) }} style={{ cursor: 'pointer' }}>
             <img src="/logo-full.svg" alt="TimeBlast" style={{ height: 64 }} />
           </div>
           <div className="landing-nav-links">

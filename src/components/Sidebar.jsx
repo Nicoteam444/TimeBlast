@@ -264,7 +264,7 @@ export default function Sidebar() {
       <aside className={`sidebar ${sidebarOpen ? 'sidebar--open' : 'sidebar--closed'}`}>
 
         {/* Logo */}
-        <div className="sidebar-logo" onClick={() => navigate('/')} style={{ cursor: 'pointer' }}>
+        <div className="sidebar-logo" onClick={() => { navigate('/'); window.scrollTo({ top: 0 }) }} style={{ cursor: 'pointer' }}>
           {settings.logoUrl ? (
             sidebarOpen
               ? <span style={{ display: 'flex', alignItems: 'center', gap: '.5rem' }}>
