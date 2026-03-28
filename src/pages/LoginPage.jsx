@@ -318,7 +318,7 @@ export default function LoginPage() {
               TimeBlast
             </h1>
             <h2 style={{ fontSize: '1.6rem', fontWeight: 700, color: '#475569', marginBottom: '1.25rem', marginTop: '-.5rem', lineHeight: 1.3 }}>
-              La BI intelligente<br />pour les PME
+              La BI intelligente<br />à l'ère de l'IA
             </h2>
             <p className="landing-hero-subtitle" style={{ fontSize: '1.05rem', fontWeight: 600, color: '#64748b', marginBottom: '1rem' }}>
               Tous vos indicateurs. Toutes vos données. Un seul outil décisionnel.
