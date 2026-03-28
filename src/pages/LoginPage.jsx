@@ -290,7 +290,7 @@ export default function LoginPage() {
       <nav className="landing-nav">
         <div className="landing-nav-inner">
           <div className="landing-logo">
-            <img src="/logo-icon.svg" alt="TimeBlast.ai" style={{ height: 28 }} />
+            <img src="/logo-full.svg" alt="TimeBlast" style={{ height: 32 }} />
           </div>
           <div className="landing-nav-links">
             <a href="#modules">Modules</a>
@@ -926,7 +926,7 @@ export default function LoginPage() {
       {/* ── Footer ── */}
       <footer className="landing-footer">
         <div className="landing-footer-inner">
-          <img src="/logo-icon.svg" alt="TimeBlast.ai" style={{ height: 24 }} />
+          <img src="/logo-full-white.svg" alt="TimeBlast" style={{ height: 24 }} />
           <span style={{ color: 'rgba(255,255,255,0.4)', fontSize: '.82rem' }}>
             © {new Date().getFullYear()} TimeBlast.ai — Plateforme décisionnelle intelligente pour PME
           </span>
