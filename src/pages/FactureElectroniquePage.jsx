@@ -69,7 +69,7 @@ export default function FactureElectroniquePage() {
       <nav className="landing-nav">
         <div className="landing-nav-inner">
           <div className="landing-logo" onClick={() => navigate('/login')} style={{ cursor: 'pointer' }}>
-            <img src="/logo-full.svg" alt="TimeBlast" style={{ height: 32 }} />
+            <img src="/logo-full.svg" alt="TimeBlast" style={{ height: 64 }} />
           </div>
           <div className="landing-nav-links">
             <a href="/login">Accueil</a>
@@ -93,12 +93,8 @@ export default function FactureElectroniquePage() {
           <div className="landing-hero-text">
             <div className="landing-hero-badge">📊 Business Intelligence + E-Facture 2026</div>
             <h1 className="landing-hero-title">
-              TimeBlast
+              La BI qui rend vos données conformes à l'e-facture
             </h1>
-            <h2 style={{ fontSize: '1.5rem', fontWeight: 700, color: '#475569', marginBottom: '1.25rem', marginTop: '-.5rem', lineHeight: 1.3 }}>
-              La BI qui rend vos données<br />
-              <span style={{ color: '#16a34a' }}>conformes à l'e-facture</span>
-            </h2>
             <p className="landing-hero-subtitle">
               <strong>La réforme e-facture exige des données propres.</strong> TimeBlast est la plateforme
               décisionnelle qui enrichit, normalise et valide vos données — pour que vos factures soient
