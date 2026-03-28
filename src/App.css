@@ -6626,6 +6626,8 @@ button:disabled { opacity: .6; cursor: not-allowed; }
     grid-template-columns: 1fr;
   }
 }
+
+/* ═══════════════════════════════════════════════════════════════
    IMPORT UNIVERSEL
    ═══════════════════════════════════════════════════════════════ */
 .import-table-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: .75rem; margin-bottom: 1.5rem; }
