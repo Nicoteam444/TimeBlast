@@ -459,7 +459,7 @@ export default function TopBar() {
       {/* Barre de favoris — style Chrome (masquée sur petit écran) */}
       {favorites.length > 0 && (
         <div className="topbar-favbar" style={{ display: 'flex', alignItems: 'center', gap: 3, marginLeft: 8, marginRight: 4 }}>
-          {favorites.filter(p => p && !p.includes('backoffice')).slice(0, 6).map(path => {
+          {favorites.slice(0, 6).map(path => {
             const label = favLabels?.[path]?.slice(0, 15) || path.split('/').pop() || 'Page'
             if (editingFav === path) {
               return (
