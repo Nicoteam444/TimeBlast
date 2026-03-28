@@ -135,14 +135,16 @@ function BiHubVisual() {
           </linearGradient>
           <filter id="bGlow"><feGaussianBlur stdDeviation="2" /><feMerge><feMergeNode /><feMergeNode in="SourceGraphic" /></feMerge></filter>
           <filter id="shadow"><feDropShadow dx="0" dy="2" stdDeviation="3" floodOpacity="0.1" /></filter>
-          <clipPath id="hubClip"><path d={`M0,0 H500 V${cy-60} H${cx+60} V${cy+60} H0 Z M${cx-60},${cy-60} V${cy+60} H${cx+60} V${cy-60} Z`} clipRule="evenodd" /></clipPath>
+          <clipPath id="hubClip"><rect x="0" y="0" width="500" height="480" /><circle cx={cx} cy={cy} r="60" fill="black" /></clipPath>
+          <mask id="hubMask"><rect x="0" y="0" width="500" height="480" fill="white" /><circle cx={cx} cy={cy} r="60" fill="black" /></mask>
         </defs>
 
         {/* Cercles de fond concentriques */}
         <circle cx={cx} cy={cy} r={R + 40} fill="none" stroke={B} strokeWidth="0.5" opacity="0.05" />
         <circle cx={cx} cy={cy} r={R + 20} fill="none" stroke={B} strokeWidth="0.5" opacity="0.08" strokeDasharray="4 4" />
 
-        {/* Connexions + billes animées */}
+        {/* Connexions + billes animées — masquées derrière le logo */}
+        <g mask="url(#hubMask)">
         {sources.map((src, i) => {
           const a = (src.angle - 90) * Math.PI / 180
           const ax = cx + R * Math.cos(a)
@@ -151,16 +153,16 @@ function BiHubVisual() {
           const delay = (i * 0.35).toFixed(1)
           return (
             <g key={src.label + '-conn'}>
-              <line x1={cx} y1={cy} x2={ax} y2={ay} stroke={B} strokeWidth="1" opacity="0.1" clipPath="url(#hubClip)" />
-              <line x1={cx} y1={cy} x2={ax} y2={ay} stroke={src.color} strokeWidth="0.8" opacity="0.3" strokeDasharray="3 5" clipPath="url(#hubClip)">
+              <line x1={cx} y1={cy} x2={ax} y2={ay} stroke={B} strokeWidth="1" opacity="0.1" />
+              <line x1={cx} y1={cy} x2={ax} y2={ay} stroke={src.color} strokeWidth="0.8" opacity="0.3" strokeDasharray="3 5">
                 <animate attributeName="strokeDashoffset" values="0;-16" dur="2s" repeatCount="indefinite" />
               </line>
-              <circle r="4" fill={B} filter="url(#bGlow)" opacity="0.85" clipPath="url(#hubClip)">
+              <circle r="4" fill={B} filter="url(#bGlow)" opacity="0.85">
                 <animateMotion dur={dur + 's'} repeatCount="indefinite" begin={delay + 's'}>
                   <mpath xlinkHref={`#path-${i}`} />
                 </animateMotion>
               </circle>
-              <circle r="2.5" fill={B} opacity="0.5" clipPath="url(#hubClip)">
+              <circle r="2.5" fill={B} opacity="0.5">
                 <animateMotion dur={dur + 's'} repeatCount="indefinite" begin={(parseFloat(delay) + 1) + 's'} keyPoints="1;0" keyTimes="0;1" calcMode="linear">
                   <mpath xlinkHref={`#path-${i}`} />
                 </animateMotion>
@@ -169,6 +171,7 @@ function BiHubVisual() {
             </g>
           )
         })}
+        </g>
 
         {/* Sources en cercle */}
         {sources.map((src, i) => {
