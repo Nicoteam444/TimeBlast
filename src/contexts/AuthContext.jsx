@@ -30,13 +30,30 @@ export function AuthProvider({ children }) {
       await new Promise(r => setTimeout(r, 500))
       return fetchProfile(userId, retries - 1)
     }
+    // Bloquer les comptes désactivés
+    if (data && data.actif === false) {
+      await supabase.auth.signOut()
+      setUser(null)
+      setProfile(null)
+      setLoading(false)
+      return
+    }
     setProfile(data)
     setLoading(false)
   }
 
   async function signIn(email, password) {
-    const { error } = await supabase.auth.signInWithPassword({ email, password })
-    return { error }
+    const { data: authData, error } = await supabase.auth.signInWithPassword({ email, password })
+    if (error) return { error }
+    // Vérifier si le compte est désactivé
+    if (authData?.user) {
+      const { data: prof } = await supabase.from('profiles').select('actif').eq('id', authData.user.id).single()
+      if (prof && prof.actif === false) {
+        await supabase.auth.signOut()
+        return { error: { message: 'Votre compte a été désactivé. Contactez votre administrateur.' } }
+      }
+    }
+    return { error: null }
   }
 
   async function signInWithMicrosoft() {
