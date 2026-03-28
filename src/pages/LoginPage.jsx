@@ -276,8 +276,12 @@ export default function LoginPage() {
       {/* ── Navbar ── */}
       <nav className="landing-nav">
         <div className="landing-nav-inner">
-          <div className="landing-logo" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })} style={{ cursor: 'pointer' }}>
+          <div className="landing-logo" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })} style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 12 }}>
             <img src="/logo-full.svg" alt="TimeBlast" style={{ height: 64 }} />
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6, borderLeft: '1px solid #e2e8f0', paddingLeft: 12 }}>
+              <span style={{ fontSize: '.7rem', color: '#94a3b8', fontWeight: 500 }}>by</span>
+              <img src="/logo-sra.png" alt="Groupe SRA" style={{ height: 24, borderRadius: 4 }} />
+            </div>
           </div>
           <div className="landing-nav-links">
             <a href="#modules">Modules</a>
