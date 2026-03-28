@@ -284,6 +284,7 @@ export default function LoginPage() {
             <a href="#connecteurs">Connecteurs</a>
             <a href="#cas-usage">Cas d'usage</a>
             <a href="#roadmap">Roadmap IA</a>
+            <a href="https://www.groupe-sra.fr" target="_blank" rel="noopener noreferrer">Groupe SRA</a>
             <a href="#contact">Contact</a>
             <a href="/facture-electronique" style={{ color: '#f59e0b', fontWeight: '600' }}>E-Facture 2026</a>
           </div>
