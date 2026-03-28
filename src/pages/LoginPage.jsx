@@ -352,7 +352,8 @@ export default function LoginPage() {
           ))}
         </div>
         {/* Mockup centré, à cheval sur la transition bleu → blanc */}
-        <div className="mockup-wrapper" style={{ maxWidth: 1060, margin: '0 auto', perspective: '1200px' }}>
+        <div className="mockup-wrapper" style={{ maxWidth: 1060, margin: '0 auto' }}>
+          <div className="mockup-scale" style={{ perspective: '1200px' }}>
           <div className="mockup-browser" style={{ transform: 'rotateX(1.5deg)', transformOrigin: 'bottom center', boxShadow: '0 25px 60px rgba(0,0,0,0.2), 0 0 0 1px rgba(0,0,0,.06)' }}>
             {/* macOS bar */}
             <div className="mockup-browser-bar">
@@ -571,6 +572,7 @@ export default function LoginPage() {
           </div>
           {/* Shadow */}
           <div style={{ height: 20, background: 'radial-gradient(ellipse at center, rgba(0,0,0,.08) 0%, transparent 70%)', marginTop: -2 }} />
+          </div>{/* /mockup-scale */}
         </div>
       </section>
 
@@ -633,7 +635,8 @@ export default function LoginPage() {
         <p className="landing-section-subtitle">
           Des dashboards intelligents qui ne se contentent pas d'afficher — ils analysent, alertent et recommandent.
         </p>
-        <div style={{ maxWidth: 960, margin: '40px auto 0', padding: '0 20px', display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 20 }}>
+        <div className="mockup-wrapper" style={{ maxWidth: 960, margin: '40px auto 0', padding: '0 20px' }}>
+        <div className="mockup-previews" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 20 }}>
 
           {/* Preview 1 — Dashboard décisionnel */}
           <div style={{ background: '#fff', borderRadius: 14, boxShadow: '0 10px 30px rgba(0,0,0,0.08)', overflow: 'hidden', border: '1px solid #e2e8f0' }}>
@@ -707,7 +710,8 @@ export default function LoginPage() {
               ))}
             </div>
           </div>
-        </div>
+        </div>{/* /mockup-previews */}
+        </div>{/* /mockup-wrapper */}
       </section>
 
       {/* ══════════════════════════════════════════════════════════════════
