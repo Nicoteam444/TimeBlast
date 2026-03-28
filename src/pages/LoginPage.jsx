@@ -203,6 +203,7 @@ export default function LoginPage() {
   const [error, setError] = useState(null)
   const [loading, setLoading] = useState(false)
   const [showLogin, setShowLogin] = useState(false)
+  const [mobileMenu, setMobileMenu] = useState(false)
   const [activeCat, setActiveCat] = useState('all')
 
   const filteredConnectors = activeCat === 'all' ? CONNECTORS : CONNECTORS.filter(c => c.cat === activeCat)
@@ -286,11 +287,26 @@ export default function LoginPage() {
             <a href="#contact">Contact</a>
             <a href="/facture-electronique" style={{ color: '#f59e0b', fontWeight: '600' }}>E-Facture 2026</a>
           </div>
+          <button className="landing-burger" onClick={() => setMobileMenu(true)}>☰</button>
           <button className="landing-nav-btn" onClick={() => setShowLogin(true)}>
             Se connecter
           </button>
         </div>
       </nav>
+
+      {/* ── Menu mobile ── */}
+      <div className={`landing-mobile-menu ${mobileMenu ? 'open' : ''}`}>
+        <button className="landing-mobile-close" onClick={() => setMobileMenu(false)}>✕</button>
+        <img src="/logo-full.svg" alt="TimeBlast" style={{ height: 40, marginBottom: '1rem' }} />
+        <a href="#connecteurs" onClick={() => setMobileMenu(false)}>Connecteurs</a>
+        <a href="#roadmap" onClick={() => setMobileMenu(false)}>Roadmap IA</a>
+        <a href="https://www.groupe-sra.fr" target="_blank" rel="noopener noreferrer">Groupe SRA</a>
+        <a href="#contact" onClick={() => setMobileMenu(false)}>Contact</a>
+        <a href="/facture-electronique" style={{ color: '#f59e0b' }}>E-Facture 2026</a>
+        <button className="landing-btn-primary" onClick={() => { setMobileMenu(false); setShowLogin(true) }} style={{ marginTop: '1rem' }}>
+          Se connecter
+        </button>
+      </div>
 
       {/* ══════════════════════════════════════════════════════════════════
           HERO — Positionnement BI décisionnel
