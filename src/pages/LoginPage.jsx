@@ -354,198 +354,261 @@ export default function LoginPage() {
       </section>
 
       {/* ══════════════════════════════════════════════════════════════════
-          ILS NOUS FONT CONFIANCE
+          GROUPE SRA — Encart lien
       ══════════════════════════════════════════════════════════════════ */}
       <section style={{ padding: '3rem 2rem 1rem', background: '#fff', textAlign: 'center' }}>
-        <p style={{ fontSize: '.85rem', color: '#94a3b8', fontWeight: 600, letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '2rem' }}>
-          La solution décisionnelle préférée des PME & ETI
+        <p style={{ fontSize: '.85rem', color: '#94a3b8', fontWeight: 600, letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '1.5rem' }}>
+          Un produit du Groupe SRA
         </p>
-        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '2.5rem', flexWrap: 'wrap', maxWidth: 1100, margin: '0 auto' }}>
-          {[
-            { name: 'Everial', color: '#2B4C7E' },
-            { name: 'Irrijardin', color: '#16a34a' },
-            { name: 'Vinovalie', color: '#7c3aed' },
-            { name: 'Eveno', color: '#dc2626' },
-            { name: 'Thievin', color: '#0891b2' },
-            { name: 'Duobat', color: '#ea580c' },
-            { name: 'FULL ACE', color: '#1D9BF0' },
-            { name: 'Azura', color: '#059669' },
-            { name: 'A.C.A', color: '#6366f1' },
-            { name: 'ADIS', color: '#be185d' },
-          ].map((client, i) => (
-            <span key={i} style={{ fontSize: '1.1rem', fontWeight: 800, color: client.color, opacity: 0.35, letterSpacing: '-.5px' }}>
-              {client.name}
-            </span>
-          ))}
-        </div>
+        <a href="https://www.groupe-sra.fr" target="_blank" rel="noopener noreferrer"
+          style={{
+            display: 'inline-flex', alignItems: 'center', gap: 16, background: 'linear-gradient(135deg, #f8fafc, #eef6fb)',
+            border: '2px solid #e2e8f0', borderRadius: 14, padding: '1.25rem 2.5rem', textDecoration: 'none',
+            transition: 'all .2s', maxWidth: 600, margin: '0 auto', boxShadow: '0 4px 16px rgba(0,0,0,.04)',
+          }}
+          onMouseEnter={e => { e.currentTarget.style.borderColor = '#195C82'; e.currentTarget.style.boxShadow = '0 8px 24px rgba(25,92,130,.12)'; e.currentTarget.style.transform = 'translateY(-2px)' }}
+          onMouseLeave={e => { e.currentTarget.style.borderColor = '#e2e8f0'; e.currentTarget.style.boxShadow = '0 4px 16px rgba(0,0,0,.04)'; e.currentTarget.style.transform = 'none' }}
+        >
+          <div style={{ width: 48, height: 48, borderRadius: 10, background: '#195C82', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontSize: '1.2rem', fontWeight: 800, flexShrink: 0 }}>
+            SRA
+          </div>
+          <div style={{ textAlign: 'left' }}>
+            <div style={{ fontSize: '1rem', fontWeight: 700, color: '#195C82' }}>
+              Groupe SRA — Partenaire digital des PME
+            </div>
+            <div style={{ fontSize: '.82rem', color: '#64748b', marginTop: 2 }}>
+              Intégrateur Sage Diamond, Microsoft, HubSpot · 200+ collaborateurs · 17 sociétés
+            </div>
+            <div style={{ fontSize: '.75rem', color: '#1D9BF0', fontWeight: 600, marginTop: 4, display: 'flex', alignItems: 'center', gap: 4 }}>
+              Découvrir le groupe → groupe-sra.fr
+            </div>
+          </div>
+        </a>
       </section>
 
       {/* ══════════════════════════════════════════════════════════════════
-          MOCKUP DASHBOARD — Pro style
+          MOCKUP DASHBOARD — Graphiques + Chat IA + Outils connectés
       ══════════════════════════════════════════════════════════════════ */}
       <section style={{ padding: '2rem 2rem 5rem', background: '#fff' }}>
-        <div style={{ maxWidth: 1000, margin: '0 auto', perspective: '1200px' }}>
+        <div style={{ maxWidth: 1060, margin: '0 auto', perspective: '1200px' }}>
           <div className="mockup-browser" style={{ transform: 'rotateX(2deg)', transformOrigin: 'bottom center' }}>
-            {/* Barre navigateur macOS */}
+            {/* macOS bar */}
             <div className="mockup-browser-bar">
               <div className="mockup-dots">
-                <span style={{ background: '#ff5f57' }} />
-                <span style={{ background: '#ffbd2e' }} />
-                <span style={{ background: '#28c840' }} />
+                <span style={{ background: '#ff5f57' }} /><span style={{ background: '#ffbd2e' }} /><span style={{ background: '#28c840' }} />
               </div>
               <div style={{ flex: 1, display: 'flex', justifyContent: 'center' }}>
-                <div className="mockup-url">
-                  <span style={{ fontSize: 10 }}>🔒</span> app.timeblast.ai/dashboard
-                </div>
+                <div className="mockup-url"><span style={{ fontSize: 10 }}>🔒</span> app.timeblast.ai</div>
               </div>
-              <div style={{ display: 'flex', gap: 8, opacity: 0.4 }}>
-                <span style={{ fontSize: 12 }}>◀</span>
-                <span style={{ fontSize: 12 }}>▶</span>
-                <span style={{ fontSize: 12 }}>↻</span>
-              </div>
+              <div style={{ display: 'flex', gap: 8, opacity: 0.4, fontSize: 12 }}>◀ ▶ ↻</div>
             </div>
-            {/* App content */}
-            <div className="mockup-content" style={{ minHeight: 340 }}>
-              {/* Sidebar */}
-              <div className="mockup-sidebar" style={{ width: 52, background: '#0f2b42', padding: '14px 10px', gap: 2, borderRight: 'none' }}>
-                <img src="/logo-icon.svg" alt="TB" style={{ width: 30, height: 30, marginBottom: 14 }} />
-                {[
-                  { icon: '📊', active: true, label: 'Dashboard' },
-                  { icon: '⏱', active: false, label: 'Temps' },
-                  { icon: '💼', active: false, label: 'Commerce' },
-                  { icon: '🧾', active: false, label: 'Finance' },
-                  { icon: '👥', active: false, label: 'Équipe' },
-                  { icon: '📋', active: false, label: 'Projets' },
-                ].map((item, i) => (
-                  <div key={i} style={{
-                    width: 34, height: 34, display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    borderRadius: 8, fontSize: 15, cursor: 'default',
-                    background: item.active ? 'rgba(255,255,255,0.12)' : 'transparent',
-                    position: 'relative',
-                  }}>
-                    {item.icon}
-                    {item.active && <div style={{ position: 'absolute', left: -10, width: 3, height: 18, background: '#F8B35A', borderRadius: '0 2px 2px 0' }} />}
+
+            <div className="mockup-content" style={{ minHeight: 420 }}>
+              {/* ── Sidebar dark ── */}
+              <div className="mockup-sidebar" style={{ width: 52, background: '#0f2b42', padding: '12px 10px', gap: 2, borderRight: 'none' }}>
+                <img src="/logo-icon.svg" alt="TB" style={{ width: 28, height: 28, marginBottom: 12 }} />
+                {['📊','⏱','💼','🧾','👥','📋','🎯','📬'].map((ic, i) => (
+                  <div key={i} style={{ width: 32, height: 32, display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: 8, fontSize: 14, background: i === 0 ? 'rgba(255,255,255,.12)' : 'transparent', position: 'relative' }}>
+                    {ic}{i === 0 && <div style={{ position: 'absolute', left: -10, width: 3, height: 16, background: '#F8B35A', borderRadius: '0 2px 2px 0' }} />}
                   </div>
                 ))}
                 <div style={{ flex: 1 }} />
-                <div style={{ width: 34, height: 34, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 15 }}>⚙️</div>
+                <div style={{ width: 32, height: 32, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 14 }}>⚙️</div>
               </div>
-              {/* Main */}
+
+              {/* ── Main area ── */}
               <div style={{ flex: 1, display: 'flex', flexDirection: 'column', background: '#f8fafc' }}>
-                {/* Top bar */}
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 20px', background: '#fff', borderBottom: '1px solid #f1f5f9' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                    <span style={{ fontSize: '.75rem', fontWeight: 700, color: '#195C82' }}>📊 Tableau de bord</span>
-                    <span style={{ fontSize: '.6rem', color: '#94a3b8', background: '#f1f5f9', padding: '2px 8px', borderRadius: 4 }}>Mars 2026</span>
+                {/* Topbar */}
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '8px 16px', background: '#fff', borderBottom: '1px solid #f1f5f9' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                    <span style={{ fontSize: '.7rem', fontWeight: 700, color: '#195C82' }}>📊 Tableau de bord</span>
+                    <span style={{ fontSize: '.5rem', color: '#94a3b8', background: '#f1f5f9', padding: '2px 6px', borderRadius: 4 }}>Mars 2026</span>
                   </div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                    <div style={{ fontSize: '.55rem', color: '#94a3b8' }}>🔔 3</div>
-                    <div style={{ width: 24, height: 24, borderRadius: '50%', background: '#195C82', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontSize: '.5rem', fontWeight: 700 }}>NN</div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                    <span style={{ fontSize: '.5rem', color: '#94a3b8' }}>🔔 3</span>
+                    <div style={{ width: 22, height: 22, borderRadius: '50%', background: '#195C82', color: '#fff', fontSize: '.45rem', fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>NN</div>
                   </div>
                 </div>
-                {/* KPIs */}
-                <div style={{ padding: '16px 20px 0' }}>
-                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 10, marginBottom: 14 }}>
+
+                {/* ── KPIs ── */}
+                <div style={{ padding: '12px 16px 0' }}>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 8, marginBottom: 10 }}>
                     {[
-                      { label: 'Chiffre d\'affaires', value: '72 450 €', trend: '+18%', icon: '💰', up: true },
-                      { label: 'Pipeline commercial', value: '343 000 €', trend: '8 deals actifs', icon: '🎯', up: true },
-                      { label: 'Marge brute', value: '68%', trend: '+3 points', icon: '📈', up: true },
+                      { label: 'CA mensuel', value: '72 450 €', trend: '+18%', icon: '💰', up: true },
+                      { label: 'Pipeline', value: '343k €', trend: '8 deals', icon: '🎯', up: true },
+                      { label: 'Marge', value: '68%', trend: '+3pts', icon: '📈', up: true },
                       { label: 'Trésorerie', value: '62 812 €', trend: '-5%', icon: '🏦', up: false },
+                      { label: 'Heures saisies', value: '1 247h', trend: '94%', icon: '⏱', up: true },
                     ].map((kpi, i) => (
-                      <div key={i} style={{ background: '#fff', borderRadius: 10, padding: '12px 14px', border: '1px solid #e2e8f0', boxShadow: '0 1px 3px rgba(0,0,0,.04)' }}>
-                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 6 }}>
-                          <span style={{ fontSize: '.55rem', color: '#94a3b8', fontWeight: 600 }}>{kpi.label}</span>
-                          <span style={{ fontSize: 12 }}>{kpi.icon}</span>
+                      <div key={i} style={{ background: '#fff', borderRadius: 8, padding: '8px 10px', border: '1px solid #e2e8f0' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 3 }}>
+                          <span style={{ fontSize: '.45rem', color: '#94a3b8', fontWeight: 600 }}>{kpi.label}</span>
+                          <span style={{ fontSize: 10 }}>{kpi.icon}</span>
                         </div>
-                        <div style={{ fontSize: '1.1rem', fontWeight: 800, color: '#1a2332', marginBottom: 2 }}>{kpi.value}</div>
-                        <span style={{ fontSize: '.5rem', fontWeight: 700, color: kpi.up ? '#16a34a' : '#ef4444', background: kpi.up ? '#f0fdf4' : '#fef2f2', padding: '1px 6px', borderRadius: 6 }}>
-                          {kpi.up ? '↑' : '↓'} {kpi.trend}
-                        </span>
+                        <div style={{ fontSize: '.9rem', fontWeight: 800, color: '#1a2332' }}>{kpi.value}</div>
+                        <span style={{ fontSize: '.42rem', fontWeight: 700, color: kpi.up ? '#16a34a' : '#ef4444' }}>{kpi.up ? '↑' : '↓'} {kpi.trend}</span>
                       </div>
                     ))}
                   </div>
                 </div>
-                {/* Charts + Sidebar */}
-                <div style={{ padding: '0 20px 16px', display: 'grid', gridTemplateColumns: '1.8fr 1fr', gap: 12, flex: 1 }}>
-                  {/* Chart principal */}
-                  <div style={{ background: '#fff', borderRadius: 10, padding: '14px 16px', border: '1px solid #e2e8f0', boxShadow: '0 1px 3px rgba(0,0,0,.04)' }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
-                      <span style={{ fontSize: '.65rem', fontWeight: 700, color: '#1a2332' }}>Évolution CA & Marge</span>
-                      <div style={{ display: 'flex', gap: 10 }}>
-                        {[{ label: 'CA', color: '#195C82' }, { label: 'Marge', color: '#1D9BF0' }, { label: 'Objectif', color: '#f59e0b' }].map((l, i) => (
-                          <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: '.45rem', color: '#64748b' }}>
-                            <div style={{ width: 8, height: 3, borderRadius: 1, background: l.color }} />
-                            {l.label}
+
+                {/* ── 3 colonnes : Graphiques | Chat IA | Outils connectés ── */}
+                <div style={{ padding: '0 16px 12px', display: 'grid', gridTemplateColumns: '1.4fr 1fr .8fr', gap: 10, flex: 1 }}>
+
+                  {/* COL 1 — Graphiques */}
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                    {/* Line chart CA */}
+                    <div style={{ background: '#fff', borderRadius: 8, padding: '10px 12px', border: '1px solid #e2e8f0', flex: 1 }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
+                        <span style={{ fontSize: '.55rem', fontWeight: 700, color: '#1a2332' }}>CA & Marge brute</span>
+                        <div style={{ display: 'flex', gap: 8 }}>
+                          {[{ l: 'CA', c: '#195C82' }, { l: 'Marge', c: '#1D9BF0' }, { l: 'Obj.', c: '#f59e0b' }].map((x, i) => (
+                            <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 3, fontSize: '.38rem', color: '#94a3b8' }}>
+                              <div style={{ width: 6, height: 2, borderRadius: 1, background: x.c }} />{x.l}
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                      <svg viewBox="0 0 300 70" style={{ width: '100%' }}>
+                        {[15,30,45,60].map(y => <line key={y} x1="0" y1={y} x2="300" y2={y} stroke="#f1f5f9" strokeWidth=".4" />)}
+                        <defs><linearGradient id="ag" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="#195C82" stopOpacity=".1" /><stop offset="100%" stopColor="#195C82" stopOpacity="0" /></linearGradient></defs>
+                        <path d="M0,55 25,52 50,48 75,38 100,42 125,33 150,28 175,24 200,20 225,22 250,16 275,14 300,8 300,70 0,70Z" fill="url(#ag)" />
+                        <polyline points="0,55 25,52 50,48 75,38 100,42 125,33 150,28 175,24 200,20 225,22 250,16 275,14 300,8" fill="none" stroke="#195C82" strokeWidth="2" strokeLinejoin="round" />
+                        <polyline points="0,58 25,56 50,53 75,48 100,46 125,42 150,44 175,40 200,37 225,34 250,32 275,30 300,26" fill="none" stroke="#1D9BF0" strokeWidth="1.2" strokeLinejoin="round" opacity=".6" />
+                        <line x1="0" y1="33" x2="300" y2="33" stroke="#f59e0b" strokeWidth=".8" strokeDasharray="4 3" opacity=".4" />
+                        <circle cx="300" cy="8" r="3" fill="#195C82" /><circle cx="300" cy="8" r="5.5" fill="none" stroke="#195C82" strokeWidth=".7" opacity=".3" />
+                      </svg>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '.35rem', color: '#cbd5e1', marginTop: 2 }}>
+                        {['Jan','Fév','Mar','Avr','Mai','Jun','Jul','Aoû','Sep','Oct','Nov','Déc'].map(m => <span key={m}>{m}</span>)}
+                      </div>
+                    </div>
+                    {/* Bar chart + Donut */}
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
+                      {/* Bars */}
+                      <div style={{ background: '#fff', borderRadius: 8, padding: '10px 12px', border: '1px solid #e2e8f0' }}>
+                        <div style={{ fontSize: '.5rem', fontWeight: 700, color: '#1a2332', marginBottom: 8 }}>CA par société</div>
+                        {[
+                          { name: 'SRA Gestion', val: 28, pct: '100%', color: '#195C82' },
+                          { name: 'SRA Digital', val: 22, pct: '78%', color: '#1D9BF0' },
+                          { name: 'SRA Infra', val: 15, pct: '54%', color: '#5B9BD5' },
+                          { name: 'SRA Conseil', val: 8, pct: '29%', color: '#98c1d9' },
+                        ].map((b, i) => (
+                          <div key={i} style={{ marginBottom: 5 }}>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '.38rem', color: '#64748b', marginBottom: 1 }}>
+                              <span>{b.name}</span><span style={{ fontWeight: 700 }}>{b.val}k€</span>
+                            </div>
+                            <div style={{ height: 5, borderRadius: 3, background: '#f1f5f9' }}>
+                              <div style={{ height: '100%', width: b.pct, background: b.color, borderRadius: 3 }} />
+                            </div>
                           </div>
                         ))}
                       </div>
-                    </div>
-                    <svg viewBox="0 0 400 100" style={{ width: '100%' }}>
-                      {/* Grid lines */}
-                      {[20, 40, 60, 80].map(y => <line key={y} x1="0" y1={y} x2="400" y2={y} stroke="#f1f5f9" strokeWidth="0.5" />)}
-                      {/* Area fill */}
-                      <path d="M0,75 30,70 60,65 90,52 120,58 150,45 180,40 210,35 240,30 270,33 300,25 330,22 360,18 400,12 400,100 0,100 Z" fill="url(#areaGrad)" />
-                      <defs><linearGradient id="areaGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="#195C82" stopOpacity="0.08" /><stop offset="100%" stopColor="#195C82" stopOpacity="0" /></linearGradient></defs>
-                      {/* Lines */}
-                      <polyline points="0,75 30,70 60,65 90,52 120,58 150,45 180,40 210,35 240,30 270,33 300,25 330,22 360,18 400,12" fill="none" stroke="#195C82" strokeWidth="2.5" strokeLinejoin="round" />
-                      <polyline points="0,80 30,77 60,73 90,68 120,65 150,60 180,62 210,56 240,52 270,48 300,45 330,42 360,40 400,36" fill="none" stroke="#1D9BF0" strokeWidth="1.5" strokeLinejoin="round" opacity="0.7" />
-                      <line x1="0" y1="45" x2="400" y2="45" stroke="#f59e0b" strokeWidth="1" strokeDasharray="6 4" opacity="0.5" />
-                      {/* Dot actuel */}
-                      <circle cx="400" cy="12" r="4" fill="#195C82" />
-                      <circle cx="400" cy="12" r="7" fill="none" stroke="#195C82" strokeWidth="1" opacity="0.3" />
-                    </svg>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '.4rem', color: '#cbd5e1', marginTop: 4 }}>
-                      {['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Juin', 'Juil', 'Août', 'Sep', 'Oct', 'Nov', 'Déc'].map(m => <span key={m}>{m}</span>)}
+                      {/* Donut */}
+                      <div style={{ background: '#fff', borderRadius: 8, padding: '10px 12px', border: '1px solid #e2e8f0' }}>
+                        <div style={{ fontSize: '.5rem', fontWeight: 700, color: '#1a2332', marginBottom: 6 }}>Répartition CA</div>
+                        <svg viewBox="0 0 80 80" style={{ width: '100%', maxWidth: 80, margin: '0 auto', display: 'block' }}>
+                          <circle cx="40" cy="40" r="30" fill="none" stroke="#195C82" strokeWidth="10" strokeDasharray="68 120" strokeDashoffset="0" />
+                          <circle cx="40" cy="40" r="30" fill="none" stroke="#1D9BF0" strokeWidth="10" strokeDasharray="48 140" strokeDashoffset="-68" />
+                          <circle cx="40" cy="40" r="30" fill="none" stroke="#5B9BD5" strokeWidth="10" strokeDasharray="35 153" strokeDashoffset="-116" />
+                          <circle cx="40" cy="40" r="30" fill="none" stroke="#98c1d9" strokeWidth="10" strokeDasharray="37 151" strokeDashoffset="-151" />
+                          <text x="40" y="38" textAnchor="middle" fontSize="8" fontWeight="800" fill="#1a2332">72k€</text>
+                          <text x="40" y="47" textAnchor="middle" fontSize="5" fill="#94a3b8">total</text>
+                        </svg>
+                      </div>
                     </div>
                   </div>
-                  {/* Colonne droite : Alertes + Pipeline */}
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-                    {/* Alertes IA */}
-                    <div style={{ background: '#fff', borderRadius: 10, padding: '12px 14px', border: '1px solid #e2e8f0', boxShadow: '0 1px 3px rgba(0,0,0,.04)' }}>
-                      <div style={{ fontSize: '.6rem', fontWeight: 700, color: '#1a2332', marginBottom: 8, display: 'flex', alignItems: 'center', gap: 6 }}>
-                        🤖 Alertes IA <span style={{ fontSize: '.45rem', background: '#fef2f2', color: '#ef4444', padding: '1px 5px', borderRadius: 4, fontWeight: 600 }}>3 nouvelles</span>
+
+                  {/* COL 2 — Chat Agent IA */}
+                  <div style={{ background: '#fff', borderRadius: 8, border: '1px solid #e2e8f0', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+                    <div style={{ background: 'linear-gradient(135deg, #0f2b42, #195C82)', padding: '8px 12px', color: '#fff', display: 'flex', alignItems: 'center', gap: 6 }}>
+                      <div style={{ width: 20, height: 20, borderRadius: '50%', background: 'rgba(255,255,255,.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10 }}>🤖</div>
+                      <div>
+                        <div style={{ fontSize: '.55rem', fontWeight: 700 }}>Agent IA TimeBlast</div>
+                        <div style={{ fontSize: '.38rem', opacity: .6 }}>En ligne · Connecté à vos données</div>
                       </div>
-                      {[
-                        { dot: '#ef4444', text: 'BatiGroup : facture en retard 22k€', sub: 'Relance auto envoyée il y a 2h' },
-                        { dot: '#f59e0b', text: 'Projet ERP : 92% du budget consommé', sub: '460h / 500h planifiées' },
-                        { dot: '#16a34a', text: 'Lead Greentech qualifié (score 87%)', sub: 'Fiche client créée automatiquement' },
-                      ].map((a, i) => (
-                        <div key={i} style={{ display: 'flex', gap: 8, padding: '5px 0', borderBottom: i < 2 ? '1px solid #f8fafc' : 'none' }}>
-                          <div style={{ width: 6, height: 6, borderRadius: '50%', background: a.dot, flexShrink: 0, marginTop: 3 }} />
-                          <div>
-                            <div style={{ fontSize: '.5rem', fontWeight: 600, color: '#1a2332', lineHeight: 1.3 }}>{a.text}</div>
-                            <div style={{ fontSize: '.4rem', color: '#94a3b8' }}>{a.sub}</div>
-                          </div>
-                        </div>
-                      ))}
+                      <div style={{ marginLeft: 'auto', width: 6, height: 6, borderRadius: '50%', background: '#22c55e' }} />
                     </div>
-                    {/* Mini pipeline */}
-                    <div style={{ background: '#fff', borderRadius: 10, padding: '12px 14px', border: '1px solid #e2e8f0', boxShadow: '0 1px 3px rgba(0,0,0,.04)', flex: 1 }}>
-                      <div style={{ fontSize: '.6rem', fontWeight: 700, color: '#1a2332', marginBottom: 8 }}>🎯 Pipeline</div>
-                      {[
-                        { phase: 'Prospection', count: 12, width: '100%', color: '#e2e8f0' },
-                        { phase: 'Qualification', count: 8, width: '67%', color: '#bfdbfe' },
-                        { phase: 'Proposition', count: 5, width: '42%', color: '#93c5fd' },
-                        { phase: 'Négociation', count: 3, width: '25%', color: '#3b82f6' },
-                        { phase: 'Gagné', count: 2, width: '17%', color: '#16a34a' },
-                      ].map((p, i) => (
-                        <div key={i} style={{ marginBottom: 4 }}>
-                          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '.4rem', color: '#64748b', marginBottom: 1 }}>
-                            <span>{p.phase}</span><span style={{ fontWeight: 700 }}>{p.count}</span>
-                          </div>
-                          <div style={{ height: 4, borderRadius: 2, background: '#f1f5f9', overflow: 'hidden' }}>
-                            <div style={{ height: '100%', width: p.width, background: p.color, borderRadius: 2 }} />
-                          </div>
+                    <div style={{ flex: 1, padding: '8px 10px', display: 'flex', flexDirection: 'column', gap: 6, overflowY: 'auto', background: '#fafbfc' }}>
+                      {/* User message */}
+                      <div style={{ alignSelf: 'flex-end', background: '#195C82', color: '#fff', borderRadius: '8px 8px 2px 8px', padding: '6px 10px', fontSize: '.48rem', maxWidth: '85%' }}>
+                        Quel est mon CA ce mois et quels clients sont en retard ?
+                      </div>
+                      {/* IA response */}
+                      <div style={{ alignSelf: 'flex-start', background: '#fff', border: '1px solid #e2e8f0', borderRadius: '8px 8px 8px 2px', padding: '8px 10px', fontSize: '.48rem', color: '#475569', maxWidth: '90%' }}>
+                        <div style={{ fontWeight: 700, color: '#195C82', marginBottom: 4 }}>📊 Analyse en cours...</div>
+                        <div style={{ marginBottom: 4 }}>Votre CA mars est de <strong style={{ color: '#16a34a' }}>72 450 €</strong> (+18% vs février).</div>
+                        <div style={{ marginBottom: 4 }}>⚠️ <strong>2 clients en retard</strong> :</div>
+                        <div style={{ background: '#fef2f2', borderRadius: 4, padding: '4px 6px', marginBottom: 3, fontSize: '.42rem' }}>
+                          🔴 <strong>BatiGroup</strong> — 22 000 € · 15 jours de retard<br />
+                          <span style={{ color: '#94a3b8' }}>→ Relance automatique envoyée il y a 2h</span>
                         </div>
-                      ))}
+                        <div style={{ background: '#fffbeb', borderRadius: 4, padding: '4px 6px', fontSize: '.42rem' }}>
+                          🟡 <strong>Greentech SA</strong> — 8 500 € · 5 jours de retard<br />
+                          <span style={{ color: '#94a3b8' }}>→ Relance programmée demain 9h</span>
+                        </div>
+                      </div>
+                      {/* User follow-up */}
+                      <div style={{ alignSelf: 'flex-end', background: '#195C82', color: '#fff', borderRadius: '8px 8px 2px 8px', padding: '6px 10px', fontSize: '.48rem', maxWidth: '85%' }}>
+                        Envoie une relance à BatiGroup avec copie au DAF
+                      </div>
+                      {/* IA action */}
+                      <div style={{ alignSelf: 'flex-start', background: '#fff', border: '1px solid #e2e8f0', borderRadius: '8px 8px 8px 2px', padding: '8px 10px', fontSize: '.48rem', color: '#475569', maxWidth: '90%' }}>
+                        <div style={{ fontWeight: 700, color: '#16a34a', marginBottom: 3 }}>✅ Action exécutée</div>
+                        <div>Email de relance envoyé à <strong>contact@batigroup.fr</strong> avec copie à <strong>daf@batigroup.fr</strong>.</div>
+                        <div style={{ marginTop: 4, fontSize: '.4rem', color: '#94a3b8' }}>Pièce jointe : Facture_F-2026-0847.pdf · Suivi activé</div>
+                      </div>
+                    </div>
+                    {/* Input */}
+                    <div style={{ padding: '6px 10px', borderTop: '1px solid #f1f5f9', display: 'flex', gap: 6, alignItems: 'center', background: '#fff' }}>
+                      <div style={{ flex: 1, background: '#f8fafc', borderRadius: 6, padding: '5px 8px', fontSize: '.45rem', color: '#94a3b8', border: '1px solid #e2e8f0' }}>
+                        Demandez n'importe quoi à l'IA...
+                      </div>
+                      <div style={{ width: 22, height: 22, borderRadius: 6, background: '#195C82', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontSize: 10 }}>→</div>
+                    </div>
+                  </div>
+
+                  {/* COL 3 — Outils connectés temps réel */}
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                    <div style={{ fontSize: '.5rem', fontWeight: 700, color: '#1a2332', display: 'flex', alignItems: 'center', gap: 4 }}>
+                      🔗 Connecté en temps réel
+                      <span style={{ width: 5, height: 5, borderRadius: '50%', background: '#22c55e', display: 'inline-block' }} />
+                    </div>
+                    {[
+                      { name: 'Sage', cat: 'Comptabilité', status: '412 écritures sync.', color: '#00DC82', time: 'il y a 2 min' },
+                      { name: 'HubSpot', cat: 'CRM', status: '8 deals actifs', color: '#FF7A59', time: 'il y a 5 min' },
+                      { name: 'Stripe', cat: 'Paiements', status: '3 encaissements', color: '#635BFF', time: 'il y a 12 min' },
+                      { name: 'PayFit', cat: 'Paie & RH', status: '47 bulletins', color: '#0066FF', time: 'il y a 1h' },
+                      { name: 'Qonto', cat: 'Banque', status: 'Solde 62 812 €', color: '#2A2A2A', time: 'temps réel' },
+                      { name: 'Slack', cat: 'Notifications', status: '12 alertes envoyées', color: '#4A154B', time: 'il y a 30 min' },
+                      { name: 'Gmail', cat: 'Email', status: '6 relances auto', color: '#EA4335', time: 'il y a 1h' },
+                      { name: 'Jira', cat: 'Projets', status: '23 tickets ouverts', color: '#0052CC', time: 'il y a 15 min' },
+                    ].map((tool, i) => (
+                      <div key={i} style={{ background: '#fff', borderRadius: 6, padding: '6px 8px', border: '1px solid #e2e8f0', display: 'flex', alignItems: 'center', gap: 6 }}>
+                        <div style={{ width: 22, height: 22, borderRadius: 5, background: tool.color + '15', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                          <div style={{ width: 8, height: 8, borderRadius: 2, background: tool.color }} />
+                        </div>
+                        <div style={{ flex: 1, minWidth: 0 }}>
+                          <div style={{ fontSize: '.45rem', fontWeight: 700, color: '#1a2332', display: 'flex', justifyContent: 'space-between' }}>
+                            <span>{tool.name}</span>
+                            <span style={{ width: 4, height: 4, borderRadius: '50%', background: '#22c55e', marginTop: 2 }} />
+                          </div>
+                          <div style={{ fontSize: '.38rem', color: '#64748b' }}>{tool.status}</div>
+                          <div style={{ fontSize: '.32rem', color: '#cbd5e1' }}>{tool.time}</div>
+                        </div>
+                      </div>
+                    ))}
+                    {/* Total */}
+                    <div style={{ background: '#f0fdf4', borderRadius: 6, padding: '5px 8px', border: '1px solid #bbf7d0', textAlign: 'center' }}>
+                      <div style={{ fontSize: '.42rem', fontWeight: 700, color: '#16a34a' }}>✅ 8 outils connectés</div>
+                      <div style={{ fontSize: '.35rem', color: '#4ade80' }}>Dernière sync. il y a 2 min</div>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
           </div>
-          {/* Ombre portée */}
-          <div style={{ height: 20, background: 'radial-gradient(ellipse at center, rgba(0,0,0,0.08) 0%, transparent 70%)', marginTop: -2 }} />
+          {/* Shadow */}
+          <div style={{ height: 20, background: 'radial-gradient(ellipse at center, rgba(0,0,0,.08) 0%, transparent 70%)', marginTop: -2 }} />
         </div>
       </section>
 
