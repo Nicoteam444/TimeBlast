@@ -7,7 +7,7 @@ import { supabase } from '../lib/supabase'
 const BI_MODULES = [
   { icon: '\u{1F4CA}', title: 'Tableaux de bord', desc: 'KPIs temps reel, drill-down multi-axes, alertes automatiques sur seuils.' },
   { icon: '\u{1F4B0}', title: 'Pilotage financier', desc: 'Tresorerie previsionnelle, marge par projet, rapprochement bancaire IA.' },
-  { icon: '\u23F1', title: 'Suivi d\'activite', desc: 'Saisie des temps, taux d\'occupation, rentabilite collaborateur.' },
+  { icon: '⏱', title: 'Suivi d\'activite', desc: 'Saisie des temps, taux d\'occupation, rentabilite collaborateur.' },
   { icon: '\u{1F3AF}', title: 'Pipeline commercial', desc: 'Kanban deals, prevision CA, scoring leads par intelligence artificielle.' },
   { icon: '\u{1F517}', title: 'Connecteurs natifs', desc: '30+ integrations : Sage, Pennylane, Stripe, HubSpot, PayFit, Slack...' },
   { icon: '\u{1F916}', title: 'IA decisionnelle', desc: 'Anomalies detectees, recommandations contextuelles, agents autonomes.' },
@@ -87,14 +87,14 @@ const BI_PREVIEWS = []
 function BiHubVisual() {
   const B = '#2B4C7E'
   const sources = [
-    { label: 'Compta', sub: 'Sage \u00B7 Pennylane', color: '#00DC82', angle: 0 },
-    { label: 'CRM', sub: 'HubSpot \u00B7 Salesforce', color: '#FF7A59', angle: 45 },
-    { label: 'Banques', sub: 'Stripe \u00B7 Qonto', color: '#635BFF', angle: 90 },
-    { label: 'RH', sub: 'PayFit \u00B7 Lucca', color: '#0066FF', angle: 135 },
-    { label: 'Temps', sub: 'Saisie \u00B7 Planning', color: '#F59E0B', angle: 180 },
-    { label: 'Mails', sub: 'Gmail \u00B7 Outlook', color: '#EA4335', angle: 225 },
-    { label: 'Projets', sub: 'Jira \u00B7 Trello', color: '#0052CC', angle: 270 },
-    { label: 'IA', sub: 'Claude \u00B7 GPT', color: '#10A37F', angle: 315 },
+    { label: 'Compta', sub: 'Sage · Pennylane', color: '#00DC82', angle: 0 },
+    { label: 'CRM', sub: 'HubSpot · Salesforce', color: '#FF7A59', angle: 45 },
+    { label: 'Banques', sub: 'Stripe · Qonto', color: '#635BFF', angle: 90 },
+    { label: 'RH', sub: 'PayFit · Lucca', color: '#0066FF', angle: 135 },
+    { label: 'Temps', sub: 'Saisie · Planning', color: '#F59E0B', angle: 180 },
+    { label: 'Mails', sub: 'Gmail · Outlook', color: '#EA4335', angle: 225 },
+    { label: 'Projets', sub: 'Jira · Trello', color: '#0052CC', angle: 270 },
+    { label: 'IA', sub: 'Claude · GPT', color: '#10A37F', angle: 315 },
   ]
   const cx = 250, cy = 240, R = 165
 
@@ -233,22 +233,207 @@ const S = {
 }
 
 // ── Interactive Mockup ──────────────────────────────────────────────────────
-function InteractiveMockup({ onTabChange }) {
+function InteractiveMockup() {
   const [active, setActive] = useState('dashboard')
 
   const TABS = [
-    { id: 'dashboard', label: 'Dashboard', icon: '\u{1F4CA}', title: 'Tableau de bord', kpis: [{ label: 'CA mensuel', value: '72 450 \u20AC', trend: '+12%' }, { label: 'Pipeline', value: '343k \u20AC', trend: '+8%' }, { label: 'Marge nette', value: '68%', trend: '+3%' }, { label: 'Tresorerie', value: '62k \u20AC', trend: '+5%' }] },
-    { id: 'equipe', label: '\u00C9quipe', icon: '\u{1F465}', title: 'Gestion d\u2019equipe', kpis: [{ label: 'Effectif', value: '45', trend: '' }, { label: 'Absents', value: '3', trend: '' }, { label: 'Heures', value: '1 247h', trend: '' }, { label: 'Occupation', value: '94%', trend: '+2%' }] },
-    { id: 'finance', label: 'Finance', icon: '\u{1F4B0}', title: 'Pilotage financier', kpis: [{ label: 'Ecritures', value: '4 521', trend: '' }, { label: 'Rapproche', value: '98%', trend: '+1%' }, { label: 'FEC', value: 'OK', trend: '' }, { label: 'Balance', value: '0.00 \u20AC', trend: '' }] },
-    { id: 'commerce', label: 'Commerce', icon: '\u{1F3AF}', title: 'Pipeline commercial', kpis: [{ label: 'Leads', value: '47', trend: '+15%' }, { label: 'Opportunites', value: '12', trend: '' }, { label: 'CA gagne', value: '185k \u20AC', trend: '+22%' }, { label: 'Taux', value: '34%', trend: '+4%' }] },
-    { id: 'calendrier', label: 'Calendrier', icon: '\u{1F4C5}', title: 'Calendrier', kpis: [{ label: 'Reunions', value: '8', trend: '' }, { label: 'A venir', value: '3', trend: '' }, { label: 'Outlook', value: 'sync', trend: '' }, { label: 'Equipe', value: '12', trend: '' }] },
+    { id: 'dashboard', label: 'Dashboard', icon: '\u{1F4CA}', title: 'Tableau de bord', kpis: [{ label: 'CA mensuel', value: '72 450 €', trend: '+12%' }, { label: 'Pipeline', value: '343k €', trend: '+8%' }, { label: 'Marge nette', value: '68%', trend: '+3%' }, { label: 'Tresorerie', value: '62k €', trend: '+5%' }] },
+    { id: 'equipe', label: '\u00C9quipe', icon: '\u{1F465}', title: 'Gestion d\u2019\u00E9quipe', kpis: [{ label: 'Effectif', value: '45', trend: '' }, { label: 'Absents', value: '3', trend: '' }, { label: 'Heures', value: '1 247h', trend: '' }, { label: 'Occupation', value: '94%', trend: '+2%' }] },
+    { id: 'finance', label: 'Finance', icon: '\u{1F4B0}', title: 'Pilotage financier', kpis: [{ label: '\u00C9critures', value: '4 521', trend: '' }, { label: 'Rapproch\u00E9', value: '98%', trend: '+1%' }, { label: 'FEC', value: 'OK', trend: '' }, { label: 'Balance', value: '0.00 €', trend: '' }] },
+    { id: 'commerce', label: 'Commerce', icon: '\u{1F3AF}', title: 'Pipeline commercial', kpis: [{ label: 'Leads', value: '47', trend: '+15%' }, { label: 'Opportunit\u00E9s', value: '12', trend: '' }, { label: 'CA gagn\u00E9', value: '185k €', trend: '+22%' }, { label: 'Taux', value: '34%', trend: '+4%' }] },
   ]
   const t = TABS.find(x => x.id === active)
 
   return (
-    <div style={{ width: '100%', maxWidth: 1000, margin: '0 auto' }}>
-      {/* Floating tab buttons ABOVE the mockup */}
-      <div style={{ display: 'flex', gap: 10, marginBottom: 14, justifyContent: 'center', flexWrap: 'wrap' }}>
+    <div style={{ width: '100%', maxWidth: 1060, margin: '0 auto' }}>
+      {/* Main mockup: chat left + app right */}
+      <div style={{
+        display: 'flex', borderRadius: 20, overflow: 'hidden',
+        boxShadow: '0 25px 80px rgba(0,0,0,0.15), 0 0 0 1px rgba(25,92,130,0.12)',
+        transform: 'perspective(2000px) rotateX(2deg)',
+        transition: 'transform .4s ease',
+      }}>
+        {/* LEFT — Chat panel (40%) */}
+        <div style={{
+          width: '40%', background: '#0f172a', display: 'flex', flexDirection: 'column',
+          borderRight: '1px solid rgba(255,255,255,0.06)', minHeight: 420,
+        }}>
+          {/* Chat header */}
+          <div style={{
+            padding: '14px 18px', borderBottom: '1px solid rgba(255,255,255,0.06)',
+            display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+              <div style={{
+                width: 32, height: 32, borderRadius: 10, background: '#195C82',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                fontSize: 14, color: '#fff', fontWeight: 800,
+              }}>TB</div>
+              <span style={{ color: '#fff', fontSize: '.85rem', fontWeight: 700 }}>TimeBlast AI</span>
+            </div>
+            <div style={{ display: 'flex', gap: 4 }}>
+              <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#22c55e' }} />
+              <span style={{ width: 6, height: 6, borderRadius: '50%', background: 'rgba(255,255,255,0.15)' }} />
+              <span style={{ width: 6, height: 6, borderRadius: '50%', background: 'rgba(255,255,255,0.15)' }} />
+            </div>
+          </div>
+
+          {/* Chat messages */}
+          <div style={{ flex: 1, padding: '18px', display: 'flex', flexDirection: 'column', gap: 14, overflow: 'hidden' }}>
+            {/* User message */}
+            <div style={{ alignSelf: 'flex-end', maxWidth: '85%' }}>
+              <div style={{
+                background: '#195C82', color: '#fff', padding: '10px 14px',
+                borderRadius: '14px 14px 4px 14px', fontSize: '.78rem', lineHeight: 1.5,
+              }}>
+                Je veux un CRM avec suivi pipeline et dashboard
+              </div>
+            </div>
+
+            {/* AI response */}
+            <div style={{ alignSelf: 'flex-start', maxWidth: '90%' }}>
+              <div style={{
+                background: 'rgba(255,255,255,0.06)', color: '#e2e8f0', padding: '12px 14px',
+                borderRadius: '14px 14px 14px 4px', fontSize: '.78rem', lineHeight: 1.7,
+                border: '1px solid rgba(255,255,255,0.06)',
+              }}>
+                <div style={{ color: '#22c55e', marginBottom: 2 }}>{'✓'} Pipeline Kanban</div>
+                <div style={{ color: '#22c55e', marginBottom: 2 }}>{'✓'} Fiches clients</div>
+                <div style={{ color: '#22c55e', marginBottom: 2 }}>{'✓'} Dashboard KPI</div>
+                <div style={{ color: '#94a3b8', marginTop: 8, fontSize: '.72rem' }}>D\u00E9ploiement : 48h</div>
+              </div>
+            </div>
+          </div>
+
+          {/* Chat input */}
+          <div style={{
+            padding: '12px 18px', borderTop: '1px solid rgba(255,255,255,0.06)',
+          }}>
+            <div style={{
+              background: 'rgba(255,255,255,0.04)', borderRadius: 12, padding: '10px 14px',
+              border: '1px solid rgba(255,255,255,0.08)', display: 'flex', alignItems: 'center',
+            }}>
+              <span style={{ color: 'rgba(255,255,255,0.25)', fontSize: '.78rem' }}>D\u00E9crivez votre besoin...</span>
+            </div>
+          </div>
+        </div>
+
+        {/* RIGHT — App mockup (60%) */}
+        <div style={{ width: '60%', display: 'flex', flexDirection: 'column', background: '#fff' }}>
+          {/* Browser bar */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '10px 14px', background: '#f8fafc', borderBottom: '1px solid #e2e8f0' }}>
+            <div style={{ display: 'flex', gap: 5 }}>
+              <span style={{ width: 10, height: 10, borderRadius: '50%', background: '#ff5f57' }} />
+              <span style={{ width: 10, height: 10, borderRadius: '50%', background: '#ffbd2e' }} />
+              <span style={{ width: 10, height: 10, borderRadius: '50%', background: '#28c840' }} />
+            </div>
+            <div style={{
+              flex: 1, textAlign: 'center', fontSize: '.7rem', color: '#94a3b8',
+              background: '#fff', borderRadius: 8, padding: '4px 12px', border: '1px solid #e2e8f0',
+              maxWidth: 240, margin: '0 auto',
+            }}>
+              {'\u{1F512}'} app.timeblast.ai/{active}
+            </div>
+            <div style={{ width: 40 }} />
+          </div>
+
+          {/* App layout */}
+          <div style={{ display: 'flex', flex: 1 }}>
+            {/* Sidebar */}
+            <div style={{
+              width: 48, background: 'linear-gradient(180deg, #0a1628, #0f2b42)', padding: '12px 6px',
+              display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 5,
+            }}>
+              <img src="/logo-icon-white.svg" alt="" style={{ width: 22, height: 22, marginBottom: 10, opacity: 0.9 }} />
+              {TABS.map((tab) => (
+                <div key={tab.id} onClick={() => setActive(tab.id)} style={{
+                  width: 32, height: 32, borderRadius: 7, display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  fontSize: 14, color: active === tab.id ? '#fff' : 'rgba(255,255,255,.35)',
+                  background: active === tab.id ? 'rgba(25,92,130,.4)' : 'transparent',
+                  cursor: 'pointer', transition: 'all .2s',
+                }}>
+                  {tab.icon}
+                </div>
+              ))}
+              <div style={{ flex: 1 }} />
+              <div style={{ width: 24, height: 24, borderRadius: '50%', background: '#195C82', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 8, color: '#fff', fontWeight: 800 }}>NR</div>
+            </div>
+
+            {/* Main content */}
+            <div style={{ flex: 1, padding: '14px 18px', background: '#f8fafc', transition: 'all .2s' }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
+                <div style={{ fontSize: '.8rem', fontWeight: 700, color: '#0f172a' }}>
+                  {t.icon} {t.title}
+                </div>
+                <div style={{ display: 'flex', gap: 5 }}>
+                  <span style={{ padding: '3px 8px', borderRadius: 6, background: '#fff', border: '1px solid #e2e8f0', fontSize: '.6rem', color: '#64748b' }}>Mars 2026</span>
+                  <span style={{ padding: '3px 8px', borderRadius: 6, background: '#195C82', fontSize: '.6rem', color: '#fff', fontWeight: 600 }}>Exporter</span>
+                </div>
+              </div>
+
+              {/* KPIs */}
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 8, marginBottom: 12 }}>
+                {t.kpis.map((kpi, i) => (
+                  <div key={i} style={{
+                    background: '#fff', borderRadius: 8, padding: '10px 10px',
+                    border: '1px solid #e2e8f0', transition: 'all .2s',
+                  }}>
+                    <div style={{ fontSize: '.45rem', color: '#94a3b8', marginBottom: 3, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.04em' }}>{kpi.label}</div>
+                    <div style={{ display: 'flex', alignItems: 'baseline', gap: 4 }}>
+                      <div style={{ fontSize: '.78rem', fontWeight: 800, color: '#0f172a' }}>{kpi.value}</div>
+                      {kpi.trend && <span style={{ fontSize: '.45rem', color: '#22c55e', fontWeight: 600 }}>{kpi.trend}</span>}
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {/* Chart / content area */}
+              <div style={{ background: '#fff', borderRadius: 8, border: '1px solid #e2e8f0', padding: '10px', minHeight: 120 }}>
+                {active === 'dashboard' ? (
+                  <svg viewBox="0 0 400 80" style={{ width: '100%' }}>
+                    <defs>
+                      <linearGradient id="mg2" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stopColor="#195C82" stopOpacity=".12" />
+                        <stop offset="100%" stopColor="#195C82" stopOpacity="0" />
+                      </linearGradient>
+                    </defs>
+                    <path d="M0,65 40,58 80,52 120,38 160,42 200,30 240,24 280,20 320,16 360,10 400,5 400,80 0,80Z" fill="url(#mg2)" />
+                    <polyline points="0,65 40,58 80,52 120,38 160,42 200,30 240,24 280,20 320,16 360,10 400,5" fill="none" stroke="#195C82" strokeWidth="2.5" strokeLinejoin="round" strokeLinecap="round" />
+                    {[[0,65],[80,52],[160,42],[240,24],[320,16],[400,5]].map(([px,py], i) => (
+                      <circle key={i} cx={px} cy={py} r="3" fill="#195C82" stroke="#fff" strokeWidth="1.5" />
+                    ))}
+                  </svg>
+                ) : (
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                    {[1,2,3,4,5].map(i => (
+                      <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '5px 0', borderBottom: '1px solid #f1f5f9' }}>
+                        <div style={{
+                          width: 22, height: 22, borderRadius: 6,
+                          background: 'rgba(25,92,130,.06)',
+                          display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11,
+                        }}>
+                          {t.icon}
+                        </div>
+                        <div style={{ flex: 1 }}>
+                          <div style={{ height: 5, background: '#e2e8f0', borderRadius: 3, width: `${100 - i * 14}%` }} />
+                        </div>
+                        <div style={{
+                          width: 36, height: 5,
+                          background: i <= 2 ? '#195C82' : '#e2e8f0',
+                          borderRadius: 3, opacity: i <= 2 ? 0.8 : 0.4,
+                        }} />
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Tab buttons BELOW the mockup */}
+      <div style={{ display: 'flex', gap: 10, marginTop: 18, justifyContent: 'center', flexWrap: 'wrap' }}>
         {TABS.map(tab => (
           <button key={tab.id} onClick={() => setActive(tab.id)} onMouseEnter={() => setActive(tab.id)}
             style={{
@@ -263,134 +448,6 @@ function InteractiveMockup({ onTabChange }) {
             {tab.icon} {tab.label}
           </button>
         ))}
-      </div>
-
-      {/* Browser chrome with perspective tilt */}
-      <div style={{
-        transform: 'perspective(2000px) rotateX(2deg)',
-        transition: 'transform .4s ease',
-      }}>
-        <div style={{
-          background: '#fff', borderRadius: 20, overflow: 'hidden',
-          boxShadow: '0 25px 80px rgba(0,0,0,0.12), 0 0 0 1px rgba(25,92,130,0.12), 0 0 60px rgba(25,92,130,0.06)',
-        }}>
-          {/* Browser bar */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '12px 16px', background: '#f8fafc', borderBottom: '1px solid #e2e8f0' }}>
-            <div style={{ display: 'flex', gap: 6 }}>
-              <span style={{ width: 12, height: 12, borderRadius: '50%', background: '#ff5f57' }} />
-              <span style={{ width: 12, height: 12, borderRadius: '50%', background: '#ffbd2e' }} />
-              <span style={{ width: 12, height: 12, borderRadius: '50%', background: '#28c840' }} />
-            </div>
-            <div style={{
-              flex: 1, textAlign: 'center', fontSize: '.75rem', color: '#94a3b8',
-              background: '#fff', borderRadius: 8, padding: '5px 16px', border: '1px solid #e2e8f0',
-              maxWidth: 320, margin: '0 auto',
-            }}>
-              <span style={{ color: '#22c55e', marginRight: 4 }}>&#x1F512;</span>
-              app.timeblast.ai/{active}
-            </div>
-            <div style={{ width: 60 }} />
-          </div>
-
-          {/* App layout */}
-          <div style={{ display: 'flex', minHeight: 360 }}>
-            {/* Sidebar */}
-            <div style={{
-              width: 52, background: 'linear-gradient(180deg, #0a1628, #0f2b42)', padding: '14px 8px',
-              display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6,
-            }}>
-              <img src="/logo-icon-white.svg" alt="" style={{ width: 24, height: 24, marginBottom: 12, opacity: 0.9 }} />
-              {TABS.map((tab) => (
-                <div key={tab.id} onClick={() => setActive(tab.id)} style={{
-                  width: 34, height: 34, borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  fontSize: 15, color: active === tab.id ? '#fff' : 'rgba(255,255,255,.35)',
-                  background: active === tab.id ? 'linear-gradient(135deg, rgba(25,92,130,.5), rgba(25,92,130,.3))' : 'transparent',
-                  cursor: 'pointer', transition: 'all .2s',
-                }}>
-                  {tab.icon}
-                </div>
-              ))}
-              <div style={{ flex: 1 }} />
-              <div style={{ width: 28, height: 28, borderRadius: '50%', background: '#195C82', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 9, color: '#fff', fontWeight: 800 }}>NR</div>
-            </div>
-
-            {/* Main content */}
-            <div style={{ flex: 1, padding: '18px 22px', background: '#f8fafc', transition: 'all .2s' }}>
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
-                <div style={{ fontSize: '.85rem', fontWeight: 700, color: '#0f172a' }}>
-                  {t.icon} {t.title}
-                </div>
-                <div style={{ display: 'flex', gap: 6 }}>
-                  <span style={{ padding: '4px 10px', borderRadius: 6, background: '#fff', border: '1px solid #e2e8f0', fontSize: '.65rem', color: '#64748b' }}>Mars 2026</span>
-                  <span style={{ padding: '4px 10px', borderRadius: 6, background: '#195C82', fontSize: '.65rem', color: '#fff', fontWeight: 600 }}>Exporter</span>
-                </div>
-              </div>
-
-              {/* KPIs */}
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 10, marginBottom: 16 }}>
-                {t.kpis.map((kpi, i) => (
-                  <div key={i} style={{
-                    background: '#fff', borderRadius: 10, padding: '12px 14px',
-                    border: '1px solid #e2e8f0', transition: 'all .2s',
-                  }}>
-                    <div style={{ fontSize: '.5rem', color: '#94a3b8', marginBottom: 4, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.04em' }}>{kpi.label}</div>
-                    <div style={{ display: 'flex', alignItems: 'baseline', gap: 6 }}>
-                      <div style={{ fontSize: '.85rem', fontWeight: 800, color: '#0f172a' }}>{kpi.value}</div>
-                      {kpi.trend && <span style={{ fontSize: '.5rem', color: '#22c55e', fontWeight: 600 }}>{kpi.trend}</span>}
-                    </div>
-                  </div>
-                ))}
-              </div>
-
-              {/* Chart / content area */}
-              <div style={{ background: '#fff', borderRadius: 10, border: '1px solid #e2e8f0', padding: '14px', minHeight: 150 }}>
-                {active === 'dashboard' ? (
-                  <svg viewBox="0 0 400 80" style={{ width: '100%' }}>
-                    <defs>
-                      <linearGradient id="mg2" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="0%" stopColor="#195C82" stopOpacity=".12" />
-                        <stop offset="100%" stopColor="#195C82" stopOpacity="0" />
-                      </linearGradient>
-                      <linearGradient id="lineGrad" x1="0" y1="0" x2="1" y2="0">
-                        <stop offset="0%" stopColor="#195C82" />
-                        <stop offset="100%" stopColor="#195C82" />
-                      </linearGradient>
-                    </defs>
-                    <path d="M0,65 40,58 80,52 120,38 160,42 200,30 240,24 280,20 320,16 360,10 400,5 400,80 0,80Z" fill="url(#mg2)" />
-                    <polyline points="0,65 40,58 80,52 120,38 160,42 200,30 240,24 280,20 320,16 360,10 400,5" fill="none" stroke="url(#lineGrad)" strokeWidth="2.5" strokeLinejoin="round" strokeLinecap="round" />
-                    <polyline points="0,70 40,65 80,62 120,55 160,52 200,48 240,42 280,36 320,32 360,28 400,22" fill="none" stroke="#195C82" strokeWidth="1.5" strokeLinejoin="round" opacity=".4" strokeDasharray="4 3" />
-                    {/* Data points */}
-                    {[[0,65],[80,52],[160,42],[240,24],[320,16],[400,5]].map(([px,py], i) => (
-                      <circle key={i} cx={px} cy={py} r="3" fill="#195C82" stroke="#fff" strokeWidth="1.5" />
-                    ))}
-                  </svg>
-                ) : (
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: 7 }}>
-                    {[1,2,3,4,5].map(i => (
-                      <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '6px 0', borderBottom: '1px solid #f1f5f9' }}>
-                        <div style={{
-                          width: 26, height: 26, borderRadius: 8,
-                          background: 'linear-gradient(135deg, rgba(25,92,130,.08), rgba(25,92,130,.08))',
-                          display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 13,
-                        }}>
-                          {t.icon}
-                        </div>
-                        <div style={{ flex: 1 }}>
-                          <div style={{ height: 6, background: '#e2e8f0', borderRadius: 3, width: `${100 - i * 14}%` }} />
-                        </div>
-                        <div style={{
-                          width: 42, height: 6,
-                          background: i <= 2 ? 'linear-gradient(90deg, #195C82, #195C82)' : '#e2e8f0',
-                          borderRadius: 3, opacity: i <= 2 ? 0.8 : 0.4,
-                        }} />
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-            </div>
-          </div>
-        </div>
       </div>
     </div>
   )
@@ -495,8 +552,6 @@ export default function LoginPage() {
         @keyframes float { 0%,100% { transform: translateY(0) } 50% { transform: translateY(-8px) } }
         @keyframes pulse-glow { 0%,100% { box-shadow: 0 0 20px rgba(25,92,130,0.15), 0 0 60px rgba(25,92,130,0.08) } 50% { box-shadow: 0 0 40px rgba(25,92,130,0.25), 0 0 80px rgba(25,92,130,0.15) } }
         @keyframes gradient-shift { 0% { background-position: 0% 50% } 50% { background-position: 100% 50% } 100% { background-position: 0% 50% } }
-        .landing-prompt-bar { animation: pulse-glow 3s ease-in-out infinite; }
-        .landing-prompt-bar:focus-within { box-shadow: 0 0 50px rgba(25,92,130,0.35), 0 0 100px rgba(25,92,130,0.2) !important; }
         .landing-nav-links { display: flex; }
         .landing-burger { display: none !important; }
         @media (max-width: 900px) {
@@ -574,7 +629,7 @@ export default function LoginPage() {
 
       {/* ── Menu mobile ── */}
       <div className={`landing-mobile-menu ${mobileMenu ? 'open' : ''}`}>
-        <button className="landing-mobile-close" onClick={() => setMobileMenu(false)}>\u2715</button>
+        <button className="landing-mobile-close" onClick={() => setMobileMenu(false)}>✕</button>
         <img src="/logo-full.svg" alt="TimeBlast" style={{ height: 40, marginBottom: '1rem' }} />
         <a href="#comment" onClick={() => setMobileMenu(false)}>Comment ca marche</a>
         <a href="#modules" onClick={() => setMobileMenu(false)}>Modules</a>
@@ -608,12 +663,6 @@ export default function LoginPage() {
           background: 'radial-gradient(circle, rgba(25,92,130,0.04) 0%, transparent 70%)',
           pointerEvents: 'none',
         }} />
-        {/* Grid pattern overlay */}
-        <div style={{
-          position: 'absolute', inset: 0, pointerEvents: 'none', opacity: 0.025,
-          backgroundImage: 'linear-gradient(rgba(15,23,42,1) 1px, transparent 1px), linear-gradient(90deg, rgba(15,23,42,1) 1px, transparent 1px)',
-          backgroundSize: '60px 60px',
-        }} />
 
         <div style={{ maxWidth: 1200, margin: '0 auto', padding: '0 2rem', textAlign: 'center', position: 'relative', zIndex: 1 }}>
           {/* Badge */}
@@ -625,7 +674,7 @@ export default function LoginPage() {
           }}
           onMouseEnter={e => { e.currentTarget.style.borderColor = 'rgba(25,92,130,0.3)'; e.currentTarget.style.background = 'rgba(25,92,130,0.06)' }}
           onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(25,92,130,0.12)'; e.currentTarget.style.background = 'rgba(25,92,130,0.04)' }}>
-            Propulse par 40 ans d'expertise SRA \u2192
+            Propulse par 40 ans d'expertise SRA →
           </a>
 
         </div>
@@ -637,12 +686,11 @@ export default function LoginPage() {
         }}>
           <div>
             <h1 style={{
-              fontSize: 'clamp(2rem, 3.5vw, 3rem)', fontWeight: 800, lineHeight: 1.15,
+              fontSize: 'clamp(2rem, 3.5vw, 3rem)', fontWeight: 800, lineHeight: 1.2,
               color: S.dark, margin: '0 0 1.25rem', letterSpacing: '-0.02em',
-              minHeight: 'calc(clamp(2rem, 3.5vw, 3rem) * 2.3)',
             }}>
-              Creez en un seul prompt votre{' '}
-              <RotatingText />
+              <span style={{ display: 'block' }}>Creez en un seul prompt</span>
+              <span style={{ display: 'block', height: 'calc(clamp(2rem, 3.5vw, 3rem) * 1.2)' }}>votre <RotatingText /></span>
             </h1>
 
             <p style={{
@@ -667,9 +715,11 @@ export default function LoginPage() {
         </div>
       </section>
 
-      {/* Mockup a cheval sur stats */}
-      <section style={{ background: 'linear-gradient(to bottom, #195C82 55%, #fff 55%)', position: 'relative', padding: '0 2rem 5rem' }}>
-        <div style={{ display: 'flex', justifyContent: 'center', gap: '3rem', padding: '3rem 2rem 2.5rem', flexWrap: 'wrap', maxWidth: 1060, margin: '0 auto' }}>
+      {/* ══════════════════════════════════════════════════════════════════
+          3. STATS BAR + INTERACTIVE MOCKUP
+      ══════════════════════════════════════════════════════════════════ */}
+      <section style={{ background: '#195C82', padding: '3rem 2rem 0' }}>
+        <div style={{ display: 'flex', justifyContent: 'center', gap: '3rem', flexWrap: 'wrap', maxWidth: 1060, margin: '0 auto', paddingBottom: '2.5rem' }}>
           {STATS.map((s, i) => (
             <div key={i} style={{ textAlign: 'center' }}>
               <span style={{ display: 'block', fontSize: '2.4rem', fontWeight: 800, color: '#fff' }}>{s.value}</span>
@@ -677,73 +727,10 @@ export default function LoginPage() {
             </div>
           ))}
         </div>
-        <div style={{ maxWidth: 1060, margin: '0 auto' }}>
-          <div style={{ perspective: '1200px' }}>
-            <div style={{ transform: 'rotateX(1.5deg)', transformOrigin: 'bottom center', boxShadow: '0 25px 60px rgba(0,0,0,0.2)', borderRadius: 16, overflow: 'hidden', background: '#fff' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '10px 14px', background: '#f8fafc', borderBottom: '1px solid #e2e8f0' }}>
-                <div style={{ display: 'flex', gap: 5 }}>
-                  <span style={{ width: 10, height: 10, borderRadius: '50%', background: '#ff5f57' }} />
-                  <span style={{ width: 10, height: 10, borderRadius: '50%', background: '#ffbd2e' }} />
-                  <span style={{ width: 10, height: 10, borderRadius: '50%', background: '#28c840' }} />
-                </div>
-                <div style={{ flex: 1, textAlign: 'center', fontSize: '.7rem', color: '#94a3b8' }}>app.timeblast.ai</div>
-              </div>
-              <div style={{ display: 'flex', minHeight: 380 }}>
-                <div style={{ width: 52, background: '#0f2b42', padding: '12px 10px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4 }}>
-                  <img src="/logo-icon-white.svg" alt="" style={{ width: 28, height: 28, marginBottom: 12 }} />
-                  {['\ud83d\udcca','\u23f1','\ud83d\udcbc','\ud83e\uddfe','\ud83d\udc65','\ud83d\udccb','\ud83c\udfaf','\ud83d\udcec'].map((ic, i) => (
-                    <div key={i} style={{ width: 32, height: 32, display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: 8, fontSize: 14, background: i === 0 ? 'rgba(255,255,255,.12)' : 'transparent' }}>{ic}</div>
-                  ))}
-                </div>
-                <div style={{ flex: 1, padding: '16px', background: '#f8fafc' }}>
-                  <div style={{ fontSize: '.75rem', fontWeight: 700, color: '#195C82', marginBottom: 12 }}>Tableau de bord</div>
-                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 8, marginBottom: 12 }}>
-                    {[{l:'CA mensuel',v:'72 450 \u20ac',t:'+18%',u:true},{l:'Pipeline',v:'343k \u20ac',t:'8 deals',u:true},{l:'Marge',v:'68%',t:'+3pts',u:true},{l:'Tresorerie',v:'62 812 \u20ac',t:'-5%',u:false},{l:'Heures',v:'1 247h',t:'94%',u:true}].map((k, i) => (
-                      <div key={i} style={{ background: '#fff', borderRadius: 8, padding: '8px 10px', border: '1px solid #e2e8f0' }}>
-                        <div style={{ fontSize: '.42rem', color: '#94a3b8', fontWeight: 600 }}>{k.l}</div>
-                        <div style={{ fontSize: '.85rem', fontWeight: 800, color: '#1a2332' }}>{k.v}</div>
-                        <span style={{ fontSize: '.4rem', fontWeight: 700, color: k.u ? '#16a34a' : '#ef4444' }}>{k.u ? '\u2191' : '\u2193'} {k.t}</span>
-                      </div>
-                    ))}
-                  </div>
-                  <div style={{ background: '#fff', borderRadius: 8, border: '1px solid #e2e8f0', padding: '10px' }}>
-                    <svg viewBox="0 0 300 70" style={{ width: '100%' }}>
-                      <defs><linearGradient id="ag2" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="#195C82" stopOpacity=".1" /><stop offset="100%" stopColor="#195C82" stopOpacity="0" /></linearGradient></defs>
-                      <path d="M0,55 25,52 50,48 75,38 100,42 125,33 150,28 175,24 200,20 225,22 250,16 275,14 300,8 300,70 0,70Z" fill="url(#ag2)" />
-                      <polyline points="0,55 25,52 50,48 75,38 100,42 125,33 150,28 175,24 200,20 225,22 250,16 275,14 300,8" fill="none" stroke="#195C82" strokeWidth="2" strokeLinejoin="round" />
-                    </svg>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
       </section>
-
-      {/* ══════════════════════════════════════════════════════════════════
-          3. STATS BAR
-      ══════════════════════════════════════════════════════════════════ */}
-      <section style={{
-        background: '#fff', padding: '4rem 2rem',
-        borderTop: '1px solid rgba(25,92,130,0.08)', borderBottom: '1px solid rgba(25,92,130,0.08)',
-      }}>
-        <div style={{
-          display: 'flex', justifyContent: 'center', gap: '5rem', flexWrap: 'wrap',
-          maxWidth: 900, margin: '0 auto',
-        }}>
-          {STATS.map((s, i) => (
-            <div key={i} style={{ textAlign: 'center' }}>
-              <span style={{
-                display: 'block', fontSize: '3.2rem', fontWeight: 800,
-                background: '#195C82',
-                WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
-                backgroundClip: 'text', lineHeight: 1.1,
-              }}>{s.value}</span>
-              <span style={{ display: 'block', fontSize: '.88rem', color: S.gray, marginTop: '.5rem', fontWeight: 500 }}>
-                {s.label}
-              </span>
-            </div>
-          ))}
+      <section style={{ background: '#fff', padding: '0 2rem 5rem', position: 'relative' }}>
+        <div style={{ maxWidth: 1060, margin: '0 auto', transform: 'translateY(-2rem)' }}>
+          <InteractiveMockup />
         </div>
       </section>
 
@@ -1016,7 +1003,7 @@ export default function LoginPage() {
             <img src="/logo-sra.png" alt="Groupe SRA" style={{ width: 52, height: 52, borderRadius: 12, objectFit: 'contain', flexShrink: 0 }} />
             <div style={{ textAlign: 'left' }}>
               <div style={{ fontSize: '1.02rem', fontWeight: 700, color: S.sra }}>
-                Groupe SRA \u2014 Partenaire digital des PME et ETI
+                Groupe SRA — Partenaire digital des PME et ETI
               </div>
               <div style={{ fontSize: '.82rem', color: S.gray, marginTop: 3 }}>
                 Integrateur Sage Diamond, Microsoft, HubSpot
@@ -1027,7 +1014,7 @@ export default function LoginPage() {
                 WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
                 backgroundClip: 'text',
               }}>
-                Decouvrir le groupe \u2192 groupe-sra.fr
+                Decouvrir le groupe → groupe-sra.fr
               </div>
             </div>
           </a>
@@ -1111,7 +1098,7 @@ export default function LoginPage() {
                   background: 'linear-gradient(135deg, #22c55e, #10b981)',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                   fontSize: '1.5rem', color: '#fff',
-                }}>\u2713</div>
+                }}>✓</div>
                 <h3 style={{ margin: '0 0 .5rem', color: S.dark, fontSize: '1.2rem' }}>Demande envoyee !</h3>
                 <p style={{ color: S.gray, fontSize: '.9rem' }}>Nous preparons votre diagnostic et revenons vers vous tres vite.</p>
               </div>
@@ -1160,7 +1147,7 @@ export default function LoginPage() {
                 }}
                 onMouseEnter={e => { e.target.style.boxShadow = '0 8px 30px rgba(25,92,130,0.45)'; e.target.style.transform = 'translateY(-1px)' }}
                 onMouseLeave={e => { e.target.style.boxShadow = '0 4px 20px rgba(25,92,130,0.3)'; e.target.style.transform = 'none' }}>
-                  Demander mon diagnostic gratuit \u2192
+                  Demander mon diagnostic gratuit →
                 </button>
               </>
             )}
@@ -1208,7 +1195,7 @@ export default function LoginPage() {
             }}
             onMouseEnter={e => { e.target.style.transform = 'translateY(-2px)'; e.target.style.boxShadow = '0 8px 30px rgba(0,0,0,0.25)' }}
             onMouseLeave={e => { e.target.style.transform = 'none'; e.target.style.boxShadow = '0 4px 20px rgba(0,0,0,0.15)' }}>
-              Demarrer mon projet \u2192
+              Demarrer mon projet →
             </button>
             <a href="#contact" style={{
               padding: '15px 36px', borderRadius: 12, background: 'transparent',
@@ -1236,7 +1223,7 @@ export default function LoginPage() {
         }}>
           <img src="/logo-full-white.svg" alt="TimeBlast" style={{ height: 24, opacity: 0.8 }} />
           <span style={{ color: 'rgba(255,255,255,0.3)', fontSize: '.82rem' }}>
-            &copy; {new Date().getFullYear()} TimeBlast.ai \u2014 Vibe-coding pour logiciels de gestion
+            &copy; {new Date().getFullYear()} TimeBlast.ai — Vibe-coding pour logiciels de gestion
           </span>
           <div style={{ display: 'flex', gap: '1.5rem' }}>
             <a href="/about" style={{ color: 'rgba(255,255,255,0.4)', fontSize: '.82rem', textDecoration: 'none', transition: 'color .2s' }}
@@ -1275,7 +1262,7 @@ export default function LoginPage() {
             }}
             onMouseEnter={e => { e.currentTarget.style.background = '#fee2e2'; e.currentTarget.style.color = '#dc2626' }}
             onMouseLeave={e => { e.currentTarget.style.background = S.bgAlt; e.currentTarget.style.color = S.gray }}>
-              \u2715
+              ✕
             </button>
 
             <div style={{ textAlign: 'center', marginBottom: '1.5rem' }}>
@@ -1320,7 +1307,7 @@ export default function LoginPage() {
                           {new Date(acc.lastLogin).toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' })}
                         </div>
                       </div>
-                      <span style={{ fontSize: 14, color: S.lightGray }}>\u2192</span>
+                      <span style={{ fontSize: 14, color: S.lightGray }}>→</span>
                     </button>
                   ))}
                 </div>
@@ -1363,7 +1350,7 @@ export default function LoginPage() {
               }}
               onMouseEnter={e => { if (!loading) { e.target.style.boxShadow = '0 8px 30px rgba(25,92,130,0.45)'; e.target.style.transform = 'translateY(-1px)' }}}
               onMouseLeave={e => { e.target.style.boxShadow = '0 4px 20px rgba(25,92,130,0.3)'; e.target.style.transform = 'none' }}>
-                {loading ? 'Connexion...' : 'Se connecter \u2192'}
+                {loading ? 'Connexion...' : 'Se connecter →'}
               </button>
 
               {/* Divider */}
