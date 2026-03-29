@@ -343,11 +343,19 @@ body {
   .landing-btn-secondary { padding: .6rem 1.5rem; font-size: .9rem; }
   .landing-cta h2 { font-size: 1.4rem; }
   .landing-footer-inner { flex-direction: column; gap: .5rem; text-align: center; }
-  /* Mockup garde ses proportions */
-  .landing-mockup-dual { flex-direction: column !important; gap: 12px !important; }
-  .landing-mockup-dual > div { flex: none !important; width: 100% !important; }
-  /* Texte animé protégé - ne déborde jamais */
-  h1 span[style*="display: block"] { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  /* Mockup interactif : garder les proportions, scale si trop petit */
+  .landing-mockup-dual { min-width: 700px; }
+  /* Wrapper du mockup : scroll horizontal si besoin */
+  .landing-mockup-wrapper { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  /* Formulaire contact ne se déforme pas */
+  .landing-contact-field input,
+  .landing-contact-field textarea,
+  .landing-contact-field select { min-width: 0 !important; width: 100% !important; box-sizing: border-box !important; }
+  /* Empêcher tout débordement global */
+  .landing { overflow-x: hidden; }
+  section { overflow-x: hidden; }
+  /* Contact form stack */
+  .landing-contact-wrapper { grid-template-columns: 1fr !important; }
 }
 
 .field {

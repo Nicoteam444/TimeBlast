@@ -336,7 +336,64 @@ function InteractiveMockup() {
                     <circle key={i} cx={px} cy={py} r="3" fill="#195C82" stroke="#fff" strokeWidth="1.5" />
                   ))}
                 </svg>
+              ) : active === 'equipe' ? (
+                <div style={{ display: 'flex', gap: 8 }}>
+                  {/* Bar chart occupation */}
+                  <div style={{ flex: 1 }}>
+                    <div style={{ fontSize: '.5rem', fontWeight: 600, color: '#94a3b8', marginBottom: 6 }}>Taux d'occupation</div>
+                    {['Martin 95%','Dupont 88%','Leroy 76%','Moreau 92%','Petit 64%'].map((n, i) => {
+                      const pct = parseInt(n.split(' ')[1])
+                      return (
+                        <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 3 }}>
+                          <span style={{ fontSize: '.45rem', color: '#64748b', width: 40, textAlign: 'right' }}>{n.split(' ')[0]}</span>
+                          <div style={{ flex: 1, height: 6, background: '#f1f5f9', borderRadius: 3 }}>
+                            <div style={{ width: pct + '%', height: '100%', background: pct > 85 ? '#22c55e' : pct > 70 ? '#f59e0b' : '#ef4444', borderRadius: 3 }} />
+                          </div>
+                          <span style={{ fontSize: '.42rem', color: '#64748b', width: 22 }}>{pct}%</span>
+                        </div>
+                      )
+                    })}
+                  </div>
+                  {/* Mini donut */}
+                  <div style={{ width: 70, textAlign: 'center' }}>
+                    <svg viewBox="0 0 60 60" style={{ width: 50, margin: '0 auto' }}>
+                      <circle cx="30" cy="30" r="22" fill="none" stroke="#f1f5f9" strokeWidth="6" />
+                      <circle cx="30" cy="30" r="22" fill="none" stroke="#22c55e" strokeWidth="6" strokeDasharray="120 140" strokeDashoffset="-10" strokeLinecap="round" />
+                      <text x="30" y="32" textAnchor="middle" fontSize="10" fontWeight="800" fill="#0f172a">87%</text>
+                    </svg>
+                    <div style={{ fontSize: '.42rem', color: '#94a3b8' }}>Moyen</div>
+                  </div>
+                </div>
+              ) : active === 'finance' ? (
+                <div>
+                  <div style={{ fontSize: '.5rem', fontWeight: 600, color: '#94a3b8', marginBottom: 6 }}>Évolution trésorerie (k€)</div>
+                  <svg viewBox="0 0 400 70" style={{ width: '100%' }}>
+                    <defs><linearGradient id="fg" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="#22c55e" stopOpacity=".1" /><stop offset="100%" stopColor="#22c55e" stopOpacity="0" /></linearGradient></defs>
+                    <path d="M0,55 60,50 120,45 180,42 240,38 300,30 360,25 400,20 400,70 0,70Z" fill="url(#fg)" />
+                    <polyline points="0,55 60,50 120,45 180,42 240,38 300,30 360,25 400,20" fill="none" stroke="#22c55e" strokeWidth="2" strokeLinejoin="round" />
+                    <polyline points="0,40 60,42 120,38 180,45 240,40 300,35 360,38 400,32" fill="none" stroke="#ef4444" strokeWidth="1.5" strokeDasharray="4 3" opacity=".5" />
+                    {[[0,55],[120,45],[240,38],[400,20]].map(([x,y], i) => <circle key={i} cx={x} cy={y} r="2.5" fill="#22c55e" stroke="#fff" strokeWidth="1" />)}
+                  </svg>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '.38rem', color: '#94a3b8', marginTop: 2 }}>
+                    {['Jan','Fev','Mar','Avr','Mai','Jun','Jul','Aou'].map(m => <span key={m}>{m}</span>)}
+                  </div>
+                </div>
               ) : (
+                <div>
+                  <div style={{ fontSize: '.5rem', fontWeight: 600, color: '#94a3b8', marginBottom: 6 }}>Pipeline par phase</div>
+                  {[{n:'Prospection',v:120,c:'#195C82'},{n:'Qualification',v:85,c:'#2d8ab8'},{n:'Proposition',v:65,c:'#f59e0b'},{n:'Négociation',v:40,c:'#22c55e'},{n:'Gagné',v:25,c:'#16a34a'}].map((p, i) => (
+                    <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 4 }}>
+                      <span style={{ fontSize: '.42rem', color: '#64748b', width: 52, textAlign: 'right' }}>{p.n}</span>
+                      <div style={{ flex: 1, height: 8, background: '#f1f5f9', borderRadius: 4 }}>
+                        <div style={{ width: (p.v / 120 * 100) + '%', height: '100%', background: p.c, borderRadius: 4 }} />
+                      </div>
+                      <span style={{ fontSize: '.42rem', fontWeight: 700, color: '#0f172a', width: 24 }}>{p.v}k€</span>
+                    </div>
+                  ))}
+                </div>
+              )}
+              {/* Keep old fallback hidden */}
+              {false && (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
                   {[1,2,3,4,5].map(i => (
                     <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '5px 0', borderBottom: '1px solid #f1f5f9' }}>
