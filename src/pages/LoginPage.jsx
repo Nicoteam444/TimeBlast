@@ -217,9 +217,9 @@ function InteractiveMockup() {
   const p = PREVIEWS[active]
 
   return (
-    <div style={{ display: 'flex', gap: 20, alignItems: 'center', width: '100%' }}>
-      {/* Mockup preview */}
-      <div style={{ flex: 1, background: '#fff', borderRadius: 16, boxShadow: '0 20px 60px rgba(0,0,0,.12)', overflow: 'hidden', border: '1px solid #e2e8f0' }}>
+    <div style={{ display: 'flex', gap: 16, alignItems: 'flex-start', width: '100%' }}>
+      {/* Mockup preview — taille fixe */}
+      <div style={{ flex: '1 1 65%', minWidth: 0, background: '#fff', borderRadius: 16, boxShadow: '0 20px 60px rgba(0,0,0,.12)', overflow: 'hidden', border: '1px solid #e2e8f0' }}>
         {/* Browser bar */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '10px 14px', background: '#f8fafc', borderBottom: '1px solid #e2e8f0' }}>
           <div style={{ display: 'flex', gap: 5 }}>
@@ -289,32 +289,33 @@ function InteractiveMockup() {
         </div>
       </div>
 
-      {/* Module selector */}
+      {/* Module selector — compact */}
       <div style={{
-        background: '#fff', borderRadius: 16, padding: '1.5rem', boxShadow: '0 10px 40px rgba(0,0,0,.08)',
-        border: '1px solid #e2e8f0', minWidth: 220,
+        background: '#fff', borderRadius: 14, padding: '1.2rem', boxShadow: '0 10px 40px rgba(0,0,0,.08)',
+        border: '1px solid #e2e8f0', flex: '0 0 190px',
       }}>
-        <h3 style={{ margin: '0 0 1rem', fontSize: '1rem', fontWeight: 800, color: '#1e293b', textAlign: 'center' }}>
+        <h3 style={{ margin: '0 0 .75rem', fontSize: '.85rem', fontWeight: 800, color: '#1e293b', textAlign: 'center' }}>
           Que souhaitez-vous créer ?
         </h3>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 8 }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
           {MODULES.map(m => (
             <div key={m.id}
               onMouseEnter={() => setActive(m.id)}
               style={{
-                padding: '12px 10px', borderRadius: 10, cursor: 'pointer', textAlign: 'center',
+                padding: '8px 10px', borderRadius: 8, cursor: 'pointer',
+                display: 'flex', alignItems: 'center', gap: 8,
                 border: active === m.id ? '2px solid #195C82' : '1px solid #e2e8f0',
                 background: active === m.id ? '#195C8208' : '#fafbfc',
-                transition: 'all .2s',
+                transition: 'all .15s',
               }}>
-              <div style={{ fontSize: 22, marginBottom: 4 }}>{m.icon}</div>
-              <div style={{ fontSize: '.72rem', fontWeight: 700, color: active === m.id ? '#195C82' : '#475569' }}>{m.label}</div>
+              <span style={{ fontSize: 16 }}>{m.icon}</span>
+              <span style={{ fontSize: '.75rem', fontWeight: 600, color: active === m.id ? '#195C82' : '#475569' }}>{m.label}</span>
             </div>
           ))}
         </div>
         <button className="landing-btn-primary" onClick={() => document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' })}
-          style={{ width: '100%', marginTop: '1rem', padding: '.75rem', fontSize: '.9rem' }}>
-          Démarrer mon projet →
+          style={{ width: '100%', marginTop: '.75rem', padding: '.6rem', fontSize: '.8rem' }}>
+          Démarrer →
         </button>
       </div>
     </div>
@@ -710,6 +711,19 @@ export default function LoginPage() {
       {/* ══════════════════════════════════════════════════════════════════
           CONNECTEURS — sélecteur par catégorie
       ══════════════════════════════════════════════════════════════════ */}
+      {/* ══════════════════════════════════════════════════════════════════
+          CONNECTEURS — Animation hub
+      ══════════════════════════════════════════════════════════════════ */}
+      <section style={{ padding: '4rem 2rem', background: '#f8fafc', textAlign: 'center' }} id="hub">
+        <h2 className="landing-section-title">Nativement connecté à votre SI</h2>
+        <p className="landing-section-subtitle">
+          Votre logiciel généré s'interconnecte avec tous vos outils existants — comptabilité, CRM, paie, banque, messagerie et IA.
+        </p>
+        <div style={{ maxWidth: 500, margin: '2rem auto 0' }}>
+          <BiHubVisual />
+        </div>
+      </section>
+
       {/* ══════════════════════════════════════════════════════════════════
           COMMENT ÇA MARCHE — 5 Phases
       ══════════════════════════════════════════════════════════════════ */}
