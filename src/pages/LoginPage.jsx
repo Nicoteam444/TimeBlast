@@ -247,7 +247,7 @@ function InteractiveMockup() {
   return (
     <div style={{ width: '100%', maxWidth: 1060, margin: '0 auto' }}>
       {/* Main mockup: chat left + app right */}
-      <div style={{
+      <div className="landing-mockup-dual" style={{
         display: 'flex', borderRadius: 20, overflow: 'hidden',
         boxShadow: '0 25px 80px rgba(0,0,0,0.15), 0 0 0 1px rgba(25,92,130,0.12)',
         transform: 'perspective(2000px) rotateX(2deg)',
@@ -255,7 +255,7 @@ function InteractiveMockup() {
       }}>
         {/* LEFT — Chat panel (40%) */}
         <div style={{
-          width: '40%', background: '#0f172a', display: 'flex', flexDirection: 'column',
+          flex: '0 0 40%', background: '#0f172a', display: 'flex', flexDirection: 'column',
           borderRight: '1px solid rgba(255,255,255,0.06)', minHeight: 420,
         }}>
           {/* Chat header */}

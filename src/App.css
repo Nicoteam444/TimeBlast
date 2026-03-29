@@ -301,16 +301,21 @@ body {
 .landing-mobile-menu .landing-mobile-close { position: absolute; top: 1rem; right: 1.5rem; font-size: 1.5rem; background: none; border: none; cursor: pointer; color: #195C82; }
 
 @media (max-width: 900px) {
-  .landing-hero-grid { grid-template-columns: 1fr; text-align: center; }
+  .landing-hero-grid { grid-template-columns: 1fr !important; text-align: center; }
   .landing-hero-text { text-align: center; }
   .landing-hero-actions { justify-content: center; }
-  .multiprise-container { max-width: 340px; }
+  .multiprise-container { max-width: 340px; margin: 0 auto; }
   .landing-steps-grid { grid-template-columns: 1fr; max-width: 400px; margin: 0 auto; }
   .landing-advantages-grid { grid-template-columns: 1fr 1fr; }
   .landing-roadmap-grid { grid-template-columns: 1fr; max-width: 500px; margin: 2rem auto 0; }
   .landing-channels-grid { grid-template-columns: 1fr; max-width: 400px; margin: 2rem auto 0; }
   .landing-contact-wrapper { grid-template-columns: 1fr; }
   .landing-logo img { height: 40px !important; }
+  /* Mockup interactif responsive */
+  .landing-mockup-dual { flex-direction: column !important; }
+  .landing-mockup-dual > div { flex: 1 1 100% !important; min-width: 0 !important; }
+  .landing-mockup-tabs { flex-wrap: wrap; justify-content: center; }
+  .landing-mockup-browser { min-height: auto !important; }
 }
 @media (max-width: 768px) {
   .landing-hero { padding: 5rem 1.25rem 2rem; }
@@ -319,7 +324,8 @@ body {
   .landing-hero-visual { max-width: 100%; margin: 0 auto; }
   .landing-hero-dual { flex-direction: column !important; }
   .landing-hero-dual > div { flex: 1 1 100% !important; }
-  .multiprise-container { max-width: 260px; }
+  .multiprise-container { max-width: 260px; margin: 0 auto; }
+  .multiprise-svg { max-width: 100%; height: auto; }
   .landing-features-grid { grid-template-columns: 1fr; }
   .landing-nav-links { display: none; }
   .landing-burger { display: block; }
@@ -337,6 +343,11 @@ body {
   .landing-btn-secondary { padding: .6rem 1.5rem; font-size: .9rem; }
   .landing-cta h2 { font-size: 1.4rem; }
   .landing-footer-inner { flex-direction: column; gap: .5rem; text-align: center; }
+  /* Mockup garde ses proportions */
+  .landing-mockup-dual { flex-direction: column !important; gap: 12px !important; }
+  .landing-mockup-dual > div { flex: none !important; width: 100% !important; }
+  /* Texte animé protégé - ne déborde jamais */
+  h1 span[style*="display: block"] { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 }
 
 .field {
