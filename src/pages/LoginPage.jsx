@@ -392,7 +392,35 @@ function InteractiveMockup() {
                   ))}
                 </div>
               )}
-              {/* 2 widgets supplémentaires */}
+              {/* 2 mini-graphiques supplémentaires */}
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginTop: 8 }}>
+                <div style={{ background: '#fff', borderRadius: 8, border: '1px solid #e2e8f0', padding: '8px 10px' }}>
+                  <div style={{ fontSize: '.45rem', fontWeight: 700, color: '#0f172a', marginBottom: 4 }}>
+                    {active === 'dashboard' ? 'CA par société' : active === 'equipe' ? 'Absences par mois' : active === 'finance' ? 'Charges vs Produits' : 'Conversion par source'}
+                  </div>
+                  {/* Mini bar chart */}
+                  <div style={{ display: 'flex', alignItems: 'flex-end', gap: 3, height: 40 }}>
+                    {[65,45,80,55,70,40,90,60].map((h, i) => (
+                      <div key={i} style={{ flex: 1, height: h + '%', background: i % 2 === 0 ? '#195C82' : 'rgba(25,92,130,0.3)', borderRadius: 2 }} />
+                    ))}
+                  </div>
+                </div>
+                <div style={{ background: '#fff', borderRadius: 8, border: '1px solid #e2e8f0', padding: '8px 10px' }}>
+                  <div style={{ fontSize: '.45rem', fontWeight: 700, color: '#0f172a', marginBottom: 4 }}>
+                    {active === 'dashboard' ? 'Répartition CA' : active === 'equipe' ? 'Répartition équipe' : active === 'finance' ? 'Répartition charges' : 'Pipeline par phase'}
+                  </div>
+                  {/* Mini donut */}
+                  <svg viewBox="0 0 80 45" style={{ width: '100%' }}>
+                    <circle cx="40" cy="25" r="16" fill="none" stroke="#195C82" strokeWidth="5" strokeDasharray="40 60" strokeDashoffset="0" />
+                    <circle cx="40" cy="25" r="16" fill="none" stroke="rgba(25,92,130,0.4)" strokeWidth="5" strokeDasharray="25 75" strokeDashoffset="-40" />
+                    <circle cx="40" cy="25" r="16" fill="none" stroke="rgba(25,92,130,0.2)" strokeWidth="5" strokeDasharray="20 80" strokeDashoffset="-65" />
+                    <text x="40" y="27" textAnchor="middle" fontSize="7" fontWeight="800" fill="#0f172a">
+                      {active === 'dashboard' ? '72k' : active === 'equipe' ? '45' : active === 'finance' ? '156k' : '12'}
+                    </text>
+                  </svg>
+                </div>
+              </div>
+              {/* 2 widgets activité et alertes */}
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginTop: 8 }}>
                 {/* Widget activité récente */}
                 <div style={{ background: '#fff', borderRadius: 8, border: '1px solid #e2e8f0', padding: '8px 10px' }}>
