@@ -166,6 +166,43 @@ function BiHubVisual() {
   )
 }
 
+// ── Composant — Texte rotatif dans le hero ──────────────────────────────────
+function RotatingText() {
+  const WORDS = [
+    'application de gestion',
+    'logiciel de facturation',
+    'CRM sur mesure',
+    'outil de comptabilite',
+    'plateforme RH',
+    'tableau de bord',
+    'tout ce que vous voulez',
+  ]
+  const [index, setIndex] = useState(0)
+  const [fade, setFade] = useState(true)
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setFade(false)
+      setTimeout(() => {
+        setIndex(i => (i + 1) % WORDS.length)
+        setFade(true)
+      }, 300)
+    }, 2500)
+    return () => clearInterval(timer)
+  }, [])
+
+  return (
+    <span style={{
+      background: 'linear-gradient(135deg, #7C3AED, #00D4FF)',
+      WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text',
+      display: 'inline-block', transition: 'opacity .3s, transform .3s',
+      opacity: fade ? 1 : 0, transform: fade ? 'translateY(0)' : 'translateY(8px)',
+    }}>
+      {WORDS[index]}
+    </span>
+  )
+}
+
 // ── Composant — Hero Visual (Prompt bar + Mockup interactif) ─────────────────
 function HeroVisual() {
   const [active, setActive] = useState('dashboard')
@@ -443,13 +480,14 @@ export default function LoginPage() {
           }}>☰</button>
 
           <button onClick={() => setShowLogin(true)} style={{
-            padding: '8px 20px', borderRadius: 8, background: 'transparent',
-            border: '1.5px solid #00D4FF', color: '#00D4FF', fontWeight: 600,
+            padding: '8px 20px', borderRadius: 8,
+            background: 'linear-gradient(135deg, #7C3AED, #00D4FF)',
+            border: 'none', color: '#fff', fontWeight: 600,
             fontSize: '.85rem', cursor: 'pointer', transition: 'all .2s',
-            boxShadow: '0 0 20px rgba(0,212,255,0.1)',
+            boxShadow: '0 4px 15px rgba(124,58,237,0.3)',
           }}
-          onMouseEnter={e => { e.target.style.background = '#00D4FF'; e.target.style.color = '#fff'; e.target.style.boxShadow = '0 0 30px rgba(0,212,255,0.3)' }}
-          onMouseLeave={e => { e.target.style.background = 'transparent'; e.target.style.color = '#00D4FF'; e.target.style.boxShadow = '0 0 20px rgba(0,212,255,0.1)' }}>
+          onMouseEnter={e => { e.target.style.boxShadow = '0 6px 25px rgba(124,58,237,0.5)'; e.target.style.transform = 'translateY(-1px)' }}
+          onMouseLeave={e => { e.target.style.boxShadow = '0 4px 15px rgba(124,58,237,0.3)'; e.target.style.transform = 'none' }}>
             Se connecter
           </button>
         </div>
@@ -511,13 +549,7 @@ export default function LoginPage() {
               color: S.dark, margin: '0 0 1.25rem', letterSpacing: '-0.02em',
             }}>
               Creez en un seul prompt votre{' '}
-              <span style={{
-                background: S.gradient, WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
-                backgroundClip: 'text',
-              }}>
-                site internet
-              </span>
-              , votre logiciel de gestion ou votre application metier
+              <RotatingText />
             </h1>
 
             <p style={{
@@ -581,25 +613,7 @@ export default function LoginPage() {
         </div>
       </section>
 
-      {/* ══════════════════════════════════════════════════════════════════
-          4. NATIVEMENT CONNECTE A VOTRE SI
-      ══════════════════════════════════════════════════════════════════ */}
-      <section style={{ padding: '5rem 2rem', background: S.bgAlt, textAlign: 'center' }} id="hub">
-        <h2 style={{
-          fontSize: 'clamp(1.6rem, 2.5vw, 2.2rem)', fontWeight: 800, color: S.dark,
-          margin: '0 0 1rem', letterSpacing: '-0.01em',
-        }}>
-          Nativement connecte a votre SI
-        </h2>
-        <p style={{
-          fontSize: '1.05rem', color: S.gray, maxWidth: 600, margin: '0 auto 2rem', lineHeight: 1.6,
-        }}>
-          Votre logiciel genere s'interconnecte avec tous vos outils existants — comptabilite, CRM, paie, banque, messagerie et IA.
-        </p>
-        <div style={{ maxWidth: 500, margin: '0 auto' }}>
-          <BiHubVisual />
-        </div>
-      </section>
+      {/* BiHubVisual is now inside the connecteurs section */}
 
       {/* ══════════════════════════════════════════════════════════════════
           5. COMMENT CA MARCHE — 5 Phases
@@ -665,17 +679,24 @@ export default function LoginPage() {
           6. MODULES DISPONIBLES (connectors/categories)
       ══════════════════════════════════════════════════════════════════ */}
       <section style={{ padding: '5rem 2rem', background: S.bgAlt }} id="connecteurs">
+        <div style={{ display: 'flex', gap: 40, maxWidth: 1200, margin: '0 auto', alignItems: 'center', flexWrap: 'wrap' }}>
+          {/* Left — BiHubVisual */}
+          <div style={{ flex: '0 0 360px', maxWidth: 400 }}>
+            <BiHubVisual />
+          </div>
+          {/* Right — Connecteurs */}
+          <div style={{ flex: 1, minWidth: 300 }}>
         <h2 style={{
-          fontSize: 'clamp(1.6rem, 2.5vw, 2.2rem)', fontWeight: 800, color: S.dark,
-          margin: '0 0 .5rem', textAlign: 'center',
+          fontSize: 'clamp(1.4rem, 2.2vw, 1.8rem)', fontWeight: 800, color: S.dark,
+          margin: '0 0 .5rem',
         }}>
-          11 modules metier disponibles
+          30+ connecteurs disponibles
         </h2>
         <p style={{
-          fontSize: '1.05rem', color: S.gray, textAlign: 'center', maxWidth: 550,
-          margin: '0 auto 2rem', lineHeight: 1.6,
+          fontSize: '1rem', color: S.gray, maxWidth: 550,
+          margin: '0 0 1.5rem', lineHeight: 1.6,
         }}>
-          Composez votre logiciel sur mesure en activant les modules dont vous avez besoin.
+          Votre application se connecte nativement a tous les outils de votre SI.
         </p>
 
         {/* Category tabs */}
@@ -726,9 +747,11 @@ export default function LoginPage() {
             </div>
           ))}
         </div>
-        <p style={{ textAlign: 'center', color: S.lightGray, fontSize: '.85rem', marginTop: '1.5rem' }}>
+        <p style={{ color: S.lightGray, fontSize: '.82rem', marginTop: '1rem' }}>
           ... et bien d'autres via <strong>Zapier</strong>, <strong>Make</strong> et notre <strong>API REST</strong> ouverte.
         </p>
+          </div>
+        </div>
       </section>
 
       {/* ══════════════════════════════════════════════════════════════════
