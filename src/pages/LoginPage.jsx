@@ -1102,13 +1102,12 @@ export default function LoginPage() {
 
         </div>
 
-        {/* Hero : texte + animation + CTA */}
+        {/* Hero grid : texte gauche + animation droite */}
         <div className="landing-hero-grid" style={{
           maxWidth: 1200, margin: '0 auto', padding: '0 2rem',
           display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '3rem', alignItems: 'center',
         }}>
-          {/* Colonne texte — sur mobile tout s'empile */}
-          <div className="landing-hero-left">
+          <div>
             <h1 style={{
               fontSize: 'clamp(2rem, 3.5vw, 3rem)', fontWeight: 800, lineHeight: 1.2,
               color: S.dark, margin: '0 0 1.25rem', letterSpacing: '-0.02em',
@@ -1117,18 +1116,13 @@ export default function LoginPage() {
               <span style={{ display: 'block', minHeight: '7rem', overflow: 'hidden' }}>votre <RotatingText /></span>
             </h1>
 
-            {/* Animation ENTRE titre et texte — visible uniquement sur mobile */}
-            <div className="multiprise-mobile" style={{ display: 'none', maxWidth: 240, margin: '0 auto 1.5rem' }}>
-              <BiHubVisual />
-            </div>
-
             <p style={{
               fontSize: '1.1rem', color: S.gray, lineHeight: 1.65, margin: '0 0 2rem', maxWidth: 520,
             }}>
-              Décrivez votre besoin. TimeBlast le génère. Nativement interconnecté à tous les logiciels de votre SI.
+              Decrivez votre besoin. TimeBlast le genere. Nativement interconnecte a tous les logiciels de votre SI.
             </p>
 
-            <div className="landing-hero-actions" style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
+            <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
               <button className="landing-btn-primary" onClick={() => setShowLogin(true)}>
                 Demarrer mon projet →
               </button>
@@ -1138,8 +1132,7 @@ export default function LoginPage() {
             </div>
           </div>
 
-          {/* Animation droite — cachée sur mobile */}
-          <div className="multiprise-desktop" style={{ maxWidth: 400, margin: '0 auto' }}>
+          <div>
             <BiHubVisual />
           </div>
         </div>
@@ -1148,7 +1141,7 @@ export default function LoginPage() {
       {/* ══════════════════════════════════════════════════════════════════
           3. STATS BAR + INTERACTIVE MOCKUP
       ══════════════════════════════════════════════════════════════════ */}
-      <section style={{ background: '#195C82', padding: '3rem 2rem 4rem' }}>
+      <section style={{ background: '#195C82', padding: '3rem 2rem 0' }}>
         <div style={{ display: 'flex', justifyContent: 'center', gap: '3rem', flexWrap: 'wrap', maxWidth: 1060, margin: '0 auto', paddingBottom: '2.5rem' }}>
           {STATS.map((s, i) => (
             <div key={i} style={{ textAlign: 'center' }}>
@@ -1158,8 +1151,8 @@ export default function LoginPage() {
           ))}
         </div>
       </section>
-      <section style={{ background: '#fff', padding: '0 2rem 5rem', position: 'relative', marginTop: '-3rem' }}>
-        <div className="landing-mockup-wrapper" style={{ maxWidth: 1060, margin: '0 auto' }}>
+      <section style={{ background: '#fff', padding: '0 2rem 5rem', position: 'relative' }}>
+        <div style={{ maxWidth: 1060, margin: '0 auto', transform: 'translateY(-2rem)' }}>
           <InteractiveMockup />
         </div>
       </section>
@@ -1471,7 +1464,7 @@ export default function LoginPage() {
           </p>
         </div>
 
-        <div className="landing-contact-wrapper" style={{
+        <div style={{
           maxWidth: 920, margin: '0 auto', display: 'grid',
           gridTemplateColumns: '1fr 1.2fr', gap: '3rem', alignItems: 'start',
         }}>
