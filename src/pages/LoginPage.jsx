@@ -534,7 +534,6 @@ function InteractiveMockup() {
                   {(active === 'dashboard' ? ['✓ Widget tresorerie ajoute', '✓ Previsionnel J+30/60/90'] : active === 'equipe' ? ['✓ Trombinoscope ajoute', '✓ Organigramme interactif'] : active === 'finance' ? ['✓ Previsionnel J+30/60/90', '✓ Alertes seuils auto'] : ['✓ Module devis ajoute', '✓ Conversion devis → facture']).map((line, i) => (
                     <div key={i} style={{ color: '#22c55e', marginBottom: 1 }}>{line}</div>
                   ))}
-                  <div style={{ color: '#f59e0b', marginTop: 2, fontWeight: 600 }}>Deploiement : 48h</div>
                 </div>
               </div>
             </div>
@@ -854,13 +853,8 @@ export default function LoginPage() {
           4. NATIVEMENT CONNECTE — BiHubVisual + connectors
       ══════════════════════════════════════════════════════════════════ */}
       <section style={{ padding: '6rem 2rem', background: S.bgAlt }} id="connecteurs">
-        <div style={{ display: 'flex', gap: 48, maxWidth: 1200, margin: '0 auto', alignItems: 'center', flexWrap: 'wrap' }}>
-          {/* Left — BiHubVisual */}
-          <div style={{ flex: '0 0 380px', maxWidth: 420 }}>
-            <BiHubVisual />
-          </div>
-          {/* Right — Connecteurs */}
-          <div style={{ flex: 1, minWidth: 300 }}>
+        <div style={{ maxWidth: 1000, margin: '0 auto' }}>
+          <div>
             <p style={{
               fontSize: '.78rem', fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase',
               background: '#195C82', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
