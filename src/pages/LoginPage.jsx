@@ -392,6 +392,38 @@ function InteractiveMockup() {
                   ))}
                 </div>
               )}
+              {/* 2 widgets supplémentaires */}
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginTop: 8 }}>
+                {/* Widget activité récente */}
+                <div style={{ background: '#fff', borderRadius: 8, border: '1px solid #e2e8f0', padding: '8px 10px' }}>
+                  <div style={{ fontSize: '.48rem', fontWeight: 700, color: '#0f172a', marginBottom: 6 }}>Activité récente</div>
+                  {[
+                    { text: 'Facture #1247 envoyée', time: 'Il y a 5 min', dot: '#22c55e' },
+                    { text: 'Nouveau lead qualifié', time: 'Il y a 12 min', dot: '#195C82' },
+                    { text: 'Paiement reçu 4 200€', time: 'Il y a 1h', dot: '#22c55e' },
+                  ].map((a, i) => (
+                    <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 3 }}>
+                      <span style={{ width: 5, height: 5, borderRadius: '50%', background: a.dot, flexShrink: 0 }} />
+                      <span style={{ fontSize: '.42rem', color: '#0f172a', flex: 1 }}>{a.text}</span>
+                      <span style={{ fontSize: '.38rem', color: '#94a3b8', whiteSpace: 'nowrap' }}>{a.time}</span>
+                    </div>
+                  ))}
+                </div>
+                {/* Widget alertes */}
+                <div style={{ background: '#fff', borderRadius: 8, border: '1px solid #e2e8f0', padding: '8px 10px' }}>
+                  <div style={{ fontSize: '.48rem', fontWeight: 700, color: '#0f172a', marginBottom: 6 }}>Alertes IA</div>
+                  {[
+                    { text: '3 factures en retard > 30j', level: '#ef4444' },
+                    { text: 'Budget projet X dépassé de 12%', level: '#f59e0b' },
+                    { text: 'Taux occupation Martin < 60%', level: '#f59e0b' },
+                  ].map((a, i) => (
+                    <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 3 }}>
+                      <span style={{ width: 5, height: 5, borderRadius: '50%', background: a.level, flexShrink: 0 }} />
+                      <span style={{ fontSize: '.42rem', color: '#0f172a' }}>{a.text}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
               {/* Keep old fallback hidden */}
               {false && (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
@@ -886,11 +918,12 @@ export default function LoginPage() {
           maxWidth: 1100, margin: '0 auto',
         }}>
           {[
-            { num: '1', icon: '💬', title: 'Besoin fonctionnel', desc: 'Decrivez votre besoin en francais. L\'IA structure vos exigences.' },
-            { num: '2', icon: '📐', title: 'Maquette', desc: 'Choisissez vos modules et validez la structure de votre outil.' },
-            { num: '3', icon: '🎨', title: 'Design & mise en page', desc: 'Personnalisez les couleurs, le logo et l\'experience utilisateur.' },
-            { num: '4', icon: '🚀', title: 'Mise en production', desc: 'Votre outil est deploye sur un sous-domaine dedie, pret a l\'emploi.' },
-            { num: '5', icon: '🛡️', title: 'Support & suivi', desc: 'Evolutions, support technique et monitoring en continu.' },
+            { num: '1', icon: '🔌', title: 'Connexion a vos outils', desc: 'TimeBlast se connecte a votre ERP, CRM, compta, paie et tous vos logiciels.' },
+            { num: '2', icon: '💬', title: 'Besoin fonctionnel', desc: 'Decrivez votre besoin en francais. L\'IA structure vos exigences.' },
+            { num: '3', icon: '🤖', title: 'Creation du logiciel', desc: 'L\'IA genere votre application sur mesure a partir de vos donnees.' },
+            { num: '4', icon: '📐', title: 'Maquette & design', desc: 'Validez la structure, personnalisez les couleurs et le logo.' },
+            { num: '5', icon: '🚀', title: 'Mise en production', desc: 'Votre outil est deploye sur un sous-domaine dedie, pret a l\'emploi.' },
+            { num: '6', icon: '🛡️', title: 'Support & suivi', desc: 'Evolutions, support technique et monitoring en continu.' },
           ].map((step, i) => (
             <div key={i} style={{
               flex: '1 1 180px', maxWidth: 200, padding: '2rem 1.4rem', borderRadius: 18,
