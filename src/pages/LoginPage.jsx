@@ -271,7 +271,7 @@ function InteractiveMockup() {
         </div>
 
         {/* App layout: sidebar + main content + chat panel */}
-        <div style={{ display: 'flex', minHeight: 420 }}>
+        <div style={{ display: 'flex', height: 480 }}>
           {/* Sidebar */}
           <div style={{
             width: 48, background: 'linear-gradient(180deg, #0a1628, #0f2b42)', padding: '12px 6px',
@@ -337,59 +337,65 @@ function InteractiveMockup() {
                   ))}
                 </svg>
               ) : active === 'equipe' ? (
-                <div style={{ display: 'flex', gap: 8 }}>
-                  {/* Bar chart occupation */}
-                  <div style={{ flex: 1 }}>
-                    <div style={{ fontSize: '.5rem', fontWeight: 600, color: '#94a3b8', marginBottom: 6 }}>Taux d'occupation</div>
-                    {['Martin 95%','Dupont 88%','Leroy 76%','Moreau 92%','Petit 64%'].map((n, i) => {
-                      const pct = parseInt(n.split(' ')[1])
+                <div>
+                  <div style={{ fontSize: '.5rem', fontWeight: 600, color: '#94a3b8', marginBottom: 6 }}>Heures travaillees vs disponibles</div>
+                  <svg viewBox="0 0 400 90" style={{ width: '100%' }}>
+                    {[{name:'Martin',worked:70,avail:25},{name:'Dupont',worked:60,avail:35},{name:'Leroy',worked:50,avail:45},{name:'Moreau',worked:65,avail:30},{name:'Petit',worked:40,avail:55}].map((d, i) => {
+                      const x = 30 + i * 75
+                      const totalH = 80
+                      const workedH = d.worked / 100 * totalH
+                      const availH = d.avail / 100 * totalH
                       return (
-                        <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 3 }}>
-                          <span style={{ fontSize: '.45rem', color: '#64748b', width: 40, textAlign: 'right' }}>{n.split(' ')[0]}</span>
-                          <div style={{ flex: 1, height: 6, background: '#f1f5f9', borderRadius: 3 }}>
-                            <div style={{ width: pct + '%', height: '100%', background: pct > 85 ? '#22c55e' : pct > 70 ? '#f59e0b' : '#ef4444', borderRadius: 3 }} />
-                          </div>
-                          <span style={{ fontSize: '.42rem', color: '#64748b', width: 22 }}>{pct}%</span>
-                        </div>
+                        <g key={i}>
+                          <rect x={x} y={totalH - workedH - availH} width={40} height={availH} rx={2} fill="#94a3b8" opacity={0.3} />
+                          <rect x={x} y={totalH - workedH} width={40} height={workedH} rx={2} fill="#195C82" />
+                          <text x={x + 20} y={88} textAnchor="middle" fontSize="7" fill="#64748b">{d.name}</text>
+                        </g>
                       )
                     })}
-                  </div>
-                  {/* Mini donut */}
-                  <div style={{ width: 70, textAlign: 'center' }}>
-                    <svg viewBox="0 0 60 60" style={{ width: 50, margin: '0 auto' }}>
-                      <circle cx="30" cy="30" r="22" fill="none" stroke="#f1f5f9" strokeWidth="6" />
-                      <circle cx="30" cy="30" r="22" fill="none" stroke="#22c55e" strokeWidth="6" strokeDasharray="120 140" strokeDashoffset="-10" strokeLinecap="round" />
-                      <text x="30" y="32" textAnchor="middle" fontSize="10" fontWeight="800" fill="#0f172a">87%</text>
-                    </svg>
-                    <div style={{ fontSize: '.42rem', color: '#94a3b8' }}>Moyen</div>
-                  </div>
+                    <rect x="320" y="10" width="8" height="8" rx={1} fill="#195C82" />
+                    <text x="332" y="17" fontSize="6" fill="#64748b">Travaille</text>
+                    <rect x="320" y="22" width="8" height="8" rx={1} fill="#94a3b8" opacity={0.3} />
+                    <text x="332" y="29" fontSize="6" fill="#64748b">Disponible</text>
+                  </svg>
                 </div>
               ) : active === 'finance' ? (
                 <div>
-                  <div style={{ fontSize: '.5rem', fontWeight: 600, color: '#94a3b8', marginBottom: 6 }}>Évolution trésorerie (k€)</div>
-                  <svg viewBox="0 0 400 70" style={{ width: '100%' }}>
-                    <defs><linearGradient id="fg" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="#22c55e" stopOpacity=".1" /><stop offset="100%" stopColor="#22c55e" stopOpacity="0" /></linearGradient></defs>
-                    <path d="M0,55 60,50 120,45 180,42 240,38 300,30 360,25 400,20 400,70 0,70Z" fill="url(#fg)" />
-                    <polyline points="0,55 60,50 120,45 180,42 240,38 300,30 360,25 400,20" fill="none" stroke="#22c55e" strokeWidth="2" strokeLinejoin="round" />
-                    <polyline points="0,40 60,42 120,38 180,45 240,40 300,35 360,38 400,32" fill="none" stroke="#ef4444" strokeWidth="1.5" strokeDasharray="4 3" opacity=".5" />
-                    {[[0,55],[120,45],[240,38],[400,20]].map(([x,y], i) => <circle key={i} cx={x} cy={y} r="2.5" fill="#22c55e" stroke="#fff" strokeWidth="1" />)}
+                  <div style={{ fontSize: '.5rem', fontWeight: 600, color: '#94a3b8', marginBottom: 6 }}>Waterfall tresorerie (k€)</div>
+                  <svg viewBox="0 0 400 90" style={{ width: '100%' }}>
+                    {[{label:'Jan',val:40,type:'up'},{label:'Ventes',val:25,type:'up'},{label:'Charges',val:-18,type:'down'},{label:'Salaires',val:-30,type:'down'},{label:'Subv.',val:15,type:'up'},{label:'Loyer',val:-10,type:'down'},{label:'Mars',val:22,type:'up'}].map((d, i) => {
+                      const x = 10 + i * 55
+                      const baseline = 60
+                      const barH = Math.abs(d.val) * 0.9
+                      const y = d.type === 'up' ? baseline - barH : baseline
+                      return (
+                        <g key={i}>
+                          <rect x={x} y={y} width={35} height={barH} rx={2} fill={d.type === 'up' ? '#22c55e' : '#ef4444'} />
+                          <text x={x + 17.5} y={85} textAnchor="middle" fontSize="6" fill="#64748b">{d.label}</text>
+                          <text x={x + 17.5} y={y - 3} textAnchor="middle" fontSize="5.5" fontWeight="700" fill={d.type === 'up' ? '#22c55e' : '#ef4444'}>{d.val > 0 ? '+' : ''}{d.val}</text>
+                        </g>
+                      )
+                    })}
+                    <line x1="5" y1="60" x2="395" y2="60" stroke="#e2e8f0" strokeWidth="0.5" strokeDasharray="3 3" />
                   </svg>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '.38rem', color: '#94a3b8', marginTop: 2 }}>
-                    {['Jan','Fev','Mar','Avr','Mai','Jun','Jul','Aou'].map(m => <span key={m}>{m}</span>)}
-                  </div>
                 </div>
               ) : (
                 <div>
-                  <div style={{ fontSize: '.5rem', fontWeight: 600, color: '#94a3b8', marginBottom: 6 }}>Pipeline par phase</div>
-                  {[{n:'Prospection',v:120,c:'#195C82'},{n:'Qualification',v:85,c:'#2d8ab8'},{n:'Proposition',v:65,c:'#f59e0b'},{n:'Négociation',v:40,c:'#22c55e'},{n:'Gagné',v:25,c:'#16a34a'}].map((p, i) => (
-                    <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 4 }}>
-                      <span style={{ fontSize: '.42rem', color: '#64748b', width: 52, textAlign: 'right' }}>{p.n}</span>
-                      <div style={{ flex: 1, height: 8, background: '#f1f5f9', borderRadius: 4 }}>
-                        <div style={{ width: (p.v / 120 * 100) + '%', height: '100%', background: p.c, borderRadius: 4 }} />
-                      </div>
-                      <span style={{ fontSize: '.42rem', fontWeight: 700, color: '#0f172a', width: 24 }}>{p.v}k€</span>
-                    </div>
-                  ))}
+                  <div style={{ fontSize: '.5rem', fontWeight: 600, color: '#94a3b8', marginBottom: 6 }}>Funnel commercial</div>
+                  <svg viewBox="0 0 400 90" style={{ width: '100%' }}>
+                    {[{label:'Prospection',pct:100,color:'#195C82'},{label:'Qualification',pct:72,color:'#2d8ab8'},{label:'Proposition',pct:50,color:'#f59e0b'},{label:'Negociation',pct:32,color:'#22c55e'},{label:'Gagne',pct:18,color:'#16a34a'}].map((d, i) => {
+                      const y = 2 + i * 17
+                      const w = d.pct / 100 * 300
+                      const xOff = (300 - w) / 2 + 70
+                      return (
+                        <g key={i}>
+                          <rect x={xOff} y={y} width={w} height={13} rx={3} fill={d.color} opacity={0.85} />
+                          <text x={65} y={y + 10} textAnchor="end" fontSize="6" fill="#64748b">{d.label}</text>
+                          <text x={xOff + w / 2} y={y + 10} textAnchor="middle" fontSize="6" fontWeight="700" fill="#fff">{d.pct}%</text>
+                        </g>
+                      )
+                    })}
+                  </svg>
                 </div>
               )}
               {/* 2 mini-graphiques supplémentaires */}
@@ -501,26 +507,35 @@ function InteractiveMockup() {
             </div>
 
             {/* Chat messages — changes per tab */}
-            <div style={{ flex: 1, padding: '10px', display: 'flex', flexDirection: 'column', gap: 8, overflow: 'hidden' }}>
-              {/* User message */}
+            <div style={{ flex: 1, padding: '10px', display: 'flex', flexDirection: 'column', gap: 5, overflow: 'hidden' }}>
+              {/* User message 1 */}
               <div style={{ alignSelf: 'flex-end', maxWidth: '90%' }}>
-                <div style={{ background: '#195C82', color: '#fff', padding: '6px 10px', borderRadius: '10px 10px 3px 10px', fontSize: '.65rem', lineHeight: 1.5 }}>
+                <div style={{ background: '#195C82', color: '#fff', padding: '5px 8px', borderRadius: '10px 10px 3px 10px', fontSize: '.55rem', lineHeight: 1.4 }}>
                   {t.chat.user}
                 </div>
               </div>
-              {/* AI response */}
+              {/* AI response 1 */}
               <div style={{ alignSelf: 'flex-start', maxWidth: '95%' }}>
-                <div style={{ background: 'rgba(255,255,255,0.06)', color: '#e2e8f0', padding: '8px 10px', borderRadius: '10px 10px 10px 3px', fontSize: '.65rem', lineHeight: 1.6, border: '1px solid rgba(255,255,255,0.06)' }}>
+                <div style={{ background: 'rgba(255,255,255,0.06)', color: '#e2e8f0', padding: '5px 8px', borderRadius: '10px 10px 10px 3px', fontSize: '.55rem', lineHeight: 1.4, border: '1px solid rgba(255,255,255,0.06)' }}>
                   {t.chat.ai.map((line, i) => (
                     <div key={i} style={{ color: '#22c55e', marginBottom: i < t.chat.ai.length - 1 ? 1 : 0 }}>{line}</div>
                   ))}
                 </div>
               </div>
-              {/* Typing indicator */}
-              <div style={{ alignSelf: 'flex-start', display: 'flex', gap: 3, padding: '6px 10px', borderRadius: 10, background: 'rgba(255,255,255,0.04)' }}>
-                <span style={{ width: 4, height: 4, borderRadius: '50%', background: 'rgba(255,255,255,0.3)', animation: 'typingDot 1.4s infinite 0s' }} />
-                <span style={{ width: 4, height: 4, borderRadius: '50%', background: 'rgba(255,255,255,0.3)', animation: 'typingDot 1.4s infinite 0.2s' }} />
-                <span style={{ width: 4, height: 4, borderRadius: '50%', background: 'rgba(255,255,255,0.3)', animation: 'typingDot 1.4s infinite 0.4s' }} />
+              {/* User message 2 */}
+              <div style={{ alignSelf: 'flex-end', maxWidth: '90%' }}>
+                <div style={{ background: '#195C82', color: '#fff', padding: '5px 8px', borderRadius: '10px 10px 3px 10px', fontSize: '.55rem', lineHeight: 1.4 }}>
+                  {active === 'dashboard' ? 'Ajoute un suivi tresorerie' : active === 'equipe' ? 'Et le trombinoscope ?' : active === 'finance' ? 'Ajoute le previsionnel' : 'Et les devis ?'}
+                </div>
+              </div>
+              {/* AI response 2 */}
+              <div style={{ alignSelf: 'flex-start', maxWidth: '95%' }}>
+                <div style={{ background: 'rgba(255,255,255,0.06)', color: '#e2e8f0', padding: '5px 8px', borderRadius: '10px 10px 10px 3px', fontSize: '.55rem', lineHeight: 1.4, border: '1px solid rgba(255,255,255,0.06)' }}>
+                  {(active === 'dashboard' ? ['✓ Widget tresorerie ajoute', '✓ Previsionnel J+30/60/90'] : active === 'equipe' ? ['✓ Trombinoscope ajoute', '✓ Organigramme interactif'] : active === 'finance' ? ['✓ Previsionnel J+30/60/90', '✓ Alertes seuils auto'] : ['✓ Module devis ajoute', '✓ Conversion devis → facture']).map((line, i) => (
+                    <div key={i} style={{ color: '#22c55e', marginBottom: 1 }}>{line}</div>
+                  ))}
+                  <div style={{ color: '#f59e0b', marginTop: 2, fontWeight: 600 }}>Deploiement : 48h</div>
+                </div>
               </div>
             </div>
 
@@ -791,7 +806,7 @@ export default function LoginPage() {
               color: S.dark, margin: '0 0 1.25rem', letterSpacing: '-0.02em',
             }}>
               <span style={{ display: 'block' }}>Créez en un seul prompt</span>
-              <span style={{ display: 'block', minHeight: '4.5rem', overflow: 'hidden' }}>votre <RotatingText /></span>
+              <span style={{ display: 'block', minHeight: '7rem', overflow: 'hidden' }}>votre <RotatingText /></span>
             </h1>
 
             <p style={{
