@@ -327,6 +327,7 @@ export default function LoginPage() {
               TimeBlast est la <strong>première plateforme de vibe-coding</strong> pour entreprises.
               Site web, CRM, facturation, RH, application métier — décrivez ce dont vous avez besoin,
               <strong> l'IA construit votre outil sur mesure en quelques jours</strong>.
+              Le logiciel généré est <strong>nativement interconnecté à tous les logiciels de votre SI</strong>.
             </p>
             <div className="landing-hero-actions">
               <button className="landing-btn-primary" onClick={() => setShowLogin(true)}>
