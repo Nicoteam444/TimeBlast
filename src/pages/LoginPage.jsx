@@ -178,27 +178,42 @@ function RotatingText() {
     'tout ce que vous voulez',
   ]
   const [index, setIndex] = useState(0)
-  const [fade, setFade] = useState(true)
+  const [displayed, setDisplayed] = useState('')
+  const [typing, setTyping] = useState(true)
 
   useEffect(() => {
-    const timer = setInterval(() => {
-      setFade(false)
-      setTimeout(() => {
+    const word = WORDS[index]
+    if (typing) {
+      if (displayed.length < word.length) {
+        const t = setTimeout(() => setDisplayed(word.slice(0, displayed.length + 1)), 60)
+        return () => clearTimeout(t)
+      } else {
+        const t = setTimeout(() => setTyping(false), 1500)
+        return () => clearTimeout(t)
+      }
+    } else {
+      if (displayed.length > 0) {
+        const t = setTimeout(() => setDisplayed(displayed.slice(0, -1)), 30)
+        return () => clearTimeout(t)
+      } else {
         setIndex(i => (i + 1) % WORDS.length)
-        setFade(true)
-      }, 300)
-    }, 2500)
-    return () => clearInterval(timer)
-  }, [])
+        setTyping(true)
+      }
+    }
+  }, [displayed, typing, index])
 
   return (
     <span style={{
       background: 'linear-gradient(135deg, #7C3AED, #00D4FF)',
       WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text',
-      display: 'inline-block', transition: 'opacity .3s, transform .3s',
-      opacity: fade ? 1 : 0, transform: fade ? 'translateY(0)' : 'translateY(8px)',
+      display: 'inline',
     }}>
-      {WORDS[index]}
+      {displayed}
+      <span style={{
+        display: 'inline-block', width: 3, height: '1em', marginLeft: 2,
+        background: 'linear-gradient(135deg, #7C3AED, #00D4FF)',
+        animation: 'blink 1s infinite', verticalAlign: 'text-bottom',
+      }} />
     </span>
   )
 }
@@ -1086,7 +1101,7 @@ export default function LoginPage() {
           11. FOOTER
       ══════════════════════════════════════════════════════════════════ */}
       <footer style={{
-        background: '#0f172a', padding: '2rem', textAlign: 'center',
+        background: '#195C82', padding: '2rem', textAlign: 'center',
       }}>
         <div style={{
           maxWidth: 1200, margin: '0 auto', display: 'flex', alignItems: 'center',
