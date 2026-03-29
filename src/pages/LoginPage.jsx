@@ -241,6 +241,10 @@ function InteractiveMockup() {
     { id: 'equipe', label: 'Équipe', icon: '👥', title: "Gestion d'équipe", kpis: [{ label: 'Effectif', value: '45', trend: '' }, { label: 'Absents', value: '3', trend: '' }, { label: 'Heures', value: '1 247h', trend: '' }, { label: 'Occupation', value: '94%', trend: '+2%' }], chat: { user: "Ajoute la gestion d'équipe", ai: ['✓ Fiches collaborateurs', '✓ Calendrier absences', "✓ Taux d'occupation"] } },
     { id: 'finance', label: 'Finance', icon: '💰', title: 'Pilotage financier', kpis: [{ label: 'Écritures', value: '4 521', trend: '' }, { label: 'Rapproché', value: '98%', trend: '+1%' }, { label: 'FEC', value: 'OK', trend: '' }, { label: 'Balance', value: '0.00 €', trend: '' }], chat: { user: 'Je veux la comptabilité FEC', ai: ['✓ Import FEC automatique', '✓ Rapprochement bancaire', '✓ Balance et écritures'] } },
     { id: 'commerce', label: 'Commerce', icon: '🎯', title: 'Pipeline commercial', kpis: [{ label: 'Leads', value: '47', trend: '+15%' }, { label: 'Opportunités', value: '12', trend: '' }, { label: 'CA gagné', value: '185k €', trend: '+22%' }, { label: 'Taux', value: '34%', trend: '+4%' }], chat: { user: 'Ajoute un CRM avec pipeline', ai: ['✓ Pipeline Kanban', '✓ Scoring leads IA', '✓ Relances automatiques'] } },
+    { id: 'banque', label: 'Banque', icon: '🏦', title: 'Rapprochement bancaire', kpis: [{ label: 'Solde', value: '84 320 €', trend: '+6%' }, { label: 'Rapproché', value: '97%', trend: '+2%' }, { label: 'En attente', value: '12', trend: '-3' }, { label: 'Virements', value: '38', trend: '' }], chat: { user: 'Je veux le rapprochement bancaire', ai: ['✓ Import relevés auto', '✓ Rapprochement IA', '✓ Alertes anomalies'] } },
+    { id: 'calendrier', label: 'Calendrier', icon: '📅', title: 'Calendrier', kpis: [{ label: 'Événements', value: '24', trend: '+5' }, { label: 'Réunions', value: '8', trend: '' }, { label: 'Échéances', value: '6', trend: '-2' }, { label: 'Disponibilité', value: '72%', trend: '+4%' }], chat: { user: 'Ajoute un calendrier partagé', ai: ['✓ Vue semaine/mois', '✓ Réservation salles', '✓ Rappels automatiques'] } },
+    { id: 'projet', label: 'Projets', icon: '📋', title: 'Suivi projets', kpis: [{ label: 'Projets actifs', value: '9', trend: '+2' }, { label: 'En retard', value: '1', trend: '-1' }, { label: 'Budget conso.', value: '67%', trend: '' }, { label: 'Livraisons', value: '4', trend: '+1' }], chat: { user: 'Ajoute le suivi de projets', ai: ['✓ Planning Gantt', '✓ Suivi jalons', '✓ Allocation ressources'] } },
+    { id: 'mail', label: 'Mail', icon: '✉', title: 'Messagerie', kpis: [{ label: 'Inbox', value: '142', trend: '+18' }, { label: 'Envoyés', value: '87', trend: '' }, { label: 'Brouillons', value: '5', trend: '' }, { label: 'Taux ouv.', value: '64%', trend: '+8%' }], chat: { user: 'Intègre la messagerie', ai: ['✓ Boîte de réception unifiée', '✓ Réponses suggérées IA', '✓ Classement automatique'] } },
   ]
   const t = TABS.find(x => x.id === active)
 
@@ -323,63 +327,69 @@ function InteractiveMockup() {
             {/* Chart / content area */}
             <div style={{ background: '#fff', borderRadius: 8, border: '1px solid #e2e8f0', padding: '10px', minHeight: 120 }}>
               {active === 'dashboard' ? (
-                <svg viewBox="0 0 400 80" style={{ width: '100%' }}>
-                  <defs>
-                    <linearGradient id="mg2" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%" stopColor="#195C82" stopOpacity=".12" />
-                      <stop offset="100%" stopColor="#195C82" stopOpacity="0" />
-                    </linearGradient>
-                  </defs>
-                  <path d="M0,65 40,58 80,52 120,38 160,42 200,30 240,24 280,20 320,16 360,10 400,5 400,80 0,80Z" fill="url(#mg2)" />
-                  <polyline points="0,65 40,58 80,52 120,38 160,42 200,30 240,24 280,20 320,16 360,10 400,5" fill="none" stroke="#195C82" strokeWidth="2.5" strokeLinejoin="round" strokeLinecap="round" />
-                  {[[0,65],[80,52],[160,42],[240,24],[320,16],[400,5]].map(([px,py], i) => (
-                    <circle key={i} cx={px} cy={py} r="3" fill="#195C82" stroke="#fff" strokeWidth="1.5" />
-                  ))}
-                </svg>
+                <div>
+                  <div style={{ fontSize: '.5rem', fontWeight: 600, color: '#94a3b8', marginBottom: 6 }}>Evolution CA mensuel (k€)</div>
+                  <svg viewBox="0 0 400 90" style={{ width: '100%' }}>
+                    <defs>
+                      <linearGradient id="mg2" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stopColor="#195C82" stopOpacity=".12" />
+                        <stop offset="100%" stopColor="#195C82" stopOpacity="0" />
+                      </linearGradient>
+                    </defs>
+                    <path d="M30,70 80,63 140,57 200,43 260,47 320,35 370,22 370,85 30,85Z" fill="url(#mg2)" />
+                    <polyline points="30,70 80,63 140,57 200,43 260,47 320,35 370,22" fill="none" stroke="#195C82" strokeWidth="2.5" strokeLinejoin="round" strokeLinecap="round" />
+                    {[[30,70,'Oct'],[80,63,'Nov'],[140,57,'Dec'],[200,43,'Jan'],[260,47,'Fev'],[320,35,'Mar'],[370,22,'Avr']].map(([px,py,lbl], i) => (
+                      <g key={i}>
+                        <circle cx={px} cy={py} r="3" fill="#195C82" stroke="#fff" strokeWidth="1.5" />
+                        <text x={px} y={88} textAnchor="middle" fontSize="6" fill="#94a3b8">{lbl}</text>
+                      </g>
+                    ))}
+                  </svg>
+                </div>
               ) : active === 'equipe' ? (
                 <div>
                   <div style={{ fontSize: '.5rem', fontWeight: 600, color: '#94a3b8', marginBottom: 6 }}>Heures travaillees vs disponibles</div>
-                  <svg viewBox="0 0 400 90" style={{ width: '100%' }}>
+                  <svg viewBox="0 0 400 100" style={{ width: '100%' }}>
                     {[{name:'Martin',worked:70,avail:25},{name:'Dupont',worked:60,avail:35},{name:'Leroy',worked:50,avail:45},{name:'Moreau',worked:65,avail:30},{name:'Petit',worked:40,avail:55}].map((d, i) => {
-                      const x = 30 + i * 75
-                      const totalH = 80
-                      const workedH = d.worked / 100 * totalH
-                      const availH = d.avail / 100 * totalH
+                      const x = 30 + i * 72
+                      const baseY = 80
+                      const workedH = d.worked / 100 * 65
+                      const availH = d.avail / 100 * 65
                       return (
                         <g key={i}>
-                          <rect x={x} y={totalH - workedH - availH} width={40} height={availH} rx={2} fill="#94a3b8" opacity={0.3} />
-                          <rect x={x} y={totalH - workedH} width={40} height={workedH} rx={2} fill="#195C82" />
-                          <text x={x + 20} y={88} textAnchor="middle" fontSize="7" fill="#64748b">{d.name}</text>
+                          <rect x={x} y={baseY - workedH - availH} width={32} height={availH} rx={2} fill="#94a3b8" opacity={0.3} />
+                          <rect x={x} y={baseY - workedH} width={32} height={workedH} rx={2} fill="#195C82" />
+                          <text x={x + 16} y={93} textAnchor="middle" fontSize="6.5" fill="#64748b">{d.name}</text>
                         </g>
                       )
                     })}
-                    <rect x="320" y="10" width="8" height="8" rx={1} fill="#195C82" />
-                    <text x="332" y="17" fontSize="6" fill="#64748b">Travaille</text>
-                    <rect x="320" y="22" width="8" height="8" rx={1} fill="#94a3b8" opacity={0.3} />
-                    <text x="332" y="29" fontSize="6" fill="#64748b">Disponible</text>
+                    <rect x="330" y="8" width="8" height="8" rx={1} fill="#195C82" />
+                    <text x="342" y="15" fontSize="6" fill="#64748b">Travaille</text>
+                    <rect x="330" y="20" width="8" height="8" rx={1} fill="#94a3b8" opacity={0.3} />
+                    <text x="342" y="27" fontSize="6" fill="#64748b">Dispo.</text>
                   </svg>
                 </div>
               ) : active === 'finance' ? (
                 <div>
                   <div style={{ fontSize: '.5rem', fontWeight: 600, color: '#94a3b8', marginBottom: 6 }}>Waterfall tresorerie (k€)</div>
-                  <svg viewBox="0 0 400 90" style={{ width: '100%' }}>
-                    {[{label:'Jan',val:40,type:'up'},{label:'Ventes',val:25,type:'up'},{label:'Charges',val:-18,type:'down'},{label:'Salaires',val:-30,type:'down'},{label:'Subv.',val:15,type:'up'},{label:'Loyer',val:-10,type:'down'},{label:'Mars',val:22,type:'up'}].map((d, i) => {
+                  <svg viewBox="0 0 400 100" style={{ width: '100%' }}>
+                    {[{label:'Jan',val:40,type:'up'},{label:'Fev',val:25,type:'up'},{label:'Charges',val:-18,type:'down'},{label:'Salaires',val:-30,type:'down'},{label:'Subv.',val:15,type:'up'},{label:'Loyer',val:-10,type:'down'},{label:'Mars',val:22,type:'up'}].map((d, i) => {
                       const x = 10 + i * 55
-                      const baseline = 60
-                      const barH = Math.abs(d.val) * 0.9
+                      const baseline = 65
+                      const barH = Math.abs(d.val) * 0.8
                       const y = d.type === 'up' ? baseline - barH : baseline
                       return (
                         <g key={i}>
                           <rect x={x} y={y} width={35} height={barH} rx={2} fill={d.type === 'up' ? '#22c55e' : '#ef4444'} />
-                          <text x={x + 17.5} y={85} textAnchor="middle" fontSize="6" fill="#64748b">{d.label}</text>
+                          <text x={x + 17.5} y={92} textAnchor="middle" fontSize="6" fill="#64748b">{d.label}</text>
                           <text x={x + 17.5} y={y - 3} textAnchor="middle" fontSize="5.5" fontWeight="700" fill={d.type === 'up' ? '#22c55e' : '#ef4444'}>{d.val > 0 ? '+' : ''}{d.val}</text>
                         </g>
                       )
                     })}
-                    <line x1="5" y1="60" x2="395" y2="60" stroke="#e2e8f0" strokeWidth="0.5" strokeDasharray="3 3" />
+                    <line x1="5" y1="65" x2="395" y2="65" stroke="#e2e8f0" strokeWidth="0.5" strokeDasharray="3 3" />
                   </svg>
                 </div>
-              ) : (
+              ) : active === 'commerce' ? (
                 <div>
                   <div style={{ fontSize: '.5rem', fontWeight: 600, color: '#94a3b8', marginBottom: 6 }}>Funnel commercial</div>
                   <svg viewBox="0 0 400 90" style={{ width: '100%' }}>
@@ -397,12 +407,125 @@ function InteractiveMockup() {
                     })}
                   </svg>
                 </div>
-              )}
+              ) : active === 'banque' ? (
+                <div>
+                  <div style={{ fontSize: '.5rem', fontWeight: 600, color: '#94a3b8', marginBottom: 6 }}>Entrees vs Sorties par mois (k€)</div>
+                  <svg viewBox="0 0 400 100" style={{ width: '100%' }}>
+                    {[{m:'Oct',e:32,s:24},{m:'Nov',e:28,s:30},{m:'Dec',e:45,s:35},{m:'Jan',e:38,s:27},{m:'Fev',e:42,s:31},{m:'Mar',e:50,s:28}].map((d, i) => {
+                      const x = 25 + i * 62
+                      const baseY = 78
+                      const eH = d.e * 0.9
+                      const sH = d.s * 0.9
+                      return (
+                        <g key={i}>
+                          <rect x={x} y={baseY - eH} width={14} height={eH} rx={2} fill="#22c55e" opacity={0.85} />
+                          <rect x={x + 17} y={baseY - sH} width={14} height={sH} rx={2} fill="#ef4444" opacity={0.85} />
+                          <text x={x + 15} y={93} textAnchor="middle" fontSize="6.5" fill="#64748b">{d.m}</text>
+                        </g>
+                      )
+                    })}
+                    <rect x="330" y="6" width="8" height="8" rx={1} fill="#22c55e" opacity={0.85} />
+                    <text x="342" y="13" fontSize="6" fill="#64748b">Entrees</text>
+                    <rect x="330" y="18" width="8" height="8" rx={1} fill="#ef4444" opacity={0.85} />
+                    <text x="342" y="25" fontSize="6" fill="#64748b">Sorties</text>
+                  </svg>
+                </div>
+              ) : active === 'calendrier' ? (
+                <div>
+                  <div style={{ fontSize: '.5rem', fontWeight: 600, color: '#94a3b8', marginBottom: 6 }}>Semaine du 24 mars 2026</div>
+                  <svg viewBox="0 0 400 95" style={{ width: '100%' }}>
+                    {['Lun','Mar','Mer','Jeu','Ven'].map((day, i) => {
+                      const x = 10 + i * 78
+                      return (
+                        <g key={i}>
+                          <text x={x + 35} y={10} textAnchor="middle" fontSize="6.5" fontWeight="700" fill="#64748b">{day}</text>
+                          <rect x={x} y={14} width={70} height={76} rx={3} fill="#f8fafc" stroke="#e2e8f0" strokeWidth="0.5" />
+                        </g>
+                      )
+                    })}
+                    {[
+                      {x:12,y:18,w:66,h:14,color:'#195C82',t:'Reunion equipe'},
+                      {x:90,y:18,w:66,h:14,color:'#f59e0b',t:'Point client'},
+                      {x:168,y:36,w:66,h:14,color:'#22c55e',t:'Formation'},
+                      {x:246,y:18,w:66,h:14,color:'#8b5cf6',t:'Sprint review'},
+                      {x:246,y:54,w:66,h:14,color:'#195C82',t:'Demo produit'},
+                      {x:324,y:36,w:66,h:14,color:'#ef4444',t:'Deadline v2'},
+                      {x:90,y:54,w:144,h:14,color:'rgba(25,92,130,0.2)',t:'Workshop design'},
+                      {x:12,y:72,w:66,h:14,color:'#22c55e',t:'1:1 Manager'},
+                    ].map((ev, i) => (
+                      <g key={i}>
+                        <rect x={ev.x} y={ev.y} width={ev.w} height={ev.h} rx={2} fill={ev.color} opacity={0.85} />
+                        <text x={ev.x + ev.w / 2} y={ev.y + 9.5} textAnchor="middle" fontSize="5" fontWeight="600" fill="#fff">{ev.t}</text>
+                      </g>
+                    ))}
+                  </svg>
+                </div>
+              ) : active === 'projet' ? (
+                <div>
+                  <div style={{ fontSize: '.5rem', fontWeight: 600, color: '#94a3b8', marginBottom: 6 }}>Planning projets (Gantt)</div>
+                  <svg viewBox="0 0 400 100" style={{ width: '100%' }}>
+                    {['Jan','Fev','Mar','Avr','Mai','Jun'].map((m, i) => (
+                      <g key={i}>
+                        <text x={100 + i * 50 + 25} y={10} textAnchor="middle" fontSize="6" fill="#94a3b8">{m}</text>
+                        <line x1={100 + i * 50} y1={14} x2={100 + i * 50} y2={95} stroke="#e2e8f0" strokeWidth="0.5" />
+                      </g>
+                    ))}
+                    {[
+                      {name:'Refonte site',start:0,end:120,color:'#195C82'},
+                      {name:'App mobile',start:50,end:200,color:'#22c55e'},
+                      {name:'Migration ERP',start:100,end:250,color:'#f59e0b'},
+                      {name:'API v2',start:30,end:150,color:'#8b5cf6'},
+                      {name:'Chatbot IA',start:150,end:300,color:'#ef4444'},
+                    ].map((p, i) => {
+                      const y = 20 + i * 16
+                      return (
+                        <g key={i}>
+                          <text x={95} y={y + 9} textAnchor="end" fontSize="6" fill="#64748b">{p.name}</text>
+                          <rect x={100 + p.start} y={y} width={p.end - p.start} height={11} rx={3} fill={p.color} opacity={0.8} />
+                        </g>
+                      )
+                    })}
+                  </svg>
+                </div>
+              ) : active === 'mail' ? (
+                <div>
+                  <div style={{ fontSize: '.5rem', fontWeight: 600, color: '#94a3b8', marginBottom: 6 }}>Volume par categorie</div>
+                  <svg viewBox="0 0 400 100" style={{ width: '100%' }}>
+                    {[
+                      {cat:'Clients',inbox:45,sent:30,draft:5},
+                      {cat:'Fournisseurs',inbox:32,sent:18,draft:3},
+                      {cat:'Interne',inbox:28,sent:42,draft:8},
+                      {cat:'Support',inbox:55,sent:25,draft:2},
+                      {cat:'Marketing',inbox:20,sent:35,draft:12},
+                    ].map((d, i) => {
+                      const y = 4 + i * 18
+                      const scale = 2.2
+                      const iW = d.inbox * scale
+                      const sW = d.sent * scale
+                      const dW = d.draft * scale
+                      return (
+                        <g key={i}>
+                          <text x={68} y={y + 10} textAnchor="end" fontSize="6" fill="#64748b">{d.cat}</text>
+                          <rect x={72} y={y} width={iW} height={13} rx={2} fill="#195C82" opacity={0.85} />
+                          <rect x={72 + iW} y={y} width={sW} height={13} rx={0} fill="#22c55e" opacity={0.7} />
+                          <rect x={72 + iW + sW} y={y} width={dW} height={13} rx={2} fill="#94a3b8" opacity={0.4} />
+                        </g>
+                      )
+                    })}
+                    <rect x="310" y="6" width="8" height="8" rx={1} fill="#195C82" opacity={0.85} />
+                    <text x="322" y="13" fontSize="5.5" fill="#64748b">Recus</text>
+                    <rect x="310" y="18" width="8" height="8" rx={1} fill="#22c55e" opacity={0.7} />
+                    <text x="322" y="25" fontSize="5.5" fill="#64748b">Envoyes</text>
+                    <rect x="310" y="30" width="8" height="8" rx={1} fill="#94a3b8" opacity={0.4} />
+                    <text x="322" y="37" fontSize="5.5" fill="#64748b">Brouillons</text>
+                  </svg>
+                </div>
+              ) : null}
               {/* 2 mini-graphiques supplémentaires */}
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginTop: 8 }}>
                 <div style={{ background: '#fff', borderRadius: 8, border: '1px solid #e2e8f0', padding: '8px 10px' }}>
                   <div style={{ fontSize: '.45rem', fontWeight: 700, color: '#0f172a', marginBottom: 4 }}>
-                    {active === 'dashboard' ? 'CA par société' : active === 'equipe' ? 'Absences par mois' : active === 'finance' ? 'Charges vs Produits' : 'Conversion par source'}
+                    {active === 'dashboard' ? 'CA par société' : active === 'equipe' ? 'Absences par mois' : active === 'finance' ? 'Charges vs Produits' : active === 'commerce' ? 'Conversion par source' : active === 'banque' ? 'Solde par compte' : active === 'calendrier' ? 'Charge semaine' : active === 'projet' ? 'Avancement projets' : 'Emails par jour'}
                   </div>
                   {/* Mini bar chart */}
                   <div style={{ display: 'flex', alignItems: 'flex-end', gap: 3, height: 40 }}>
@@ -413,7 +536,7 @@ function InteractiveMockup() {
                 </div>
                 <div style={{ background: '#fff', borderRadius: 8, border: '1px solid #e2e8f0', padding: '8px 10px' }}>
                   <div style={{ fontSize: '.45rem', fontWeight: 700, color: '#0f172a', marginBottom: 4 }}>
-                    {active === 'dashboard' ? 'Répartition CA' : active === 'equipe' ? 'Répartition équipe' : active === 'finance' ? 'Répartition charges' : 'Pipeline par phase'}
+                    {active === 'dashboard' ? 'Répartition CA' : active === 'equipe' ? 'Répartition équipe' : active === 'finance' ? 'Répartition charges' : active === 'commerce' ? 'Pipeline par phase' : active === 'banque' ? 'Types opérations' : active === 'calendrier' ? 'Types événements' : active === 'projet' ? 'Budget par projet' : 'Répartition mails'}
                   </div>
                   {/* Mini donut */}
                   <svg viewBox="0 0 80 45" style={{ width: '100%' }}>
@@ -421,7 +544,7 @@ function InteractiveMockup() {
                     <circle cx="40" cy="25" r="16" fill="none" stroke="rgba(25,92,130,0.4)" strokeWidth="5" strokeDasharray="25 75" strokeDashoffset="-40" />
                     <circle cx="40" cy="25" r="16" fill="none" stroke="rgba(25,92,130,0.2)" strokeWidth="5" strokeDasharray="20 80" strokeDashoffset="-65" />
                     <text x="40" y="27" textAnchor="middle" fontSize="7" fontWeight="800" fill="#0f172a">
-                      {active === 'dashboard' ? '72k' : active === 'equipe' ? '45' : active === 'finance' ? '156k' : '12'}
+                      {active === 'dashboard' ? '72k' : active === 'equipe' ? '45' : active === 'finance' ? '156k' : active === 'commerce' ? '12' : active === 'banque' ? '84k' : active === 'calendrier' ? '24' : active === 'projet' ? '9' : '142'}
                     </text>
                   </svg>
                 </div>
@@ -525,13 +648,13 @@ function InteractiveMockup() {
               {/* User message 2 */}
               <div style={{ alignSelf: 'flex-end', maxWidth: '90%' }}>
                 <div style={{ background: '#195C82', color: '#fff', padding: '5px 8px', borderRadius: '10px 10px 3px 10px', fontSize: '.55rem', lineHeight: 1.4 }}>
-                  {active === 'dashboard' ? 'Ajoute un suivi tresorerie' : active === 'equipe' ? 'Et le trombinoscope ?' : active === 'finance' ? 'Ajoute le previsionnel' : 'Et les devis ?'}
+                  {active === 'dashboard' ? 'Ajoute un suivi tresorerie' : active === 'equipe' ? 'Et le trombinoscope ?' : active === 'finance' ? 'Ajoute le previsionnel' : active === 'commerce' ? 'Et les devis ?' : active === 'banque' ? 'Ajoute les virements SEPA' : active === 'calendrier' ? 'Synchronise avec Outlook' : active === 'projet' ? 'Ajoute le suivi budgetaire' : 'Ajoute les templates'}
                 </div>
               </div>
               {/* AI response 2 */}
               <div style={{ alignSelf: 'flex-start', maxWidth: '95%' }}>
                 <div style={{ background: 'rgba(255,255,255,0.06)', color: '#e2e8f0', padding: '5px 8px', borderRadius: '10px 10px 10px 3px', fontSize: '.55rem', lineHeight: 1.4, border: '1px solid rgba(255,255,255,0.06)' }}>
-                  {(active === 'dashboard' ? ['✓ Widget tresorerie ajoute', '✓ Previsionnel J+30/60/90'] : active === 'equipe' ? ['✓ Trombinoscope ajoute', '✓ Organigramme interactif'] : active === 'finance' ? ['✓ Previsionnel J+30/60/90', '✓ Alertes seuils auto'] : ['✓ Module devis ajoute', '✓ Conversion devis → facture']).map((line, i) => (
+                  {(active === 'dashboard' ? ['✓ Widget tresorerie ajoute', '✓ Previsionnel J+30/60/90'] : active === 'equipe' ? ['✓ Trombinoscope ajoute', '✓ Organigramme interactif'] : active === 'finance' ? ['✓ Previsionnel J+30/60/90', '✓ Alertes seuils auto'] : active === 'commerce' ? ['✓ Module devis ajoute', '✓ Conversion devis → facture'] : active === 'banque' ? ['✓ Virements SEPA', '✓ Prelevements auto'] : active === 'calendrier' ? ['✓ Sync Outlook bidirectionnelle', '✓ Invitations auto'] : active === 'projet' ? ['✓ Budget par projet', '✓ Alertes depassement'] : ['✓ Templates email', '✓ Suivi ouvertures']).map((line, i) => (
                     <div key={i} style={{ color: '#22c55e', marginBottom: 1 }}>{line}</div>
                   ))}
                 </div>
