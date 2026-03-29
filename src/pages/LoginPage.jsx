@@ -1102,34 +1102,39 @@ export default function LoginPage() {
 
         </div>
 
-        {/* Hero : texte centré + animation + CTA */}
-        <div style={{ maxWidth: 800, margin: '0 auto', padding: '0 2rem', textAlign: 'center' }}>
-          <h1 style={{
-            fontSize: 'clamp(2rem, 4vw, 3.2rem)', fontWeight: 800, lineHeight: 1.2,
-            color: S.dark, margin: '0 0 1rem', letterSpacing: '-0.02em',
-          }}>
-            <span style={{ display: 'block' }}>Créez en un seul prompt</span>
-            <span style={{ display: 'block', minHeight: '4.5rem', overflow: 'hidden' }}>votre <RotatingText /></span>
-          </h1>
+        {/* Hero grid : texte gauche + animation droite (stack mobile) */}
+        <div className="landing-hero-grid" style={{
+          maxWidth: 1200, margin: '0 auto', padding: '0 2rem',
+          display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '3rem', alignItems: 'center',
+        }}>
+          <div>
+            <h1 style={{
+              fontSize: 'clamp(2rem, 3.5vw, 3rem)', fontWeight: 800, lineHeight: 1.2,
+              color: S.dark, margin: '0 0 1.25rem', letterSpacing: '-0.02em',
+            }}>
+              <span style={{ display: 'block' }}>Créez en un seul prompt</span>
+              <span style={{ display: 'block', minHeight: '7rem', overflow: 'hidden' }}>votre <RotatingText /></span>
+            </h1>
 
-          <p style={{
-            fontSize: '1.1rem', color: S.gray, lineHeight: 1.65, margin: '0 auto 1.5rem', maxWidth: 560,
-          }}>
-            Décrivez votre besoin. TimeBlast le génère. Nativement interconnecté à tous les logiciels de votre SI.
-          </p>
+            <p style={{
+              fontSize: '1.1rem', color: S.gray, lineHeight: 1.65, margin: '0 0 2rem', maxWidth: 520,
+            }}>
+              Décrivez votre besoin. TimeBlast le génère. Nativement interconnecté à tous les logiciels de votre SI.
+            </p>
 
-          {/* Animation entre texte et boutons */}
-          <div className="multiprise-container" style={{ maxWidth: 320, margin: '0 auto 2rem' }}>
-            <BiHubVisual />
+            <div className="landing-hero-actions" style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
+              <button className="landing-btn-primary" onClick={() => setShowLogin(true)}>
+                Demarrer mon projet →
+              </button>
+              <a href="#comment" className="landing-btn-secondary">
+                Comment ca marche
+              </a>
+            </div>
           </div>
 
-          <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', justifyContent: 'center' }}>
-            <button className="landing-btn-primary" onClick={() => setShowLogin(true)}>
-              Demarrer mon projet →
-            </button>
-            <a href="#comment" className="landing-btn-secondary">
-              Comment ca marche
-            </a>
+          {/* Animation — passe sous le texte en responsive */}
+          <div className="multiprise-container" style={{ maxWidth: 400, margin: '0 auto' }}>
+            <BiHubVisual />
           </div>
         </div>
       </section>
