@@ -175,7 +175,7 @@ function RotatingText() {
     'outil de comptabilite',
     'plateforme RH',
     'tableau de bord',
-    'tout ce que vous voulez',
+    'logiciel metier',
   ]
   const [index, setIndex] = useState(0)
   const [displayed, setDisplayed] = useState('')
@@ -674,7 +674,7 @@ export default function LoginPage() {
           }}
           onMouseEnter={e => { e.currentTarget.style.borderColor = 'rgba(25,92,130,0.3)'; e.currentTarget.style.background = 'rgba(25,92,130,0.06)' }}
           onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(25,92,130,0.12)'; e.currentTarget.style.background = 'rgba(25,92,130,0.04)' }}>
-            Propulse par 40 ans d'expertise SRA →
+            Propulsé par 40 ans d'expertise SRA →
           </a>
 
         </div>
