@@ -3,37 +3,26 @@ import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
 import { supabase } from '../lib/supabase'
 
-// ── Modules décisionnels ──
+// ── Modules decisionnels ──
 const BI_MODULES = [
-  { icon: '📊', title: 'Tableaux de bord', desc: 'KPIs temps réel, drill-down multi-axes, alertes automatiques sur seuils.' },
-  { icon: '💰', title: 'Pilotage financier', desc: 'Trésorerie prévisionnelle, marge par projet, rapprochement bancaire IA.' },
-  { icon: '⏱', title: 'Suivi d\'activité', desc: 'Saisie des temps, taux d\'occupation, rentabilité collaborateur.' },
-  { icon: '🎯', title: 'Pipeline commercial', desc: 'Kanban deals, prévision CA, scoring leads par intelligence artificielle.' },
-  { icon: '🔗', title: 'Connecteurs natifs', desc: '30+ intégrations : Sage, Pennylane, Stripe, HubSpot, PayFit, Slack…' },
-  { icon: '🤖', title: 'IA décisionnelle', desc: 'Anomalies détectées, recommandations contextuelles, agents autonomes.' },
-]
-
-const COMPARE = [
-  { feature: 'Prix accessible PME', tb: true, others: false },
-  { feature: 'BI + ERP + CRM unifié', tb: true, others: false },
-  { feature: 'IA agentique intégrée', tb: true, others: false },
-  { feature: 'Multi-sociétés natif', tb: true, others: false },
-  { feature: 'Connecteurs natifs 30+', tb: true, others: true },
-  { feature: 'Tableaux de bord', tb: true, others: true },
-  { feature: 'Pas besoin d\'intégrateur', tb: true, others: false },
-  { feature: 'Données propres dès J1', tb: true, others: false },
+  { icon: '📊', title: 'Tableaux de bord', desc: 'KPIs temps reel, drill-down multi-axes, alertes automatiques sur seuils.' },
+  { icon: '💰', title: 'Pilotage financier', desc: 'Tresorerie previsionnelle, marge par projet, rapprochement bancaire IA.' },
+  { icon: '⏱', title: 'Suivi d\'activite', desc: 'Saisie des temps, taux d\'occupation, rentabilite collaborateur.' },
+  { icon: '🎯', title: 'Pipeline commercial', desc: 'Kanban deals, prevision CA, scoring leads par intelligence artificielle.' },
+  { icon: '🔗', title: 'Connecteurs natifs', desc: '30+ integrations : Sage, Pennylane, Stripe, HubSpot, PayFit, Slack...' },
+  { icon: '🤖', title: 'IA decisionnelle', desc: 'Anomalies detectees, recommandations contextuelles, agents autonomes.' },
 ]
 
 const PERSONAS = [
-  { icon: '👔', role: 'Dirigeant', need: 'Vue 360° de mon entreprise en 1 écran', solution: 'Dashboard décisionnel avec alertes IA sur CA, trésorerie et rentabilité.' },
-  { icon: '📈', role: 'DAF / Comptable', need: 'Arrêtés mensuels en 2h au lieu de 2 jours', solution: 'Import FEC, rapprochement bancaire IA, prévisionnel automatisé.' },
-  { icon: '🎯', role: 'Commercial', need: 'Pipeline clair et prévisions fiables', solution: 'Kanban deals, scoring IA, relances automatiques, suivi multi-sociétés.' },
-  { icon: '👥', role: 'Manager', need: 'Savoir où en sont mes équipes en temps réel', solution: 'Taux d\'occupation, validation temps, alertes dépassement budget projet.' },
+  { icon: '👔', role: 'Dirigeant', need: 'Vue 360° de mon entreprise en 1 ecran', solution: 'Dashboard decisionnel avec alertes IA sur CA, tresorerie et rentabilite.' },
+  { icon: '📈', role: 'DAF / Comptable', need: 'Arretes mensuels en 2h au lieu de 2 jours', solution: 'Import FEC, rapprochement bancaire IA, previsionnel automatise.' },
+  { icon: '🎯', role: 'Commercial', need: 'Pipeline clair et previsions fiables', solution: 'Kanban deals, scoring IA, relances automatiques, suivi multi-societes.' },
+  { icon: '👥', role: 'Manager', need: 'Savoir ou en sont mes equipes en temps reel', solution: 'Taux d\'occupation, validation temps, alertes depassement budget projet.' },
 ]
 
 const STATS = [
-  { value: '48h', label: 'pour générer votre outil' },
-  { value: '11', label: 'modules métier disponibles' },
+  { value: '48h', label: 'pour generer votre outil' },
+  { value: '11', label: 'modules metier disponibles' },
   { value: '0', label: 'ligne de code requise' },
   { value: 'IA', label: 'qui code pour vous' },
 ]
@@ -82,35 +71,19 @@ const CONNECTORS = [
 
 const CATEGORIES = [
   { id: 'all',     label: 'Tous',           icon: '⚡' },
-  { id: 'compta',  label: 'Comptabilité',   icon: '📊' },
+  { id: 'compta',  label: 'Comptabilite',   icon: '📊' },
   { id: 'crm',     label: 'CRM',            icon: '🎯' },
   { id: 'finance', label: 'Finance',        icon: '💳' },
   { id: 'rh',      label: 'RH & Paie',     icon: '👥' },
   { id: 'comm',    label: 'Communication',  icon: '💬' },
-  { id: 'prod',    label: 'Productivité',   icon: '🚀' },
+  { id: 'prod',    label: 'Productivite',   icon: '🚀' },
   { id: 'data',    label: 'Data & API',     icon: '🔗' },
   { id: 'ia',      label: 'IA',             icon: '🤖' },
 ]
 
-const ROADMAP = [
-  {
-    phase: 'Phase 1', timing: 'Disponible', color: '#16a34a',
-    title: 'Données propres & connectées',
-    items: ['Qualité des données & normalisation', 'Connecteurs natifs (Sage, Pennylane, Stripe…)', 'Conformité e-facture 2026', 'Tableaux de bord multi-axes'],
-  },
-  {
-    phase: 'Phase 2', timing: '3–6 mois', color: '#1D9BF0',
-    title: 'IA contextuelle & prédictive',
-    items: ['Assistant IA en langage naturel', 'Prévisions trésorerie & CA', 'Détection d\'anomalies comptables', 'Scoring leads automatique'],
-  },
-  {
-    phase: 'Phase 3', timing: '6–12 mois', color: '#7c3aed',
-    title: 'Agents IA autonomes',
-    items: ['Relances clients automatiques', 'Validation notes de frais par IA', 'Alertes trésorerie intelligentes', 'Workflows IA sur mesure'],
-  },
-]
+const BI_PREVIEWS = []
 
-// ── Composant SVG — Hub décisionnel ────────────────────────────────────────
+// ── Composant SVG — Hub decisionnel ────────────────────────────────────────
 function BiHubVisual() {
   const B = '#2B4C7E'
   const sources = [
@@ -143,7 +116,7 @@ function BiHubVisual() {
         <circle cx={cx} cy={cy} r={R + 40} fill="none" stroke={B} strokeWidth="0.5" opacity="0.05" />
         <circle cx={cx} cy={cy} r={R + 20} fill="none" stroke={B} strokeWidth="0.5" opacity="0.08" strokeDasharray="4 4" />
 
-        {/* Connexions + billes animées — masquées derrière le logo */}
+        {/* Connexions + billes animees — masquees derriere le logo */}
         <g mask="url(#hubMask)">
         {sources.map((src, i) => {
           const a = (src.angle - 90) * Math.PI / 180
@@ -197,21 +170,21 @@ function BiHubVisual() {
 function InteractiveMockup() {
   const [active, setActive] = useState('dashboard')
   const MODULES = [
-    { id: 'dashboard', label: 'Dashboard', icon: '📊', desc: 'Tableau de bord avec KPI en temps réel' },
+    { id: 'dashboard', label: 'Dashboard', icon: '📊', desc: 'Tableau de bord avec KPI en temps reel' },
     { id: 'crm', label: 'CRM', icon: '🎯', desc: 'Gestion clients, contacts et pipeline commercial' },
     { id: 'facturation', label: 'Facturation', icon: '🧾', desc: 'Devis, factures, relances et e-facture' },
     { id: 'rh', label: 'RH & Paie', icon: '👥', desc: 'Collaborateurs, absences, temps et paie' },
-    { id: 'compta', label: 'Comptabilité', icon: '💰', desc: 'Écritures, FEC, rapprochement bancaire' },
-    { id: 'projet', label: 'Projets', icon: '📋', desc: 'Planification, suivi et rentabilité projet' },
+    { id: 'compta', label: 'Comptabilite', icon: '💰', desc: 'Ecritures, FEC, rapprochement bancaire' },
+    { id: 'projet', label: 'Projets', icon: '📋', desc: 'Planification, suivi et rentabilite projet' },
     { id: 'site', label: 'Site web', icon: '🌐', desc: 'Vitrine, e-commerce, blog, portail client' },
   ]
   const PREVIEWS = {
-    dashboard: { title: 'Tableau de bord', kpis: ['CA: 72 450 €', 'Pipeline: 343k €', 'Marge: 68%', 'Tréso: 62k €'], chart: true },
-    crm: { title: 'Pipeline commercial', kpis: ['Leads: 47', 'Opportunités: 12', 'CA gagné: 185k €', 'Taux: 34%'], chart: false },
-    facturation: { title: 'Facturation', kpis: ['Factures: 156', 'En attente: 23k €', 'En retard: 8k €', 'Payées: 245k €'], chart: false },
-    rh: { title: 'Équipe', kpis: ['Collaborateurs: 45', 'Absents: 3', 'Heures saisies: 1247h', 'Taux occ.: 94%'], chart: false },
-    compta: { title: 'Comptabilité', kpis: ['Écritures: 4 521', 'Rapproché: 98%', 'FEC: OK', 'Balance: 0.00 €'], chart: false },
-    projet: { title: 'Projets en cours', kpis: ['Actifs: 8', 'Budget restant: 125k €', 'Retard: 1', 'Terminés: 23'], chart: false },
+    dashboard: { title: 'Tableau de bord', kpis: ['CA: 72 450 €', 'Pipeline: 343k €', 'Marge: 68%', 'Treso: 62k €'], chart: true },
+    crm: { title: 'Pipeline commercial', kpis: ['Leads: 47', 'Opportunites: 12', 'CA gagne: 185k €', 'Taux: 34%'], chart: false },
+    facturation: { title: 'Facturation', kpis: ['Factures: 156', 'En attente: 23k €', 'En retard: 8k €', 'Payees: 245k €'], chart: false },
+    rh: { title: 'Equipe', kpis: ['Collaborateurs: 45', 'Absents: 3', 'Heures saisies: 1247h', 'Taux occ.: 94%'], chart: false },
+    compta: { title: 'Comptabilite', kpis: ['Ecritures: 4 521', 'Rapproche: 98%', 'FEC: OK', 'Balance: 0.00 €'], chart: false },
+    projet: { title: 'Projets en cours', kpis: ['Actifs: 8', 'Budget restant: 125k €', 'Retard: 1', 'Termines: 23'], chart: false },
     site: { title: 'Site web', kpis: ['Visiteurs: 3 240', 'Pages vues: 8 901', 'Taux rebond: 42%', 'Leads: 18'], chart: false },
   }
   const p = PREVIEWS[active]
@@ -219,7 +192,7 @@ function InteractiveMockup() {
   return (
     <div style={{ display: 'flex', gap: 16, alignItems: 'flex-start', width: '100%' }}>
       {/* Mockup preview — taille fixe */}
-      <div style={{ flex: '1 1 65%', minWidth: 0, background: '#fff', borderRadius: 16, boxShadow: '0 20px 60px rgba(0,0,0,.12)', overflow: 'hidden', border: '1px solid #e2e8f0' }}>
+      <div style={{ flex: '1 1 65%', minWidth: 0, background: '#fff', borderRadius: 16, boxShadow: '0 20px 60px rgba(0,212,255,.08), 0 8px 32px rgba(0,0,0,.06)', overflow: 'hidden', border: '1px solid rgba(0,212,255,0.15)' }}>
         {/* Browser bar */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '10px 14px', background: '#f8fafc', borderBottom: '1px solid #e2e8f0' }}>
           <div style={{ display: 'flex', gap: 5 }}>
@@ -227,7 +200,7 @@ function InteractiveMockup() {
             <span style={{ width: 10, height: 10, borderRadius: '50%', background: '#ffbd2e' }} />
             <span style={{ width: 10, height: 10, borderRadius: '50%', background: '#28c840' }} />
           </div>
-          <div style={{ flex: 1, textAlign: 'center', fontSize: '.7rem', color: '#94a3b8' }}>🔒 app.timeblast.ai</div>
+          <div style={{ flex: 1, textAlign: 'center', fontSize: '.7rem', color: '#94a3b8' }}>app.timeblast.ai</div>
         </div>
         {/* App content */}
         <div style={{ display: 'flex', minHeight: 280 }}>
@@ -265,15 +238,15 @@ function InteractiveMockup() {
             <div style={{ background: '#fff', borderRadius: 8, border: '1px solid #e2e8f0', padding: '12px', minHeight: 120 }}>
               {p.chart ? (
                 <svg viewBox="0 0 300 60" style={{ width: '100%' }}>
-                  <defs><linearGradient id="mg" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="#195C82" stopOpacity=".15" /><stop offset="100%" stopColor="#195C82" stopOpacity="0" /></linearGradient></defs>
+                  <defs><linearGradient id="mg" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="#00D4FF" stopOpacity=".15" /><stop offset="100%" stopColor="#00D4FF" stopOpacity="0" /></linearGradient></defs>
                   <path d="M0,50 30,45 60,40 90,30 120,35 150,25 180,20 210,18 240,15 270,12 300,6 300,60 0,60Z" fill="url(#mg)" />
-                  <polyline points="0,50 30,45 60,40 90,30 120,35 150,25 180,20 210,18 240,15 270,12 300,6" fill="none" stroke="#195C82" strokeWidth="2" strokeLinejoin="round" />
+                  <polyline points="0,50 30,45 60,40 90,30 120,35 150,25 180,20 210,18 240,15 270,12 300,6" fill="none" stroke="#00D4FF" strokeWidth="2" strokeLinejoin="round" />
                 </svg>
               ) : (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
                   {[1,2,3,4].map(i => (
                     <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '6px 0', borderBottom: '1px solid #f1f5f9' }}>
-                      <div style={{ width: 24, height: 24, borderRadius: 6, background: '#195C8210', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10 }}>
+                      <div style={{ width: 24, height: 24, borderRadius: 6, background: '#00D4FF10', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10 }}>
                         {MODULES.find(m => m.id === active)?.icon}
                       </div>
                       <div style={{ flex: 1 }}>
@@ -291,11 +264,11 @@ function InteractiveMockup() {
 
       {/* Module selector — compact */}
       <div style={{
-        background: '#fff', borderRadius: 14, padding: '1.2rem', boxShadow: '0 10px 40px rgba(0,0,0,.08)',
-        border: '1px solid #e2e8f0', flex: '0 0 190px',
+        background: '#fff', borderRadius: 14, padding: '1.2rem', boxShadow: '0 10px 40px rgba(0,212,255,.06)',
+        border: '1px solid rgba(0,212,255,0.12)', flex: '0 0 190px',
       }}>
-        <h3 style={{ margin: '0 0 .75rem', fontSize: '.85rem', fontWeight: 800, color: '#1e293b', textAlign: 'center' }}>
-          Que souhaitez-vous créer ?
+        <h3 style={{ margin: '0 0 .75rem', fontSize: '.85rem', fontWeight: 800, color: '#0f172a', textAlign: 'center' }}>
+          Que souhaitez-vous creer ?
         </h3>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
           {MODULES.map(m => (
@@ -304,8 +277,8 @@ function InteractiveMockup() {
               style={{
                 padding: '8px 10px', borderRadius: 8, cursor: 'pointer',
                 display: 'flex', alignItems: 'center', gap: 8,
-                border: active === m.id ? '2px solid #195C82' : '1px solid #e2e8f0',
-                background: active === m.id ? '#195C8208' : '#fafbfc',
+                border: active === m.id ? '2px solid #00D4FF' : '1px solid #e2e8f0',
+                background: active === m.id ? 'rgba(0,212,255,0.04)' : '#fafbfc',
                 transition: 'all .15s',
               }}>
               <span style={{ fontSize: 16 }}>{m.icon}</span>
@@ -313,13 +286,32 @@ function InteractiveMockup() {
             </div>
           ))}
         </div>
-        <button className="landing-btn-primary" onClick={() => document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' })}
-          style={{ width: '100%', marginTop: '.75rem', padding: '.6rem', fontSize: '.8rem' }}>
-          Démarrer →
+        <button onClick={() => document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' })}
+          style={{
+            width: '100%', marginTop: '.75rem', padding: '.6rem', fontSize: '.8rem',
+            background: '#00D4FF', color: '#fff', border: 'none', borderRadius: 8,
+            fontWeight: 700, cursor: 'pointer',
+          }}>
+          Demarrer
         </button>
       </div>
     </div>
   )
+}
+
+// ── Styles constants ──
+const S = {
+  // Colors
+  neon: '#00D4FF',
+  sra: '#195C82',
+  dark: '#0f172a',
+  gray: '#64748b',
+  lightGray: '#94a3b8',
+  bg: '#fff',
+  bgAlt: '#fafbfc',
+  borderGlow: 'rgba(0,212,255,0.12)',
+  shadowGlow: 'rgba(0,212,255,0.08)',
+  gradient: 'linear-gradient(135deg, #00D4FF, #195C82)',
 }
 
 // ── Page principale ──────────────────────────────────────────────────────────
@@ -336,7 +328,7 @@ export default function LoginPage() {
 
   const filteredConnectors = activeCat === 'all' ? CONNECTORS : CONNECTORS.filter(c => c.cat === activeCat)
 
-  // Comptes récents
+  // Comptes recents
   const [recentAccounts, setRecentAccounts] = useState([])
   const isSwitching = localStorage.getItem('tb_switch_account') === 'true'
 
@@ -401,23 +393,61 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="landing">
-      {/* ── Navbar ── */}
-      <nav className="landing-nav">
-        <div className="landing-nav-inner">
-          <div className="landing-logo" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })} style={{ cursor: 'pointer' }}>
-            <img src="/logo-full.svg" alt="TimeBlast" style={{ height: 64 }} />
+    <div className="landing" style={{ background: '#fff', minHeight: '100vh' }}>
+
+      {/* ══════════════════════════════════════════════════════════════════
+          1. NAVBAR
+      ══════════════════════════════════════════════════════════════════ */}
+      <nav style={{
+        position: 'fixed', top: 0, left: 0, right: 0, zIndex: 1000,
+        background: 'rgba(255,255,255,0.85)', backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)',
+        borderBottom: '1px solid rgba(0,212,255,0.08)',
+      }}>
+        <div style={{
+          maxWidth: 1200, margin: '0 auto', padding: '0 2rem',
+          display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: 64,
+        }}>
+          <div style={{ cursor: 'pointer', flexShrink: 0 }} onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
+            <img src="/logo-full.svg" alt="TimeBlast" style={{ height: 38 }} />
           </div>
-          <div className="landing-nav-links">
-            <a href="#comment">Comment ça marche</a>
-            <a href="#modules">Modules</a>
-            <a href="https://www.groupe-sra.fr" target="_blank" rel="noopener noreferrer">Groupe SRA</a>
-            <a href="#contact">Contact</a>
-            <a href="/about">À propos</a>
-            <a href="/facture-electronique" style={{ color: '#f59e0b', fontWeight: '600' }}>E-Facture 2026</a>
+
+          <div style={{
+            display: 'flex', alignItems: 'center', gap: '2rem', fontSize: '.85rem', fontWeight: 500,
+          }} className="landing-nav-links">
+            <a href="#comment" style={{ color: S.gray, textDecoration: 'none', transition: 'color .2s' }}
+              onMouseEnter={e => e.target.style.color = S.neon} onMouseLeave={e => e.target.style.color = S.gray}>
+              Comment ca marche
+            </a>
+            <a href="#modules" style={{ color: S.gray, textDecoration: 'none', transition: 'color .2s' }}
+              onMouseEnter={e => e.target.style.color = S.neon} onMouseLeave={e => e.target.style.color = S.gray}>
+              Modules
+            </a>
+            <a href="https://www.groupe-sra.fr" target="_blank" rel="noopener noreferrer"
+              style={{ color: S.gray, textDecoration: 'none', transition: 'color .2s' }}
+              onMouseEnter={e => e.target.style.color = S.neon} onMouseLeave={e => e.target.style.color = S.gray}>
+              Groupe SRA
+            </a>
+            <a href="/about" style={{ color: S.gray, textDecoration: 'none', transition: 'color .2s' }}
+              onMouseEnter={e => e.target.style.color = S.neon} onMouseLeave={e => e.target.style.color = S.gray}>
+              A propos
+            </a>
+            <a href="/facture-electronique" style={{ color: '#f59e0b', textDecoration: 'none', fontWeight: 600 }}>
+              E-Facture 2026
+            </a>
           </div>
-          <button className="landing-burger" onClick={() => setMobileMenu(true)}>☰</button>
-          <button className="landing-nav-btn" onClick={() => setShowLogin(true)}>
+
+          <button className="landing-burger" onClick={() => setMobileMenu(true)} style={{
+            display: 'none', background: 'none', border: 'none', fontSize: '1.5rem', cursor: 'pointer', color: S.dark,
+          }}>☰</button>
+
+          <button onClick={() => setShowLogin(true)} style={{
+            padding: '8px 20px', borderRadius: 8, background: 'transparent',
+            border: '1.5px solid #00D4FF', color: '#00D4FF', fontWeight: 600,
+            fontSize: '.85rem', cursor: 'pointer', transition: 'all .2s',
+            boxShadow: '0 0 20px rgba(0,212,255,0.1)',
+          }}
+          onMouseEnter={e => { e.target.style.background = '#00D4FF'; e.target.style.color = '#fff'; e.target.style.boxShadow = '0 0 30px rgba(0,212,255,0.3)' }}
+          onMouseLeave={e => { e.target.style.background = 'transparent'; e.target.style.color = '#00D4FF'; e.target.style.boxShadow = '0 0 20px rgba(0,212,255,0.1)' }}>
             Se connecter
           </button>
         </div>
@@ -427,653 +457,530 @@ export default function LoginPage() {
       <div className={`landing-mobile-menu ${mobileMenu ? 'open' : ''}`}>
         <button className="landing-mobile-close" onClick={() => setMobileMenu(false)}>✕</button>
         <img src="/logo-full.svg" alt="TimeBlast" style={{ height: 40, marginBottom: '1rem' }} />
-        <a href="#comment" onClick={() => setMobileMenu(false)}>Comment ça marche</a>
+        <a href="#comment" onClick={() => setMobileMenu(false)}>Comment ca marche</a>
         <a href="#modules" onClick={() => setMobileMenu(false)}>Modules</a>
         <a href="https://www.groupe-sra.fr" target="_blank" rel="noopener noreferrer">Groupe SRA</a>
         <a href="#contact" onClick={() => setMobileMenu(false)}>Contact</a>
-        <a href="/about" onClick={() => setMobileMenu(false)}>À propos</a>
+        <a href="/about" onClick={() => setMobileMenu(false)}>A propos</a>
         <a href="/facture-electronique" style={{ color: '#f59e0b' }}>E-Facture 2026</a>
-        <button className="landing-btn-primary" onClick={() => { setMobileMenu(false); setShowLogin(true) }} style={{ marginTop: '1rem' }}>
+        <button onClick={() => { setMobileMenu(false); setShowLogin(true) }} style={{
+          marginTop: '1rem', padding: '12px 24px', borderRadius: 8, background: '#00D4FF',
+          color: '#fff', border: 'none', fontWeight: 700, fontSize: '.95rem', cursor: 'pointer', width: '100%',
+        }}>
           Se connecter
         </button>
       </div>
 
       {/* ══════════════════════════════════════════════════════════════════
-          HERO — Positionnement BI décisionnel
+          2. HERO
       ══════════════════════════════════════════════════════════════════ */}
-      <section className="landing-hero">
-        <div className="landing-hero-bg" />
-        <div className="landing-hero-grid">
-          <div className="landing-hero-text">
-            <div className="landing-hero-badge">⚡ Vibe-coding pour logiciels d'entreprise</div>
-            <h1 className="landing-hero-title">
-              Créez en un seul prompt votre site internet, votre logiciel de gestion ou votre application métier
+      <section style={{
+        paddingTop: 120, paddingBottom: 60, background: '#fff',
+        position: 'relative', overflow: 'hidden',
+      }}>
+        {/* Subtle gradient orb background */}
+        <div style={{
+          position: 'absolute', top: -200, right: -200, width: 600, height: 600,
+          background: 'radial-gradient(circle, rgba(0,212,255,0.06) 0%, transparent 70%)',
+          pointerEvents: 'none',
+        }} />
+        <div style={{
+          position: 'absolute', bottom: -100, left: -100, width: 400, height: 400,
+          background: 'radial-gradient(circle, rgba(25,92,130,0.04) 0%, transparent 70%)',
+          pointerEvents: 'none',
+        }} />
+
+        <div className="landing-hero-grid" style={{
+          maxWidth: 1200, margin: '0 auto', padding: '0 2rem',
+          display: 'grid', gridTemplateColumns: '1fr 1.1fr', gap: '3rem', alignItems: 'center',
+        }}>
+          <div>
+            {/* Badge */}
+            <div style={{
+              display: 'inline-flex', alignItems: 'center', gap: 8, padding: '6px 16px',
+              borderRadius: 100, background: 'rgba(0,212,255,0.06)', border: '1px solid rgba(0,212,255,0.15)',
+              fontSize: '.82rem', fontWeight: 600, color: S.sra, marginBottom: '1.5rem',
+            }}>
+              <span style={{ fontSize: '1rem' }}>⚡</span> Propulse par 40 ans d'expertise SRA
+            </div>
+
+            <h1 style={{
+              fontSize: 'clamp(2rem, 3.5vw, 3rem)', fontWeight: 800, lineHeight: 1.15,
+              color: S.dark, margin: '0 0 1.25rem', letterSpacing: '-0.02em',
+            }}>
+              Creez en un seul prompt votre{' '}
+              <span style={{
+                background: S.gradient, WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
+                backgroundClip: 'text',
+              }}>
+                site internet
+              </span>
+              , votre logiciel de gestion ou votre application metier
             </h1>
-            <p className="landing-hero-subtitle" style={{ fontSize: '1.05rem', fontWeight: 600, color: '#64748b', marginBottom: '1rem' }}>
-              Décrivez votre besoin. TimeBlast le génère.
+
+            <p style={{
+              fontSize: '1.1rem', color: S.gray, lineHeight: 1.65, margin: '0 0 2rem', maxWidth: 520,
+            }}>
+              Decrivez votre besoin. TimeBlast le genere. Nativement interconnecte a tous les logiciels de votre SI.
             </p>
-            <p className="landing-hero-subtitle">
-              TimeBlast est la <strong>première plateforme de vibe-coding</strong> pour entreprises.
-              Site web, CRM, facturation, RH, application métier — décrivez ce dont vous avez besoin,
-              <strong> l'IA construit votre outil sur mesure en quelques jours</strong>.
-              Le logiciel généré est <strong>nativement interconnecté à tous les logiciels de votre SI</strong>.
-            </p>
-            <div className="landing-hero-actions">
-              <button className="landing-btn-primary" onClick={() => setShowLogin(true)}>
-                Démarrer mon projet →
+
+            <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
+              <button onClick={() => document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' })} style={{
+                padding: '14px 28px', borderRadius: 10, background: '#00D4FF', color: '#fff',
+                border: 'none', fontWeight: 700, fontSize: '1rem', cursor: 'pointer',
+                boxShadow: '0 4px 20px rgba(0,212,255,0.35)', transition: 'all .25s',
+              }}
+              onMouseEnter={e => { e.target.style.transform = 'translateY(-2px)'; e.target.style.boxShadow = '0 8px 30px rgba(0,212,255,0.45)' }}
+              onMouseLeave={e => { e.target.style.transform = 'none'; e.target.style.boxShadow = '0 4px 20px rgba(0,212,255,0.35)' }}>
+                Demarrer mon projet →
               </button>
-              <a href="#comment" className="landing-btn-secondary">
-                Comment ça marche
+              <a href="#comment" style={{
+                padding: '14px 28px', borderRadius: 10, background: 'transparent',
+                border: '1.5px solid #e2e8f0', color: S.dark, fontWeight: 600,
+                fontSize: '1rem', textDecoration: 'none', transition: 'all .25s',
+                display: 'inline-flex', alignItems: 'center',
+              }}
+              onMouseEnter={e => { e.target.style.borderColor = '#00D4FF'; e.target.style.color = '#00D4FF' }}
+              onMouseLeave={e => { e.target.style.borderColor = '#e2e8f0'; e.target.style.color = S.dark }}>
+                Comment ca marche
               </a>
             </div>
           </div>
-          <div className="landing-hero-visual">
+
+          <div className="landing-hero-visual" style={{ position: 'relative' }}>
             <InteractiveMockup />
           </div>
         </div>
       </section>
 
-      {/* ── Stats ── */}
-      <section style={{ background: '#195C82', padding: '2.5rem 2rem' }} id="stats">
-        <div style={{ display: 'flex', justifyContent: 'center', gap: '3rem', flexWrap: 'wrap', maxWidth: 1060, margin: '0 auto' }}>
+      {/* ══════════════════════════════════════════════════════════════════
+          3. STATS BAR
+      ══════════════════════════════════════════════════════════════════ */}
+      <section style={{
+        background: '#fff', padding: '3rem 2rem',
+        borderTop: '1px solid rgba(0,212,255,0.08)', borderBottom: '1px solid rgba(0,212,255,0.08)',
+      }}>
+        <div style={{
+          display: 'flex', justifyContent: 'center', gap: '4rem', flexWrap: 'wrap',
+          maxWidth: 900, margin: '0 auto',
+        }}>
           {STATS.map((s, i) => (
             <div key={i} style={{ textAlign: 'center' }}>
-              <span style={{ display: 'block', fontSize: '2.4rem', fontWeight: 800, color: '#fff' }}>{s.value}</span>
-              <span style={{ display: 'block', fontSize: '.85rem', color: 'rgba(255,255,255,0.6)', marginTop: '.2rem' }}>{s.label}</span>
+              <span style={{
+                display: 'block', fontSize: '2.8rem', fontWeight: 800,
+                background: S.gradient, WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
+                backgroundClip: 'text', lineHeight: 1.1,
+              }}>{s.value}</span>
+              <span style={{ display: 'block', fontSize: '.85rem', color: S.gray, marginTop: '.35rem', fontWeight: 500 }}>
+                {s.label}
+              </span>
             </div>
           ))}
-        </div>
-        {/* Mockup centré, à cheval sur la transition bleu → blanc */}
-        <div className="mockup-wrapper" style={{ maxWidth: 1060, margin: '0 auto' }}>
-          <div className="mockup-scale" style={{ perspective: '1200px' }}>
-          <div className="mockup-browser" style={{ transform: 'rotateX(1.5deg)', transformOrigin: 'bottom center', boxShadow: '0 25px 60px rgba(0,0,0,0.2), 0 0 0 1px rgba(0,0,0,.06)' }}>
-            {/* macOS bar */}
-            <div className="mockup-browser-bar">
-              <div className="mockup-dots">
-                <span style={{ background: '#ff5f57' }} /><span style={{ background: '#ffbd2e' }} /><span style={{ background: '#28c840' }} />
-              </div>
-              <div style={{ flex: 1, display: 'flex', justifyContent: 'center' }}>
-                <div className="mockup-url"><span style={{ fontSize: 10 }}>🔒</span> app.timeblast.ai</div>
-              </div>
-              <div style={{ display: 'flex', gap: 8, opacity: 0.4, fontSize: 12 }}>◀ ▶ ↻</div>
-            </div>
-
-            <div className="mockup-content" style={{ minHeight: 420 }}>
-              {/* ── Sidebar dark ── */}
-              <div className="mockup-sidebar" style={{ width: 52, background: '#0f2b42', padding: '12px 10px', gap: 2, borderRight: 'none' }}>
-                <img src="/logo-icon-white.svg" alt="TB" style={{ width: 28, height: 28, marginBottom: 12 }} />
-                {['📊','⏱','💼','🧾','👥','📋','🎯','📬'].map((ic, i) => (
-                  <div key={i} style={{ width: 32, height: 32, display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: 8, fontSize: 14, background: i === 0 ? 'rgba(255,255,255,.12)' : 'transparent', position: 'relative' }}>
-                    {ic}{i === 0 && <div style={{ position: 'absolute', left: -10, width: 3, height: 16, background: '#F8B35A', borderRadius: '0 2px 2px 0' }} />}
-                  </div>
-                ))}
-                <div style={{ flex: 1 }} />
-                <div style={{ width: 32, height: 32, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 14 }}>⚙️</div>
-              </div>
-
-              {/* ── Main area ── */}
-              <div style={{ flex: 1, display: 'flex', flexDirection: 'column', background: '#f8fafc' }}>
-                {/* Topbar */}
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '8px 16px', background: '#fff', borderBottom: '1px solid #f1f5f9' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                    <span style={{ fontSize: '.7rem', fontWeight: 700, color: '#195C82' }}>📊 Tableau de bord</span>
-                    <span style={{ fontSize: '.5rem', color: '#94a3b8', background: '#f1f5f9', padding: '2px 6px', borderRadius: 4 }}>Mars 2026</span>
-                  </div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                    <span style={{ fontSize: '.5rem', color: '#94a3b8' }}>🔔 3</span>
-                    <div style={{ width: 22, height: 22, borderRadius: '50%', background: '#195C82', color: '#fff', fontSize: '.45rem', fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>NN</div>
-                  </div>
-                </div>
-
-                {/* ── KPIs ── */}
-                <div style={{ padding: '12px 16px 0' }}>
-                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 8, marginBottom: 10 }}>
-                    {[
-                      { label: 'CA mensuel', value: '72 450 €', trend: '+18%', icon: '💰', up: true },
-                      { label: 'Pipeline', value: '343k €', trend: '8 deals', icon: '🎯', up: true },
-                      { label: 'Marge', value: '68%', trend: '+3pts', icon: '📈', up: true },
-                      { label: 'Trésorerie', value: '62 812 €', trend: '-5%', icon: '🏦', up: false },
-                      { label: 'Heures saisies', value: '1 247h', trend: '94%', icon: '⏱', up: true },
-                    ].map((kpi, i) => (
-                      <div key={i} style={{ background: '#fff', borderRadius: 8, padding: '8px 10px', border: '1px solid #e2e8f0' }}>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 3 }}>
-                          <span style={{ fontSize: '.45rem', color: '#94a3b8', fontWeight: 600 }}>{kpi.label}</span>
-                          <span style={{ fontSize: 10 }}>{kpi.icon}</span>
-                        </div>
-                        <div style={{ fontSize: '.9rem', fontWeight: 800, color: '#1a2332' }}>{kpi.value}</div>
-                        <span style={{ fontSize: '.42rem', fontWeight: 700, color: kpi.up ? '#16a34a' : '#ef4444' }}>{kpi.up ? '↑' : '↓'} {kpi.trend}</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                {/* ── 3 colonnes : Graphiques | Chat IA | Outils connectés ── */}
-                <div style={{ padding: '0 16px 12px', display: 'grid', gridTemplateColumns: '1.4fr 1fr .8fr', gap: 10, flex: 1 }}>
-
-                  {/* COL 1 — Graphiques */}
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-                    {/* Line chart CA */}
-                    <div style={{ background: '#fff', borderRadius: 8, padding: '10px 12px', border: '1px solid #e2e8f0', flex: 1 }}>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
-                        <span style={{ fontSize: '.55rem', fontWeight: 700, color: '#1a2332' }}>CA & Marge brute</span>
-                        <div style={{ display: 'flex', gap: 8 }}>
-                          {[{ l: 'CA', c: '#195C82' }, { l: 'Marge', c: '#1D9BF0' }, { l: 'Obj.', c: '#f59e0b' }].map((x, i) => (
-                            <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 3, fontSize: '.38rem', color: '#94a3b8' }}>
-                              <div style={{ width: 6, height: 2, borderRadius: 1, background: x.c }} />{x.l}
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                      <svg viewBox="0 0 300 70" style={{ width: '100%' }}>
-                        {[15,30,45,60].map(y => <line key={y} x1="0" y1={y} x2="300" y2={y} stroke="#f1f5f9" strokeWidth=".4" />)}
-                        <defs><linearGradient id="ag" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="#195C82" stopOpacity=".1" /><stop offset="100%" stopColor="#195C82" stopOpacity="0" /></linearGradient></defs>
-                        <path d="M0,55 25,52 50,48 75,38 100,42 125,33 150,28 175,24 200,20 225,22 250,16 275,14 300,8 300,70 0,70Z" fill="url(#ag)" />
-                        <polyline points="0,55 25,52 50,48 75,38 100,42 125,33 150,28 175,24 200,20 225,22 250,16 275,14 300,8" fill="none" stroke="#195C82" strokeWidth="2" strokeLinejoin="round" />
-                        <polyline points="0,58 25,56 50,53 75,48 100,46 125,42 150,44 175,40 200,37 225,34 250,32 275,30 300,26" fill="none" stroke="#1D9BF0" strokeWidth="1.2" strokeLinejoin="round" opacity=".6" />
-                        <line x1="0" y1="33" x2="300" y2="33" stroke="#f59e0b" strokeWidth=".8" strokeDasharray="4 3" opacity=".4" />
-                        <circle cx="300" cy="8" r="3" fill="#195C82" /><circle cx="300" cy="8" r="5.5" fill="none" stroke="#195C82" strokeWidth=".7" opacity=".3" />
-                      </svg>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '.35rem', color: '#cbd5e1', marginTop: 2 }}>
-                        {['Jan','Fév','Mar','Avr','Mai','Jun','Jul','Aoû','Sep','Oct','Nov','Déc'].map(m => <span key={m}>{m}</span>)}
-                      </div>
-                    </div>
-                    {/* Bar chart + Donut */}
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
-                      {/* Bars */}
-                      <div style={{ background: '#fff', borderRadius: 8, padding: '10px 12px', border: '1px solid #e2e8f0' }}>
-                        <div style={{ fontSize: '.5rem', fontWeight: 700, color: '#1a2332', marginBottom: 8 }}>CA par société</div>
-                        {[
-                          { name: 'SRA Gestion', val: 28, pct: '100%', color: '#195C82' },
-                          { name: 'SRA Digital', val: 22, pct: '78%', color: '#1D9BF0' },
-                          { name: 'SRA Infra', val: 15, pct: '54%', color: '#5B9BD5' },
-                          { name: 'SRA Conseil', val: 8, pct: '29%', color: '#98c1d9' },
-                        ].map((b, i) => (
-                          <div key={i} style={{ marginBottom: 5 }}>
-                            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '.38rem', color: '#64748b', marginBottom: 1 }}>
-                              <span>{b.name}</span><span style={{ fontWeight: 700 }}>{b.val}k€</span>
-                            </div>
-                            <div style={{ height: 5, borderRadius: 3, background: '#f1f5f9' }}>
-                              <div style={{ height: '100%', width: b.pct, background: b.color, borderRadius: 3 }} />
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                      {/* Donut */}
-                      <div style={{ background: '#fff', borderRadius: 8, padding: '10px 12px', border: '1px solid #e2e8f0' }}>
-                        <div style={{ fontSize: '.5rem', fontWeight: 700, color: '#1a2332', marginBottom: 6 }}>Répartition CA</div>
-                        <svg viewBox="0 0 80 80" style={{ width: '100%', maxWidth: 80, margin: '0 auto', display: 'block' }}>
-                          <circle cx="40" cy="40" r="30" fill="none" stroke="#195C82" strokeWidth="10" strokeDasharray="68 120" strokeDashoffset="0" />
-                          <circle cx="40" cy="40" r="30" fill="none" stroke="#1D9BF0" strokeWidth="10" strokeDasharray="48 140" strokeDashoffset="-68" />
-                          <circle cx="40" cy="40" r="30" fill="none" stroke="#5B9BD5" strokeWidth="10" strokeDasharray="35 153" strokeDashoffset="-116" />
-                          <circle cx="40" cy="40" r="30" fill="none" stroke="#98c1d9" strokeWidth="10" strokeDasharray="37 151" strokeDashoffset="-151" />
-                          <text x="40" y="38" textAnchor="middle" fontSize="8" fontWeight="800" fill="#1a2332">72k€</text>
-                          <text x="40" y="47" textAnchor="middle" fontSize="5" fill="#94a3b8">total</text>
-                        </svg>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* COL 2 — Chat Agent IA */}
-                  <div style={{ background: '#fff', borderRadius: 8, border: '1px solid #e2e8f0', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
-                    <div style={{ background: 'linear-gradient(135deg, #0f2b42, #195C82)', padding: '8px 12px', color: '#fff', display: 'flex', alignItems: 'center', gap: 6 }}>
-                      <div style={{ width: 20, height: 20, borderRadius: '50%', background: 'rgba(255,255,255,.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10 }}>🤖</div>
-                      <div>
-                        <div style={{ fontSize: '.55rem', fontWeight: 700 }}>Agent IA TimeBlast</div>
-                        <div style={{ fontSize: '.38rem', opacity: .6 }}>En ligne · Connecté à vos données</div>
-                      </div>
-                      <div style={{ marginLeft: 'auto', width: 6, height: 6, borderRadius: '50%', background: '#22c55e' }} />
-                    </div>
-                    <div style={{ flex: 1, padding: '8px 10px', display: 'flex', flexDirection: 'column', gap: 6, overflowY: 'auto', background: '#fafbfc' }}>
-                      {/* User message */}
-                      <div style={{ alignSelf: 'flex-end', background: '#195C82', color: '#fff', borderRadius: '8px 8px 2px 8px', padding: '6px 10px', fontSize: '.48rem', maxWidth: '85%' }}>
-                        Quel est mon CA ce mois et quels clients sont en retard ?
-                      </div>
-                      {/* IA response */}
-                      <div style={{ alignSelf: 'flex-start', background: '#fff', border: '1px solid #e2e8f0', borderRadius: '8px 8px 8px 2px', padding: '8px 10px', fontSize: '.48rem', color: '#475569', maxWidth: '90%' }}>
-                        <div style={{ fontWeight: 700, color: '#195C82', marginBottom: 4 }}>📊 Analyse en cours...</div>
-                        <div style={{ marginBottom: 4 }}>Votre CA mars est de <strong style={{ color: '#16a34a' }}>72 450 €</strong> (+18% vs février).</div>
-                        <div style={{ marginBottom: 4 }}>⚠️ <strong>2 clients en retard</strong> :</div>
-                        <div style={{ background: '#fef2f2', borderRadius: 4, padding: '4px 6px', marginBottom: 3, fontSize: '.42rem' }}>
-                          🔴 <strong>BatiGroup</strong> — 22 000 € · 15 jours de retard<br />
-                          <span style={{ color: '#94a3b8' }}>→ Relance automatique envoyée il y a 2h</span>
-                        </div>
-                        <div style={{ background: '#fffbeb', borderRadius: 4, padding: '4px 6px', fontSize: '.42rem' }}>
-                          🟡 <strong>Greentech SA</strong> — 8 500 € · 5 jours de retard<br />
-                          <span style={{ color: '#94a3b8' }}>→ Relance programmée demain 9h</span>
-                        </div>
-                      </div>
-                      {/* User follow-up */}
-                      <div style={{ alignSelf: 'flex-end', background: '#195C82', color: '#fff', borderRadius: '8px 8px 2px 8px', padding: '6px 10px', fontSize: '.48rem', maxWidth: '85%' }}>
-                        Envoie une relance à BatiGroup avec copie au DAF
-                      </div>
-                      {/* IA action */}
-                      <div style={{ alignSelf: 'flex-start', background: '#fff', border: '1px solid #e2e8f0', borderRadius: '8px 8px 8px 2px', padding: '8px 10px', fontSize: '.48rem', color: '#475569', maxWidth: '90%' }}>
-                        <div style={{ fontWeight: 700, color: '#16a34a', marginBottom: 3 }}>✅ Action exécutée</div>
-                        <div>Email de relance envoyé à <strong>contact@batigroup.fr</strong> avec copie à <strong>daf@batigroup.fr</strong>.</div>
-                        <div style={{ marginTop: 4, fontSize: '.4rem', color: '#94a3b8' }}>Pièce jointe : Facture_F-2026-0847.pdf · Suivi activé</div>
-                      </div>
-                    </div>
-                    {/* Input */}
-                    <div style={{ padding: '6px 10px', borderTop: '1px solid #f1f5f9', display: 'flex', gap: 6, alignItems: 'center', background: '#fff' }}>
-                      <div style={{ flex: 1, background: '#f8fafc', borderRadius: 6, padding: '5px 8px', fontSize: '.45rem', color: '#94a3b8', border: '1px solid #e2e8f0' }}>
-                        Demandez n'importe quoi à l'IA...
-                      </div>
-                      <div style={{ width: 22, height: 22, borderRadius: 6, background: '#195C82', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontSize: 10 }}>→</div>
-                    </div>
-                  </div>
-
-                  {/* COL 3 — Outils connectés temps réel */}
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-                    <div style={{ fontSize: '.5rem', fontWeight: 700, color: '#1a2332', display: 'flex', alignItems: 'center', gap: 4 }}>
-                      🔗 Connecté en temps réel
-                      <span style={{ width: 5, height: 5, borderRadius: '50%', background: '#22c55e', display: 'inline-block' }} />
-                    </div>
-                    {[
-                      { name: 'Sage', cat: 'Comptabilité', status: '412 écritures sync.', color: '#00DC82', time: 'il y a 2 min' },
-                      { name: 'HubSpot', cat: 'CRM', status: '8 deals actifs', color: '#FF7A59', time: 'il y a 5 min' },
-                      { name: 'Stripe', cat: 'Paiements', status: '3 encaissements', color: '#635BFF', time: 'il y a 12 min' },
-                      { name: 'PayFit', cat: 'Paie & RH', status: '47 bulletins', color: '#0066FF', time: 'il y a 1h' },
-                      { name: 'Qonto', cat: 'Banque', status: 'Solde 62 812 €', color: '#2A2A2A', time: 'temps réel' },
-                      { name: 'Slack', cat: 'Notifications', status: '12 alertes envoyées', color: '#4A154B', time: 'il y a 30 min' },
-                      { name: 'Gmail', cat: 'Email', status: '6 relances auto', color: '#EA4335', time: 'il y a 1h' },
-                      { name: 'Jira', cat: 'Projets', status: '23 tickets ouverts', color: '#0052CC', time: 'il y a 15 min' },
-                    ].map((tool, i) => (
-                      <div key={i} style={{ background: '#fff', borderRadius: 6, padding: '6px 8px', border: '1px solid #e2e8f0', display: 'flex', alignItems: 'center', gap: 6 }}>
-                        <div style={{ width: 22, height: 22, borderRadius: 5, background: tool.color + '15', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                          <div style={{ width: 8, height: 8, borderRadius: 2, background: tool.color }} />
-                        </div>
-                        <div style={{ flex: 1, minWidth: 0 }}>
-                          <div style={{ fontSize: '.45rem', fontWeight: 700, color: '#1a2332', display: 'flex', justifyContent: 'space-between' }}>
-                            <span>{tool.name}</span>
-                            <span style={{ width: 4, height: 4, borderRadius: '50%', background: '#22c55e', marginTop: 2 }} />
-                          </div>
-                          <div style={{ fontSize: '.38rem', color: '#64748b' }}>{tool.status}</div>
-                          <div style={{ fontSize: '.32rem', color: '#cbd5e1' }}>{tool.time}</div>
-                        </div>
-                      </div>
-                    ))}
-                    {/* Total */}
-                    <div style={{ background: '#f0fdf4', borderRadius: 6, padding: '5px 8px', border: '1px solid #bbf7d0', textAlign: 'center' }}>
-                      <div style={{ fontSize: '.42rem', fontWeight: 700, color: '#16a34a' }}>✅ 8 outils connectés</div>
-                      <div style={{ fontSize: '.35rem', color: '#4ade80' }}>Dernière sync. il y a 2 min</div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-          {/* Shadow */}
-          <div style={{ height: 20, background: 'radial-gradient(ellipse at center, rgba(0,0,0,.08) 0%, transparent 70%)', marginTop: -2 }} />
-          </div>{/* /mockup-scale */}
         </div>
       </section>
 
       {/* ══════════════════════════════════════════════════════════════════
-          CONNECTEURS — sélecteur par catégorie
+          4. NATIVEMENT CONNECTE A VOTRE SI
       ══════════════════════════════════════════════════════════════════ */}
-      {/* ══════════════════════════════════════════════════════════════════
-          CONNECTEURS — Animation hub
-      ══════════════════════════════════════════════════════════════════ */}
-      <section style={{ padding: '4rem 2rem', background: '#f8fafc', textAlign: 'center' }} id="hub">
-        <h2 className="landing-section-title">Nativement connecté à votre SI</h2>
-        <p className="landing-section-subtitle">
-          Votre logiciel généré s'interconnecte avec tous vos outils existants — comptabilité, CRM, paie, banque, messagerie et IA.
+      <section style={{ padding: '5rem 2rem', background: S.bgAlt, textAlign: 'center' }} id="hub">
+        <h2 style={{
+          fontSize: 'clamp(1.6rem, 2.5vw, 2.2rem)', fontWeight: 800, color: S.dark,
+          margin: '0 0 1rem', letterSpacing: '-0.01em',
+        }}>
+          Nativement connecte a votre SI
+        </h2>
+        <p style={{
+          fontSize: '1.05rem', color: S.gray, maxWidth: 600, margin: '0 auto 2rem', lineHeight: 1.6,
+        }}>
+          Votre logiciel genere s'interconnecte avec tous vos outils existants — comptabilite, CRM, paie, banque, messagerie et IA.
         </p>
-        <div style={{ maxWidth: 500, margin: '2rem auto 0' }}>
+        <div style={{ maxWidth: 500, margin: '0 auto' }}>
           <BiHubVisual />
         </div>
       </section>
 
       {/* ══════════════════════════════════════════════════════════════════
-          COMMENT ÇA MARCHE — 5 Phases
+          5. COMMENT CA MARCHE — 5 Phases
       ══════════════════════════════════════════════════════════════════ */}
       <section style={{ padding: '5rem 2rem', background: '#fff' }} id="comment">
-        <h2 className="landing-section-title">Comment ça marche</h2>
-        <p className="landing-section-subtitle">5 étapes pour passer de l'idée à l'outil en production</p>
-        <div style={{ display: 'flex', justifyContent: 'center', gap: 16, flexWrap: 'wrap', maxWidth: 1100, margin: '2rem auto 0' }}>
+        <h2 style={{
+          fontSize: 'clamp(1.6rem, 2.5vw, 2.2rem)', fontWeight: 800, color: S.dark,
+          margin: '0 0 .5rem', textAlign: 'center', letterSpacing: '-0.01em',
+        }}>
+          Comment ca marche
+        </h2>
+        <p style={{
+          fontSize: '1.05rem', color: S.gray, textAlign: 'center', maxWidth: 500,
+          margin: '0 auto 3rem', lineHeight: 1.6,
+        }}>
+          5 etapes pour passer de l'idee a l'outil en production
+        </p>
+        <div style={{
+          display: 'flex', justifyContent: 'center', gap: 20, flexWrap: 'wrap',
+          maxWidth: 1100, margin: '0 auto',
+        }}>
           {[
-            { num: '1', title: 'Besoin fonctionnel', desc: 'Décrivez votre besoin en français. L\'IA structure vos exigences.', icon: '💬', color: '#6366f1' },
-            { num: '2', title: 'Maquette', desc: 'Choisissez vos modules et validez la structure de votre outil.', icon: '📐', color: '#0891b2' },
-            { num: '3', title: 'Design & mise en page', desc: 'Personnalisez les couleurs, le logo et l\'expérience utilisateur.', icon: '🎨', color: '#f59e0b' },
-            { num: '4', title: 'Mise en production', desc: 'Votre outil est déployé sur un sous-domaine dédié, prêt à l\'emploi.', icon: '🚀', color: '#16a34a' },
-            { num: '5', title: 'Support & suivi', desc: 'Évolutions, support technique et monitoring en continu.', icon: '🛡️', color: '#0F4C75' },
+            { num: '1', title: 'Besoin fonctionnel', desc: 'Decrivez votre besoin en francais. L\'IA structure vos exigences.', icon: '💬' },
+            { num: '2', title: 'Maquette', desc: 'Choisissez vos modules et validez la structure de votre outil.', icon: '📐' },
+            { num: '3', title: 'Design & mise en page', desc: 'Personnalisez les couleurs, le logo et l\'experience utilisateur.', icon: '🎨' },
+            { num: '4', title: 'Mise en production', desc: 'Votre outil est deploye sur un sous-domaine dedie, pret a l\'emploi.', icon: '🚀' },
+            { num: '5', title: 'Support & suivi', desc: 'Evolutions, support technique et monitoring en continu.', icon: '🛡️' },
           ].map((step, i) => (
             <div key={i} style={{
-              flex: '1 1 180px', maxWidth: 200, padding: '1.5rem 1.2rem', borderRadius: 14,
-              border: '1px solid #e2e8f0', background: '#fafbfc', textAlign: 'center', position: 'relative',
+              flex: '1 1 180px', maxWidth: 200, padding: '2rem 1.2rem', borderRadius: 16,
+              border: '1px solid rgba(0,212,255,0.1)', background: '#fff', textAlign: 'center',
+              transition: 'all .3s', cursor: 'default',
+              boxShadow: '0 2px 12px rgba(0,0,0,0.02)',
+            }}
+            onMouseEnter={e => {
+              e.currentTarget.style.borderColor = 'rgba(0,212,255,0.3)'
+              e.currentTarget.style.boxShadow = '0 8px 30px rgba(0,212,255,0.1)'
+              e.currentTarget.style.transform = 'translateY(-4px)'
+            }}
+            onMouseLeave={e => {
+              e.currentTarget.style.borderColor = 'rgba(0,212,255,0.1)'
+              e.currentTarget.style.boxShadow = '0 2px 12px rgba(0,0,0,0.02)'
+              e.currentTarget.style.transform = 'none'
             }}>
               <div style={{
-                width: 48, height: 48, borderRadius: '50%', background: step.color + '15',
+                width: 52, height: 52, borderRadius: '50%', background: 'rgba(0,212,255,0.06)',
                 display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto .75rem',
-                fontSize: 22, border: `2px solid ${step.color}30`,
+                fontSize: 24, border: '1px solid rgba(0,212,255,0.12)',
               }}>{step.icon}</div>
-              <div style={{ fontSize: '.7rem', fontWeight: 800, color: step.color, marginBottom: 4 }}>ÉTAPE {step.num}</div>
-              <h4 style={{ margin: '0 0 .4rem', fontSize: '.9rem', fontWeight: 700, color: '#1e293b' }}>{step.title}</h4>
-              <p style={{ margin: 0, fontSize: '.78rem', color: '#64748b', lineHeight: 1.4 }}>{step.desc}</p>
+              <div style={{
+                fontSize: '.75rem', fontWeight: 800, letterSpacing: '0.05em',
+                background: S.gradient, WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
+                backgroundClip: 'text', marginBottom: 6, textTransform: 'uppercase',
+              }}>ETAPE {step.num}</div>
+              <h4 style={{ margin: '0 0 .4rem', fontSize: '.92rem', fontWeight: 700, color: S.dark }}>{step.title}</h4>
+              <p style={{ margin: 0, fontSize: '.8rem', color: S.gray, lineHeight: 1.5 }}>{step.desc}</p>
             </div>
           ))}
         </div>
       </section>
 
-      <section className="landing-connectors" id="connecteurs">
-        <h2 className="landing-section-title">11 modules métier disponibles</h2>
-        <p className="landing-section-subtitle">
+      {/* ══════════════════════════════════════════════════════════════════
+          6. MODULES DISPONIBLES (connectors/categories)
+      ══════════════════════════════════════════════════════════════════ */}
+      <section style={{ padding: '5rem 2rem', background: S.bgAlt }} id="connecteurs">
+        <h2 style={{
+          fontSize: 'clamp(1.6rem, 2.5vw, 2.2rem)', fontWeight: 800, color: S.dark,
+          margin: '0 0 .5rem', textAlign: 'center',
+        }}>
+          11 modules metier disponibles
+        </h2>
+        <p style={{
+          fontSize: '1.05rem', color: S.gray, textAlign: 'center', maxWidth: 550,
+          margin: '0 auto 2rem', lineHeight: 1.6,
+        }}>
           Composez votre logiciel sur mesure en activant les modules dont vous avez besoin.
         </p>
-        <div className="landing-cat-tabs">
+
+        {/* Category tabs */}
+        <div style={{
+          display: 'flex', justifyContent: 'center', gap: 8, flexWrap: 'wrap',
+          maxWidth: 900, margin: '0 auto 2rem',
+        }}>
           {CATEGORIES.map(cat => (
-            <button
-              key={cat.id}
-              className={`landing-cat-tab ${activeCat === cat.id ? 'landing-cat-tab--active' : ''}`}
-              onClick={() => setActiveCat(cat.id)}
-            >
-              <span>{cat.icon}</span> {cat.label}
+            <button key={cat.id} onClick={() => setActiveCat(cat.id)} style={{
+              padding: '8px 16px', borderRadius: 100, border: '1px solid',
+              borderColor: activeCat === cat.id ? '#00D4FF' : '#e2e8f0',
+              background: activeCat === cat.id ? 'rgba(0,212,255,0.08)' : '#fff',
+              color: activeCat === cat.id ? S.sra : S.gray,
+              fontWeight: activeCat === cat.id ? 700 : 500, fontSize: '.82rem',
+              cursor: 'pointer', transition: 'all .2s',
+              boxShadow: activeCat === cat.id ? '0 0 15px rgba(0,212,255,0.12)' : 'none',
+            }}>
+              <span style={{ marginRight: 4 }}>{cat.icon}</span> {cat.label}
             </button>
           ))}
         </div>
-        <div className="landing-connectors-grid">
+
+        {/* Connector grid */}
+        <div style={{
+          display: 'flex', justifyContent: 'center', gap: 10, flexWrap: 'wrap',
+          maxWidth: 900, margin: '0 auto',
+        }}>
           {filteredConnectors.map(c => (
-            <div key={c.id} className="landing-connector-chip" style={{ '--chip-color': c.color }}>
-              <span className="landing-connector-dot" style={{ background: c.color }} />
-              <span>{c.name}</span>
+            <div key={c.id} style={{
+              display: 'flex', alignItems: 'center', gap: 8, padding: '10px 16px',
+              borderRadius: 10, background: '#fff', border: '1px solid #e2e8f0',
+              fontSize: '.85rem', fontWeight: 500, color: S.dark, transition: 'all .2s',
+              cursor: 'default',
+            }}
+            onMouseEnter={e => {
+              e.currentTarget.style.borderColor = '#00D4FF'
+              e.currentTarget.style.boxShadow = '0 4px 15px rgba(0,212,255,0.1)'
+            }}
+            onMouseLeave={e => {
+              e.currentTarget.style.borderColor = '#e2e8f0'
+              e.currentTarget.style.boxShadow = 'none'
+            }}>
+              <span style={{
+                width: 10, height: 10, borderRadius: '50%', background: c.color,
+                flexShrink: 0,
+              }} />
+              {c.name}
             </div>
           ))}
         </div>
-        <p style={{ textAlign: 'center', color: '#94a3b8', fontSize: '.85rem', marginTop: '1.5rem' }}>
-          … et bien d'autres via <strong>Zapier</strong>, <strong>Make</strong> et notre <strong>API REST</strong> ouverte.
+        <p style={{ textAlign: 'center', color: S.lightGray, fontSize: '.85rem', marginTop: '1.5rem' }}>
+          ... et bien d'autres via <strong>Zapier</strong>, <strong>Make</strong> et notre <strong>API REST</strong> ouverte.
         </p>
       </section>
 
       {/* ══════════════════════════════════════════════════════════════════
-          MODULES DÉCISIONNELS
+          7. DES MODULES PRETS A L'EMPLOI
       ══════════════════════════════════════════════════════════════════ */}
-      <section className="landing-features" id="modules">
-        <h2 className="landing-section-title">Des modules prêts à l'emploi</h2>
-        <p className="landing-section-subtitle">
-          Chaque module est pré-construit et personnalisable. L'IA les adapte à votre métier.
+      <section style={{ padding: '5rem 2rem', background: '#fff' }} id="modules">
+        <h2 style={{
+          fontSize: 'clamp(1.6rem, 2.5vw, 2.2rem)', fontWeight: 800, color: S.dark,
+          margin: '0 0 .5rem', textAlign: 'center',
+        }}>
+          Des modules prets a l'emploi
+        </h2>
+        <p style={{
+          fontSize: '1.05rem', color: S.gray, textAlign: 'center', maxWidth: 550,
+          margin: '0 auto 3rem', lineHeight: 1.6,
+        }}>
+          Chaque module est pre-construit et personnalisable. L'IA les adapte a votre metier.
         </p>
-        <div className="landing-features-grid">
+        <div style={{
+          display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
+          gap: 20, maxWidth: 1000, margin: '0 auto',
+        }}>
           {BI_MODULES.map((m, i) => (
-            <div key={i} className="landing-feature-card">
-              <span className="landing-feature-icon">{m.icon}</span>
-              <h3>{m.title}</h3>
-              <p>{m.desc}</p>
+            <div key={i} style={{
+              padding: '2rem', borderRadius: 16, background: '#fff',
+              border: '1px solid rgba(0,212,255,0.1)',
+              boxShadow: '0 2px 12px rgba(0,0,0,0.02)', transition: 'all .3s',
+            }}
+            onMouseEnter={e => {
+              e.currentTarget.style.borderColor = 'rgba(0,212,255,0.3)'
+              e.currentTarget.style.boxShadow = '0 8px 30px rgba(0,212,255,0.1)'
+              e.currentTarget.style.transform = 'translateY(-3px)'
+            }}
+            onMouseLeave={e => {
+              e.currentTarget.style.borderColor = 'rgba(0,212,255,0.1)'
+              e.currentTarget.style.boxShadow = '0 2px 12px rgba(0,0,0,0.02)'
+              e.currentTarget.style.transform = 'none'
+            }}>
+              <span style={{
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                width: 48, height: 48, borderRadius: 12, background: 'rgba(0,212,255,0.06)',
+                fontSize: 24, marginBottom: '1rem', border: '1px solid rgba(0,212,255,0.1)',
+              }}>{m.icon}</span>
+              <h3 style={{ margin: '0 0 .5rem', fontSize: '1.05rem', fontWeight: 700, color: S.dark }}>{m.title}</h3>
+              <p style={{ margin: 0, fontSize: '.88rem', color: S.gray, lineHeight: 1.55 }}>{m.desc}</p>
             </div>
           ))}
         </div>
       </section>
 
       {/* ══════════════════════════════════════════════════════════════════
-          PREVIEWS — 3 dashboards IA
+          8. 40 ANS D'EXPERTISE
       ══════════════════════════════════════════════════════════════════ */}
-      <section style={{ padding: '60px 0', background: '#f8fafc' }} id="previews">
-        <h2 className="landing-section-title">Votre outil ressemble à ça</h2>
-        <p className="landing-section-subtitle">
-          Chaque logiciel généré par TimeBlast est professionnel, complet et personnalisé pour votre métier.
-        </p>
-        <div className="mockup-wrapper" style={{ maxWidth: 960, margin: '40px auto 0', padding: '0 20px' }}>
-        <div className="mockup-previews" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 20 }}>
-
-          {/* Preview 1 — Dashboard décisionnel */}
-          <div style={{ background: '#fff', borderRadius: 14, boxShadow: '0 10px 30px rgba(0,0,0,0.08)', overflow: 'hidden', border: '1px solid #e2e8f0' }}>
-            <div style={{ background: 'linear-gradient(135deg, #2B4C7E, #1a6fa8)', padding: '14px 16px', color: '#fff' }}>
-              <div style={{ fontSize: '.7rem', fontWeight: 700, display: 'flex', alignItems: 'center', gap: 6 }}>📊 Dashboard dirigeant</div>
-              <div style={{ fontSize: '.55rem', opacity: 0.7, marginTop: 2 }}>Vue 360° temps réel</div>
-            </div>
-            <div style={{ padding: 14, display: 'flex', flexDirection: 'column', gap: 8 }}>
-              {[
-                { label: 'CA ce mois', val: '72 450 €', trend: '+18%', up: true },
-                { label: 'Pipeline', val: '343 000 €', trend: '8 deals', up: true },
-                { label: 'Marge brute', val: '68%', trend: '+3pts', up: true },
-                { label: 'Trésorerie', val: '62 812 €', trend: '-5%', up: false },
-              ].map((k, i) => (
-                <div key={i} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '6px 10px', background: '#f8fafc', borderRadius: 8, border: '1px solid #f1f5f9' }}>
-                  <div>
-                    <div style={{ fontSize: '.55rem', color: '#64748b' }}>{k.label}</div>
-                    <div style={{ fontSize: '.85rem', fontWeight: 800, color: '#1a2332' }}>{k.val}</div>
-                  </div>
-                  <span style={{ fontSize: '.6rem', fontWeight: 700, color: k.up ? '#16a34a' : '#dc2626', background: k.up ? '#f0fdf4' : '#fef2f2', padding: '2px 8px', borderRadius: 10 }}>
-                    {k.up ? '↑' : '↓'} {k.trend}
-                  </span>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Preview 2 — IA décisionnelle */}
-          <div style={{ background: '#fff', borderRadius: 14, boxShadow: '0 10px 30px rgba(0,0,0,0.08)', overflow: 'hidden', border: '1px solid #e2e8f0' }}>
-            <div style={{ background: 'linear-gradient(135deg, #0f3d5c, #2B4C7E)', padding: '14px 16px', color: '#fff' }}>
-              <div style={{ fontSize: '.7rem', fontWeight: 700, display: 'flex', alignItems: 'center', gap: 6 }}>🤖 IA décisionnelle</div>
-              <div style={{ fontSize: '.55rem', opacity: 0.7, marginTop: 2 }}>Recommandations automatiques</div>
-            </div>
-            <div style={{ padding: 14, display: 'flex', flexDirection: 'column', gap: 8 }}>
-              <div style={{ background: '#f0f9ff', borderRadius: 8, padding: '8px 10px', fontSize: '.6rem', color: '#1a2332', borderLeft: '3px solid #2B4C7E' }}>
-                "Quel est mon risque trésorerie à 30 jours ?"
+      <section style={{
+        padding: '5rem 2rem', background: S.bgAlt, textAlign: 'center',
+      }}>
+        <div style={{ maxWidth: 700, margin: '0 auto' }}>
+          <p style={{
+            fontSize: '.82rem', color: S.lightGray, fontWeight: 600, letterSpacing: '2px',
+            textTransform: 'uppercase', marginBottom: '1.5rem',
+          }}>
+            Un produit du Groupe SRA
+          </p>
+          <h2 style={{
+            fontSize: 'clamp(1.6rem, 2.5vw, 2.2rem)', fontWeight: 800, color: S.dark,
+            margin: '0 0 1.5rem',
+          }}>
+            40 ans d'expertise
+          </h2>
+          <p style={{
+            fontSize: '1.05rem', color: S.gray, lineHeight: 1.7, margin: '0 0 2rem',
+          }}>
+            Depuis 1986, le Groupe SRA accompagne les PME et ETI dans leur transformation digitale. Cette expertise de terrain nous a permis de concevoir TimeBlast : la plateforme de vibe-coding parfaite pour creer des applications metier avec l'IA.
+          </p>
+          <a href="https://www.groupe-sra.fr" target="_blank" rel="noopener noreferrer"
+            style={{
+              display: 'inline-flex', alignItems: 'center', gap: 16, background: '#fff',
+              border: '1px solid rgba(0,212,255,0.15)', borderRadius: 14,
+              padding: '1.25rem 2.5rem', textDecoration: 'none', transition: 'all .3s',
+              boxShadow: '0 4px 16px rgba(0,212,255,0.04)',
+            }}
+            onMouseEnter={e => {
+              e.currentTarget.style.borderColor = '#00D4FF'
+              e.currentTarget.style.boxShadow = '0 8px 30px rgba(0,212,255,0.12)'
+              e.currentTarget.style.transform = 'translateY(-2px)'
+            }}
+            onMouseLeave={e => {
+              e.currentTarget.style.borderColor = 'rgba(0,212,255,0.15)'
+              e.currentTarget.style.boxShadow = '0 4px 16px rgba(0,212,255,0.04)'
+              e.currentTarget.style.transform = 'none'
+            }}>
+            <img src="/logo-sra.png" alt="Groupe SRA" style={{ width: 48, height: 48, borderRadius: 10, objectFit: 'contain', flexShrink: 0 }} />
+            <div style={{ textAlign: 'left' }}>
+              <div style={{ fontSize: '1rem', fontWeight: 700, color: S.sra }}>
+                Groupe SRA — Partenaire digital des PME et ETI
               </div>
-              <div style={{ background: '#f8fafc', borderRadius: 8, padding: '8px 10px', fontSize: '.6rem', color: '#475569' }}>
-                <span style={{ color: '#2B4C7E', fontWeight: 700 }}>📊</span> Risque <strong style={{ color: '#f59e0b' }}>modéré</strong>. 3 factures en retard (42k€). Si payées sous 15j, trésorerie stable à +58k€.
-                <br /><span style={{ fontSize: '.5rem', color: '#94a3b8' }}>Recommandation : relancer BatiGroup (15j de retard, 22k€)</span>
+              <div style={{ fontSize: '.82rem', color: S.gray, marginTop: 2 }}>
+                Integrateur Sage Diamond, Microsoft, HubSpot
               </div>
-              <div style={{ background: '#f0f9ff', borderRadius: 8, padding: '8px 10px', fontSize: '.6rem', color: '#1a2332', borderLeft: '3px solid #2B4C7E' }}>
-                "Mes projets les plus rentables ?"
+              <div style={{
+                fontSize: '.78rem', fontWeight: 600, marginTop: 4,
+                background: S.gradient, WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
+                backgroundClip: 'text',
+              }}>
+                Decouvrir le groupe → groupe-sra.fr
               </div>
-              <div style={{ background: '#f8fafc', borderRadius: 8, padding: '8px 10px', fontSize: '.6rem', color: '#475569' }}>
-                <span style={{ color: '#2B4C7E', fontWeight: 700 }}>📊</span> Top 3 : <strong>Migration ERP</strong> (marge 72%), <strong>Audit ISO</strong> (68%), <strong>Refonte SI</strong> (61%).
-              </div>
             </div>
-          </div>
-
-          {/* Preview 3 — Alertes BI */}
-          <div style={{ background: '#fff', borderRadius: 14, boxShadow: '0 10px 30px rgba(0,0,0,0.08)', overflow: 'hidden', border: '1px solid #e2e8f0' }}>
-            <div style={{ background: 'linear-gradient(135deg, #1a3a5c, #2B4C7E)', padding: '14px 16px', color: '#fff' }}>
-              <div style={{ fontSize: '.7rem', fontWeight: 700, display: 'flex', alignItems: 'center', gap: 6 }}>🔔 Alertes décisionnelles</div>
-              <div style={{ fontSize: '.55rem', opacity: 0.7, marginTop: 2 }}>L'IA surveille vos indicateurs</div>
-            </div>
-            <div style={{ padding: 14, display: 'flex', flexDirection: 'column', gap: 6 }}>
-              {[
-                { icon: '🔴', text: 'Facture BatiGroup : 15 jours de retard', sub: '22 000 € — Relance auto envoyée' },
-                { icon: '🟡', text: 'Projet Migration ERP à 92% du budget', sub: '460h / 500h — Alerte dépassement' },
-                { icon: '🟢', text: 'Marge brute en hausse de +3 points', sub: 'Objectif annuel atteint à 85%' },
-                { icon: '🔵', text: 'Rapprochement bancaire : 3 écritures', sub: 'Suggestions IA avec 98% de confiance' },
-              ].map((a, i) => (
-                <div key={i} style={{ display: 'flex', gap: 8, padding: '6px 8px', borderRadius: 8, background: '#fafbfc', border: '1px solid #f1f5f9' }}>
-                  <span style={{ fontSize: 12, flexShrink: 0 }}>{a.icon}</span>
-                  <div>
-                    <div style={{ fontSize: '.6rem', fontWeight: 600, color: '#1a2332' }}>{a.text}</div>
-                    <div style={{ fontSize: '.5rem', color: '#94a3b8' }}>{a.sub}</div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>{/* /mockup-previews */}
-        </div>{/* /mockup-wrapper */}
-      </section>
-
-      {/* ══════════════════════════════════════════════════════════════════
-          CAS D'USAGE PAR PERSONA
-      ══════════════════════════════════════════════════════════════════ */}
-      <section className="landing-advantages" id="cas-usage">
-        <h2 className="landing-section-title">Pour chaque décideur, un tableau de bord</h2>
-        <p className="landing-section-subtitle">
-          TimeBlast s'adapte à votre rôle. Chaque profil voit les indicateurs qui comptent.
-        </p>
-        <div className="landing-advantages-grid">
-          {PERSONAS.map((p, i) => (
-            <div key={i} className="landing-advantage-card">
-              <span className="landing-advantage-icon">{p.icon}</span>
-              <h3>{p.role}</h3>
-              <p style={{ fontStyle: 'italic', color: '#195C82', fontWeight: 600, fontSize: '.82rem', marginBottom: '.5rem' }}>
-                "{p.need}"
-              </p>
-              <p>{p.solution}</p>
-            </div>
-          ))}
+          </a>
         </div>
       </section>
 
-      {/* ── Marquee connecteurs ── */}
-      <div className="landing-marquee-section">
-        <div className="landing-marquee">
-          <div className="landing-marquee-track">
-            {[...CONNECTORS_LIST, ...CONNECTORS_LIST].map((name, i) => (
-              <span key={i} className="landing-marquee-item" style={{ color: '#fff' }}>
-                {name}
-              </span>
+      {/* ══════════════════════════════════════════════════════════════════
+          9. CONTACT FORM
+      ══════════════════════════════════════════════════════════════════ */}
+      <section style={{ padding: '5rem 2rem', background: '#fff' }} id="contact">
+        <h2 style={{
+          fontSize: 'clamp(1.6rem, 2.5vw, 2.2rem)', fontWeight: 800, color: S.dark,
+          margin: '0 0 .5rem', textAlign: 'center',
+        }}>
+          Demandez votre diagnostic gratuit
+        </h2>
+        <p style={{
+          fontSize: '1.05rem', color: S.gray, textAlign: 'center', maxWidth: 550,
+          margin: '0 auto 3rem', lineHeight: 1.6,
+        }}>
+          En 30 minutes, nous evaluons votre besoin et vous montrons ce que TimeBlast peut automatiser.
+        </p>
+
+        <div style={{
+          maxWidth: 900, margin: '0 auto', display: 'grid',
+          gridTemplateColumns: '1fr 1.2fr', gap: '3rem', alignItems: 'start',
+        }}>
+          {/* Info side */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+            {[
+              { icon: '📊', title: 'Diagnostic gratuit', desc: 'Evaluation de votre maturite data en 30 min' },
+              { icon: '💬', title: 'Reponse sous 24h', desc: 'Notre equipe revient vers vous rapidement' },
+              { icon: '🎯', title: 'Demo personnalisee', desc: 'Sur vos donnees, vos cas d\'usage' },
+            ].map((item, i) => (
+              <div key={i} style={{
+                display: 'flex', gap: 16, padding: '1.25rem',
+                borderRadius: 14, background: S.bgAlt, border: '1px solid rgba(0,212,255,0.08)',
+              }}>
+                <span style={{
+                  fontSize: '1.5rem', flexShrink: 0, width: 48, height: 48,
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  borderRadius: 12, background: 'rgba(0,212,255,0.06)',
+                }}>{item.icon}</span>
+                <div>
+                  <strong style={{ color: S.dark, fontSize: '.95rem' }}>{item.title}</strong>
+                  <p style={{ margin: '.25rem 0 0', color: S.gray, fontSize: '.85rem' }}>{item.desc}</p>
+                </div>
+              </div>
             ))}
           </div>
-        </div>
-      </div>
 
-      {/* ══════════════════════════════════════════════════════════════════
-          COMPARAISON — TimeBlast vs outils classiques
-      ══════════════════════════════════════════════════════════════════ */}
-      <section style={{ padding: '5rem 2rem', background: '#fff' }} id="connecteurs">
-        <h2 className="landing-section-title">TimeBlast vs les outils classiques</h2>
-        <p className="landing-section-subtitle">
-          Pourquoi jongler avec 10 logiciels quand un seul suffit ?
-        </p>
-        <div style={{ maxWidth: 700, margin: '2rem auto 0' }}>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr auto auto', gap: 0, background: '#f8fafc', borderRadius: 12, overflow: 'hidden', border: '1px solid #e2e8f0' }}>
-            <div style={{ padding: '12px 16px', fontWeight: 700, fontSize: '.85rem', color: '#64748b', borderBottom: '2px solid #e2e8f0' }}>Fonctionnalité</div>
-            <div style={{ padding: '12px 20px', fontWeight: 700, fontSize: '.85rem', color: '#195C82', borderBottom: '2px solid #e2e8f0', textAlign: 'center', background: 'rgba(25,92,130,0.04)' }}>TimeBlast</div>
-            <div style={{ padding: '12px 20px', fontWeight: 700, fontSize: '.85rem', color: '#94a3b8', borderBottom: '2px solid #e2e8f0', textAlign: 'center' }}>BI classique</div>
-            {COMPARE.map((row, i) => (
-              <React.Fragment key={i}>
-                <div style={{ padding: '10px 16px', fontSize: '.85rem', color: '#475569', borderBottom: '1px solid #f1f5f9' }}>{row.feature}</div>
-                <div style={{ padding: '10px 20px', textAlign: 'center', borderBottom: '1px solid #f1f5f9', background: 'rgba(25,92,130,0.04)', fontSize: '1rem' }}>
-                  {row.tb ? '✅' : '❌'}
-                </div>
-                <div style={{ padding: '10px 20px', textAlign: 'center', borderBottom: '1px solid #f1f5f9', fontSize: '1rem' }}>
-                  {row.others ? '✅' : '❌'}
-                </div>
-              </React.Fragment>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ── Roadmap IA ── */}
-      <section className="landing-roadmap" id="roadmap">
-        <h2 className="landing-section-title">Roadmap vers l'IA décisionnelle</h2>
-        <p className="landing-section-subtitle">
-          De la qualité des données aux agents IA autonomes — notre vision en 3 phases.
-        </p>
-        <div className="landing-roadmap-grid">
-          {ROADMAP.map((phase, i) => (
-            <div key={i} className="landing-roadmap-card" style={{ '--phase-color': phase.color }}>
-              <div className="landing-roadmap-header">
-                <span className="landing-roadmap-badge" style={{ background: phase.color }}>{phase.phase}</span>
-                <span className="landing-roadmap-timing">{phase.timing}</span>
-              </div>
-              <h3 className="landing-roadmap-title">{phase.title}</h3>
-              <ul className="landing-roadmap-list">
-                {phase.items.map((item, j) => <li key={j}>{item}</li>)}
-              </ul>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* ── Groupe SRA ── */}
-      <section style={{ padding: '4rem 2rem', background: '#f8fafc', textAlign: 'center' }}>
-        <p style={{ fontSize: '.85rem', color: '#94a3b8', fontWeight: 600, letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '1.5rem' }}>
-          Un produit du Groupe SRA
-        </p>
-        <a href="https://www.groupe-sra.fr" target="_blank" rel="noopener noreferrer"
-          style={{
-            display: 'inline-flex', alignItems: 'center', gap: 16, background: '#fff',
-            border: '2px solid #e2e8f0', borderRadius: 14, padding: '1.25rem 2.5rem', textDecoration: 'none',
-            transition: 'all .2s', maxWidth: 600, margin: '0 auto', boxShadow: '0 4px 16px rgba(0,0,0,.04)',
-          }}
-          onMouseEnter={e => { e.currentTarget.style.borderColor = '#195C82'; e.currentTarget.style.boxShadow = '0 8px 24px rgba(25,92,130,.12)'; e.currentTarget.style.transform = 'translateY(-2px)' }}
-          onMouseLeave={e => { e.currentTarget.style.borderColor = '#e2e8f0'; e.currentTarget.style.boxShadow = '0 4px 16px rgba(0,0,0,.04)'; e.currentTarget.style.transform = 'none' }}
-        >
-          <img src="/logo-sra.png" alt="Groupe SRA" style={{ width: 48, height: 48, borderRadius: 10, objectFit: 'contain', flexShrink: 0 }} />
-          <div style={{ textAlign: 'left' }}>
-            <div style={{ fontSize: '1rem', fontWeight: 700, color: '#195C82' }}>
-              Groupe SRA — Partenaire digital des PME et ETI
-            </div>
-            <div style={{ fontSize: '.82rem', color: '#64748b', marginTop: 2 }}>
-              Intégrateur Sage Diamond, Microsoft, HubSpot · 200+ collaborateurs · 17 sociétés
-            </div>
-            <div style={{ fontSize: '.75rem', color: '#1D9BF0', fontWeight: 600, marginTop: 4 }}>
-              Découvrir le groupe → groupe-sra.fr
-            </div>
-          </div>
-        </a>
-      </section>
-
-      {/* ── Contact ── */}
-      <section className="landing-contact" id="contact">
-        <h2 className="landing-section-title">Demandez votre diagnostic BI gratuit</h2>
-        <p className="landing-section-subtitle">
-          En 30 minutes, nous évaluons votre maturité data et vous montrons ce que TimeBlast peut automatiser.
-        </p>
-        <div className="landing-contact-wrapper">
-          <div className="landing-contact-info">
-            <div className="landing-contact-info-item">
-              <span>📊</span>
-              <div>
-                <strong>Diagnostic BI gratuit</strong>
-                <p>Évaluation de votre maturité data en 30 min</p>
-              </div>
-            </div>
-            <div className="landing-contact-info-item">
-              <span>💬</span>
-              <div>
-                <strong>Réponse sous 24h</strong>
-                <p>Notre équipe revient vers vous rapidement</p>
-              </div>
-            </div>
-            <div className="landing-contact-info-item">
-              <span>🎯</span>
-              <div>
-                <strong>Démo personnalisée</strong>
-                <p>Sur vos données, vos cas d'usage</p>
-              </div>
-            </div>
-          </div>
-          <form className="landing-contact-form" onSubmit={handleContactSubmit}>
+          {/* Form side */}
+          <form onSubmit={handleContactSubmit} style={{
+            padding: '2rem', borderRadius: 16, background: '#fff',
+            border: '1px solid rgba(0,212,255,0.12)',
+            boxShadow: '0 8px 30px rgba(0,212,255,0.06)',
+          }}>
             {contactSent ? (
-              <div className="landing-contact-success">
-                <span style={{ fontSize: '2.5rem' }}>✅</span>
-                <h3>Demande envoyée !</h3>
-                <p>Nous préparons votre diagnostic BI et revenons vers vous très vite.</p>
+              <div style={{ textAlign: 'center', padding: '2rem 0' }}>
+                <span style={{ fontSize: '2.5rem', display: 'block', marginBottom: '.75rem' }}>✅</span>
+                <h3 style={{ margin: '0 0 .5rem', color: S.dark }}>Demande envoyee !</h3>
+                <p style={{ color: S.gray }}>Nous preparons votre diagnostic et revenons vers vous tres vite.</p>
               </div>
             ) : (
               <>
-                <div className="landing-contact-row">
-                  <div className="landing-contact-field">
-                    <label>Nom complet *</label>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginBottom: 16 }}>
+                  <div>
+                    <label style={{ display: 'block', fontSize: '.82rem', fontWeight: 600, color: S.dark, marginBottom: 6 }}>Nom complet *</label>
                     <input type="text" required placeholder="Jean Dupont"
-                      value={contactForm.name} onChange={e => setContactForm(f => ({ ...f, name: e.target.value }))} />
+                      value={contactForm.name} onChange={e => setContactForm(f => ({ ...f, name: e.target.value }))}
+                      style={{
+                        width: '100%', padding: '10px 14px', borderRadius: 10,
+                        border: '1px solid #e2e8f0', fontSize: '.9rem', outline: 'none',
+                        transition: 'border-color .2s, box-shadow .2s', background: S.bgAlt,
+                        boxSizing: 'border-box',
+                      }}
+                      onFocus={e => { e.target.style.borderColor = '#00D4FF'; e.target.style.boxShadow = '0 0 0 3px rgba(0,212,255,0.1)' }}
+                      onBlur={e => { e.target.style.borderColor = '#e2e8f0'; e.target.style.boxShadow = 'none' }}
+                    />
                   </div>
-                  <div className="landing-contact-field">
-                    <label>Email professionnel *</label>
+                  <div>
+                    <label style={{ display: 'block', fontSize: '.82rem', fontWeight: 600, color: S.dark, marginBottom: 6 }}>Email professionnel *</label>
                     <input type="email" required placeholder="jean@entreprise.com"
-                      value={contactForm.email} onChange={e => setContactForm(f => ({ ...f, email: e.target.value }))} />
+                      value={contactForm.email} onChange={e => setContactForm(f => ({ ...f, email: e.target.value }))}
+                      style={{
+                        width: '100%', padding: '10px 14px', borderRadius: 10,
+                        border: '1px solid #e2e8f0', fontSize: '.9rem', outline: 'none',
+                        transition: 'border-color .2s, box-shadow .2s', background: S.bgAlt,
+                        boxSizing: 'border-box',
+                      }}
+                      onFocus={e => { e.target.style.borderColor = '#00D4FF'; e.target.style.boxShadow = '0 0 0 3px rgba(0,212,255,0.1)' }}
+                      onBlur={e => { e.target.style.borderColor = '#e2e8f0'; e.target.style.boxShadow = 'none' }}
+                    />
                   </div>
                 </div>
-                <div className="landing-contact-row">
-                  <div className="landing-contact-field">
-                    <label>Entreprise</label>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginBottom: 16 }}>
+                  <div>
+                    <label style={{ display: 'block', fontSize: '.82rem', fontWeight: 600, color: S.dark, marginBottom: 6 }}>Entreprise</label>
                     <input type="text" placeholder="Mon Entreprise SAS"
-                      value={contactForm.company} onChange={e => setContactForm(f => ({ ...f, company: e.target.value }))} />
+                      value={contactForm.company} onChange={e => setContactForm(f => ({ ...f, company: e.target.value }))}
+                      style={{
+                        width: '100%', padding: '10px 14px', borderRadius: 10,
+                        border: '1px solid #e2e8f0', fontSize: '.9rem', outline: 'none',
+                        transition: 'border-color .2s, box-shadow .2s', background: S.bgAlt,
+                        boxSizing: 'border-box',
+                      }}
+                      onFocus={e => { e.target.style.borderColor = '#00D4FF'; e.target.style.boxShadow = '0 0 0 3px rgba(0,212,255,0.1)' }}
+                      onBlur={e => { e.target.style.borderColor = '#e2e8f0'; e.target.style.boxShadow = 'none' }}
+                    />
                   </div>
-                  <div className="landing-contact-field">
-                    <label>Téléphone</label>
+                  <div>
+                    <label style={{ display: 'block', fontSize: '.82rem', fontWeight: 600, color: S.dark, marginBottom: 6 }}>Telephone</label>
                     <input type="tel" placeholder="06 XX XX XX XX"
-                      value={contactForm.phone} onChange={e => setContactForm(f => ({ ...f, phone: e.target.value }))} />
+                      value={contactForm.phone} onChange={e => setContactForm(f => ({ ...f, phone: e.target.value }))}
+                      style={{
+                        width: '100%', padding: '10px 14px', borderRadius: 10,
+                        border: '1px solid #e2e8f0', fontSize: '.9rem', outline: 'none',
+                        transition: 'border-color .2s, box-shadow .2s', background: S.bgAlt,
+                        boxSizing: 'border-box',
+                      }}
+                      onFocus={e => { e.target.style.borderColor = '#00D4FF'; e.target.style.boxShadow = '0 0 0 3px rgba(0,212,255,0.1)' }}
+                      onBlur={e => { e.target.style.borderColor = '#e2e8f0'; e.target.style.boxShadow = 'none' }}
+                    />
                   </div>
                 </div>
-                <div className="landing-contact-field">
-                  <label>Votre besoin *</label>
-                  <textarea required rows={4} placeholder="Décrivez le logiciel de gestion dont vous avez besoin…"
-                    value={contactForm.message} onChange={e => setContactForm(f => ({ ...f, message: e.target.value }))} />
+                <div style={{ marginBottom: 16 }}>
+                  <label style={{ display: 'block', fontSize: '.82rem', fontWeight: 600, color: S.dark, marginBottom: 6 }}>Votre besoin *</label>
+                  <textarea required rows={4} placeholder="Decrivez le logiciel dont vous avez besoin..."
+                    value={contactForm.message} onChange={e => setContactForm(f => ({ ...f, message: e.target.value }))}
+                    style={{
+                      width: '100%', padding: '10px 14px', borderRadius: 10,
+                      border: '1px solid #e2e8f0', fontSize: '.9rem', outline: 'none',
+                      resize: 'vertical', fontFamily: 'inherit',
+                      transition: 'border-color .2s, box-shadow .2s', background: S.bgAlt,
+                      boxSizing: 'border-box',
+                    }}
+                    onFocus={e => { e.target.style.borderColor = '#00D4FF'; e.target.style.boxShadow = '0 0 0 3px rgba(0,212,255,0.1)' }}
+                    onBlur={e => { e.target.style.borderColor = '#e2e8f0'; e.target.style.boxShadow = 'none' }}
+                  />
                 </div>
-                <button type="submit" className="landing-btn-primary" style={{ width: '100%', marginTop: '.5rem' }}>
-                  Demander mon diagnostic BI gratuit →
+                <button type="submit" style={{
+                  width: '100%', padding: '14px', borderRadius: 10, background: '#00D4FF',
+                  color: '#fff', border: 'none', fontWeight: 700, fontSize: '.95rem',
+                  cursor: 'pointer', boxShadow: '0 4px 20px rgba(0,212,255,0.3)',
+                  transition: 'all .25s',
+                }}
+                onMouseEnter={e => { e.target.style.boxShadow = '0 8px 30px rgba(0,212,255,0.45)'; e.target.style.transform = 'translateY(-1px)' }}
+                onMouseLeave={e => { e.target.style.boxShadow = '0 4px 20px rgba(0,212,255,0.3)'; e.target.style.transform = 'none' }}>
+                  Demander mon diagnostic gratuit →
                 </button>
               </>
             )}
@@ -1081,111 +988,222 @@ export default function LoginPage() {
         </div>
       </section>
 
-      {/* ── CTA final ── */}
-      <section className="landing-cta" id="cta">
-        <div className="landing-cta-inner">
-          <span className="landing-cta-icon">📊</span>
-          <h2>Passez au pilotage décisionnel intelligent</h2>
-          <p>Créez votre logiciel de gestion sur mesure sans écrire une ligne de code.</p>
+      {/* ══════════════════════════════════════════════════════════════════
+          10. FINAL CTA
+      ══════════════════════════════════════════════════════════════════ */}
+      <section style={{
+        padding: '5rem 2rem', textAlign: 'center',
+        background: S.gradient, position: 'relative', overflow: 'hidden',
+      }}>
+        {/* Glow orbs */}
+        <div style={{
+          position: 'absolute', top: -100, left: '50%', transform: 'translateX(-50%)',
+          width: 600, height: 300, background: 'radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%)',
+          pointerEvents: 'none',
+        }} />
+        <div style={{ position: 'relative', zIndex: 1 }}>
+          <h2 style={{
+            fontSize: 'clamp(1.8rem, 3vw, 2.5rem)', fontWeight: 800, color: '#fff',
+            margin: '0 0 1rem',
+          }}>
+            Pret a creer votre application ?
+          </h2>
+          <p style={{
+            fontSize: '1.1rem', color: 'rgba(255,255,255,0.8)', maxWidth: 500,
+            margin: '0 auto 2rem', lineHeight: 1.6,
+          }}>
+            Creez votre logiciel de gestion sur mesure sans ecrire une ligne de code.
+          </p>
           <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', flexWrap: 'wrap' }}>
-            <button className="landing-btn-primary landing-btn-lg" onClick={() => setShowLogin(true)}>
-              Démarrer mon projet →
+            <button onClick={() => setShowLogin(true)} style={{
+              padding: '14px 32px', borderRadius: 10, background: '#fff',
+              color: S.sra, border: 'none', fontWeight: 700, fontSize: '1rem',
+              cursor: 'pointer', transition: 'all .25s',
+              boxShadow: '0 4px 20px rgba(0,0,0,0.15)',
+            }}
+            onMouseEnter={e => { e.target.style.transform = 'translateY(-2px)'; e.target.style.boxShadow = '0 8px 30px rgba(0,0,0,0.2)' }}
+            onMouseLeave={e => { e.target.style.transform = 'none'; e.target.style.boxShadow = '0 4px 20px rgba(0,0,0,0.15)' }}>
+              Demarrer mon projet →
             </button>
-            <a href="#contact" className="landing-btn-secondary landing-btn-lg" style={{ color: '#fff', borderColor: 'rgba(255,255,255,0.4)' }}>
+            <a href="#contact" style={{
+              padding: '14px 32px', borderRadius: 10, background: 'transparent',
+              border: '1.5px solid rgba(255,255,255,0.4)', color: '#fff',
+              fontWeight: 600, fontSize: '1rem', textDecoration: 'none',
+              transition: 'all .25s', display: 'inline-flex', alignItems: 'center',
+            }}
+            onMouseEnter={e => { e.target.style.background = 'rgba(255,255,255,0.1)'; e.target.style.borderColor = 'rgba(255,255,255,0.6)' }}
+            onMouseLeave={e => { e.target.style.background = 'transparent'; e.target.style.borderColor = 'rgba(255,255,255,0.4)' }}>
               Nous contacter
             </a>
           </div>
         </div>
       </section>
 
-      {/* ── Footer ── */}
-      <footer className="landing-footer">
-        <div className="landing-footer-inner">
-          <img src="/logo-full-white.svg" alt="TimeBlast" style={{ height: 24 }} />
-          <span style={{ color: 'rgba(255,255,255,0.4)', fontSize: '.82rem' }}>
-            © {new Date().getFullYear()} TimeBlast.ai — Vibe-coding pour logiciels de gestion
+      {/* ══════════════════════════════════════════════════════════════════
+          11. FOOTER
+      ══════════════════════════════════════════════════════════════════ */}
+      <footer style={{
+        background: '#0f172a', padding: '2rem', textAlign: 'center',
+      }}>
+        <div style={{
+          maxWidth: 1200, margin: '0 auto', display: 'flex', alignItems: 'center',
+          justifyContent: 'space-between', flexWrap: 'wrap', gap: '1rem',
+        }}>
+          <img src="/logo-full-white.svg" alt="TimeBlast" style={{ height: 24, opacity: 0.8 }} />
+          <span style={{ color: 'rgba(255,255,255,0.35)', fontSize: '.82rem' }}>
+            &copy; {new Date().getFullYear()} TimeBlast.ai — Vibe-coding pour logiciels de gestion
           </span>
+          <div style={{ display: 'flex', gap: '1.5rem' }}>
+            <a href="/about" style={{ color: 'rgba(255,255,255,0.4)', fontSize: '.82rem', textDecoration: 'none' }}>A propos</a>
+            <a href="https://www.groupe-sra.fr" target="_blank" rel="noopener noreferrer" style={{ color: 'rgba(255,255,255,0.4)', fontSize: '.82rem', textDecoration: 'none' }}>Groupe SRA</a>
+          </div>
         </div>
       </footer>
 
-      {/* ── Login Modal ── */}
+      {/* ══════════════════════════════════════════════════════════════════
+          LOGIN MODAL
+      ══════════════════════════════════════════════════════════════════ */}
       {showLogin && (
-        <div className="landing-modal-overlay" onClick={() => setShowLogin(false)}>
-          <div className="landing-login-card" onClick={e => e.stopPropagation()}>
-            <button className="landing-login-close" onClick={() => setShowLogin(false)}>✕</button>
+        <div onClick={() => setShowLogin(false)} style={{
+          position: 'fixed', inset: 0, zIndex: 9999,
+          background: 'rgba(15,23,42,0.6)', backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)',
+          display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '2rem',
+        }}>
+          <div onClick={e => e.stopPropagation()} style={{
+            background: '#fff', borderRadius: 20, padding: '2.5rem', maxWidth: 420, width: '100%',
+            boxShadow: '0 25px 60px rgba(0,0,0,0.2), 0 0 40px rgba(0,212,255,0.08)',
+            border: '1px solid rgba(0,212,255,0.1)', position: 'relative',
+          }}>
+            {/* Close button */}
+            <button onClick={() => setShowLogin(false)} style={{
+              position: 'absolute', top: 16, right: 16, width: 32, height: 32, borderRadius: '50%',
+              border: 'none', background: S.bgAlt, color: S.gray, fontSize: '1rem',
+              cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
+              transition: 'all .2s',
+            }}
+            onMouseEnter={e => { e.currentTarget.style.background = '#fee2e2'; e.currentTarget.style.color = '#dc2626' }}
+            onMouseLeave={e => { e.currentTarget.style.background = S.bgAlt; e.currentTarget.style.color = S.gray }}>
+              ✕
+            </button>
+
             <div style={{ textAlign: 'center', marginBottom: '1.5rem' }}>
-              <span style={{ fontSize: '2rem' }}>📊</span>
-              <h2 style={{ margin: '.25rem 0 0' }}>Connexion</h2>
-              <p style={{ color: '#64748b', fontSize: '.88rem', margin: '.25rem 0 0' }}>
-                Accédez à votre espace décisionnel
+              <div style={{
+                width: 48, height: 48, borderRadius: 14, background: 'rgba(0,212,255,0.08)',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                margin: '0 auto .75rem', border: '1px solid rgba(0,212,255,0.15)',
+              }}>
+                <span style={{ fontSize: '1.5rem' }}>📊</span>
+              </div>
+              <h2 style={{ margin: '0 0 .25rem', fontSize: '1.4rem', fontWeight: 800, color: S.dark }}>Connexion</h2>
+              <p style={{ color: S.gray, fontSize: '.88rem', margin: 0 }}>
+                Accedez a votre espace decisionnel
               </p>
             </div>
+
+            {/* Recent accounts */}
             {recentAccounts.length > 0 && !email && (
-              <div style={{ marginBottom: 16 }}>
-                <div style={{ fontSize: 12, color: '#64748b', fontWeight: 500, marginBottom: 8 }}>Comptes récents</div>
+              <div style={{ marginBottom: 20 }}>
+                <div style={{ fontSize: '.75rem', color: S.gray, fontWeight: 600, marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Comptes recents</div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
                   {recentAccounts.map(acc => (
                     <button key={acc.email} onClick={() => selectRecentAccount(acc.email)}
                       style={{
-                        display: 'flex', alignItems: 'center', gap: 10, padding: '8px 12px',
-                        borderRadius: 8, border: '1px solid #e2e8f0', background: '#f8fafc',
-                        cursor: 'pointer', textAlign: 'left', width: '100%', transition: 'background .15s'
+                        display: 'flex', alignItems: 'center', gap: 10, padding: '10px 14px',
+                        borderRadius: 12, border: '1px solid #e2e8f0', background: S.bgAlt,
+                        cursor: 'pointer', textAlign: 'left', width: '100%', transition: 'all .2s',
                       }}
-                      onMouseEnter={e => e.currentTarget.style.background = '#f0f9ff'}
-                      onMouseLeave={e => e.currentTarget.style.background = '#f8fafc'}>
+                      onMouseEnter={e => { e.currentTarget.style.borderColor = '#00D4FF'; e.currentTarget.style.boxShadow = '0 2px 12px rgba(0,212,255,0.08)' }}
+                      onMouseLeave={e => { e.currentTarget.style.borderColor = '#e2e8f0'; e.currentTarget.style.boxShadow = 'none' }}>
                       <div style={{
-                        width: 32, height: 32, borderRadius: '50%', background: '#2B4C7E',
-                        color: '#fff', fontSize: 12, fontWeight: 700, display: 'flex',
-                        alignItems: 'center', justifyContent: 'center', flexShrink: 0
+                        width: 36, height: 36, borderRadius: '50%',
+                        background: S.gradient, color: '#fff', fontSize: 13, fontWeight: 700,
+                        display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
                       }}>
                         {acc.email.slice(0, 2).toUpperCase()}
                       </div>
                       <div style={{ flex: 1, minWidth: 0 }}>
-                        <div style={{ fontSize: 13, fontWeight: 500, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{acc.email}</div>
-                        <div style={{ fontSize: 11, color: '#94a3b8' }}>
+                        <div style={{ fontSize: '.88rem', fontWeight: 500, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', color: S.dark }}>{acc.email}</div>
+                        <div style={{ fontSize: '.75rem', color: S.lightGray }}>
                           {new Date(acc.lastLogin).toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' })}
                         </div>
                       </div>
-                      <span style={{ fontSize: 14, color: '#94a3b8' }}>→</span>
+                      <span style={{ fontSize: 14, color: S.lightGray }}>→</span>
                     </button>
                   ))}
                 </div>
-                <div style={{ textAlign: 'center', margin: '10px 0 0' }}>
-                  <button onClick={() => setEmail(' ')} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 12, color: '#2B4C7E', fontWeight: 500 }}>
+                <div style={{ textAlign: 'center', margin: '12px 0 0' }}>
+                  <button onClick={() => setEmail(' ')} style={{
+                    background: 'none', border: 'none', cursor: 'pointer', fontSize: '.82rem',
+                    fontWeight: 600,
+                    background: S.gradient, WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
+                    backgroundClip: 'text',
+                  }}>
                     + Utiliser un autre compte
                   </button>
                 </div>
               </div>
             )}
+
             <form onSubmit={handleSubmit}>
-              <div className="field">
-                <label htmlFor="email">Email</label>
+              <div style={{ marginBottom: 14 }}>
+                <label htmlFor="email" style={{ display: 'block', fontSize: '.82rem', fontWeight: 600, color: S.dark, marginBottom: 6 }}>Email</label>
                 <input id="email" type="email" value={email.trim()}
                   onChange={e => setEmail(e.target.value)} required autoComplete="email" autoFocus
-                  placeholder="nom@entreprise.com" />
+                  placeholder="nom@entreprise.com"
+                  style={{
+                    width: '100%', padding: '11px 14px', borderRadius: 10,
+                    border: '1px solid #e2e8f0', fontSize: '.9rem', outline: 'none',
+                    transition: 'border-color .2s, box-shadow .2s', background: S.bgAlt,
+                    boxSizing: 'border-box',
+                  }}
+                  onFocus={e => { e.target.style.borderColor = '#00D4FF'; e.target.style.boxShadow = '0 0 0 3px rgba(0,212,255,0.1)' }}
+                  onBlur={e => { e.target.style.borderColor = '#e2e8f0'; e.target.style.boxShadow = 'none' }}
+                />
               </div>
-              <div className="field">
-                <label htmlFor="password">Mot de passe</label>
+              <div style={{ marginBottom: 14 }}>
+                <label htmlFor="password" style={{ display: 'block', fontSize: '.82rem', fontWeight: 600, color: S.dark, marginBottom: 6 }}>Mot de passe</label>
                 <input id="password" type="password" value={password}
                   onChange={e => setPassword(e.target.value)} required autoComplete="current-password"
-                  placeholder="••••••••" />
+                  placeholder="••••••••"
+                  style={{
+                    width: '100%', padding: '11px 14px', borderRadius: 10,
+                    border: '1px solid #e2e8f0', fontSize: '.9rem', outline: 'none',
+                    transition: 'border-color .2s, box-shadow .2s', background: S.bgAlt,
+                    boxSizing: 'border-box',
+                  }}
+                  onFocus={e => { e.target.style.borderColor = '#00D4FF'; e.target.style.boxShadow = '0 0 0 3px rgba(0,212,255,0.1)' }}
+                  onBlur={e => { e.target.style.borderColor = '#e2e8f0'; e.target.style.boxShadow = 'none' }}
+                />
               </div>
-              {error && <p className="error">{error}</p>}
-              <button type="submit" className="landing-btn-primary" style={{ width: '100%', marginTop: '.75rem' }} disabled={loading}>
+
+              {error && <p style={{ color: '#dc2626', fontSize: '.85rem', margin: '0 0 12px', padding: '8px 12px', background: '#fef2f2', borderRadius: 8 }}>{error}</p>}
+
+              <button type="submit" disabled={loading} style={{
+                width: '100%', padding: '12px', borderRadius: 10, background: '#00D4FF',
+                color: '#fff', border: 'none', fontWeight: 700, fontSize: '.95rem',
+                cursor: loading ? 'not-allowed' : 'pointer', opacity: loading ? 0.7 : 1,
+                boxShadow: '0 4px 20px rgba(0,212,255,0.3)', transition: 'all .25s',
+              }}>
                 {loading ? 'Connexion...' : 'Se connecter →'}
               </button>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', margin: '1rem 0' }}>
+
+              {/* Divider */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', margin: '1.25rem 0' }}>
                 <div style={{ flex: 1, height: 1, background: '#e2e8f0' }} />
-                <span style={{ color: '#94a3b8', fontSize: '.8rem' }}>ou</span>
+                <span style={{ color: S.lightGray, fontSize: '.8rem' }}>ou</span>
                 <div style={{ flex: 1, height: 1, background: '#e2e8f0' }} />
               </div>
+
+              {/* Microsoft SSO */}
               <button type="button" onClick={handleMicrosoftLogin} disabled={loading}
                 style={{
-                  width: '100%', padding: '.75rem', borderRadius: 8, cursor: 'pointer',
+                  width: '100%', padding: '12px', borderRadius: 10, cursor: 'pointer',
                   border: '1px solid #e2e8f0', background: '#fff', fontSize: '.9rem',
                   display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '.5rem',
-                  color: '#1e293b', fontWeight: 600, transition: 'all .2s'
-                }}>
+                  color: S.dark, fontWeight: 600, transition: 'all .2s',
+                }}
+                onMouseEnter={e => { e.currentTarget.style.borderColor = '#00D4FF'; e.currentTarget.style.boxShadow = '0 2px 12px rgba(0,212,255,0.08)' }}
+                onMouseLeave={e => { e.currentTarget.style.borderColor = '#e2e8f0'; e.currentTarget.style.boxShadow = 'none' }}>
                 <svg width="20" height="20" viewBox="0 0 21 21">
                   <rect x="1" y="1" width="9" height="9" fill="#f25022"/>
                   <rect x="11" y="1" width="9" height="9" fill="#7fba00"/>
