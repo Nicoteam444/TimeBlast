@@ -48,7 +48,7 @@ const CONNECTORS = [
   { id: 'qonto',       name: 'Qonto',          cat: 'finance',  color: '#2A2A2A' },
   { id: 'gocardless',  name: 'GoCardless',     cat: 'finance',  color: '#1A1A2E' },
   { id: 'payfit',      name: 'PayFit',         cat: 'rh',       color: '#0066FF' },
-  { id: 'lucca',       name: 'Lucca',          cat: 'rh',       color: '#7C3AED' },
+  { id: 'lucca',       name: 'Lucca',          cat: 'rh',       color: '#195C82' },
   { id: 'silae',       name: 'Silae',          cat: 'rh',       color: '#4A90D9' },
   { id: 'slack',       name: 'Slack',          cat: 'comm',     color: '#4A154B' },
   { id: 'teams',       name: 'Teams',          cat: 'comm',     color: '#6264A7' },
@@ -204,14 +204,14 @@ function RotatingText() {
 
   return (
     <span style={{
-      background: 'linear-gradient(135deg, #7C3AED, #00D4FF)',
+      background: '#195C82',
       WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text',
       display: 'inline',
     }}>
       {displayed}
       <span style={{
         display: 'inline-block', width: 3, height: '1em', marginLeft: 2,
-        background: 'linear-gradient(135deg, #7C3AED, #00D4FF)',
+        background: '#195C82',
         animation: 'blink 1s infinite', verticalAlign: 'text-bottom',
       }} />
     </span>
@@ -220,16 +220,16 @@ function RotatingText() {
 
 // ── Styles constants ──
 const S = {
-  neon: '#00D4FF',
+  neon: '#195C82',
   sra: '#195C82',
   dark: '#0f172a',
   gray: '#64748b',
   lightGray: '#94a3b8',
   bg: '#fff',
   bgAlt: '#fafbfc',
-  borderGlow: 'rgba(0,212,255,0.12)',
-  shadowGlow: 'rgba(0,212,255,0.08)',
-  gradient: 'linear-gradient(135deg, #00D4FF, #7C3AED, #00D4FF)',
+  borderGlow: 'rgba(25,92,130,0.12)',
+  shadowGlow: 'rgba(25,92,130,0.08)',
+  gradient: 'linear-gradient(135deg, #195C82, #195C82, #195C82)',
 }
 
 // ── Interactive Mockup ──────────────────────────────────────────────────────
@@ -254,9 +254,9 @@ function InteractiveMockup({ onTabChange }) {
             style={{
               padding: '8px 20px', borderRadius: 100, cursor: 'pointer', fontSize: '.82rem', fontWeight: 600,
               border: active === tab.id ? '2px solid transparent' : '1px solid #e2e8f0',
-              background: active === tab.id ? 'linear-gradient(135deg, #7C3AED, #00D4FF)' : '#fff',
+              background: active === tab.id ? '#195C82' : '#fff',
               color: active === tab.id ? '#fff' : '#64748b',
-              boxShadow: active === tab.id ? '0 4px 20px rgba(124,58,237,0.35)' : '0 2px 8px rgba(0,0,0,0.04)',
+              boxShadow: active === tab.id ? '0 4px 20px rgba(25,92,130,0.35)' : '0 2px 8px rgba(0,0,0,0.04)',
               transition: 'all .25s ease',
               letterSpacing: '-0.01em',
             }}>
@@ -272,7 +272,7 @@ function InteractiveMockup({ onTabChange }) {
       }}>
         <div style={{
           background: '#fff', borderRadius: 20, overflow: 'hidden',
-          boxShadow: '0 25px 80px rgba(0,0,0,0.12), 0 0 0 1px rgba(0,212,255,0.12), 0 0 60px rgba(0,212,255,0.06)',
+          boxShadow: '0 25px 80px rgba(0,0,0,0.12), 0 0 0 1px rgba(25,92,130,0.12), 0 0 60px rgba(25,92,130,0.06)',
         }}>
           {/* Browser bar */}
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '12px 16px', background: '#f8fafc', borderBottom: '1px solid #e2e8f0' }}>
@@ -304,14 +304,14 @@ function InteractiveMockup({ onTabChange }) {
                 <div key={tab.id} onClick={() => setActive(tab.id)} style={{
                   width: 34, height: 34, borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center',
                   fontSize: 15, color: active === tab.id ? '#fff' : 'rgba(255,255,255,.35)',
-                  background: active === tab.id ? 'linear-gradient(135deg, rgba(124,58,237,.5), rgba(0,212,255,.3))' : 'transparent',
+                  background: active === tab.id ? 'linear-gradient(135deg, rgba(25,92,130,.5), rgba(25,92,130,.3))' : 'transparent',
                   cursor: 'pointer', transition: 'all .2s',
                 }}>
                   {tab.icon}
                 </div>
               ))}
               <div style={{ flex: 1 }} />
-              <div style={{ width: 28, height: 28, borderRadius: '50%', background: 'linear-gradient(135deg, #7C3AED, #00D4FF)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 9, color: '#fff', fontWeight: 800 }}>NR</div>
+              <div style={{ width: 28, height: 28, borderRadius: '50%', background: '#195C82', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 9, color: '#fff', fontWeight: 800 }}>NR</div>
             </div>
 
             {/* Main content */}
@@ -322,7 +322,7 @@ function InteractiveMockup({ onTabChange }) {
                 </div>
                 <div style={{ display: 'flex', gap: 6 }}>
                   <span style={{ padding: '4px 10px', borderRadius: 6, background: '#fff', border: '1px solid #e2e8f0', fontSize: '.65rem', color: '#64748b' }}>Mars 2026</span>
-                  <span style={{ padding: '4px 10px', borderRadius: 6, background: 'linear-gradient(135deg, #7C3AED, #00D4FF)', fontSize: '.65rem', color: '#fff', fontWeight: 600 }}>Exporter</span>
+                  <span style={{ padding: '4px 10px', borderRadius: 6, background: '#195C82', fontSize: '.65rem', color: '#fff', fontWeight: 600 }}>Exporter</span>
                 </div>
               </div>
 
@@ -348,20 +348,20 @@ function InteractiveMockup({ onTabChange }) {
                   <svg viewBox="0 0 400 80" style={{ width: '100%' }}>
                     <defs>
                       <linearGradient id="mg2" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="0%" stopColor="#7C3AED" stopOpacity=".12" />
-                        <stop offset="100%" stopColor="#00D4FF" stopOpacity="0" />
+                        <stop offset="0%" stopColor="#195C82" stopOpacity=".12" />
+                        <stop offset="100%" stopColor="#195C82" stopOpacity="0" />
                       </linearGradient>
                       <linearGradient id="lineGrad" x1="0" y1="0" x2="1" y2="0">
-                        <stop offset="0%" stopColor="#7C3AED" />
-                        <stop offset="100%" stopColor="#00D4FF" />
+                        <stop offset="0%" stopColor="#195C82" />
+                        <stop offset="100%" stopColor="#195C82" />
                       </linearGradient>
                     </defs>
                     <path d="M0,65 40,58 80,52 120,38 160,42 200,30 240,24 280,20 320,16 360,10 400,5 400,80 0,80Z" fill="url(#mg2)" />
                     <polyline points="0,65 40,58 80,52 120,38 160,42 200,30 240,24 280,20 320,16 360,10 400,5" fill="none" stroke="url(#lineGrad)" strokeWidth="2.5" strokeLinejoin="round" strokeLinecap="round" />
-                    <polyline points="0,70 40,65 80,62 120,55 160,52 200,48 240,42 280,36 320,32 360,28 400,22" fill="none" stroke="#00D4FF" strokeWidth="1.5" strokeLinejoin="round" opacity=".4" strokeDasharray="4 3" />
+                    <polyline points="0,70 40,65 80,62 120,55 160,52 200,48 240,42 280,36 320,32 360,28 400,22" fill="none" stroke="#195C82" strokeWidth="1.5" strokeLinejoin="round" opacity=".4" strokeDasharray="4 3" />
                     {/* Data points */}
                     {[[0,65],[80,52],[160,42],[240,24],[320,16],[400,5]].map(([px,py], i) => (
-                      <circle key={i} cx={px} cy={py} r="3" fill="#7C3AED" stroke="#fff" strokeWidth="1.5" />
+                      <circle key={i} cx={px} cy={py} r="3" fill="#195C82" stroke="#fff" strokeWidth="1.5" />
                     ))}
                   </svg>
                 ) : (
@@ -370,7 +370,7 @@ function InteractiveMockup({ onTabChange }) {
                       <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '6px 0', borderBottom: '1px solid #f1f5f9' }}>
                         <div style={{
                           width: 26, height: 26, borderRadius: 8,
-                          background: 'linear-gradient(135deg, rgba(124,58,237,.08), rgba(0,212,255,.08))',
+                          background: 'linear-gradient(135deg, rgba(25,92,130,.08), rgba(25,92,130,.08))',
                           display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 13,
                         }}>
                           {t.icon}
@@ -380,7 +380,7 @@ function InteractiveMockup({ onTabChange }) {
                         </div>
                         <div style={{
                           width: 42, height: 6,
-                          background: i <= 2 ? 'linear-gradient(90deg, #7C3AED, #00D4FF)' : '#e2e8f0',
+                          background: i <= 2 ? 'linear-gradient(90deg, #195C82, #195C82)' : '#e2e8f0',
                           borderRadius: 3, opacity: i <= 2 ? 0.8 : 0.4,
                         }} />
                       </div>
@@ -481,7 +481,7 @@ export default function LoginPage() {
     transition: 'border-color .2s, box-shadow .2s', background: '#fafbfc',
     boxSizing: 'border-box', fontFamily: 'inherit',
   }
-  const focusInput = e => { e.target.style.borderColor = '#7C3AED'; e.target.style.boxShadow = '0 0 0 3px rgba(124,58,237,0.1)' }
+  const focusInput = e => { e.target.style.borderColor = '#195C82'; e.target.style.boxShadow = '0 0 0 3px rgba(25,92,130,0.1)' }
   const blurInput = e => { e.target.style.borderColor = '#e2e8f0'; e.target.style.boxShadow = 'none' }
 
   return (
@@ -493,10 +493,10 @@ export default function LoginPage() {
       <style>{`
         @keyframes blink { 0%,50% { opacity: 1 } 51%,100% { opacity: 0 } }
         @keyframes float { 0%,100% { transform: translateY(0) } 50% { transform: translateY(-8px) } }
-        @keyframes pulse-glow { 0%,100% { box-shadow: 0 0 20px rgba(124,58,237,0.15), 0 0 60px rgba(0,212,255,0.08) } 50% { box-shadow: 0 0 40px rgba(124,58,237,0.25), 0 0 80px rgba(0,212,255,0.15) } }
+        @keyframes pulse-glow { 0%,100% { box-shadow: 0 0 20px rgba(25,92,130,0.15), 0 0 60px rgba(25,92,130,0.08) } 50% { box-shadow: 0 0 40px rgba(25,92,130,0.25), 0 0 80px rgba(25,92,130,0.15) } }
         @keyframes gradient-shift { 0% { background-position: 0% 50% } 50% { background-position: 100% 50% } 100% { background-position: 0% 50% } }
         .landing-prompt-bar { animation: pulse-glow 3s ease-in-out infinite; }
-        .landing-prompt-bar:focus-within { box-shadow: 0 0 50px rgba(124,58,237,0.35), 0 0 100px rgba(0,212,255,0.2) !important; }
+        .landing-prompt-bar:focus-within { box-shadow: 0 0 50px rgba(25,92,130,0.35), 0 0 100px rgba(25,92,130,0.2) !important; }
         .landing-nav-links { display: flex; }
         .landing-burger { display: none !important; }
         @media (max-width: 900px) {
@@ -515,7 +515,7 @@ export default function LoginPage() {
       <nav style={{
         position: 'fixed', top: 0, left: 0, right: 0, zIndex: 1000,
         background: 'rgba(255,255,255,0.75)', backdropFilter: 'blur(24px) saturate(180%)', WebkitBackdropFilter: 'blur(24px) saturate(180%)',
-        borderBottom: '1px solid rgba(0,212,255,0.08)',
+        borderBottom: '1px solid rgba(25,92,130,0.08)',
       }}>
         <div style={{
           maxWidth: 1200, margin: '0 auto', padding: '0 2rem',
@@ -546,7 +546,7 @@ export default function LoginPage() {
               A propos
             </a>
             <a href="/facture-electronique" style={{
-              background: 'linear-gradient(135deg, #7C3AED, #00D4FF)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
+              background: '#195C82', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
               backgroundClip: 'text', textDecoration: 'none', fontWeight: 700,
             }}>
               E-Facture 2026
@@ -559,14 +559,14 @@ export default function LoginPage() {
 
           <button onClick={() => setShowLogin(true)} style={{
             padding: '9px 22px', borderRadius: 10,
-            background: 'linear-gradient(135deg, #7C3AED, #00D4FF)',
+            background: '#195C82',
             border: 'none', color: '#fff', fontWeight: 700,
             fontSize: '.85rem', cursor: 'pointer', transition: 'all .25s',
-            boxShadow: '0 4px 20px rgba(124,58,237,0.3)',
+            boxShadow: '0 4px 20px rgba(25,92,130,0.3)',
             letterSpacing: '-0.01em',
           }}
-          onMouseEnter={e => { e.target.style.boxShadow = '0 8px 30px rgba(124,58,237,0.5)'; e.target.style.transform = 'translateY(-1px)' }}
-          onMouseLeave={e => { e.target.style.boxShadow = '0 4px 20px rgba(124,58,237,0.3)'; e.target.style.transform = 'none' }}>
+          onMouseEnter={e => { e.target.style.boxShadow = '0 8px 30px rgba(25,92,130,0.5)'; e.target.style.transform = 'translateY(-1px)' }}
+          onMouseLeave={e => { e.target.style.boxShadow = '0 4px 20px rgba(25,92,130,0.3)'; e.target.style.transform = 'none' }}>
             Se connecter
           </button>
         </div>
@@ -581,9 +581,9 @@ export default function LoginPage() {
         <a href="https://www.groupe-sra.fr" target="_blank" rel="noopener noreferrer">Groupe SRA</a>
         <a href="#contact" onClick={() => setMobileMenu(false)}>Contact</a>
         <a href="/about" onClick={() => setMobileMenu(false)}>A propos</a>
-        <a href="/facture-electronique" style={{ color: '#7C3AED' }}>E-Facture 2026</a>
+        <a href="/facture-electronique" style={{ color: '#195C82' }}>E-Facture 2026</a>
         <button onClick={() => { setMobileMenu(false); setShowLogin(true) }} style={{
-          marginTop: '1rem', padding: '14px 24px', borderRadius: 10, background: 'linear-gradient(135deg, #7C3AED, #00D4FF)',
+          marginTop: '1rem', padding: '14px 24px', borderRadius: 10, background: '#195C82',
           color: '#fff', border: 'none', fontWeight: 700, fontSize: '.95rem', cursor: 'pointer', width: '100%',
         }}>
           Se connecter
@@ -600,12 +600,12 @@ export default function LoginPage() {
         {/* Background orbs */}
         <div style={{
           position: 'absolute', top: -300, right: -200, width: 800, height: 800,
-          background: 'radial-gradient(circle, rgba(124,58,237,0.04) 0%, rgba(0,212,255,0.03) 40%, transparent 70%)',
+          background: 'radial-gradient(circle, rgba(25,92,130,0.04) 0%, rgba(25,92,130,0.03) 40%, transparent 70%)',
           pointerEvents: 'none',
         }} />
         <div style={{
           position: 'absolute', top: 100, left: -300, width: 600, height: 600,
-          background: 'radial-gradient(circle, rgba(0,212,255,0.04) 0%, transparent 70%)',
+          background: 'radial-gradient(circle, rgba(25,92,130,0.04) 0%, transparent 70%)',
           pointerEvents: 'none',
         }} />
         {/* Grid pattern overlay */}
@@ -619,12 +619,12 @@ export default function LoginPage() {
           {/* Badge */}
           <a href="https://www.groupe-sra.fr" target="_blank" rel="noopener noreferrer" style={{
             display: 'inline-flex', alignItems: 'center', gap: 8, padding: '7px 18px',
-            borderRadius: 100, background: 'rgba(124,58,237,0.04)', border: '1px solid rgba(124,58,237,0.12)',
+            borderRadius: 100, background: 'rgba(25,92,130,0.04)', border: '1px solid rgba(25,92,130,0.12)',
             fontSize: '.82rem', fontWeight: 600, color: S.sra, marginBottom: '2rem',
             textDecoration: 'none', cursor: 'pointer', transition: 'all .25s',
           }}
-          onMouseEnter={e => { e.currentTarget.style.borderColor = 'rgba(124,58,237,0.3)'; e.currentTarget.style.background = 'rgba(124,58,237,0.06)' }}
-          onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(124,58,237,0.12)'; e.currentTarget.style.background = 'rgba(124,58,237,0.04)' }}>
+          onMouseEnter={e => { e.currentTarget.style.borderColor = 'rgba(25,92,130,0.3)'; e.currentTarget.style.background = 'rgba(25,92,130,0.06)' }}
+          onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(25,92,130,0.12)'; e.currentTarget.style.background = 'rgba(25,92,130,0.04)' }}>
             Propulse par 40 ans d'expertise SRA \u2192
           </a>
 
@@ -649,17 +649,17 @@ export default function LoginPage() {
             className="landing-prompt-bar"
             style={{
               display: 'flex', alignItems: 'center', gap: 14, padding: '16px 22px',
-              borderRadius: 18, border: '1.5px solid rgba(124,58,237,0.2)',
+              borderRadius: 18, border: '1.5px solid rgba(25,92,130,0.2)',
               background: '#0f172a',
               maxWidth: 750, margin: '0 auto 1.5rem',
               transition: 'all .3s',
             }}>
             <div style={{
               width: 40, height: 40, borderRadius: '50%', flexShrink: 0,
-              background: 'linear-gradient(135deg, #7C3AED, #00D4FF)',
+              background: '#195C82',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               fontSize: '.72rem', fontWeight: 800, color: '#fff',
-              boxShadow: '0 0 20px rgba(124,58,237,0.4)',
+              boxShadow: '0 0 20px rgba(25,92,130,0.4)',
             }}>AI</div>
             <input type="text" placeholder="Decrivez l'application que vous souhaitez creer..."
               style={{
@@ -669,14 +669,14 @@ export default function LoginPage() {
               }} />
             <button type="submit" style={{
               padding: '10px 24px', borderRadius: 12,
-              background: 'linear-gradient(135deg, #7C3AED, #00D4FF)',
+              background: '#195C82',
               color: '#fff', fontSize: '.88rem', fontWeight: 700,
               border: 'none', cursor: 'pointer', whiteSpace: 'nowrap',
-              boxShadow: '0 4px 20px rgba(124,58,237,0.4)',
+              boxShadow: '0 4px 20px rgba(25,92,130,0.4)',
               transition: 'all .25s',
             }}
-            onMouseEnter={e => { e.target.style.transform = 'scale(1.03)'; e.target.style.boxShadow = '0 6px 28px rgba(124,58,237,0.5)' }}
-            onMouseLeave={e => { e.target.style.transform = 'none'; e.target.style.boxShadow = '0 4px 20px rgba(124,58,237,0.4)' }}>
+            onMouseEnter={e => { e.target.style.transform = 'scale(1.03)'; e.target.style.boxShadow = '0 6px 28px rgba(25,92,130,0.5)' }}
+            onMouseLeave={e => { e.target.style.transform = 'none'; e.target.style.boxShadow = '0 4px 20px rgba(25,92,130,0.4)' }}>
               Generer \u2192
             </button>
           </form>
@@ -685,8 +685,10 @@ export default function LoginPage() {
             Essayer gratuitement \u2014 aucune carte bancaire requise
           </p>
 
-          {/* Interactive Mockup */}
-          <InteractiveMockup />
+          {/* Animation hub central */}
+          <div style={{ maxWidth: 500, margin: '0 auto' }}>
+            <BiHubVisual />
+          </div>
         </div>
       </section>
 
@@ -695,7 +697,7 @@ export default function LoginPage() {
       ══════════════════════════════════════════════════════════════════ */}
       <section style={{
         background: '#fff', padding: '4rem 2rem',
-        borderTop: '1px solid rgba(0,212,255,0.08)', borderBottom: '1px solid rgba(0,212,255,0.08)',
+        borderTop: '1px solid rgba(25,92,130,0.08)', borderBottom: '1px solid rgba(25,92,130,0.08)',
       }}>
         <div style={{
           display: 'flex', justifyContent: 'center', gap: '5rem', flexWrap: 'wrap',
@@ -705,7 +707,7 @@ export default function LoginPage() {
             <div key={i} style={{ textAlign: 'center' }}>
               <span style={{
                 display: 'block', fontSize: '3.2rem', fontWeight: 800,
-                background: 'linear-gradient(135deg, #7C3AED, #00D4FF)',
+                background: '#195C82',
                 WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
                 backgroundClip: 'text', lineHeight: 1.1,
               }}>{s.value}</span>
@@ -730,7 +732,7 @@ export default function LoginPage() {
           <div style={{ flex: 1, minWidth: 300 }}>
             <p style={{
               fontSize: '.78rem', fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase',
-              background: 'linear-gradient(135deg, #7C3AED, #00D4FF)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
+              background: '#195C82', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
               backgroundClip: 'text', marginBottom: '.75rem',
             }}>Nativement connecte</p>
             <h2 style={{
@@ -753,12 +755,12 @@ export default function LoginPage() {
               {CATEGORIES.map(cat => (
                 <button key={cat.id} onClick={() => setActiveCat(cat.id)} style={{
                   padding: '7px 16px', borderRadius: 100, border: '1px solid',
-                  borderColor: activeCat === cat.id ? '#7C3AED' : '#e2e8f0',
-                  background: activeCat === cat.id ? 'rgba(124,58,237,0.06)' : '#fff',
-                  color: activeCat === cat.id ? '#7C3AED' : S.gray,
+                  borderColor: activeCat === cat.id ? '#195C82' : '#e2e8f0',
+                  background: activeCat === cat.id ? 'rgba(25,92,130,0.06)' : '#fff',
+                  color: activeCat === cat.id ? '#195C82' : S.gray,
                   fontWeight: activeCat === cat.id ? 700 : 500, fontSize: '.8rem',
                   cursor: 'pointer', transition: 'all .2s',
-                  boxShadow: activeCat === cat.id ? '0 0 15px rgba(124,58,237,0.1)' : 'none',
+                  boxShadow: activeCat === cat.id ? '0 0 15px rgba(25,92,130,0.1)' : 'none',
                 }}>
                   {cat.label}
                 </button>
@@ -807,7 +809,7 @@ export default function LoginPage() {
         <div style={{ textAlign: 'center', marginBottom: '3.5rem' }}>
           <p style={{
             fontSize: '.78rem', fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase',
-            background: 'linear-gradient(135deg, #7C3AED, #00D4FF)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
+            background: '#195C82', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
             backgroundClip: 'text', marginBottom: '.75rem',
           }}>Processus</p>
           <h2 style={{
@@ -836,29 +838,29 @@ export default function LoginPage() {
           ].map((step, i) => (
             <div key={i} style={{
               flex: '1 1 180px', maxWidth: 200, padding: '2rem 1.4rem', borderRadius: 18,
-              border: '1px solid rgba(0,212,255,0.1)', background: '#fff', textAlign: 'center',
+              border: '1px solid rgba(25,92,130,0.1)', background: '#fff', textAlign: 'center',
               transition: 'all .3s cubic-bezier(0.4, 0, 0.2, 1)', cursor: 'default',
               boxShadow: '0 2px 12px rgba(0,0,0,0.02)',
             }}
             onMouseEnter={e => {
-              e.currentTarget.style.borderColor = 'rgba(124,58,237,0.25)'
-              e.currentTarget.style.boxShadow = '0 12px 40px rgba(124,58,237,0.08), 0 0 0 1px rgba(124,58,237,0.1)'
+              e.currentTarget.style.borderColor = 'rgba(25,92,130,0.25)'
+              e.currentTarget.style.boxShadow = '0 12px 40px rgba(25,92,130,0.08), 0 0 0 1px rgba(25,92,130,0.1)'
               e.currentTarget.style.transform = 'translateY(-4px)'
             }}
             onMouseLeave={e => {
-              e.currentTarget.style.borderColor = 'rgba(0,212,255,0.1)'
+              e.currentTarget.style.borderColor = 'rgba(25,92,130,0.1)'
               e.currentTarget.style.boxShadow = '0 2px 12px rgba(0,0,0,0.02)'
               e.currentTarget.style.transform = 'none'
             }}>
               <div style={{
                 width: 56, height: 56, borderRadius: '50%',
-                background: 'linear-gradient(135deg, rgba(124,58,237,.06), rgba(0,212,255,.06))',
+                background: 'linear-gradient(135deg, rgba(25,92,130,.06), rgba(25,92,130,.06))',
                 display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto .75rem',
-                fontSize: 26, border: '1px solid rgba(124,58,237,0.1)',
+                fontSize: 26, border: '1px solid rgba(25,92,130,0.1)',
               }}>{step.icon}</div>
               <div style={{
                 fontSize: '.72rem', fontWeight: 800, letterSpacing: '0.08em',
-                background: 'linear-gradient(135deg, #7C3AED, #00D4FF)',
+                background: '#195C82',
                 WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
                 backgroundClip: 'text', marginBottom: 8, textTransform: 'uppercase',
               }}>ETAPE {step.num}</div>
@@ -876,7 +878,7 @@ export default function LoginPage() {
         <div style={{ textAlign: 'center', marginBottom: '3.5rem' }}>
           <p style={{
             fontSize: '.78rem', fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase',
-            background: 'linear-gradient(135deg, #7C3AED, #00D4FF)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
+            background: '#195C82', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
             backgroundClip: 'text', marginBottom: '.75rem',
           }}>Catalogue</p>
           <h2 style={{
@@ -899,25 +901,25 @@ export default function LoginPage() {
           {BI_MODULES.map((m, i) => (
             <div key={i} style={{
               padding: '2rem', borderRadius: 18, background: '#fff',
-              border: '1px solid rgba(0,212,255,0.1)',
+              border: '1px solid rgba(25,92,130,0.1)',
               boxShadow: '0 2px 12px rgba(0,0,0,0.02)', transition: 'all .3s cubic-bezier(0.4, 0, 0.2, 1)',
             }}
             onMouseEnter={e => {
-              e.currentTarget.style.borderColor = 'rgba(124,58,237,0.25)'
-              e.currentTarget.style.boxShadow = '0 12px 40px rgba(124,58,237,0.08), 0 0 0 1px rgba(124,58,237,0.08)'
+              e.currentTarget.style.borderColor = 'rgba(25,92,130,0.25)'
+              e.currentTarget.style.boxShadow = '0 12px 40px rgba(25,92,130,0.08), 0 0 0 1px rgba(25,92,130,0.08)'
               e.currentTarget.style.transform = 'translateY(-4px)'
             }}
             onMouseLeave={e => {
-              e.currentTarget.style.borderColor = 'rgba(0,212,255,0.1)'
+              e.currentTarget.style.borderColor = 'rgba(25,92,130,0.1)'
               e.currentTarget.style.boxShadow = '0 2px 12px rgba(0,0,0,0.02)'
               e.currentTarget.style.transform = 'none'
             }}>
               <span style={{
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
                 width: 52, height: 52, borderRadius: 14,
-                background: 'linear-gradient(135deg, rgba(124,58,237,.06), rgba(0,212,255,.06))',
+                background: 'linear-gradient(135deg, rgba(25,92,130,.06), rgba(25,92,130,.06))',
                 fontSize: 26, marginBottom: '1.25rem',
-                border: '1px solid rgba(124,58,237,0.1)',
+                border: '1px solid rgba(25,92,130,0.1)',
               }}>{m.icon}</span>
               <h3 style={{ margin: '0 0 .5rem', fontSize: '1.08rem', fontWeight: 700, color: S.dark }}>{m.title}</h3>
               <p style={{ margin: 0, fontSize: '.88rem', color: S.gray, lineHeight: 1.6 }}>{m.desc}</p>
@@ -935,14 +937,14 @@ export default function LoginPage() {
         <div style={{
           position: 'absolute', top: -80, left: '50%', transform: 'translateX(-50%)',
           width: 600, height: 300,
-          background: 'radial-gradient(circle, rgba(124,58,237,0.04) 0%, rgba(0,212,255,0.03) 40%, transparent 70%)',
+          background: 'radial-gradient(circle, rgba(25,92,130,0.04) 0%, rgba(25,92,130,0.03) 40%, transparent 70%)',
           pointerEvents: 'none',
         }} />
         <div style={{ maxWidth: 700, margin: '0 auto', position: 'relative', zIndex: 1 }}>
           <p style={{
             fontSize: '.78rem', fontWeight: 700, letterSpacing: '0.1em',
             textTransform: 'uppercase', marginBottom: '1.5rem',
-            background: 'linear-gradient(135deg, #7C3AED, #00D4FF)',
+            background: '#195C82',
             WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
             backgroundClip: 'text',
           }}>
@@ -954,7 +956,7 @@ export default function LoginPage() {
           }}>
             40 ans d'expertise{' '}
             <span style={{
-              background: 'linear-gradient(135deg, #7C3AED, #00D4FF)',
+              background: '#195C82',
               WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
               backgroundClip: 'text',
             }}>
@@ -969,17 +971,17 @@ export default function LoginPage() {
           <a href="https://www.groupe-sra.fr" target="_blank" rel="noopener noreferrer"
             style={{
               display: 'inline-flex', alignItems: 'center', gap: 16, background: '#fff',
-              border: '1px solid rgba(124,58,237,0.1)', borderRadius: 16,
+              border: '1px solid rgba(25,92,130,0.1)', borderRadius: 16,
               padding: '1.5rem 2.5rem', textDecoration: 'none', transition: 'all .3s cubic-bezier(0.4, 0, 0.2, 1)',
               boxShadow: '0 4px 20px rgba(0,0,0,0.04)',
             }}
             onMouseEnter={e => {
-              e.currentTarget.style.borderColor = '#7C3AED'
-              e.currentTarget.style.boxShadow = '0 12px 40px rgba(124,58,237,0.1)'
+              e.currentTarget.style.borderColor = '#195C82'
+              e.currentTarget.style.boxShadow = '0 12px 40px rgba(25,92,130,0.1)'
               e.currentTarget.style.transform = 'translateY(-3px)'
             }}
             onMouseLeave={e => {
-              e.currentTarget.style.borderColor = 'rgba(124,58,237,0.1)'
+              e.currentTarget.style.borderColor = 'rgba(25,92,130,0.1)'
               e.currentTarget.style.boxShadow = '0 4px 20px rgba(0,0,0,0.04)'
               e.currentTarget.style.transform = 'none'
             }}>
@@ -993,7 +995,7 @@ export default function LoginPage() {
               </div>
               <div style={{
                 fontSize: '.8rem', fontWeight: 700, marginTop: 5,
-                background: 'linear-gradient(135deg, #7C3AED, #00D4FF)',
+                background: '#195C82',
                 WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
                 backgroundClip: 'text',
               }}>
@@ -1011,7 +1013,7 @@ export default function LoginPage() {
         <div style={{ textAlign: 'center', marginBottom: '3.5rem' }}>
           <p style={{
             fontSize: '.78rem', fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase',
-            background: 'linear-gradient(135deg, #7C3AED, #00D4FF)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
+            background: '#195C82', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
             backgroundClip: 'text', marginBottom: '.75rem',
           }}>Contact</p>
           <h2 style={{
@@ -1041,24 +1043,24 @@ export default function LoginPage() {
             ].map((item, i) => (
               <div key={i} style={{
                 display: 'flex', gap: 16, padding: '1.25rem',
-                borderRadius: 16, background: '#fff', border: '1px solid rgba(124,58,237,0.06)',
+                borderRadius: 16, background: '#fff', border: '1px solid rgba(25,92,130,0.06)',
                 transition: 'all .25s',
               }}
               onMouseEnter={e => {
-                e.currentTarget.style.borderColor = 'rgba(124,58,237,0.15)'
-                e.currentTarget.style.boxShadow = '0 8px 25px rgba(124,58,237,0.06)'
+                e.currentTarget.style.borderColor = 'rgba(25,92,130,0.15)'
+                e.currentTarget.style.boxShadow = '0 8px 25px rgba(25,92,130,0.06)'
                 e.currentTarget.style.transform = 'translateY(-2px)'
               }}
               onMouseLeave={e => {
-                e.currentTarget.style.borderColor = 'rgba(124,58,237,0.06)'
+                e.currentTarget.style.borderColor = 'rgba(25,92,130,0.06)'
                 e.currentTarget.style.boxShadow = 'none'
                 e.currentTarget.style.transform = 'none'
               }}>
                 <span style={{
                   fontSize: '1.4rem', flexShrink: 0, width: 48, height: 48,
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  borderRadius: 14, background: 'linear-gradient(135deg, rgba(124,58,237,.06), rgba(0,212,255,.06))',
-                  border: '1px solid rgba(124,58,237,0.08)',
+                  borderRadius: 14, background: 'linear-gradient(135deg, rgba(25,92,130,.06), rgba(25,92,130,.06))',
+                  border: '1px solid rgba(25,92,130,0.08)',
                 }}>{item.icon}</span>
                 <div>
                   <strong style={{ color: S.dark, fontSize: '.95rem' }}>{item.title}</strong>
@@ -1071,7 +1073,7 @@ export default function LoginPage() {
           {/* Form side */}
           <form onSubmit={handleContactSubmit} style={{
             padding: '2rem', borderRadius: 20, background: '#fff',
-            border: '1px solid rgba(124,58,237,0.08)',
+            border: '1px solid rgba(25,92,130,0.08)',
             boxShadow: '0 8px 40px rgba(0,0,0,0.04)',
           }}>
             {contactSent ? (
@@ -1147,12 +1149,12 @@ export default function LoginPage() {
       }}>
         <div style={{
           position: 'absolute', top: -150, left: '50%', transform: 'translateX(-50%)',
-          width: 800, height: 400, background: 'radial-gradient(circle, rgba(124,58,237,0.15) 0%, rgba(0,212,255,0.1) 30%, transparent 70%)',
+          width: 800, height: 400, background: 'radial-gradient(circle, rgba(25,92,130,0.15) 0%, rgba(25,92,130,0.1) 30%, transparent 70%)',
           pointerEvents: 'none',
         }} />
         <div style={{
           position: 'absolute', bottom: -100, right: -100, width: 400, height: 400,
-          background: 'radial-gradient(circle, rgba(0,212,255,0.1) 0%, transparent 70%)',
+          background: 'radial-gradient(circle, rgba(25,92,130,0.1) 0%, transparent 70%)',
           pointerEvents: 'none',
         }} />
         <div style={{ position: 'relative', zIndex: 1 }}>
@@ -1233,8 +1235,8 @@ export default function LoginPage() {
         }}>
           <div onClick={e => e.stopPropagation()} style={{
             background: '#fff', borderRadius: 24, padding: '2.5rem', maxWidth: 420, width: '100%',
-            boxShadow: '0 25px 80px rgba(0,0,0,0.25), 0 0 60px rgba(124,58,237,0.08)',
-            border: '1px solid rgba(124,58,237,0.08)', position: 'relative',
+            boxShadow: '0 25px 80px rgba(0,0,0,0.25), 0 0 60px rgba(25,92,130,0.08)',
+            border: '1px solid rgba(25,92,130,0.08)', position: 'relative',
           }}>
             {/* Close button */}
             <button onClick={() => setShowLogin(false)} style={{
@@ -1251,11 +1253,11 @@ export default function LoginPage() {
             <div style={{ textAlign: 'center', marginBottom: '1.5rem' }}>
               <div style={{
                 width: 52, height: 52, borderRadius: 16,
-                background: 'linear-gradient(135deg, rgba(124,58,237,.08), rgba(0,212,255,.08))',
+                background: 'linear-gradient(135deg, rgba(25,92,130,.08), rgba(25,92,130,.08))',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
-                margin: '0 auto .75rem', border: '1px solid rgba(124,58,237,0.12)',
+                margin: '0 auto .75rem', border: '1px solid rgba(25,92,130,0.12)',
               }}>
-                <span style={{ fontSize: '1.5rem', fontWeight: 800, background: 'linear-gradient(135deg, #7C3AED, #00D4FF)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>TB</span>
+                <span style={{ fontSize: '1.5rem', fontWeight: 800, background: '#195C82', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>TB</span>
               </div>
               <h2 style={{ margin: '0 0 .25rem', fontSize: '1.4rem', fontWeight: 800, color: S.dark }}>Connexion</h2>
               <p style={{ color: S.gray, fontSize: '.88rem', margin: 0 }}>
@@ -1275,11 +1277,11 @@ export default function LoginPage() {
                         borderRadius: 14, border: '1px solid #e2e8f0', background: S.bgAlt,
                         cursor: 'pointer', textAlign: 'left', width: '100%', transition: 'all .2s',
                       }}
-                      onMouseEnter={e => { e.currentTarget.style.borderColor = '#7C3AED'; e.currentTarget.style.boxShadow = '0 2px 12px rgba(124,58,237,0.08)' }}
+                      onMouseEnter={e => { e.currentTarget.style.borderColor = '#195C82'; e.currentTarget.style.boxShadow = '0 2px 12px rgba(25,92,130,0.08)' }}
                       onMouseLeave={e => { e.currentTarget.style.borderColor = '#e2e8f0'; e.currentTarget.style.boxShadow = 'none' }}>
                       <div style={{
                         width: 36, height: 36, borderRadius: '50%',
-                        background: 'linear-gradient(135deg, #7C3AED, #00D4FF)', color: '#fff', fontSize: 13, fontWeight: 700,
+                        background: '#195C82', color: '#fff', fontSize: 13, fontWeight: 700,
                         display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
                       }}>
                         {acc.email.slice(0, 2).toUpperCase()}
@@ -1298,7 +1300,7 @@ export default function LoginPage() {
                   <button onClick={() => setEmail(' ')} style={{
                     background: 'none', border: 'none', cursor: 'pointer', fontSize: '.82rem',
                     fontWeight: 600,
-                    background: 'linear-gradient(135deg, #7C3AED, #00D4FF)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
+                    background: '#195C82', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
                     backgroundClip: 'text',
                   }}>
                     + Utiliser un autre compte
@@ -1351,7 +1353,7 @@ export default function LoginPage() {
                   display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '.5rem',
                   color: S.dark, fontWeight: 600, transition: 'all .2s',
                 }}
-                onMouseEnter={e => { e.currentTarget.style.borderColor = '#7C3AED'; e.currentTarget.style.boxShadow = '0 2px 12px rgba(124,58,237,0.06)' }}
+                onMouseEnter={e => { e.currentTarget.style.borderColor = '#195C82'; e.currentTarget.style.boxShadow = '0 2px 12px rgba(25,92,130,0.06)' }}
                 onMouseLeave={e => { e.currentTarget.style.borderColor = '#e2e8f0'; e.currentTarget.style.boxShadow = 'none' }}>
                 <svg width="20" height="20" viewBox="0 0 21 21">
                   <rect x="1" y="1" width="9" height="9" fill="#f25022"/>
