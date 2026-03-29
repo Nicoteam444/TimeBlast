@@ -32,10 +32,10 @@ const PERSONAS = [
 ]
 
 const STATS = [
-  { value: '80%', label: 'de temps gagné sur le reporting' },
-  { value: '30+', label: 'connecteurs natifs' },
-  { value: '1', label: 'seul outil au lieu de 10' },
-  { value: 'IA', label: 'décisionnelle intégrée' },
+  { value: '48h', label: 'pour générer votre outil' },
+  { value: '11', label: 'modules métier disponibles' },
+  { value: '0', label: 'ligne de code requise' },
+  { value: 'IA', label: 'qui code pour vous' },
 ]
 
 const CONNECTORS_LIST = [
@@ -280,8 +280,8 @@ export default function LoginPage() {
             <img src="/logo-full.svg" alt="TimeBlast" style={{ height: 64 }} />
           </div>
           <div className="landing-nav-links">
-            <a href="#connecteurs">Connecteurs</a>
-            <a href="#roadmap">Roadmap IA</a>
+            <a href="#comment">Comment ça marche</a>
+            <a href="#modules">Modules</a>
             <a href="https://www.groupe-sra.fr" target="_blank" rel="noopener noreferrer">Groupe SRA</a>
             <a href="#contact">Contact</a>
             <a href="/about">À propos</a>
@@ -298,8 +298,8 @@ export default function LoginPage() {
       <div className={`landing-mobile-menu ${mobileMenu ? 'open' : ''}`}>
         <button className="landing-mobile-close" onClick={() => setMobileMenu(false)}>✕</button>
         <img src="/logo-full.svg" alt="TimeBlast" style={{ height: 40, marginBottom: '1rem' }} />
-        <a href="#connecteurs" onClick={() => setMobileMenu(false)}>Connecteurs</a>
-        <a href="#roadmap" onClick={() => setMobileMenu(false)}>Roadmap IA</a>
+        <a href="#comment" onClick={() => setMobileMenu(false)}>Comment ça marche</a>
+        <a href="#modules" onClick={() => setMobileMenu(false)}>Modules</a>
         <a href="https://www.groupe-sra.fr" target="_blank" rel="noopener noreferrer">Groupe SRA</a>
         <a href="#contact" onClick={() => setMobileMenu(false)}>Contact</a>
         <a href="/about" onClick={() => setMobileMenu(false)}>À propos</a>
@@ -316,24 +316,24 @@ export default function LoginPage() {
         <div className="landing-hero-bg" />
         <div className="landing-hero-grid">
           <div className="landing-hero-text">
-            <div className="landing-hero-badge">📊 Business Intelligence nouvelle génération</div>
+            <div className="landing-hero-badge">⚡ Vibe-coding pour logiciels d'entreprise</div>
             <h1 className="landing-hero-title">
-              Votre plateforme décisionnelle à l'ère de l'IA
+              Créez votre logiciel de gestion sur mesure
             </h1>
             <p className="landing-hero-subtitle" style={{ fontSize: '1.05rem', fontWeight: 600, color: '#64748b', marginBottom: '1rem' }}>
-              Tous vos indicateurs. Toutes vos données. Un seul outil décisionnel.
+              Décrivez votre besoin. TimeBlast le génère.
             </p>
             <p className="landing-hero-subtitle">
-              TimeBlast.ai est la <strong>plateforme décisionnelle tout-en-un</strong> pour PME/ETI.
-              Finance, activité, commerce, RH — toutes vos données convergent dans des
-              <strong> dashboards intelligents enrichis par l'IA</strong>.
+              TimeBlast est la <strong>première plateforme de vibe-coding</strong> pour logiciels de gestion.
+              CRM, facturation, RH, comptabilité — décrivez ce dont vous avez besoin,
+              <strong> l'IA construit votre outil sur mesure en quelques jours</strong>.
             </p>
             <div className="landing-hero-actions">
               <button className="landing-btn-primary" onClick={() => setShowLogin(true)}>
-                Accéder à la plateforme →
+                Démarrer mon projet →
               </button>
-              <a href="#contact" className="landing-btn-secondary">
-                Demander une démo
+              <a href="#comment" className="landing-btn-secondary">
+                Comment ça marche
               </a>
             </div>
           </div>
@@ -582,10 +582,41 @@ export default function LoginPage() {
       {/* ══════════════════════════════════════════════════════════════════
           CONNECTEURS — sélecteur par catégorie
       ══════════════════════════════════════════════════════════════════ */}
+      {/* ══════════════════════════════════════════════════════════════════
+          COMMENT ÇA MARCHE — 5 Phases
+      ══════════════════════════════════════════════════════════════════ */}
+      <section style={{ padding: '5rem 2rem', background: '#fff' }} id="comment">
+        <h2 className="landing-section-title">Comment ça marche</h2>
+        <p className="landing-section-subtitle">5 étapes pour passer de l'idée à l'outil en production</p>
+        <div style={{ display: 'flex', justifyContent: 'center', gap: 16, flexWrap: 'wrap', maxWidth: 1100, margin: '2rem auto 0' }}>
+          {[
+            { num: '1', title: 'Besoin fonctionnel', desc: 'Décrivez votre besoin en français. L\'IA structure vos exigences.', icon: '💬', color: '#6366f1' },
+            { num: '2', title: 'Maquette', desc: 'Choisissez vos modules et validez la structure de votre outil.', icon: '📐', color: '#0891b2' },
+            { num: '3', title: 'Design & mise en page', desc: 'Personnalisez les couleurs, le logo et l\'expérience utilisateur.', icon: '🎨', color: '#f59e0b' },
+            { num: '4', title: 'Mise en production', desc: 'Votre outil est déployé sur un sous-domaine dédié, prêt à l\'emploi.', icon: '🚀', color: '#16a34a' },
+            { num: '5', title: 'Support & suivi', desc: 'Évolutions, support technique et monitoring en continu.', icon: '🛡️', color: '#0F4C75' },
+          ].map((step, i) => (
+            <div key={i} style={{
+              flex: '1 1 180px', maxWidth: 200, padding: '1.5rem 1.2rem', borderRadius: 14,
+              border: '1px solid #e2e8f0', background: '#fafbfc', textAlign: 'center', position: 'relative',
+            }}>
+              <div style={{
+                width: 48, height: 48, borderRadius: '50%', background: step.color + '15',
+                display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto .75rem',
+                fontSize: 22, border: `2px solid ${step.color}30`,
+              }}>{step.icon}</div>
+              <div style={{ fontSize: '.7rem', fontWeight: 800, color: step.color, marginBottom: 4 }}>ÉTAPE {step.num}</div>
+              <h4 style={{ margin: '0 0 .4rem', fontSize: '.9rem', fontWeight: 700, color: '#1e293b' }}>{step.title}</h4>
+              <p style={{ margin: 0, fontSize: '.78rem', color: '#64748b', lineHeight: 1.4 }}>{step.desc}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
       <section className="landing-connectors" id="connecteurs">
-        <h2 className="landing-section-title">30+ connecteurs disponibles</h2>
+        <h2 className="landing-section-title">11 modules métier disponibles</h2>
         <p className="landing-section-subtitle">
-          Comptabilité, CRM, paie, banque, productivité — branchez ce que vous voulez.
+          Composez votre logiciel sur mesure en activant les modules dont vous avez besoin.
         </p>
         <div className="landing-cat-tabs">
           {CATEGORIES.map(cat => (
@@ -615,9 +646,9 @@ export default function LoginPage() {
           MODULES DÉCISIONNELS
       ══════════════════════════════════════════════════════════════════ */}
       <section className="landing-features" id="modules">
-        <h2 className="landing-section-title">Vos modules décisionnels</h2>
+        <h2 className="landing-section-title">Des modules prêts à l'emploi</h2>
         <p className="landing-section-subtitle">
-          Chaque module alimente vos tableaux de bord. L'IA détecte les anomalies et recommande des actions.
+          Chaque module est pré-construit et personnalisable. L'IA les adapte à votre métier.
         </p>
         <div className="landing-features-grid">
           {BI_MODULES.map((m, i) => (
@@ -634,9 +665,9 @@ export default function LoginPage() {
           PREVIEWS — 3 dashboards IA
       ══════════════════════════════════════════════════════════════════ */}
       <section style={{ padding: '60px 0', background: '#f8fafc' }} id="previews">
-        <h2 className="landing-section-title">Vos données deviennent des décisions</h2>
+        <h2 className="landing-section-title">Votre outil ressemble à ça</h2>
         <p className="landing-section-subtitle">
-          Des dashboards intelligents qui ne se contentent pas d'afficher — ils analysent, alertent et recommandent.
+          Chaque logiciel généré par TimeBlast est professionnel, complet et personnalisé pour votre métier.
         </p>
         <div className="mockup-wrapper" style={{ maxWidth: 960, margin: '40px auto 0', padding: '0 20px' }}>
         <div className="mockup-previews" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 20 }}>
@@ -896,7 +927,7 @@ export default function LoginPage() {
                 </div>
                 <div className="landing-contact-field">
                   <label>Votre besoin *</label>
-                  <textarea required rows={4} placeholder="Décrivez votre besoin en pilotage décisionnel…"
+                  <textarea required rows={4} placeholder="Décrivez le logiciel de gestion dont vous avez besoin…"
                     value={contactForm.message} onChange={e => setContactForm(f => ({ ...f, message: e.target.value }))} />
                 </div>
                 <button type="submit" className="landing-btn-primary" style={{ width: '100%', marginTop: '.5rem' }}>
@@ -913,13 +944,13 @@ export default function LoginPage() {
         <div className="landing-cta-inner">
           <span className="landing-cta-icon">📊</span>
           <h2>Passez au pilotage décisionnel intelligent</h2>
-          <p>Rejoignez les PME qui transforment leurs données en décisions avec TimeBlast.ai.</p>
+          <p>Créez votre logiciel de gestion sur mesure sans écrire une ligne de code.</p>
           <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', flexWrap: 'wrap' }}>
             <button className="landing-btn-primary landing-btn-lg" onClick={() => setShowLogin(true)}>
-              Se connecter →
+              Démarrer mon projet →
             </button>
             <a href="#contact" className="landing-btn-secondary landing-btn-lg" style={{ color: '#fff', borderColor: 'rgba(255,255,255,0.4)' }}>
-              Demander une démo
+              Nous contacter
             </a>
           </div>
         </div>
@@ -930,7 +961,7 @@ export default function LoginPage() {
         <div className="landing-footer-inner">
           <img src="/logo-full-white.svg" alt="TimeBlast" style={{ height: 24 }} />
           <span style={{ color: 'rgba(255,255,255,0.4)', fontSize: '.82rem' }}>
-            © {new Date().getFullYear()} TimeBlast.ai — Plateforme décisionnelle intelligente pour PME
+            © {new Date().getFullYear()} TimeBlast.ai — Vibe-coding pour logiciels de gestion
           </span>
         </div>
       </footer>

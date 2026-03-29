@@ -91,18 +91,17 @@ export default function FactureElectroniquePage() {
         <div className="landing-hero-bg" />
         <div className="landing-hero-grid">
           <div className="landing-hero-text">
-            <div className="landing-hero-badge">📊 Business Intelligence + E-Facture 2026</div>
+            <div className="landing-hero-badge">⚡ Généré par TimeBlast en 48h</div>
             <h1 className="landing-hero-title">
-              La BI qui rend vos données conformes à l'e-facture
+              Votre outil de facturation conforme e-facture, créé sur mesure
             </h1>
             <p className="landing-hero-subtitle">
-              <strong>La réforme e-facture exige des données propres.</strong> TimeBlast est la plateforme
-              décisionnelle qui enrichit, normalise et valide vos données — pour que vos factures soient
-              conformes automatiquement.
+              <strong>La réforme e-facture 2026 approche.</strong> Décrivez votre besoin, TimeBlast génère votre outil de facturation
+              conforme : enrichissement données, normalisation, validation SIRENE, génération XML — tout est automatisé.
             </p>
             <div className="landing-hero-actions">
               <button className="landing-btn-primary" onClick={() => navigate('/login#contact')}>
-                Diagnostic data gratuit →
+                Créer mon outil de facturation →
               </button>
               <a href="#solution" className="landing-btn-secondary">
                 Comment ça marche
