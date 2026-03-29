@@ -5,19 +5,19 @@ import { supabase } from '../lib/supabase'
 
 // ── Modules decisionnels ──
 const BI_MODULES = [
-  { icon: '\u{1F4CA}', title: 'Tableaux de bord', desc: 'KPIs temps reel, drill-down multi-axes, alertes automatiques sur seuils.' },
-  { icon: '\u{1F4B0}', title: 'Pilotage financier', desc: 'Tresorerie previsionnelle, marge par projet, rapprochement bancaire IA.' },
+  { icon: '📊', title: 'Tableaux de bord', desc: 'KPIs temps reel, drill-down multi-axes, alertes automatiques sur seuils.' },
+  { icon: '💰', title: 'Pilotage financier', desc: 'Tresorerie previsionnelle, marge par projet, rapprochement bancaire IA.' },
   { icon: '⏱', title: 'Suivi d\'activite', desc: 'Saisie des temps, taux d\'occupation, rentabilite collaborateur.' },
-  { icon: '\u{1F3AF}', title: 'Pipeline commercial', desc: 'Kanban deals, prevision CA, scoring leads par intelligence artificielle.' },
-  { icon: '\u{1F517}', title: 'Connecteurs natifs', desc: '30+ integrations : Sage, Pennylane, Stripe, HubSpot, PayFit, Slack...' },
-  { icon: '\u{1F916}', title: 'IA decisionnelle', desc: 'Anomalies detectees, recommandations contextuelles, agents autonomes.' },
+  { icon: '🎯', title: 'Pipeline commercial', desc: 'Kanban deals, prevision CA, scoring leads par intelligence artificielle.' },
+  { icon: '🔗', title: 'Connecteurs natifs', desc: '30+ integrations : Sage, Pennylane, Stripe, HubSpot, PayFit, Slack...' },
+  { icon: '🤖', title: 'IA decisionnelle', desc: 'Anomalies detectees, recommandations contextuelles, agents autonomes.' },
 ]
 
 const PERSONAS = [
-  { icon: '\u{1F454}', role: 'Dirigeant', need: 'Vue 360 de mon entreprise en 1 ecran', solution: 'Dashboard decisionnel avec alertes IA sur CA, tresorerie et rentabilite.' },
-  { icon: '\u{1F4C8}', role: 'DAF / Comptable', need: 'Arretes mensuels en 2h au lieu de 2 jours', solution: 'Import FEC, rapprochement bancaire IA, previsionnel automatise.' },
-  { icon: '\u{1F3AF}', role: 'Commercial', need: 'Pipeline clair et previsions fiables', solution: 'Kanban deals, scoring IA, relances automatiques, suivi multi-societes.' },
-  { icon: '\u{1F465}', role: 'Manager', need: 'Savoir ou en sont mes equipes en temps reel', solution: 'Taux d\'occupation, validation temps, alertes depassement budget projet.' },
+  { icon: '👔', role: 'Dirigeant', need: 'Vue 360 de mon entreprise en 1 ecran', solution: 'Dashboard decisionnel avec alertes IA sur CA, tresorerie et rentabilite.' },
+  { icon: '📈', role: 'DAF / Comptable', need: 'Arretes mensuels en 2h au lieu de 2 jours', solution: 'Import FEC, rapprochement bancaire IA, previsionnel automatise.' },
+  { icon: '🎯', role: 'Commercial', need: 'Pipeline clair et previsions fiables', solution: 'Kanban deals, scoring IA, relances automatiques, suivi multi-societes.' },
+  { icon: '👥', role: 'Manager', need: 'Savoir ou en sont mes equipes en temps reel', solution: 'Taux d\'occupation, validation temps, alertes depassement budget projet.' },
 ]
 
 const STATS = [
@@ -237,10 +237,10 @@ function InteractiveMockup() {
   const [active, setActive] = useState('dashboard')
 
   const TABS = [
-    { id: 'dashboard', label: 'Dashboard', icon: '\u{1F4CA}', title: 'Tableau de bord', kpis: [{ label: 'CA mensuel', value: '72 450 €', trend: '+12%' }, { label: 'Pipeline', value: '343k €', trend: '+8%' }, { label: 'Marge nette', value: '68%', trend: '+3%' }, { label: 'Tresorerie', value: '62k €', trend: '+5%' }] },
-    { id: 'equipe', label: '\u00C9quipe', icon: '\u{1F465}', title: 'Gestion d\u2019\u00E9quipe', kpis: [{ label: 'Effectif', value: '45', trend: '' }, { label: 'Absents', value: '3', trend: '' }, { label: 'Heures', value: '1 247h', trend: '' }, { label: 'Occupation', value: '94%', trend: '+2%' }] },
-    { id: 'finance', label: 'Finance', icon: '\u{1F4B0}', title: 'Pilotage financier', kpis: [{ label: '\u00C9critures', value: '4 521', trend: '' }, { label: 'Rapproch\u00E9', value: '98%', trend: '+1%' }, { label: 'FEC', value: 'OK', trend: '' }, { label: 'Balance', value: '0.00 €', trend: '' }] },
-    { id: 'commerce', label: 'Commerce', icon: '\u{1F3AF}', title: 'Pipeline commercial', kpis: [{ label: 'Leads', value: '47', trend: '+15%' }, { label: 'Opportunit\u00E9s', value: '12', trend: '' }, { label: 'CA gagn\u00E9', value: '185k €', trend: '+22%' }, { label: 'Taux', value: '34%', trend: '+4%' }] },
+    { id: 'dashboard', label: 'Dashboard', icon: '📊', title: 'Tableau de bord', kpis: [{ label: 'CA mensuel', value: '72 450 €', trend: '+12%' }, { label: 'Pipeline', value: '343k €', trend: '+8%' }, { label: 'Marge nette', value: '68%', trend: '+3%' }, { label: 'Tresorerie', value: '62k €', trend: '+5%' }] },
+    { id: 'equipe', label: 'Équipe', icon: '👥', title: 'Gestion d’équipe', kpis: [{ label: 'Effectif', value: '45', trend: '' }, { label: 'Absents', value: '3', trend: '' }, { label: 'Heures', value: '1 247h', trend: '' }, { label: 'Occupation', value: '94%', trend: '+2%' }] },
+    { id: 'finance', label: 'Finance', icon: '💰', title: 'Pilotage financier', kpis: [{ label: 'Écritures', value: '4 521', trend: '' }, { label: 'Rapproché', value: '98%', trend: '+1%' }, { label: 'FEC', value: 'OK', trend: '' }, { label: 'Balance', value: '0.00 €', trend: '' }] },
+    { id: 'commerce', label: 'Commerce', icon: '🎯', title: 'Pipeline commercial', kpis: [{ label: 'Leads', value: '47', trend: '+15%' }, { label: 'Opportunités', value: '12', trend: '' }, { label: 'CA gagné', value: '185k €', trend: '+22%' }, { label: 'Taux', value: '34%', trend: '+4%' }] },
   ]
   const t = TABS.find(x => x.id === active)
 
@@ -279,29 +279,43 @@ function InteractiveMockup() {
           </div>
 
           {/* Chat messages */}
-          <div style={{ flex: 1, padding: '18px', display: 'flex', flexDirection: 'column', gap: 14, overflow: 'hidden' }}>
-            {/* User message */}
+          <div style={{ flex: 1, padding: '14px', display: 'flex', flexDirection: 'column', gap: 10, overflow: 'hidden' }}>
+            {/* User message 1 */}
             <div style={{ alignSelf: 'flex-end', maxWidth: '85%' }}>
-              <div style={{
-                background: '#195C82', color: '#fff', padding: '10px 14px',
-                borderRadius: '14px 14px 4px 14px', fontSize: '.78rem', lineHeight: 1.5,
-              }}>
-                Je veux un CRM avec suivi pipeline et dashboard
+              <div style={{ background: '#195C82', color: '#fff', padding: '8px 12px', borderRadius: '12px 12px 4px 12px', fontSize: '.72rem', lineHeight: 1.5 }}>
+                Je veux un CRM avec suivi pipeline, fiche client et dashboard commercial
               </div>
             </div>
-
-            {/* AI response */}
+            {/* AI response 1 */}
             <div style={{ alignSelf: 'flex-start', maxWidth: '90%' }}>
-              <div style={{
-                background: 'rgba(255,255,255,0.06)', color: '#e2e8f0', padding: '12px 14px',
-                borderRadius: '14px 14px 14px 4px', fontSize: '.78rem', lineHeight: 1.7,
-                border: '1px solid rgba(255,255,255,0.06)',
-              }}>
-                <div style={{ color: '#22c55e', marginBottom: 2 }}>{'✓'} Pipeline Kanban</div>
-                <div style={{ color: '#22c55e', marginBottom: 2 }}>{'✓'} Fiches clients</div>
-                <div style={{ color: '#22c55e', marginBottom: 2 }}>{'✓'} Dashboard KPI</div>
-                <div style={{ color: '#94a3b8', marginTop: 8, fontSize: '.72rem' }}>D\u00E9ploiement : 48h</div>
+              <div style={{ background: 'rgba(255,255,255,0.06)', color: '#e2e8f0', padding: '10px 12px', borderRadius: '12px 12px 12px 4px', fontSize: '.72rem', lineHeight: 1.6, border: '1px solid rgba(255,255,255,0.06)' }}>
+                <div style={{ color: '#22c55e', marginBottom: 1 }}>✓ Pipeline Kanban drag & drop</div>
+                <div style={{ color: '#22c55e', marginBottom: 1 }}>✓ Fiches clients enrichies SIRENE</div>
+                <div style={{ color: '#22c55e', marginBottom: 1 }}>✓ Dashboard KPI temps réel</div>
+                <div style={{ color: '#22c55e', marginBottom: 1 }}>✓ Connecteurs HubSpot, Sage, Mail</div>
+                <div style={{ color: '#94a3b8', marginTop: 6, fontSize: '.65rem' }}>Déploiement estimé : 48h</div>
               </div>
+            </div>
+            {/* User message 2 */}
+            <div style={{ alignSelf: 'flex-end', maxWidth: '85%' }}>
+              <div style={{ background: '#195C82', color: '#fff', padding: '8px 12px', borderRadius: '12px 12px 4px 12px', fontSize: '.72rem', lineHeight: 1.5 }}>
+                Ajoute aussi la facturation et le suivi des paiements
+              </div>
+            </div>
+            {/* AI response 2 */}
+            <div style={{ alignSelf: 'flex-start', maxWidth: '90%' }}>
+              <div style={{ background: 'rgba(255,255,255,0.06)', color: '#e2e8f0', padding: '10px 12px', borderRadius: '12px 12px 12px 4px', fontSize: '.72rem', lineHeight: 1.6, border: '1px solid rgba(255,255,255,0.06)' }}>
+                <div style={{ color: '#22c55e', marginBottom: 1 }}>✓ Module facturation ajouté</div>
+                <div style={{ color: '#22c55e', marginBottom: 1 }}>✓ Suivi paiements et relances</div>
+                <div style={{ color: '#22c55e', marginBottom: 1 }}>✓ E-facture 2026 conforme</div>
+                <div style={{ color: '#94a3b8', marginTop: 6, fontSize: '.65rem' }}>6 modules · 30+ connecteurs</div>
+              </div>
+            </div>
+            {/* Typing */}
+            <div style={{ alignSelf: 'flex-start', display: 'flex', gap: 4, padding: '8px 12px', borderRadius: 12, background: 'rgba(255,255,255,0.04)' }}>
+              <span style={{ width: 5, height: 5, borderRadius: '50%', background: 'rgba(255,255,255,0.3)', animation: 'typingDot 1.4s infinite 0s' }} />
+              <span style={{ width: 5, height: 5, borderRadius: '50%', background: 'rgba(255,255,255,0.3)', animation: 'typingDot 1.4s infinite 0.2s' }} />
+              <span style={{ width: 5, height: 5, borderRadius: '50%', background: 'rgba(255,255,255,0.3)', animation: 'typingDot 1.4s infinite 0.4s' }} />
             </div>
           </div>
 
@@ -313,7 +327,7 @@ function InteractiveMockup() {
               background: 'rgba(255,255,255,0.04)', borderRadius: 12, padding: '10px 14px',
               border: '1px solid rgba(255,255,255,0.08)', display: 'flex', alignItems: 'center',
             }}>
-              <span style={{ color: 'rgba(255,255,255,0.25)', fontSize: '.78rem' }}>D\u00E9crivez votre besoin...</span>
+              <span style={{ color: 'rgba(255,255,255,0.25)', fontSize: '.78rem' }}>Décrivez votre besoin...</span>
             </div>
           </div>
         </div>
@@ -332,7 +346,7 @@ function InteractiveMockup() {
               background: '#fff', borderRadius: 8, padding: '4px 12px', border: '1px solid #e2e8f0',
               maxWidth: 240, margin: '0 auto',
             }}>
-              {'\u{1F512}'} app.timeblast.ai/{active}
+              {'🔒'} app.timeblast.ai/{active}
             </div>
             <div style={{ width: 40 }} />
           </div>
@@ -596,10 +610,6 @@ export default function LoginPage() {
               onMouseEnter={e => e.target.style.color = S.dark} onMouseLeave={e => e.target.style.color = S.gray}>
               Groupe SRA
             </a>
-            <a href="/about" style={{ color: S.gray, textDecoration: 'none', transition: 'color .2s' }}
-              onMouseEnter={e => e.target.style.color = S.dark} onMouseLeave={e => e.target.style.color = S.gray}>
-              A propos
-            </a>
             <a href="/facture-electronique" style={{
               background: '#195C82', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
               backgroundClip: 'text', textDecoration: 'none', fontWeight: 700,
@@ -610,7 +620,7 @@ export default function LoginPage() {
 
           <button className="landing-burger" onClick={() => setMobileMenu(true)} style={{
             display: 'none', background: 'none', border: 'none', fontSize: '1.5rem', cursor: 'pointer', color: S.dark,
-          }}>\u2630</button>
+          }}>☰</button>
 
           <button onClick={() => setShowLogin(true)} style={{
             padding: '9px 22px', borderRadius: 10,
@@ -635,7 +645,7 @@ export default function LoginPage() {
         <a href="#modules" onClick={() => setMobileMenu(false)}>Modules</a>
         <a href="https://www.groupe-sra.fr" target="_blank" rel="noopener noreferrer">Groupe SRA</a>
         <a href="#contact" onClick={() => setMobileMenu(false)}>Contact</a>
-        <a href="/about" onClick={() => setMobileMenu(false)}>A propos</a>
+        
         <a href="/facture-electronique" style={{ color: '#195C82' }}>E-Facture 2026</a>
         <button onClick={() => { setMobileMenu(false); setShowLogin(true) }} style={{
           marginTop: '1rem', padding: '14px 24px', borderRadius: 10, background: '#195C82',
@@ -689,8 +699,8 @@ export default function LoginPage() {
               fontSize: 'clamp(2rem, 3.5vw, 3rem)', fontWeight: 800, lineHeight: 1.2,
               color: S.dark, margin: '0 0 1.25rem', letterSpacing: '-0.02em',
             }}>
-              <span style={{ display: 'block' }}>Creez en un seul prompt</span>
-              <span style={{ display: 'block', height: 'calc(clamp(2rem, 3.5vw, 3rem) * 1.2)' }}>votre <RotatingText /></span>
+              <span style={{ display: 'block' }}>Créez en un seul prompt</span>
+              <span style={{ display: 'block', height: 'calc(clamp(2rem, 3.5vw, 3rem) * 1.2)', overflow: 'hidden' }}>votre <RotatingText /></span>
             </h1>
 
             <p style={{
@@ -845,11 +855,11 @@ export default function LoginPage() {
           maxWidth: 1100, margin: '0 auto',
         }}>
           {[
-            { num: '1', icon: '\u{1F4AC}', title: 'Besoin fonctionnel', desc: 'Decrivez votre besoin en francais. L\'IA structure vos exigences.' },
-            { num: '2', icon: '\u{1F4D0}', title: 'Maquette', desc: 'Choisissez vos modules et validez la structure de votre outil.' },
-            { num: '3', icon: '\u{1F3A8}', title: 'Design & mise en page', desc: 'Personnalisez les couleurs, le logo et l\'experience utilisateur.' },
-            { num: '4', icon: '\u{1F680}', title: 'Mise en production', desc: 'Votre outil est deploye sur un sous-domaine dedie, pret a l\'emploi.' },
-            { num: '5', icon: '\u{1F6E1}\uFE0F', title: 'Support & suivi', desc: 'Evolutions, support technique et monitoring en continu.' },
+            { num: '1', icon: '💬', title: 'Besoin fonctionnel', desc: 'Decrivez votre besoin en francais. L\'IA structure vos exigences.' },
+            { num: '2', icon: '📐', title: 'Maquette', desc: 'Choisissez vos modules et validez la structure de votre outil.' },
+            { num: '3', icon: '🎨', title: 'Design & mise en page', desc: 'Personnalisez les couleurs, le logo et l\'experience utilisateur.' },
+            { num: '4', icon: '🚀', title: 'Mise en production', desc: 'Votre outil est deploye sur un sous-domaine dedie, pret a l\'emploi.' },
+            { num: '5', icon: '🛡️', title: 'Support & suivi', desc: 'Evolutions, support technique et monitoring en continu.' },
           ].map((step, i) => (
             <div key={i} style={{
               flex: '1 1 180px', maxWidth: 200, padding: '2rem 1.4rem', borderRadius: 18,
@@ -1052,9 +1062,9 @@ export default function LoginPage() {
           {/* Info side */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
             {[
-              { icon: '\u{1F50D}', title: 'Diagnostic gratuit', desc: 'Evaluation de votre maturite data en 30 min' },
-              { icon: '\u26A1', title: 'Reponse sous 24h', desc: 'Notre equipe revient vers vous rapidement' },
-              { icon: '\u{1F3AF}', title: 'Demo personnalisee', desc: 'Sur vos donnees, vos cas d\'usage' },
+              { icon: '🔍', title: 'Diagnostic gratuit', desc: 'Evaluation de votre maturite data en 30 min' },
+              { icon: '⚡', title: 'Reponse sous 24h', desc: 'Notre equipe revient vers vous rapidement' },
+              { icon: '🎯', title: 'Demo personnalisee', desc: 'Sur vos donnees, vos cas d\'usage' },
             ].map((item, i) => (
               <div key={i} style={{
                 display: 'flex', gap: 16, padding: '1.25rem',
@@ -1226,10 +1236,6 @@ export default function LoginPage() {
             &copy; {new Date().getFullYear()} TimeBlast.ai — Vibe-coding pour logiciels de gestion
           </span>
           <div style={{ display: 'flex', gap: '1.5rem' }}>
-            <a href="/about" style={{ color: 'rgba(255,255,255,0.4)', fontSize: '.82rem', textDecoration: 'none', transition: 'color .2s' }}
-              onMouseEnter={e => e.target.style.color = 'rgba(255,255,255,0.7)'} onMouseLeave={e => e.target.style.color = 'rgba(255,255,255,0.4)'}>
-              A propos
-            </a>
             <a href="https://www.groupe-sra.fr" target="_blank" rel="noopener noreferrer"
               style={{ color: 'rgba(255,255,255,0.4)', fontSize: '.82rem', textDecoration: 'none', transition: 'color .2s' }}
               onMouseEnter={e => e.target.style.color = 'rgba(255,255,255,0.7)'} onMouseLeave={e => e.target.style.color = 'rgba(255,255,255,0.4)'}>
@@ -1336,7 +1342,7 @@ export default function LoginPage() {
                 <label htmlFor="password" style={{ display: 'block', fontSize: '.82rem', fontWeight: 600, color: S.dark, marginBottom: 6 }}>Mot de passe</label>
                 <input id="password" type="password" value={password}
                   onChange={e => setPassword(e.target.value)} required autoComplete="current-password"
-                  placeholder="\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022"
+                  placeholder="••••••••"
                   style={inputStyle} onFocus={focusInput} onBlur={blurInput} />
               </div>
 
