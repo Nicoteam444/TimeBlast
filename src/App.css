@@ -78,8 +78,8 @@ body {
 .landing-nav-links { display: flex; gap: 2rem; }
 .landing-nav-links a { text-decoration: none; color: #475569; font-size: .9rem; font-weight: 500; transition: color .15s; }
 .landing-nav-links a:hover { color: #195C82; }
-.landing-nav-btn { background: #195C82; color: #fff; border: none; padding: .5rem 1.25rem; border-radius: 8px; font-size: .875rem; font-weight: 700; cursor: pointer; transition: all .15s; }
-.landing-nav-btn:hover { background: #134a68; box-shadow: 0 4px 16px rgba(15,76,117,0.25); }
+.landing-nav-btn { background: linear-gradient(135deg, #7C3AED, #00D4FF); color: #fff; border: none; padding: .5rem 1.25rem; border-radius: 8px; font-size: .875rem; font-weight: 700; cursor: pointer; transition: all .15s; }
+.landing-nav-btn:hover { background: linear-gradient(135deg, #6D28D9, #00B8D9); box-shadow: 0 4px 16px rgba(124,58,237,0.3); }
 
 /* Hero — fond blanc, texte bleu SRA, multiprise sur fond clair */
 .landing-hero { position: relative; padding: 7rem 2rem 4rem; overflow: hidden; }
@@ -96,8 +96,8 @@ body {
 .landing-hero-visual { display: flex; justify-content: center; align-items: center; }
 
 /* Buttons — style SRA */
-.landing-btn-primary { background: #195C82; color: #fff; border: none; padding: .75rem 2rem; border-radius: 8px; font-size: 1rem; font-weight: 700; cursor: pointer; transition: all .15s; }
-.landing-btn-primary:hover { background: #134a68; transform: translateY(-1px); box-shadow: 0 8px 24px rgba(15,76,117,0.25); }
+.landing-btn-primary { background: linear-gradient(135deg, #7C3AED, #00D4FF); color: #fff; border: none; padding: .75rem 2rem; border-radius: 8px; font-size: 1rem; font-weight: 700; cursor: pointer; transition: all .15s; }
+.landing-btn-primary:hover { background: linear-gradient(135deg, #6D28D9, #00B8D9); transform: translateY(-1px); box-shadow: 0 8px 24px rgba(124,58,237,0.3); }
 .landing-btn-secondary { background: transparent; color: #195C82; border: 1.5px solid #195C82; padding: .75rem 2rem; border-radius: 8px; font-size: 1rem; font-weight: 600; cursor: pointer; text-decoration: none; transition: all .15s; display: inline-block; }
 .landing-btn-secondary:hover { background: rgba(15,76,117,0.05); box-shadow: 0 4px 12px rgba(15,76,117,0.1); }
 .landing-btn-lg { padding: 1rem 2.5rem; font-size: 1.1rem; }
