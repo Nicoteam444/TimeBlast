@@ -5,19 +5,19 @@ import { supabase } from '../lib/supabase'
 
 // ── Modules decisionnels ──
 const BI_MODULES = [
-  { letter: 'D', title: 'Tableaux de bord', desc: 'KPIs temps reel, drill-down multi-axes, alertes automatiques sur seuils.' },
-  { letter: 'F', title: 'Pilotage financier', desc: 'Tresorerie previsionnelle, marge par projet, rapprochement bancaire IA.' },
-  { letter: 'A', title: 'Suivi d\'activite', desc: 'Saisie des temps, taux d\'occupation, rentabilite collaborateur.' },
-  { letter: 'C', title: 'Pipeline commercial', desc: 'Kanban deals, prevision CA, scoring leads par intelligence artificielle.' },
-  { letter: 'I', title: 'Connecteurs natifs', desc: '30+ integrations : Sage, Pennylane, Stripe, HubSpot, PayFit, Slack...' },
-  { letter: 'AI', title: 'IA decisionnelle', desc: 'Anomalies detectees, recommandations contextuelles, agents autonomes.' },
+  { icon: '📊', title: 'Tableaux de bord', desc: 'KPIs temps reel, drill-down multi-axes, alertes automatiques sur seuils.' },
+  { icon: '💰', title: 'Pilotage financier', desc: 'Tresorerie previsionnelle, marge par projet, rapprochement bancaire IA.' },
+  { icon: '⏱', title: 'Suivi d\'activite', desc: 'Saisie des temps, taux d\'occupation, rentabilite collaborateur.' },
+  { icon: '🎯', title: 'Pipeline commercial', desc: 'Kanban deals, prevision CA, scoring leads par intelligence artificielle.' },
+  { icon: '🔗', title: 'Connecteurs natifs', desc: '30+ integrations : Sage, Pennylane, Stripe, HubSpot, PayFit, Slack...' },
+  { icon: '🤖', title: 'IA decisionnelle', desc: 'Anomalies detectees, recommandations contextuelles, agents autonomes.' },
 ]
 
 const PERSONAS = [
-  { icon: '-', role: 'Dirigeant', need: 'Vue 360 de mon entreprise en 1 ecran', solution: 'Dashboard decisionnel avec alertes IA sur CA, tresorerie et rentabilite.' },
-  { icon: '-', role: 'DAF / Comptable', need: 'Arretes mensuels en 2h au lieu de 2 jours', solution: 'Import FEC, rapprochement bancaire IA, previsionnel automatise.' },
-  { icon: '-', role: 'Commercial', need: 'Pipeline clair et previsions fiables', solution: 'Kanban deals, scoring IA, relances automatiques, suivi multi-societes.' },
-  { icon: '-', role: 'Manager', need: 'Savoir ou en sont mes equipes en temps reel', solution: 'Taux d\'occupation, validation temps, alertes depassement budget projet.' },
+  { icon: '👔', role: 'Dirigeant', need: 'Vue 360 de mon entreprise en 1 ecran', solution: 'Dashboard decisionnel avec alertes IA sur CA, tresorerie et rentabilite.' },
+  { icon: '📈', role: 'DAF / Comptable', need: 'Arretes mensuels en 2h au lieu de 2 jours', solution: 'Import FEC, rapprochement bancaire IA, previsionnel automatise.' },
+  { icon: '🎯', role: 'Commercial', need: 'Pipeline clair et previsions fiables', solution: 'Kanban deals, scoring IA, relances automatiques, suivi multi-societes.' },
+  { icon: '👥', role: 'Manager', need: 'Savoir ou en sont mes equipes en temps reel', solution: 'Taux d\'occupation, validation temps, alertes depassement budget projet.' },
 ]
 
 const STATS = [
@@ -223,11 +223,11 @@ function HeroVisual() {
   const [active, setActive] = useState('dashboard')
 
   const TABS = [
-    { id: 'dashboard', label: 'Dashboard', title: 'Tableau de bord', kpis: ['CA: 72 450 €', 'Pipeline: 343k €', 'Marge: 68%', 'Treso: 62k €'] },
-    { id: 'equipe', label: 'Equipe', title: 'Gestion d\'equipe', kpis: ['Effectif: 45', 'Absents: 3', 'Heures: 1 247h', 'Occupation: 94%'] },
-    { id: 'finance', label: 'Finance', title: 'Pilotage financier', kpis: ['Ecritures: 4 521', 'Rapproche: 98%', 'FEC: OK', 'Balance: 0.00 €'] },
-    { id: 'commerce', label: 'Commerce', title: 'Pipeline commercial', kpis: ['Leads: 47', 'Opportunites: 12', 'CA gagne: 185k €', 'Taux: 34%'] },
-    { id: 'calendrier', label: 'Calendrier', title: 'Calendrier', kpis: ['Reunions: 8', 'A venir: 3', 'Outlook: sync', 'Equipe: 12'] },
+    { id: 'dashboard', label: 'Dashboard', icon: '📊', title: 'Tableau de bord', kpis: ['CA: 72 450 €', 'Pipeline: 343k €', 'Marge: 68%', 'Treso: 62k €'] },
+    { id: 'equipe', label: 'Equipe', icon: '👥', title: 'Gestion d\'equipe', kpis: ['Effectif: 45', 'Absents: 3', 'Heures: 1 247h', 'Occupation: 94%'] },
+    { id: 'finance', label: 'Finance', icon: '💰', title: 'Pilotage financier', kpis: ['Ecritures: 4 521', 'Rapproche: 98%', 'FEC: OK', 'Balance: 0.00 €'] },
+    { id: 'commerce', label: 'Commerce', icon: '🎯', title: 'Pipeline commercial', kpis: ['Leads: 47', 'Opportunites: 12', 'CA gagne: 185k €', 'Taux: 34%'] },
+    { id: 'calendrier', label: 'Calendrier', icon: '📅', title: 'Calendrier', kpis: ['Reunions: 8', 'A venir: 3', 'Outlook: sync', 'Equipe: 12'] },
   ]
   const t = TABS.find(x => x.id === active)
 
@@ -292,21 +292,21 @@ function HeroVisual() {
             {/* Sidebar */}
             <div style={{ width: 44, background: '#0f2b42', padding: '10px 6px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4 }}>
               <img src="/logo-icon-white.svg" alt="" style={{ width: 22, height: 22, marginBottom: 8 }} />
-              {TABS.map((tab, i) => (
+              {TABS.map((tab) => (
                 <div key={tab.id} onClick={() => setActive(tab.id)} style={{
-                  width: 28, height: 28, borderRadius: 6, display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  fontSize: 10, fontWeight: 700, color: active === tab.id ? '#fff' : 'rgba(255,255,255,.4)',
+                  width: 30, height: 30, borderRadius: 6, display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  fontSize: 14, color: active === tab.id ? '#fff' : 'rgba(255,255,255,.4)',
                   background: active === tab.id ? 'rgba(255,255,255,.15)' : 'transparent',
                   cursor: 'pointer', transition: 'all .15s',
                 }}>
-                  {tab.label[0]}
+                  {tab.icon}
                 </div>
               ))}
             </div>
             {/* Main content — changes with active tab */}
             <div style={{ flex: 1, padding: '14px 18px', background: '#f8fafc', transition: 'all .2s' }}>
               <div style={{ fontSize: '.75rem', fontWeight: 700, color: '#195C82', marginBottom: 12 }}>
-                {t.title}
+                {t.icon} {t.title}
               </div>
               {/* KPIs */}
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 8, marginBottom: 14 }}>
@@ -333,8 +333,8 @@ function HeroVisual() {
                   <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
                     {[1,2,3,4,5].map(i => (
                       <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '5px 0', borderBottom: '1px solid #f1f5f9' }}>
-                        <div style={{ width: 22, height: 22, borderRadius: 6, background: 'linear-gradient(135deg, rgba(124,58,237,.1), rgba(0,212,255,.1))', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 9, fontWeight: 700, color: '#7C3AED' }}>
-                          {t.label[0]}
+                        <div style={{ width: 22, height: 22, borderRadius: 6, background: 'linear-gradient(135deg, rgba(124,58,237,.1), rgba(0,212,255,.1))', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12 }}>
+                          {t.icon}
                         </div>
                         <div style={{ flex: 1 }}>
                           <div style={{ height: 5, background: '#e2e8f0', borderRadius: 3, width: `${95 - i * 14}%` }} />
@@ -551,13 +551,14 @@ export default function LoginPage() {
         }}>
           <div>
             {/* Badge */}
-            <div style={{
+            <a href="https://www.groupe-sra.fr" target="_blank" rel="noopener noreferrer" style={{
               display: 'inline-flex', alignItems: 'center', gap: 8, padding: '6px 16px',
               borderRadius: 100, background: 'rgba(0,212,255,0.06)', border: '1px solid rgba(0,212,255,0.15)',
               fontSize: '.82rem', fontWeight: 600, color: S.sra, marginBottom: '1.5rem',
+              textDecoration: 'none', cursor: 'pointer',
             }}>
-              Propulse par 40 ans d'expertise SRA
-            </div>
+              Propulse par 40 ans d'expertise SRA →
+            </a>
 
             <h1 style={{
               fontSize: 'clamp(2rem, 3.5vw, 3rem)', fontWeight: 800, lineHeight: 1.15,
@@ -651,11 +652,11 @@ export default function LoginPage() {
           maxWidth: 1100, margin: '0 auto',
         }}>
           {[
-            { num: '1', title: 'Besoin fonctionnel', desc: 'Decrivez votre besoin en francais. L\'IA structure vos exigences.' },
-            { num: '2', title: 'Maquette', desc: 'Choisissez vos modules et validez la structure de votre outil.' },
-            { num: '3', title: 'Design & mise en page', desc: 'Personnalisez les couleurs, le logo et l\'experience utilisateur.' },
-            { num: '4', title: 'Mise en production', desc: 'Votre outil est deploye sur un sous-domaine dedie, pret a l\'emploi.' },
-            { num: '5', title: 'Support & suivi', desc: 'Evolutions, support technique et monitoring en continu.' },
+            { num: '1', icon: '💬', title: 'Besoin fonctionnel', desc: 'Decrivez votre besoin en francais. L\'IA structure vos exigences.' },
+            { num: '2', icon: '📐', title: 'Maquette', desc: 'Choisissez vos modules et validez la structure de votre outil.' },
+            { num: '3', icon: '🎨', title: 'Design & mise en page', desc: 'Personnalisez les couleurs, le logo et l\'experience utilisateur.' },
+            { num: '4', icon: '🚀', title: 'Mise en production', desc: 'Votre outil est deploye sur un sous-domaine dedie, pret a l\'emploi.' },
+            { num: '5', icon: '🛡️', title: 'Support & suivi', desc: 'Evolutions, support technique et monitoring en continu.' },
           ].map((step, i) => (
             <div key={i} style={{
               flex: '1 1 180px', maxWidth: 200, padding: '2rem 1.2rem', borderRadius: 16,
@@ -676,8 +677,8 @@ export default function LoginPage() {
               <div style={{
                 width: 52, height: 52, borderRadius: '50%', background: 'rgba(0,212,255,0.06)',
                 display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto .75rem',
-                fontSize: 20, fontWeight: 800, color: '#195C82', border: '1px solid rgba(0,212,255,0.12)',
-              }}>{step.num}</div>
+                fontSize: 24, border: '1px solid rgba(0,212,255,0.12)',
+              }}>{step.icon}</div>
               <div style={{
                 fontSize: '.75rem', fontWeight: 800, letterSpacing: '0.05em',
                 background: S.gradient, WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
@@ -809,10 +810,9 @@ export default function LoginPage() {
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
                 width: 48, height: 48, borderRadius: 12,
                 background: 'linear-gradient(135deg, rgba(124,58,237,.08), rgba(0,212,255,.08))',
-                fontSize: 16, fontWeight: 800, marginBottom: '1rem',
+                fontSize: 24, marginBottom: '1rem',
                 border: '1px solid rgba(0,212,255,0.15)',
-                color: '#7C3AED',
-              }}>{m.letter}</span>
+              }}>{m.icon}</span>
               <h3 style={{ margin: '0 0 .5rem', fontSize: '1.05rem', fontWeight: 700, color: S.dark }}>{m.title}</h3>
               <p style={{ margin: 0, fontSize: '.88rem', color: S.gray, lineHeight: 1.55 }}>{m.desc}</p>
             </div>
@@ -1051,7 +1051,7 @@ export default function LoginPage() {
       ══════════════════════════════════════════════════════════════════ */}
       <section style={{
         padding: '5rem 2rem', textAlign: 'center',
-        background: S.gradient, position: 'relative', overflow: 'hidden',
+        background: '#195C82', position: 'relative', overflow: 'hidden',
       }}>
         {/* Glow orbs */}
         <div style={{
