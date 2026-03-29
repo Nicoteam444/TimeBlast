@@ -276,7 +276,7 @@ function InteractiveMockup() {
         </div>
 
         {/* App layout: sidebar + main content + chat panel */}
-        <div style={{ display: 'flex', height: 480 }}>
+        <div style={{ display: 'flex', height: 600 }}>
           {/* Sidebar */}
           <div style={{
             width: 48, background: 'linear-gradient(180deg, #0a1628, #0f2b42)', padding: '12px 6px',
