@@ -301,19 +301,19 @@ body {
 .landing-mobile-menu .landing-mobile-close { position: absolute; top: 1rem; right: 1.5rem; font-size: 1.5rem; background: none; border: none; cursor: pointer; color: #195C82; }
 
 @media (max-width: 900px) {
-  /* Hero : animation SOUS le texte (forcer 1 colonne) */
-  .landing-hero-grid,
-  [class*="landing-hero"] > div[style*="grid-template-columns"] {
-    display: flex !important; flex-direction: column !important; text-align: center;
-  }
+  /* Hero : 1 colonne */
+  .landing-hero-grid { display: block !important; text-align: center; }
+  /* Animation : cacher desktop, montrer mobile */
+  .multiprise-desktop { display: none !important; }
+  .multiprise-mobile { display: block !important; }
   .landing-hero-actions { justify-content: center; }
-  .multiprise-container { max-width: 280px; margin: 1rem auto 0; }
-  /* Mockup + chat : INDÉFORMABLE — zoom pour garder proportions */
+  .landing-hero-left { text-align: center; }
+  /* Mockup : scroll horizontal pour garder proportions */
   .landing-mockup-wrapper {
-    transform: none !important; margin-bottom: 0 !important;
-    zoom: 0.7; -moz-transform: scale(0.7); -moz-transform-origin: top center;
+    transform: none !important; margin-top: -3rem !important;
+    overflow-x: auto; -webkit-overflow-scrolling: touch;
   }
-  .landing-mockup-dual { min-width: 0 !important; }
+  .landing-mockup-dual { min-width: 900px !important; }
   /* Grilles */
   .landing-steps-grid { grid-template-columns: 1fr 1fr; }
   .landing-advantages-grid { grid-template-columns: 1fr; }
@@ -326,8 +326,8 @@ body {
   /* Animation sous le texte — plus petite */
   .multiprise-container { max-width: 200px !important; margin: 1rem auto 0 !important; }
   .multiprise-svg { max-width: 100%; height: auto; }
-  /* Mockup : zoom encore plus petit */
-  .landing-mockup-wrapper { zoom: 0.5 !important; -moz-transform: scale(0.5) !important; }
+  /* Mockup : garder scroll horizontal */
+  .landing-mockup-wrapper { margin-top: -2rem !important; }
   /* Nav mobile */
   .landing-nav-links { display: none; }
   .landing-burger { display: block; }
