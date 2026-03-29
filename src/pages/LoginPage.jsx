@@ -555,32 +555,116 @@ function InteractiveMockup() {
                   </div>
                 </div>
               ) : null}
-              {/* 2 mini-graphiques supplémentaires */}
+              {/* 2 mini-graphiques — visuels uniques par onglet */}
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginTop: 8 }}>
+                {/* Mini graph 1 */}
                 <div style={{ background: '#fff', borderRadius: 8, border: '1px solid #e2e8f0', padding: '8px 10px' }}>
-                  <div style={{ fontSize: '.45rem', fontWeight: 700, color: '#0f172a', marginBottom: 4 }}>
-                    {active === 'dashboard' ? 'CA par société' : active === 'equipe' ? 'Absences par mois' : active === 'finance' ? 'Charges vs Produits' : active === 'commerce' ? 'Conversion par source' : active === 'banque' ? 'Solde par compte' : active === 'calendrier' ? 'Charge semaine' : active === 'projet' ? 'Avancement projets' : active === 'mail' ? 'Emails par jour' : 'Activité serveur'}
-                  </div>
-                  {/* Mini bar chart */}
-                  <div style={{ display: 'flex', alignItems: 'flex-end', gap: 3, height: 40 }}>
-                    {[65,45,80,55,70,40,90,60].map((h, i) => (
-                      <div key={i} style={{ flex: 1, height: h + '%', background: i % 2 === 0 ? '#195C82' : 'rgba(25,92,130,0.3)', borderRadius: 2 }} />
-                    ))}
-                  </div>
+                  {active === 'dashboard' ? (<>
+                    <div style={{ fontSize: '.45rem', fontWeight: 700, color: '#0f172a', marginBottom: 4 }}>CA par société</div>
+                    <div style={{ display: 'flex', alignItems: 'flex-end', gap: 3, height: 35 }}>
+                      {[65,45,80,55,70].map((h,i) => <div key={i} style={{ flex:1, height:h+'%', background:'#195C82', borderRadius:2, opacity:.6+i*.08 }} />)}
+                    </div>
+                  </>) : active === 'equipe' ? (<>
+                    <div style={{ fontSize: '.45rem', fontWeight: 700, color: '#0f172a', marginBottom: 4 }}>Heures par service</div>
+                    <svg viewBox="0 0 100 35" style={{ width:'100%' }}>
+                      <polyline points="0,30 20,22 40,25 60,15 80,18 100,8" fill="none" stroke="#195C82" strokeWidth="2" />
+                      {[[0,30],[40,25],[80,18],[100,8]].map(([x,y],i) => <circle key={i} cx={x} cy={y} r="2" fill="#195C82" />)}
+                    </svg>
+                  </>) : active === 'finance' ? (<>
+                    <div style={{ fontSize: '.45rem', fontWeight: 700, color: '#0f172a', marginBottom: 4 }}>Balance mensuelle</div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 2, height: 35 }}>
+                      {[20,-15,25,-10,30,-8,18].map((v,i) => <div key={i} style={{ flex:1, height:Math.abs(v)+'px', background:v>0?'#22c55e':'#ef4444', borderRadius:2, alignSelf:v>0?'flex-end':'flex-start' }} />)}
+                    </div>
+                  </>) : active === 'commerce' ? (<>
+                    <div style={{ fontSize: '.45rem', fontWeight: 700, color: '#0f172a', marginBottom: 4 }}>Taux de conversion</div>
+                    <svg viewBox="0 0 100 35" style={{ width:'100%' }}>
+                      <rect x="5" y="2" width="90" height="6" rx="3" fill="#195C82" opacity=".8" />
+                      <rect x="15" y="10" width="70" height="6" rx="3" fill="#195C82" opacity=".6" />
+                      <rect x="25" y="18" width="50" height="6" rx="3" fill="#195C82" opacity=".4" />
+                      <rect x="35" y="26" width="30" height="6" rx="3" fill="#22c55e" opacity=".8" />
+                    </svg>
+                  </>) : active === 'banque' ? (<>
+                    <div style={{ fontSize: '.45rem', fontWeight: 700, color: '#0f172a', marginBottom: 4 }}>Flux entrant/sortant</div>
+                    <svg viewBox="0 0 100 35" style={{ width:'100%' }}>
+                      <path d="M0,20 25,12 50,18 75,8 100,15" fill="none" stroke="#22c55e" strokeWidth="2" />
+                      <path d="M0,25 25,28 50,22 75,30 100,26" fill="none" stroke="#ef4444" strokeWidth="1.5" strokeDasharray="3 2" />
+                    </svg>
+                  </>) : active === 'calendrier' ? (<>
+                    <div style={{ fontSize: '.45rem', fontWeight: 700, color: '#0f172a', marginBottom: 4 }}>Charge par jour</div>
+                    <div style={{ display: 'flex', gap: 2, height: 35 }}>
+                      {[8,6,9,4,7].map((h,i) => <div key={i} style={{ flex:1, display:'flex', flexDirection:'column', justifyContent:'flex-end', gap:1 }}>
+                        <div style={{ height:h*3, background:h>7?'#ef4444':h>5?'#f59e0b':'#22c55e', borderRadius:2 }} />
+                        <div style={{ fontSize:'.3rem', textAlign:'center', color:'#94a3b8' }}>{['L','M','Me','J','V'][i]}</div>
+                      </div>)}
+                    </div>
+                  </>) : active === 'projet' ? (<>
+                    <div style={{ fontSize: '.45rem', fontWeight: 700, color: '#0f172a', marginBottom: 4 }}>Avancement</div>
+                    {[85,62,45].map((p,i) => <div key={i} style={{ display:'flex', alignItems:'center', gap:4, marginBottom:3 }}>
+                      <div style={{ flex:1, height:5, background:'#f1f5f9', borderRadius:3 }}><div style={{ width:p+'%', height:'100%', background:p>70?'#22c55e':p>50?'#f59e0b':'#ef4444', borderRadius:3 }} /></div>
+                      <span style={{ fontSize:'.38rem', color:'#64748b', width:18 }}>{p}%</span>
+                    </div>)}
+                  </>) : active === 'mail' ? (<>
+                    <div style={{ fontSize: '.45rem', fontWeight: 700, color: '#0f172a', marginBottom: 4 }}>Volume par jour</div>
+                    <svg viewBox="0 0 100 35" style={{ width:'100%' }}>
+                      {[12,18,8,22,15,10,20].map((v,i) => <rect key={i} x={i*14+1} y={35-v} width="11" height={v} fill="#195C82" rx="2" opacity={.5+i*.07} />)}
+                    </svg>
+                  </>) : (<>
+                    <div style={{ fontSize: '.45rem', fontWeight: 700, color: '#0f172a', marginBottom: 4 }}>Requêtes API</div>
+                    <svg viewBox="0 0 100 35" style={{ width:'100%' }}>
+                      <polyline points="0,28 15,20 30,24 45,12 60,18 75,8 100,14" fill="none" stroke="#22c55e" strokeWidth="1.5" />
+                    </svg>
+                  </>)}
                 </div>
+                {/* Mini graph 2 */}
                 <div style={{ background: '#fff', borderRadius: 8, border: '1px solid #e2e8f0', padding: '8px 10px' }}>
-                  <div style={{ fontSize: '.45rem', fontWeight: 700, color: '#0f172a', marginBottom: 4 }}>
-                    {active === 'dashboard' ? 'Répartition CA' : active === 'equipe' ? 'Répartition équipe' : active === 'finance' ? 'Répartition charges' : active === 'commerce' ? 'Pipeline par phase' : active === 'banque' ? 'Types opérations' : active === 'calendrier' ? 'Types événements' : active === 'projet' ? 'Budget par projet' : active === 'mail' ? 'Répartition mails' : 'Droits par rôle'}
-                  </div>
-                  {/* Mini donut */}
-                  <svg viewBox="0 0 80 45" style={{ width: '100%' }}>
-                    <circle cx="40" cy="25" r="16" fill="none" stroke="#195C82" strokeWidth="5" strokeDasharray="40 60" strokeDashoffset="0" />
-                    <circle cx="40" cy="25" r="16" fill="none" stroke="rgba(25,92,130,0.4)" strokeWidth="5" strokeDasharray="25 75" strokeDashoffset="-40" />
-                    <circle cx="40" cy="25" r="16" fill="none" stroke="rgba(25,92,130,0.2)" strokeWidth="5" strokeDasharray="20 80" strokeDashoffset="-65" />
-                    <text x="40" y="27" textAnchor="middle" fontSize="7" fontWeight="800" fill="#0f172a">
-                      {active === 'dashboard' ? '72k' : active === 'equipe' ? '45' : active === 'finance' ? '156k' : active === 'commerce' ? '12' : active === 'banque' ? '84k' : active === 'calendrier' ? '24' : active === 'projet' ? '9' : active === 'mail' ? '142' : '9'}
-                    </text>
-                  </svg>
+                  {active === 'dashboard' ? (<>
+                    <div style={{ fontSize: '.45rem', fontWeight: 700, color: '#0f172a', marginBottom: 4 }}>Répartition CA</div>
+                    <svg viewBox="0 0 80 40" style={{ width:'100%' }}><circle cx="40" cy="22" r="14" fill="none" stroke="#195C82" strokeWidth="4" strokeDasharray="35 53" /><circle cx="40" cy="22" r="14" fill="none" stroke="#2d8ab8" strokeWidth="4" strokeDasharray="22 66" strokeDashoffset="-35" /><circle cx="40" cy="22" r="14" fill="none" stroke="#94c5e3" strokeWidth="4" strokeDasharray="18 70" strokeDashoffset="-57" /><text x="40" y="24" textAnchor="middle" fontSize="6" fontWeight="800" fill="#0f172a">72k</text></svg>
+                  </>) : active === 'equipe' ? (<>
+                    <div style={{ fontSize: '.45rem', fontWeight: 700, color: '#0f172a', marginBottom: 4 }}>Par département</div>
+                    <svg viewBox="0 0 80 40" style={{ width:'100%' }}><circle cx="40" cy="22" r="14" fill="none" stroke="#22c55e" strokeWidth="4" strokeDasharray="30 58" /><circle cx="40" cy="22" r="14" fill="none" stroke="#f59e0b" strokeWidth="4" strokeDasharray="25 63" strokeDashoffset="-30" /><circle cx="40" cy="22" r="14" fill="none" stroke="#195C82" strokeWidth="4" strokeDasharray="20 68" strokeDashoffset="-55" /><text x="40" y="24" textAnchor="middle" fontSize="6" fontWeight="800" fill="#0f172a">45</text></svg>
+                  </>) : active === 'finance' ? (<>
+                    <div style={{ fontSize: '.45rem', fontWeight: 700, color: '#0f172a', marginBottom: 4 }}>Postes de charges</div>
+                    <svg viewBox="0 0 80 40" style={{ width:'100%' }}><circle cx="40" cy="22" r="14" fill="none" stroke="#ef4444" strokeWidth="4" strokeDasharray="28 60" /><circle cx="40" cy="22" r="14" fill="none" stroke="#f59e0b" strokeWidth="4" strokeDasharray="22 66" strokeDashoffset="-28" /><circle cx="40" cy="22" r="14" fill="none" stroke="#195C82" strokeWidth="4" strokeDasharray="25 63" strokeDashoffset="-50" /><text x="40" y="24" textAnchor="middle" fontSize="6" fontWeight="800" fill="#0f172a">156k</text></svg>
+                  </>) : active === 'commerce' ? (<>
+                    <div style={{ fontSize: '.45rem', fontWeight: 700, color: '#0f172a', marginBottom: 4 }}>Sources de leads</div>
+                    <div style={{ display:'flex', alignItems:'flex-end', gap:2, height:32 }}>
+                      {[{h:90,c:'#195C82'},{h:65,c:'#2d8ab8'},{h:45,c:'#f59e0b'},{h:30,c:'#22c55e'}].map((b,i) => <div key={i} style={{ flex:1, height:b.h+'%', background:b.c, borderRadius:2 }} />)}
+                    </div>
+                  </>) : active === 'banque' ? (<>
+                    <div style={{ fontSize: '.45rem', fontWeight: 700, color: '#0f172a', marginBottom: 4 }}>Par catégorie</div>
+                    {[{n:'Salaires',p:45},{n:'Fournisseurs',p:30},{n:'Charges',p:25}].map((c,i) => <div key={i} style={{ display:'flex', alignItems:'center', gap:4, marginBottom:2 }}>
+                      <span style={{ fontSize:'.35rem', color:'#64748b', width:35 }}>{c.n}</span>
+                      <div style={{ flex:1, height:4, background:'#f1f5f9', borderRadius:2 }}><div style={{ width:c.p+'%', height:'100%', background:['#195C82','#f59e0b','#ef4444'][i], borderRadius:2 }} /></div>
+                    </div>)}
+                  </>) : active === 'calendrier' ? (<>
+                    <div style={{ fontSize: '.45rem', fontWeight: 700, color: '#0f172a', marginBottom: 4 }}>Types événements</div>
+                    <svg viewBox="0 0 80 40" style={{ width:'100%' }}><circle cx="40" cy="22" r="14" fill="none" stroke="#195C82" strokeWidth="4" strokeDasharray="38 50" /><circle cx="40" cy="22" r="14" fill="none" stroke="#f59e0b" strokeWidth="4" strokeDasharray="20 68" strokeDashoffset="-38" /><circle cx="40" cy="22" r="14" fill="none" stroke="#22c55e" strokeWidth="4" strokeDasharray="15 73" strokeDashoffset="-58" /><text x="40" y="24" textAnchor="middle" fontSize="6" fontWeight="800" fill="#0f172a">24</text></svg>
+                  </>) : active === 'projet' ? (<>
+                    <div style={{ fontSize: '.45rem', fontWeight: 700, color: '#0f172a', marginBottom: 4 }}>Budget consommé</div>
+                    <svg viewBox="0 0 80 40" style={{ width:'100%' }}>
+                      <rect x="5" y="5" width="70" height="12" rx="6" fill="#f1f5f9" />
+                      <rect x="5" y="5" width="48" height="12" rx="6" fill="#195C82" />
+                      <text x="40" y="13" textAnchor="middle" fontSize="5" fontWeight="700" fill="#fff">68%</text>
+                      <rect x="5" y="22" width="70" height="12" rx="6" fill="#f1f5f9" />
+                      <rect x="5" y="22" width="55" height="12" rx="6" fill="#f59e0b" />
+                      <text x="40" y="30" textAnchor="middle" fontSize="5" fontWeight="700" fill="#fff">78%</text>
+                    </svg>
+                  </>) : active === 'mail' ? (<>
+                    <div style={{ fontSize: '.45rem', fontWeight: 700, color: '#0f172a', marginBottom: 4 }}>Taux d'ouverture</div>
+                    <svg viewBox="0 0 80 40" style={{ width:'100%' }}>
+                      <circle cx="40" cy="22" r="16" fill="none" stroke="#f1f5f9" strokeWidth="3" />
+                      <circle cx="40" cy="22" r="16" fill="none" stroke="#22c55e" strokeWidth="3" strokeDasharray="75 25" strokeDashoffset="25" strokeLinecap="round" />
+                      <text x="40" y="24" textAnchor="middle" fontSize="7" fontWeight="800" fill="#0f172a">74%</text>
+                    </svg>
+                  </>) : (<>
+                    <div style={{ fontSize: '.45rem', fontWeight: 700, color: '#0f172a', marginBottom: 4 }}>Rôles actifs</div>
+                    {[{n:'Admin',v:2,c:'#ef4444'},{n:'Manager',v:3,c:'#f59e0b'},{n:'Collab',v:4,c:'#22c55e'}].map((r,i) => <div key={i} style={{ display:'flex', alignItems:'center', gap:4, marginBottom:2 }}>
+                      <span style={{ width:5, height:5, borderRadius:'50%', background:r.c }} />
+                      <span style={{ fontSize:'.38rem', color:'#64748b', flex:1 }}>{r.n}</span>
+                      <span style={{ fontSize:'.38rem', fontWeight:700, color:'#0f172a' }}>{r.v}</span>
+                    </div>)}
+                  </>)}
                 </div>
               </div>
               {/* 2 widgets — unique per tab */}
