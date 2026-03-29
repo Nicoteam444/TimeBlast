@@ -1103,7 +1103,7 @@ export default function LoginPage() {
         </div>
 
         {/* Hero grid : texte gauche + animation droite */}
-        <div style={{
+        <div className="landing-hero-grid" style={{
           maxWidth: 1200, margin: '0 auto', padding: '0 2rem',
           display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '3rem', alignItems: 'center',
         }}>

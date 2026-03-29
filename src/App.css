@@ -301,55 +301,58 @@ body {
 .landing-mobile-menu .landing-mobile-close { position: absolute; top: 1rem; right: 1.5rem; font-size: 1.5rem; background: none; border: none; cursor: pointer; color: #195C82; }
 
 @media (max-width: 900px) {
-  /* Hero : animation sous le texte */
-  .landing-hero-grid { grid-template-columns: 1fr !important; text-align: center; }
-  .landing-hero-text { text-align: center; }
+  /* Hero : animation SOUS le texte (forcer 1 colonne) */
+  .landing-hero-grid,
+  [class*="landing-hero"] > div[style*="grid-template-columns"] {
+    display: flex !important; flex-direction: column !important; text-align: center;
+  }
   .landing-hero-actions { justify-content: center; }
-  .multiprise-container { max-width: 300px; margin: 0 auto; }
-  /* Mockup : pleine largeur, pas de scale */
-  .landing-mockup-wrapper { transform: none !important; margin-bottom: 0 !important; overflow-x: auto; -webkit-overflow-scrolling: touch; }
-  .landing-mockup-dual { min-width: 700px; }
-  /* Grilles en 1 colonne */
-  .landing-steps-grid { grid-template-columns: 1fr; max-width: 400px; margin: 0 auto; }
+  .multiprise-container { max-width: 280px; margin: 1rem auto 0; }
+  /* Mockup + chat : INDÉFORMABLE, scroll horizontal si besoin */
+  .landing-mockup-wrapper {
+    transform: none !important; margin-bottom: 0 !important;
+    overflow-x: auto; -webkit-overflow-scrolling: touch; padding: 0 0 1rem;
+  }
+  .landing-mockup-dual { min-width: 900px !important; }
+  /* Grilles */
+  .landing-steps-grid { grid-template-columns: 1fr 1fr; }
   .landing-advantages-grid { grid-template-columns: 1fr; }
-  .landing-roadmap-grid { grid-template-columns: 1fr; max-width: 500px; margin: 2rem auto 0; }
-  .landing-channels-grid { grid-template-columns: 1fr; max-width: 400px; margin: 2rem auto 0; }
   .landing-contact-wrapper { grid-template-columns: 1fr !important; }
   .landing-features-grid { grid-template-columns: 1fr 1fr; }
   .landing-logo img { height: 40px !important; }
 }
 @media (max-width: 768px) {
   .landing-hero { padding: 5rem 1rem 2rem; }
-  .landing-hero-title { font-size: 1.6rem; }
-  .landing-hero-subtitle { font-size: .9rem; }
-  /* Animation : pleine largeur sous le texte */
-  .multiprise-container { max-width: 240px; margin: 0 auto; }
+  /* Animation sous le texte */
+  .multiprise-container { max-width: 220px; margin: 1rem auto 0; }
   .multiprise-svg { max-width: 100%; height: auto; }
   /* Nav mobile */
   .landing-nav-links { display: none; }
   .landing-burger { display: block; }
   .landing-nav-inner { padding: .5rem 1rem; }
   .landing-logo img { height: 32px !important; }
-  /* Tout prend 100% largeur */
+  /* Tout 100% largeur */
   .landing-features-grid { grid-template-columns: 1fr; }
   .landing-advantages-grid { grid-template-columns: 1fr; }
-  .landing-contact-row { grid-template-columns: 1fr; }
+  .landing-contact-row { grid-template-columns: 1fr !important; }
+  .landing-steps-grid { grid-template-columns: 1fr; max-width: 350px; margin: 0 auto; }
   .landing-section-title { font-size: 1.4rem; }
   .landing-section-subtitle { font-size: .9rem; }
-  .landing-btn-primary { padding: .6rem 1.5rem; font-size: .9rem; width: 100%; }
-  .landing-btn-secondary { padding: .6rem 1.5rem; font-size: .9rem; width: 100%; }
+  .landing-btn-primary { padding: .6rem 1.5rem; font-size: .9rem; width: 100%; text-align: center; }
+  .landing-btn-secondary { padding: .6rem 1.5rem; font-size: .9rem; width: 100%; text-align: center; }
   .landing-cta h2 { font-size: 1.4rem; }
   .landing-footer-inner { flex-direction: column; gap: .5rem; text-align: center; }
   .landing-stats { gap: 1rem; padding: 1.5rem 1rem; }
   .landing-stat-value { font-size: 1.5rem; }
   .landing-cat-tabs { gap: .3rem; }
   .landing-cat-tab { font-size: .72rem; padding: .3rem .6rem; }
-  /* Formulaire pleine largeur */
+  /* Formulaire INDÉFORMABLE */
   .landing-contact-field input,
   .landing-contact-field textarea,
-  .landing-contact-field select { min-width: 0 !important; width: 100% !important; box-sizing: border-box !important; }
-  /* Anti débordement */
-  .landing { overflow-x: hidden; }
+  .landing-contact-field select { min-width: 0 !important; width: 100% !important; box-sizing: border-box !important; font-size: 16px !important; }
+  form { width: 100% !important; }
+  /* Anti débordement global */
+  .landing { overflow-x: hidden; max-width: 100vw; }
   section { overflow-x: hidden; }
 }
 
