@@ -5,19 +5,19 @@ import { supabase } from '../lib/supabase'
 
 // ── Modules decisionnels ──
 const BI_MODULES = [
-  { icon: '📊', title: 'Tableaux de bord', desc: 'KPIs temps reel, drill-down multi-axes, alertes automatiques sur seuils.' },
-  { icon: '💰', title: 'Pilotage financier', desc: 'Tresorerie previsionnelle, marge par projet, rapprochement bancaire IA.' },
-  { icon: '⏱', title: 'Suivi d\'activite', desc: 'Saisie des temps, taux d\'occupation, rentabilite collaborateur.' },
-  { icon: '🎯', title: 'Pipeline commercial', desc: 'Kanban deals, prevision CA, scoring leads par intelligence artificielle.' },
-  { icon: '🔗', title: 'Connecteurs natifs', desc: '30+ integrations : Sage, Pennylane, Stripe, HubSpot, PayFit, Slack...' },
-  { icon: '🤖', title: 'IA decisionnelle', desc: 'Anomalies detectees, recommandations contextuelles, agents autonomes.' },
+  { icon: '\u{1F4CA}', title: 'Tableaux de bord', desc: 'KPIs temps reel, drill-down multi-axes, alertes automatiques sur seuils.' },
+  { icon: '\u{1F4B0}', title: 'Pilotage financier', desc: 'Tresorerie previsionnelle, marge par projet, rapprochement bancaire IA.' },
+  { icon: '\u23F1', title: 'Suivi d\'activite', desc: 'Saisie des temps, taux d\'occupation, rentabilite collaborateur.' },
+  { icon: '\u{1F3AF}', title: 'Pipeline commercial', desc: 'Kanban deals, prevision CA, scoring leads par intelligence artificielle.' },
+  { icon: '\u{1F517}', title: 'Connecteurs natifs', desc: '30+ integrations : Sage, Pennylane, Stripe, HubSpot, PayFit, Slack...' },
+  { icon: '\u{1F916}', title: 'IA decisionnelle', desc: 'Anomalies detectees, recommandations contextuelles, agents autonomes.' },
 ]
 
 const PERSONAS = [
-  { icon: '👔', role: 'Dirigeant', need: 'Vue 360 de mon entreprise en 1 ecran', solution: 'Dashboard decisionnel avec alertes IA sur CA, tresorerie et rentabilite.' },
-  { icon: '📈', role: 'DAF / Comptable', need: 'Arretes mensuels en 2h au lieu de 2 jours', solution: 'Import FEC, rapprochement bancaire IA, previsionnel automatise.' },
-  { icon: '🎯', role: 'Commercial', need: 'Pipeline clair et previsions fiables', solution: 'Kanban deals, scoring IA, relances automatiques, suivi multi-societes.' },
-  { icon: '👥', role: 'Manager', need: 'Savoir ou en sont mes equipes en temps reel', solution: 'Taux d\'occupation, validation temps, alertes depassement budget projet.' },
+  { icon: '\u{1F454}', role: 'Dirigeant', need: 'Vue 360 de mon entreprise en 1 ecran', solution: 'Dashboard decisionnel avec alertes IA sur CA, tresorerie et rentabilite.' },
+  { icon: '\u{1F4C8}', role: 'DAF / Comptable', need: 'Arretes mensuels en 2h au lieu de 2 jours', solution: 'Import FEC, rapprochement bancaire IA, previsionnel automatise.' },
+  { icon: '\u{1F3AF}', role: 'Commercial', need: 'Pipeline clair et previsions fiables', solution: 'Kanban deals, scoring IA, relances automatiques, suivi multi-societes.' },
+  { icon: '\u{1F465}', role: 'Manager', need: 'Savoir ou en sont mes equipes en temps reel', solution: 'Taux d\'occupation, validation temps, alertes depassement budget projet.' },
 ]
 
 const STATS = [
@@ -87,14 +87,14 @@ const BI_PREVIEWS = []
 function BiHubVisual() {
   const B = '#2B4C7E'
   const sources = [
-    { label: 'Compta', sub: 'Sage · Pennylane', color: '#00DC82', angle: 0 },
-    { label: 'CRM', sub: 'HubSpot · Salesforce', color: '#FF7A59', angle: 45 },
-    { label: 'Banques', sub: 'Stripe · Qonto', color: '#635BFF', angle: 90 },
-    { label: 'RH', sub: 'PayFit · Lucca', color: '#0066FF', angle: 135 },
-    { label: 'Temps', sub: 'Saisie · Planning', color: '#F59E0B', angle: 180 },
-    { label: 'Mails', sub: 'Gmail · Outlook', color: '#EA4335', angle: 225 },
-    { label: 'Projets', sub: 'Jira · Trello', color: '#0052CC', angle: 270 },
-    { label: 'IA', sub: 'Claude · GPT', color: '#10A37F', angle: 315 },
+    { label: 'Compta', sub: 'Sage \u00B7 Pennylane', color: '#00DC82', angle: 0 },
+    { label: 'CRM', sub: 'HubSpot \u00B7 Salesforce', color: '#FF7A59', angle: 45 },
+    { label: 'Banques', sub: 'Stripe \u00B7 Qonto', color: '#635BFF', angle: 90 },
+    { label: 'RH', sub: 'PayFit \u00B7 Lucca', color: '#0066FF', angle: 135 },
+    { label: 'Temps', sub: 'Saisie \u00B7 Planning', color: '#F59E0B', angle: 180 },
+    { label: 'Mails', sub: 'Gmail \u00B7 Outlook', color: '#EA4335', angle: 225 },
+    { label: 'Projets', sub: 'Jira \u00B7 Trello', color: '#0052CC', angle: 270 },
+    { label: 'IA', sub: 'Claude \u00B7 GPT', color: '#10A37F', angle: 315 },
   ]
   const cx = 250, cy = 240, R = 165
 
@@ -218,128 +218,171 @@ function RotatingText() {
   )
 }
 
-// ── Composant — Hero Visual (Prompt bar + Mockup interactif) ─────────────────
-function HeroVisual() {
+// ── Styles constants ──
+const S = {
+  neon: '#00D4FF',
+  sra: '#195C82',
+  dark: '#0f172a',
+  gray: '#64748b',
+  lightGray: '#94a3b8',
+  bg: '#fff',
+  bgAlt: '#fafbfc',
+  borderGlow: 'rgba(0,212,255,0.12)',
+  shadowGlow: 'rgba(0,212,255,0.08)',
+  gradient: 'linear-gradient(135deg, #00D4FF, #7C3AED, #00D4FF)',
+}
+
+// ── Interactive Mockup ──────────────────────────────────────────────────────
+function InteractiveMockup({ onTabChange }) {
   const [active, setActive] = useState('dashboard')
 
   const TABS = [
-    { id: 'dashboard', label: 'Dashboard', icon: '📊', title: 'Tableau de bord', kpis: ['CA: 72 450 €', 'Pipeline: 343k €', 'Marge: 68%', 'Treso: 62k €'] },
-    { id: 'equipe', label: 'Equipe', icon: '👥', title: 'Gestion d\'equipe', kpis: ['Effectif: 45', 'Absents: 3', 'Heures: 1 247h', 'Occupation: 94%'] },
-    { id: 'finance', label: 'Finance', icon: '💰', title: 'Pilotage financier', kpis: ['Ecritures: 4 521', 'Rapproche: 98%', 'FEC: OK', 'Balance: 0.00 €'] },
-    { id: 'commerce', label: 'Commerce', icon: '🎯', title: 'Pipeline commercial', kpis: ['Leads: 47', 'Opportunites: 12', 'CA gagne: 185k €', 'Taux: 34%'] },
-    { id: 'calendrier', label: 'Calendrier', icon: '📅', title: 'Calendrier', kpis: ['Reunions: 8', 'A venir: 3', 'Outlook: sync', 'Equipe: 12'] },
+    { id: 'dashboard', label: 'Dashboard', icon: '\u{1F4CA}', title: 'Tableau de bord', kpis: [{ label: 'CA mensuel', value: '72 450 \u20AC', trend: '+12%' }, { label: 'Pipeline', value: '343k \u20AC', trend: '+8%' }, { label: 'Marge nette', value: '68%', trend: '+3%' }, { label: 'Tresorerie', value: '62k \u20AC', trend: '+5%' }] },
+    { id: 'equipe', label: '\u00C9quipe', icon: '\u{1F465}', title: 'Gestion d\u2019equipe', kpis: [{ label: 'Effectif', value: '45', trend: '' }, { label: 'Absents', value: '3', trend: '' }, { label: 'Heures', value: '1 247h', trend: '' }, { label: 'Occupation', value: '94%', trend: '+2%' }] },
+    { id: 'finance', label: 'Finance', icon: '\u{1F4B0}', title: 'Pilotage financier', kpis: [{ label: 'Ecritures', value: '4 521', trend: '' }, { label: 'Rapproche', value: '98%', trend: '+1%' }, { label: 'FEC', value: 'OK', trend: '' }, { label: 'Balance', value: '0.00 \u20AC', trend: '' }] },
+    { id: 'commerce', label: 'Commerce', icon: '\u{1F3AF}', title: 'Pipeline commercial', kpis: [{ label: 'Leads', value: '47', trend: '+15%' }, { label: 'Opportunites', value: '12', trend: '' }, { label: 'CA gagne', value: '185k \u20AC', trend: '+22%' }, { label: 'Taux', value: '34%', trend: '+4%' }] },
+    { id: 'calendrier', label: 'Calendrier', icon: '\u{1F4C5}', title: 'Calendrier', kpis: [{ label: 'Reunions', value: '8', trend: '' }, { label: 'A venir', value: '3', trend: '' }, { label: 'Outlook', value: 'sync', trend: '' }, { label: 'Equipe', value: '12', trend: '' }] },
   ]
   const t = TABS.find(x => x.id === active)
 
   return (
-    <div style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: 16 }}>
-      {/* Prompt bar — factice */}
-      <div style={{
-        display: 'flex', alignItems: 'center', gap: 12, padding: '14px 20px',
-        borderRadius: 14, border: '1px solid rgba(0,212,255,0.2)',
-        background: '#0f172a', boxShadow: '0 4px 20px rgba(0,212,255,0.08)',
-      }}>
-        <div style={{
-          width: 32, height: 32, borderRadius: '50%', flexShrink: 0,
-          background: 'linear-gradient(135deg, #7C3AED, #00D4FF)',
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-          fontSize: '.65rem', fontWeight: 800, color: '#fff',
-        }}>AI</div>
-        <span style={{ flex: 1, color: 'rgba(255,255,255,0.4)', fontSize: '.9rem' }}>
-          Decrivez l'application de gestion que vous souhaitez creer...
-        </span>
-        <span style={{
-          padding: '6px 16px', borderRadius: 8, background: 'linear-gradient(135deg, #7C3AED, #00D4FF)',
-          color: '#fff', fontSize: '.78rem', fontWeight: 700, cursor: 'pointer',
-        }}>Generer</span>
+    <div style={{ width: '100%', maxWidth: 1000, margin: '0 auto' }}>
+      {/* Floating tab buttons ABOVE the mockup */}
+      <div style={{ display: 'flex', gap: 10, marginBottom: 14, justifyContent: 'center', flexWrap: 'wrap' }}>
+        {TABS.map(tab => (
+          <button key={tab.id} onClick={() => setActive(tab.id)} onMouseEnter={() => setActive(tab.id)}
+            style={{
+              padding: '8px 20px', borderRadius: 100, cursor: 'pointer', fontSize: '.82rem', fontWeight: 600,
+              border: active === tab.id ? '2px solid transparent' : '1px solid #e2e8f0',
+              background: active === tab.id ? 'linear-gradient(135deg, #7C3AED, #00D4FF)' : '#fff',
+              color: active === tab.id ? '#fff' : '#64748b',
+              boxShadow: active === tab.id ? '0 4px 20px rgba(124,58,237,0.35)' : '0 2px 8px rgba(0,0,0,0.04)',
+              transition: 'all .25s ease',
+              letterSpacing: '-0.01em',
+            }}>
+            {tab.icon} {tab.label}
+          </button>
+        ))}
       </div>
 
-      {/* Mockup browser — interactif */}
-      <div style={{ position: 'relative' }}>
-        {/* Floating tab buttons */}
-        <div style={{ display: 'flex', gap: 8, marginBottom: 10, justifyContent: 'center' }}>
-          {TABS.map(tab => (
-            <button key={tab.id} onClick={() => setActive(tab.id)} onMouseEnter={() => setActive(tab.id)}
-              style={{
-                padding: '6px 16px', borderRadius: 100, cursor: 'pointer', fontSize: '.78rem', fontWeight: 600,
-                border: active === tab.id ? '2px solid transparent' : '1px solid #e2e8f0',
-                background: active === tab.id ? 'linear-gradient(135deg, #7C3AED, #00D4FF)' : '#fff',
-                color: active === tab.id ? '#fff' : '#64748b',
-                boxShadow: active === tab.id ? '0 4px 15px rgba(0,212,255,0.3)' : '0 2px 8px rgba(0,0,0,0.04)',
-                transition: 'all .2s',
-              }}>
-              {tab.label}
-            </button>
-          ))}
-        </div>
-
-        {/* Browser chrome */}
+      {/* Browser chrome with perspective tilt */}
+      <div style={{
+        transform: 'perspective(2000px) rotateX(2deg)',
+        transition: 'transform .4s ease',
+      }}>
         <div style={{
-          background: '#fff', borderRadius: 16, overflow: 'hidden',
-          boxShadow: '0 20px 60px rgba(0,0,0,0.08), 0 0 0 1px rgba(0,212,255,0.1)',
+          background: '#fff', borderRadius: 20, overflow: 'hidden',
+          boxShadow: '0 25px 80px rgba(0,0,0,0.12), 0 0 0 1px rgba(0,212,255,0.12), 0 0 60px rgba(0,212,255,0.06)',
         }}>
-          {/* Bar */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '10px 14px', background: '#f8fafc', borderBottom: '1px solid #e2e8f0' }}>
-            <div style={{ display: 'flex', gap: 5 }}>
-              <span style={{ width: 10, height: 10, borderRadius: '50%', background: '#ff5f57' }} />
-              <span style={{ width: 10, height: 10, borderRadius: '50%', background: '#ffbd2e' }} />
-              <span style={{ width: 10, height: 10, borderRadius: '50%', background: '#28c840' }} />
+          {/* Browser bar */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '12px 16px', background: '#f8fafc', borderBottom: '1px solid #e2e8f0' }}>
+            <div style={{ display: 'flex', gap: 6 }}>
+              <span style={{ width: 12, height: 12, borderRadius: '50%', background: '#ff5f57' }} />
+              <span style={{ width: 12, height: 12, borderRadius: '50%', background: '#ffbd2e' }} />
+              <span style={{ width: 12, height: 12, borderRadius: '50%', background: '#28c840' }} />
             </div>
-            <div style={{ flex: 1, textAlign: 'center', fontSize: '.7rem', color: '#94a3b8' }}>app.timeblast.ai</div>
+            <div style={{
+              flex: 1, textAlign: 'center', fontSize: '.75rem', color: '#94a3b8',
+              background: '#fff', borderRadius: 8, padding: '5px 16px', border: '1px solid #e2e8f0',
+              maxWidth: 320, margin: '0 auto',
+            }}>
+              <span style={{ color: '#22c55e', marginRight: 4 }}>&#x1F512;</span>
+              app.timeblast.ai/{active}
+            </div>
+            <div style={{ width: 60 }} />
           </div>
-          {/* App */}
-          <div style={{ display: 'flex', minHeight: 320 }}>
+
+          {/* App layout */}
+          <div style={{ display: 'flex', minHeight: 360 }}>
             {/* Sidebar */}
-            <div style={{ width: 44, background: '#0f2b42', padding: '10px 6px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4 }}>
-              <img src="/logo-icon-white.svg" alt="" style={{ width: 22, height: 22, marginBottom: 8 }} />
+            <div style={{
+              width: 52, background: 'linear-gradient(180deg, #0a1628, #0f2b42)', padding: '14px 8px',
+              display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6,
+            }}>
+              <img src="/logo-icon-white.svg" alt="" style={{ width: 24, height: 24, marginBottom: 12, opacity: 0.9 }} />
               {TABS.map((tab) => (
                 <div key={tab.id} onClick={() => setActive(tab.id)} style={{
-                  width: 30, height: 30, borderRadius: 6, display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  fontSize: 14, color: active === tab.id ? '#fff' : 'rgba(255,255,255,.4)',
-                  background: active === tab.id ? 'rgba(255,255,255,.15)' : 'transparent',
-                  cursor: 'pointer', transition: 'all .15s',
+                  width: 34, height: 34, borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  fontSize: 15, color: active === tab.id ? '#fff' : 'rgba(255,255,255,.35)',
+                  background: active === tab.id ? 'linear-gradient(135deg, rgba(124,58,237,.5), rgba(0,212,255,.3))' : 'transparent',
+                  cursor: 'pointer', transition: 'all .2s',
                 }}>
                   {tab.icon}
                 </div>
               ))}
+              <div style={{ flex: 1 }} />
+              <div style={{ width: 28, height: 28, borderRadius: '50%', background: 'linear-gradient(135deg, #7C3AED, #00D4FF)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 9, color: '#fff', fontWeight: 800 }}>NR</div>
             </div>
-            {/* Main content — changes with active tab */}
-            <div style={{ flex: 1, padding: '14px 18px', background: '#f8fafc', transition: 'all .2s' }}>
-              <div style={{ fontSize: '.75rem', fontWeight: 700, color: '#195C82', marginBottom: 12 }}>
-                {t.icon} {t.title}
+
+            {/* Main content */}
+            <div style={{ flex: 1, padding: '18px 22px', background: '#f8fafc', transition: 'all .2s' }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
+                <div style={{ fontSize: '.85rem', fontWeight: 700, color: '#0f172a' }}>
+                  {t.icon} {t.title}
+                </div>
+                <div style={{ display: 'flex', gap: 6 }}>
+                  <span style={{ padding: '4px 10px', borderRadius: 6, background: '#fff', border: '1px solid #e2e8f0', fontSize: '.65rem', color: '#64748b' }}>Mars 2026</span>
+                  <span style={{ padding: '4px 10px', borderRadius: 6, background: 'linear-gradient(135deg, #7C3AED, #00D4FF)', fontSize: '.65rem', color: '#fff', fontWeight: 600 }}>Exporter</span>
+                </div>
               </div>
+
               {/* KPIs */}
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 8, marginBottom: 14 }}>
-                {t.kpis.map((kpi, i) => {
-                  const [label, val] = kpi.split(': ')
-                  return (
-                    <div key={i} style={{ background: '#fff', borderRadius: 8, padding: '8px 10px', border: '1px solid #e2e8f0' }}>
-                      <div style={{ fontSize: '.38rem', color: '#94a3b8', marginBottom: 2 }}>{label}</div>
-                      <div style={{ fontSize: '.7rem', fontWeight: 800, color: '#1a2332' }}>{val}</div>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 10, marginBottom: 16 }}>
+                {t.kpis.map((kpi, i) => (
+                  <div key={i} style={{
+                    background: '#fff', borderRadius: 10, padding: '12px 14px',
+                    border: '1px solid #e2e8f0', transition: 'all .2s',
+                  }}>
+                    <div style={{ fontSize: '.5rem', color: '#94a3b8', marginBottom: 4, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.04em' }}>{kpi.label}</div>
+                    <div style={{ display: 'flex', alignItems: 'baseline', gap: 6 }}>
+                      <div style={{ fontSize: '.85rem', fontWeight: 800, color: '#0f172a' }}>{kpi.value}</div>
+                      {kpi.trend && <span style={{ fontSize: '.5rem', color: '#22c55e', fontWeight: 600 }}>{kpi.trend}</span>}
                     </div>
-                  )
-                })}
+                  </div>
+                ))}
               </div>
-              {/* Content area */}
-              <div style={{ background: '#fff', borderRadius: 8, border: '1px solid #e2e8f0', padding: '10px', minHeight: 140 }}>
+
+              {/* Chart / content area */}
+              <div style={{ background: '#fff', borderRadius: 10, border: '1px solid #e2e8f0', padding: '14px', minHeight: 150 }}>
                 {active === 'dashboard' ? (
-                  <svg viewBox="0 0 300 60" style={{ width: '100%' }}>
-                    <defs><linearGradient id="mg" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="#7C3AED" stopOpacity=".15" /><stop offset="100%" stopColor="#00D4FF" stopOpacity="0" /></linearGradient></defs>
-                    <path d="M0,50 30,45 60,40 90,30 120,35 150,25 180,20 210,18 240,15 270,12 300,6 300,60 0,60Z" fill="url(#mg)" />
-                    <polyline points="0,50 30,45 60,40 90,30 120,35 150,25 180,20 210,18 240,15 270,12 300,6" fill="none" stroke="#7C3AED" strokeWidth="2" strokeLinejoin="round" />
-                    <polyline points="0,55 30,50 60,48 90,42 120,40 150,38 180,35 210,30 240,28 270,25 300,20" fill="none" stroke="#00D4FF" strokeWidth="1.5" strokeLinejoin="round" opacity=".6" />
+                  <svg viewBox="0 0 400 80" style={{ width: '100%' }}>
+                    <defs>
+                      <linearGradient id="mg2" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stopColor="#7C3AED" stopOpacity=".12" />
+                        <stop offset="100%" stopColor="#00D4FF" stopOpacity="0" />
+                      </linearGradient>
+                      <linearGradient id="lineGrad" x1="0" y1="0" x2="1" y2="0">
+                        <stop offset="0%" stopColor="#7C3AED" />
+                        <stop offset="100%" stopColor="#00D4FF" />
+                      </linearGradient>
+                    </defs>
+                    <path d="M0,65 40,58 80,52 120,38 160,42 200,30 240,24 280,20 320,16 360,10 400,5 400,80 0,80Z" fill="url(#mg2)" />
+                    <polyline points="0,65 40,58 80,52 120,38 160,42 200,30 240,24 280,20 320,16 360,10 400,5" fill="none" stroke="url(#lineGrad)" strokeWidth="2.5" strokeLinejoin="round" strokeLinecap="round" />
+                    <polyline points="0,70 40,65 80,62 120,55 160,52 200,48 240,42 280,36 320,32 360,28 400,22" fill="none" stroke="#00D4FF" strokeWidth="1.5" strokeLinejoin="round" opacity=".4" strokeDasharray="4 3" />
+                    {/* Data points */}
+                    {[[0,65],[80,52],[160,42],[240,24],[320,16],[400,5]].map(([px,py], i) => (
+                      <circle key={i} cx={px} cy={py} r="3" fill="#7C3AED" stroke="#fff" strokeWidth="1.5" />
+                    ))}
                   </svg>
                 ) : (
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 7 }}>
                     {[1,2,3,4,5].map(i => (
-                      <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '5px 0', borderBottom: '1px solid #f1f5f9' }}>
-                        <div style={{ width: 22, height: 22, borderRadius: 6, background: 'linear-gradient(135deg, rgba(124,58,237,.1), rgba(0,212,255,.1))', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12 }}>
+                      <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '6px 0', borderBottom: '1px solid #f1f5f9' }}>
+                        <div style={{
+                          width: 26, height: 26, borderRadius: 8,
+                          background: 'linear-gradient(135deg, rgba(124,58,237,.08), rgba(0,212,255,.08))',
+                          display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 13,
+                        }}>
                           {t.icon}
                         </div>
                         <div style={{ flex: 1 }}>
-                          <div style={{ height: 5, background: '#e2e8f0', borderRadius: 3, width: `${95 - i * 14}%` }} />
+                          <div style={{ height: 6, background: '#e2e8f0', borderRadius: 3, width: `${100 - i * 14}%` }} />
                         </div>
-                        <div style={{ width: 36, height: 5, background: i <= 2 ? 'linear-gradient(90deg, #7C3AED, #00D4FF)' : '#e2e8f0', borderRadius: 3, opacity: .6 }} />
+                        <div style={{
+                          width: 42, height: 6,
+                          background: i <= 2 ? 'linear-gradient(90deg, #7C3AED, #00D4FF)' : '#e2e8f0',
+                          borderRadius: 3, opacity: i <= 2 ? 0.8 : 0.4,
+                        }} />
                       </div>
                     ))}
                   </div>
@@ -351,21 +394,6 @@ function HeroVisual() {
       </div>
     </div>
   )
-}
-
-// ── Styles constants ──
-const S = {
-  // Colors
-  neon: '#00D4FF',
-  sra: '#195C82',
-  dark: '#0f172a',
-  gray: '#64748b',
-  lightGray: '#94a3b8',
-  bg: '#fff',
-  bgAlt: '#fafbfc',
-  borderGlow: 'rgba(0,212,255,0.12)',
-  shadowGlow: 'rgba(0,212,255,0.08)',
-  gradient: 'linear-gradient(135deg, #00D4FF, #7C3AED, #00D4FF)',
 }
 
 // ── Page principale ──────────────────────────────────────────────────────────
@@ -446,15 +474,47 @@ export default function LoginPage() {
     setTimeout(() => setContactSent(false), 5000)
   }
 
+  // Shared input style helper
+  const inputStyle = {
+    width: '100%', padding: '12px 16px', borderRadius: 12,
+    border: '1px solid #e2e8f0', fontSize: '.9rem', outline: 'none',
+    transition: 'border-color .2s, box-shadow .2s', background: '#fafbfc',
+    boxSizing: 'border-box', fontFamily: 'inherit',
+  }
+  const focusInput = e => { e.target.style.borderColor = '#7C3AED'; e.target.style.boxShadow = '0 0 0 3px rgba(124,58,237,0.1)' }
+  const blurInput = e => { e.target.style.borderColor = '#e2e8f0'; e.target.style.boxShadow = 'none' }
+
   return (
     <div className="landing" style={{ background: '#fff', minHeight: '100vh' }}>
 
       {/* ══════════════════════════════════════════════════════════════════
-          1. NAVBAR
+          GLOBAL KEYFRAMES
+      ══════════════════════════════════════════════════════════════════ */}
+      <style>{`
+        @keyframes blink { 0%,50% { opacity: 1 } 51%,100% { opacity: 0 } }
+        @keyframes float { 0%,100% { transform: translateY(0) } 50% { transform: translateY(-8px) } }
+        @keyframes pulse-glow { 0%,100% { box-shadow: 0 0 20px rgba(124,58,237,0.15), 0 0 60px rgba(0,212,255,0.08) } 50% { box-shadow: 0 0 40px rgba(124,58,237,0.25), 0 0 80px rgba(0,212,255,0.15) } }
+        @keyframes gradient-shift { 0% { background-position: 0% 50% } 50% { background-position: 100% 50% } 100% { background-position: 0% 50% } }
+        .landing-prompt-bar { animation: pulse-glow 3s ease-in-out infinite; }
+        .landing-prompt-bar:focus-within { box-shadow: 0 0 50px rgba(124,58,237,0.35), 0 0 100px rgba(0,212,255,0.2) !important; }
+        .landing-nav-links { display: flex; }
+        .landing-burger { display: none !important; }
+        @media (max-width: 900px) {
+          .landing-nav-links { display: none !important; }
+          .landing-burger { display: flex !important; }
+        }
+        .landing-mobile-menu { position:fixed;inset:0;z-index:10000;background:#fff;padding:2rem;display:flex;flex-direction:column;gap:1rem;transform:translateX(100%);transition:transform .3s; }
+        .landing-mobile-menu.open { transform:translateX(0); }
+        .landing-mobile-menu a { font-size:1.1rem;font-weight:600;color:#0f172a;text-decoration:none;padding:.5rem 0;border-bottom:1px solid #f1f5f9; }
+        .landing-mobile-close { position:absolute;top:1rem;right:1rem;background:none;border:none;font-size:1.5rem;cursor:pointer;color:#64748b; }
+      `}</style>
+
+      {/* ══════════════════════════════════════════════════════════════════
+          1. NAVBAR — Glassmorphism
       ══════════════════════════════════════════════════════════════════ */}
       <nav style={{
         position: 'fixed', top: 0, left: 0, right: 0, zIndex: 1000,
-        background: 'rgba(255,255,255,0.85)', backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)',
+        background: 'rgba(255,255,255,0.75)', backdropFilter: 'blur(24px) saturate(180%)', WebkitBackdropFilter: 'blur(24px) saturate(180%)',
         borderBottom: '1px solid rgba(0,212,255,0.08)',
       }}>
         <div style={{
@@ -462,47 +522,51 @@ export default function LoginPage() {
           display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: 64,
         }}>
           <div style={{ cursor: 'pointer', flexShrink: 0 }} onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
-            <img src="/logo-full.svg" alt="TimeBlast" style={{ height: 38 }} />
+            <img src="/logo-full.svg" alt="TimeBlast" style={{ height: 40 }} />
           </div>
 
           <div style={{
             display: 'flex', alignItems: 'center', gap: '2rem', fontSize: '.85rem', fontWeight: 500,
           }} className="landing-nav-links">
             <a href="#comment" style={{ color: S.gray, textDecoration: 'none', transition: 'color .2s' }}
-              onMouseEnter={e => e.target.style.color = S.neon} onMouseLeave={e => e.target.style.color = S.gray}>
+              onMouseEnter={e => e.target.style.color = S.dark} onMouseLeave={e => e.target.style.color = S.gray}>
               Comment ca marche
             </a>
             <a href="#modules" style={{ color: S.gray, textDecoration: 'none', transition: 'color .2s' }}
-              onMouseEnter={e => e.target.style.color = S.neon} onMouseLeave={e => e.target.style.color = S.gray}>
+              onMouseEnter={e => e.target.style.color = S.dark} onMouseLeave={e => e.target.style.color = S.gray}>
               Modules
             </a>
             <a href="https://www.groupe-sra.fr" target="_blank" rel="noopener noreferrer"
               style={{ color: S.gray, textDecoration: 'none', transition: 'color .2s' }}
-              onMouseEnter={e => e.target.style.color = S.neon} onMouseLeave={e => e.target.style.color = S.gray}>
+              onMouseEnter={e => e.target.style.color = S.dark} onMouseLeave={e => e.target.style.color = S.gray}>
               Groupe SRA
             </a>
             <a href="/about" style={{ color: S.gray, textDecoration: 'none', transition: 'color .2s' }}
-              onMouseEnter={e => e.target.style.color = S.neon} onMouseLeave={e => e.target.style.color = S.gray}>
+              onMouseEnter={e => e.target.style.color = S.dark} onMouseLeave={e => e.target.style.color = S.gray}>
               A propos
             </a>
-            <a href="/facture-electronique" style={{ background: 'linear-gradient(135deg, #7C3AED, #00D4FF)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', textDecoration: 'none', fontWeight: 600 }}>
+            <a href="/facture-electronique" style={{
+              background: 'linear-gradient(135deg, #7C3AED, #00D4FF)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
+              backgroundClip: 'text', textDecoration: 'none', fontWeight: 700,
+            }}>
               E-Facture 2026
             </a>
           </div>
 
           <button className="landing-burger" onClick={() => setMobileMenu(true)} style={{
             display: 'none', background: 'none', border: 'none', fontSize: '1.5rem', cursor: 'pointer', color: S.dark,
-          }}>☰</button>
+          }}>\u2630</button>
 
           <button onClick={() => setShowLogin(true)} style={{
-            padding: '8px 20px', borderRadius: 8,
+            padding: '9px 22px', borderRadius: 10,
             background: 'linear-gradient(135deg, #7C3AED, #00D4FF)',
-            border: 'none', color: '#fff', fontWeight: 600,
-            fontSize: '.85rem', cursor: 'pointer', transition: 'all .2s',
-            boxShadow: '0 4px 15px rgba(124,58,237,0.3)',
+            border: 'none', color: '#fff', fontWeight: 700,
+            fontSize: '.85rem', cursor: 'pointer', transition: 'all .25s',
+            boxShadow: '0 4px 20px rgba(124,58,237,0.3)',
+            letterSpacing: '-0.01em',
           }}
-          onMouseEnter={e => { e.target.style.boxShadow = '0 6px 25px rgba(124,58,237,0.5)'; e.target.style.transform = 'translateY(-1px)' }}
-          onMouseLeave={e => { e.target.style.boxShadow = '0 4px 15px rgba(124,58,237,0.3)'; e.target.style.transform = 'none' }}>
+          onMouseEnter={e => { e.target.style.boxShadow = '0 8px 30px rgba(124,58,237,0.5)'; e.target.style.transform = 'translateY(-1px)' }}
+          onMouseLeave={e => { e.target.style.boxShadow = '0 4px 20px rgba(124,58,237,0.3)'; e.target.style.transform = 'none' }}>
             Se connecter
           </button>
         </div>
@@ -510,7 +574,7 @@ export default function LoginPage() {
 
       {/* ── Menu mobile ── */}
       <div className={`landing-mobile-menu ${mobileMenu ? 'open' : ''}`}>
-        <button className="landing-mobile-close" onClick={() => setMobileMenu(false)}>✕</button>
+        <button className="landing-mobile-close" onClick={() => setMobileMenu(false)}>\u2715</button>
         <img src="/logo-full.svg" alt="TimeBlast" style={{ height: 40, marginBottom: '1rem' }} />
         <a href="#comment" onClick={() => setMobileMenu(false)}>Comment ca marche</a>
         <a href="#modules" onClick={() => setMobileMenu(false)}>Modules</a>
@@ -519,7 +583,7 @@ export default function LoginPage() {
         <a href="/about" onClick={() => setMobileMenu(false)}>A propos</a>
         <a href="/facture-electronique" style={{ color: '#7C3AED' }}>E-Facture 2026</a>
         <button onClick={() => { setMobileMenu(false); setShowLogin(true) }} style={{
-          marginTop: '1rem', padding: '12px 24px', borderRadius: 8, background: '#195C82',
+          marginTop: '1rem', padding: '14px 24px', borderRadius: 10, background: 'linear-gradient(135deg, #7C3AED, #00D4FF)',
           color: '#fff', border: 'none', fontWeight: 700, fontSize: '.95rem', cursor: 'pointer', width: '100%',
         }}>
           Se connecter
@@ -527,82 +591,102 @@ export default function LoginPage() {
       </div>
 
       {/* ══════════════════════════════════════════════════════════════════
-          2. HERO
+          2. HERO — Full impact
       ══════════════════════════════════════════════════════════════════ */}
       <section style={{
-        paddingTop: 120, paddingBottom: 60, background: '#fff',
+        paddingTop: 140, paddingBottom: 40, background: '#fff',
         position: 'relative', overflow: 'hidden',
       }}>
-        {/* Subtle gradient orb background */}
+        {/* Background orbs */}
         <div style={{
-          position: 'absolute', top: -200, right: -200, width: 600, height: 600,
-          background: 'radial-gradient(circle, rgba(0,212,255,0.06) 0%, transparent 70%)',
+          position: 'absolute', top: -300, right: -200, width: 800, height: 800,
+          background: 'radial-gradient(circle, rgba(124,58,237,0.04) 0%, rgba(0,212,255,0.03) 40%, transparent 70%)',
           pointerEvents: 'none',
         }} />
         <div style={{
-          position: 'absolute', bottom: -100, left: -100, width: 400, height: 400,
-          background: 'radial-gradient(circle, rgba(25,92,130,0.04) 0%, transparent 70%)',
+          position: 'absolute', top: 100, left: -300, width: 600, height: 600,
+          background: 'radial-gradient(circle, rgba(0,212,255,0.04) 0%, transparent 70%)',
           pointerEvents: 'none',
         }} />
+        {/* Grid pattern overlay */}
+        <div style={{
+          position: 'absolute', inset: 0, pointerEvents: 'none', opacity: 0.025,
+          backgroundImage: 'linear-gradient(rgba(15,23,42,1) 1px, transparent 1px), linear-gradient(90deg, rgba(15,23,42,1) 1px, transparent 1px)',
+          backgroundSize: '60px 60px',
+        }} />
 
-        <div style={{ maxWidth: 1200, margin: '0 auto', padding: '0 2rem', textAlign: 'center' }}>
-          <div>
-            {/* Badge */}
-            <a href="https://www.groupe-sra.fr" target="_blank" rel="noopener noreferrer" style={{
-              display: 'inline-flex', alignItems: 'center', gap: 8, padding: '6px 16px',
-              borderRadius: 100, background: 'rgba(0,212,255,0.06)', border: '1px solid rgba(0,212,255,0.15)',
-              fontSize: '.82rem', fontWeight: 600, color: S.sra, marginBottom: '1.5rem',
-              textDecoration: 'none', cursor: 'pointer',
+        <div style={{ maxWidth: 1200, margin: '0 auto', padding: '0 2rem', textAlign: 'center', position: 'relative', zIndex: 1 }}>
+          {/* Badge */}
+          <a href="https://www.groupe-sra.fr" target="_blank" rel="noopener noreferrer" style={{
+            display: 'inline-flex', alignItems: 'center', gap: 8, padding: '7px 18px',
+            borderRadius: 100, background: 'rgba(124,58,237,0.04)', border: '1px solid rgba(124,58,237,0.12)',
+            fontSize: '.82rem', fontWeight: 600, color: S.sra, marginBottom: '2rem',
+            textDecoration: 'none', cursor: 'pointer', transition: 'all .25s',
+          }}
+          onMouseEnter={e => { e.currentTarget.style.borderColor = 'rgba(124,58,237,0.3)'; e.currentTarget.style.background = 'rgba(124,58,237,0.06)' }}
+          onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(124,58,237,0.12)'; e.currentTarget.style.background = 'rgba(124,58,237,0.04)' }}>
+            Propulse par 40 ans d'expertise SRA \u2192
+          </a>
+
+          <h1 style={{
+            fontSize: 'clamp(2.4rem, 4.5vw, 3.8rem)', fontWeight: 800, lineHeight: 1.12,
+            color: S.dark, margin: '0 auto 1.5rem', letterSpacing: '-0.03em',
+            maxWidth: 850, minHeight: 'calc(clamp(2.4rem, 4.5vw, 3.8rem) * 2.3)',
+          }}>
+            Creez en un seul prompt votre{' '}
+            <RotatingText />
+          </h1>
+
+          <p style={{
+            fontSize: '1.15rem', color: S.gray, lineHeight: 1.7, margin: '0 auto 3rem', maxWidth: 620,
+            fontWeight: 400,
+          }}>
+            Decrivez votre besoin. TimeBlast le genere. Nativement interconnecte a tous les logiciels de votre SI.
+          </p>
+
+          {/* BIG PROMPT BAR — centerpiece */}
+          <form onSubmit={e => { e.preventDefault(); setShowLogin(true) }}
+            className="landing-prompt-bar"
+            style={{
+              display: 'flex', alignItems: 'center', gap: 14, padding: '16px 22px',
+              borderRadius: 18, border: '1.5px solid rgba(124,58,237,0.2)',
+              background: '#0f172a',
+              maxWidth: 750, margin: '0 auto 1.5rem',
+              transition: 'all .3s',
             }}>
-              Propulse par 40 ans d'expertise SRA →
-            </a>
+            <div style={{
+              width: 40, height: 40, borderRadius: '50%', flexShrink: 0,
+              background: 'linear-gradient(135deg, #7C3AED, #00D4FF)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              fontSize: '.72rem', fontWeight: 800, color: '#fff',
+              boxShadow: '0 0 20px rgba(124,58,237,0.4)',
+            }}>AI</div>
+            <input type="text" placeholder="Decrivez l'application que vous souhaitez creer..."
+              style={{
+                flex: 1, background: 'transparent', border: 'none', outline: 'none',
+                color: 'rgba(255,255,255,0.9)', fontSize: '1.05rem', fontWeight: 500,
+                letterSpacing: '-0.01em',
+              }} />
+            <button type="submit" style={{
+              padding: '10px 24px', borderRadius: 12,
+              background: 'linear-gradient(135deg, #7C3AED, #00D4FF)',
+              color: '#fff', fontSize: '.88rem', fontWeight: 700,
+              border: 'none', cursor: 'pointer', whiteSpace: 'nowrap',
+              boxShadow: '0 4px 20px rgba(124,58,237,0.4)',
+              transition: 'all .25s',
+            }}
+            onMouseEnter={e => { e.target.style.transform = 'scale(1.03)'; e.target.style.boxShadow = '0 6px 28px rgba(124,58,237,0.5)' }}
+            onMouseLeave={e => { e.target.style.transform = 'none'; e.target.style.boxShadow = '0 4px 20px rgba(124,58,237,0.4)' }}>
+              Generer \u2192
+            </button>
+          </form>
 
-            <h1 style={{
-              fontSize: 'clamp(2.2rem, 4vw, 3.5rem)', fontWeight: 800, lineHeight: 1.15,
-              color: S.dark, margin: '0 auto 1.5rem', letterSpacing: '-0.02em',
-              maxWidth: 800, minHeight: 'calc(clamp(2.2rem, 4vw, 3.5rem) * 2.3)',
-            }}>
-              Creez en un seul prompt votre{' '}
-              <RotatingText />
-            </h1>
+          <p style={{ fontSize: '.82rem', color: S.lightGray, marginBottom: '4rem' }}>
+            Essayer gratuitement \u2014 aucune carte bancaire requise
+          </p>
 
-            <p style={{
-              fontSize: '1.1rem', color: S.gray, lineHeight: 1.65, margin: '0 auto 2.5rem', maxWidth: 600,
-            }}>
-              Decrivez votre besoin. TimeBlast le genere. Nativement interconnecte a tous les logiciels de votre SI.
-            </p>
-
-            {/* Grande barre de prompt */}
-            <form onSubmit={e => { e.preventDefault(); setShowLogin(true) }} style={{
-              display: 'flex', alignItems: 'center', gap: 12, padding: '14px 20px',
-              borderRadius: 16, border: '2px solid rgba(0,212,255,0.2)',
-              background: '#0f172a', boxShadow: '0 8px 40px rgba(0,212,255,0.12)',
-              maxWidth: 700, margin: '0 auto 3rem',
-            }}>
-              <div style={{
-                width: 36, height: 36, borderRadius: '50%', flexShrink: 0,
-                background: 'linear-gradient(135deg, #7C3AED, #00D4FF)',
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                fontSize: '.7rem', fontWeight: 800, color: '#fff',
-              }}>AI</div>
-              <input type="text" placeholder="Decrivez l'application que vous souhaitez creer..."
-                style={{
-                  flex: 1, background: 'transparent', border: 'none', outline: 'none',
-                  color: '#fff', fontSize: '1rem', fontWeight: 500,
-                }} />
-              <button type="submit" style={{
-                padding: '8px 20px', borderRadius: 10,
-                background: 'linear-gradient(135deg, #7C3AED, #00D4FF)',
-                color: '#fff', fontSize: '.85rem', fontWeight: 700,
-                border: 'none', cursor: 'pointer', whiteSpace: 'nowrap',
-              }}>Generer →</button>
-            </form>
-
-            {/* Mockup interactif en dessous */}
-            <div style={{ maxWidth: 900, margin: '0 auto' }}>
-              <HeroVisual />
-            </div>
-          </div>
+          {/* Interactive Mockup */}
+          <InteractiveMockup />
         </div>
       </section>
 
@@ -610,21 +694,22 @@ export default function LoginPage() {
           3. STATS BAR
       ══════════════════════════════════════════════════════════════════ */}
       <section style={{
-        background: '#fff', padding: '3rem 2rem',
+        background: '#fff', padding: '4rem 2rem',
         borderTop: '1px solid rgba(0,212,255,0.08)', borderBottom: '1px solid rgba(0,212,255,0.08)',
       }}>
         <div style={{
-          display: 'flex', justifyContent: 'center', gap: '4rem', flexWrap: 'wrap',
+          display: 'flex', justifyContent: 'center', gap: '5rem', flexWrap: 'wrap',
           maxWidth: 900, margin: '0 auto',
         }}>
           {STATS.map((s, i) => (
             <div key={i} style={{ textAlign: 'center' }}>
               <span style={{
-                display: 'block', fontSize: '2.8rem', fontWeight: 800,
-                background: S.gradient, WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
+                display: 'block', fontSize: '3.2rem', fontWeight: 800,
+                background: 'linear-gradient(135deg, #7C3AED, #00D4FF)',
+                WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
                 backgroundClip: 'text', lineHeight: 1.1,
               }}>{s.value}</span>
-              <span style={{ display: 'block', fontSize: '.85rem', color: S.gray, marginTop: '.35rem', fontWeight: 500 }}>
+              <span style={{ display: 'block', fontSize: '.88rem', color: S.gray, marginTop: '.5rem', fontWeight: 500 }}>
                 {s.label}
               </span>
             </div>
@@ -632,44 +717,132 @@ export default function LoginPage() {
         </div>
       </section>
 
-      {/* BiHubVisual is now inside the connecteurs section */}
+      {/* ══════════════════════════════════════════════════════════════════
+          4. NATIVEMENT CONNECTE — BiHubVisual + connectors
+      ══════════════════════════════════════════════════════════════════ */}
+      <section style={{ padding: '6rem 2rem', background: S.bgAlt }} id="connecteurs">
+        <div style={{ display: 'flex', gap: 48, maxWidth: 1200, margin: '0 auto', alignItems: 'center', flexWrap: 'wrap' }}>
+          {/* Left — BiHubVisual */}
+          <div style={{ flex: '0 0 380px', maxWidth: 420 }}>
+            <BiHubVisual />
+          </div>
+          {/* Right — Connecteurs */}
+          <div style={{ flex: 1, minWidth: 300 }}>
+            <p style={{
+              fontSize: '.78rem', fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase',
+              background: 'linear-gradient(135deg, #7C3AED, #00D4FF)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
+              backgroundClip: 'text', marginBottom: '.75rem',
+            }}>Nativement connecte</p>
+            <h2 style={{
+              fontSize: 'clamp(1.5rem, 2.5vw, 2rem)', fontWeight: 800, color: S.dark,
+              margin: '0 0 .5rem', letterSpacing: '-0.02em',
+            }}>
+              30+ connecteurs disponibles
+            </h2>
+            <p style={{
+              fontSize: '1rem', color: S.gray, maxWidth: 550,
+              margin: '0 0 2rem', lineHeight: 1.65,
+            }}>
+              Votre application se connecte nativement a tous les outils de votre SI.
+            </p>
+
+            {/* Category tabs */}
+            <div style={{
+              display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: '1.5rem',
+            }}>
+              {CATEGORIES.map(cat => (
+                <button key={cat.id} onClick={() => setActiveCat(cat.id)} style={{
+                  padding: '7px 16px', borderRadius: 100, border: '1px solid',
+                  borderColor: activeCat === cat.id ? '#7C3AED' : '#e2e8f0',
+                  background: activeCat === cat.id ? 'rgba(124,58,237,0.06)' : '#fff',
+                  color: activeCat === cat.id ? '#7C3AED' : S.gray,
+                  fontWeight: activeCat === cat.id ? 700 : 500, fontSize: '.8rem',
+                  cursor: 'pointer', transition: 'all .2s',
+                  boxShadow: activeCat === cat.id ? '0 0 15px rgba(124,58,237,0.1)' : 'none',
+                }}>
+                  {cat.label}
+                </button>
+              ))}
+            </div>
+
+            {/* Connector grid */}
+            <div style={{
+              display: 'flex', gap: 8, flexWrap: 'wrap',
+            }}>
+              {filteredConnectors.map(c => (
+                <div key={c.id} style={{
+                  display: 'flex', alignItems: 'center', gap: 8, padding: '9px 14px',
+                  borderRadius: 10, background: '#fff', border: '1px solid #e2e8f0',
+                  fontSize: '.83rem', fontWeight: 500, color: S.dark, transition: 'all .25s',
+                  cursor: 'default',
+                }}
+                onMouseEnter={e => {
+                  e.currentTarget.style.borderColor = c.color
+                  e.currentTarget.style.boxShadow = `0 4px 15px ${c.color}20`
+                  e.currentTarget.style.transform = 'translateY(-2px)'
+                }}
+                onMouseLeave={e => {
+                  e.currentTarget.style.borderColor = '#e2e8f0'
+                  e.currentTarget.style.boxShadow = 'none'
+                  e.currentTarget.style.transform = 'none'
+                }}>
+                  <span style={{
+                    width: 10, height: 10, borderRadius: '50%', background: c.color, flexShrink: 0,
+                  }} />
+                  {c.name}
+                </div>
+              ))}
+            </div>
+            <p style={{ color: S.lightGray, fontSize: '.82rem', marginTop: '1rem' }}>
+              ... et bien d'autres via <strong>Zapier</strong>, <strong>Make</strong> et notre <strong>API REST</strong> ouverte.
+            </p>
+          </div>
+        </div>
+      </section>
 
       {/* ══════════════════════════════════════════════════════════════════
           5. COMMENT CA MARCHE — 5 Phases
       ══════════════════════════════════════════════════════════════════ */}
-      <section style={{ padding: '5rem 2rem', background: '#fff' }} id="comment">
-        <h2 style={{
-          fontSize: 'clamp(1.6rem, 2.5vw, 2.2rem)', fontWeight: 800, color: S.dark,
-          margin: '0 0 .5rem', textAlign: 'center', letterSpacing: '-0.01em',
-        }}>
-          Comment ca marche
-        </h2>
-        <p style={{
-          fontSize: '1.05rem', color: S.gray, textAlign: 'center', maxWidth: 500,
-          margin: '0 auto 3rem', lineHeight: 1.6,
-        }}>
-          5 etapes pour passer de l'idee a l'outil en production
-        </p>
+      <section style={{ padding: '6rem 2rem', background: '#fff' }} id="comment">
+        <div style={{ textAlign: 'center', marginBottom: '3.5rem' }}>
+          <p style={{
+            fontSize: '.78rem', fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase',
+            background: 'linear-gradient(135deg, #7C3AED, #00D4FF)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
+            backgroundClip: 'text', marginBottom: '.75rem',
+          }}>Processus</p>
+          <h2 style={{
+            fontSize: 'clamp(1.7rem, 2.8vw, 2.4rem)', fontWeight: 800, color: S.dark,
+            margin: '0 0 .75rem', letterSpacing: '-0.02em',
+          }}>
+            Comment ca marche
+          </h2>
+          <p style={{
+            fontSize: '1.05rem', color: S.gray, maxWidth: 500,
+            margin: '0 auto', lineHeight: 1.65,
+          }}>
+            5 etapes pour passer de l'idee a l'outil en production
+          </p>
+        </div>
         <div style={{
           display: 'flex', justifyContent: 'center', gap: 20, flexWrap: 'wrap',
           maxWidth: 1100, margin: '0 auto',
         }}>
           {[
-            { num: '1', icon: '💬', title: 'Besoin fonctionnel', desc: 'Decrivez votre besoin en francais. L\'IA structure vos exigences.' },
-            { num: '2', icon: '📐', title: 'Maquette', desc: 'Choisissez vos modules et validez la structure de votre outil.' },
-            { num: '3', icon: '🎨', title: 'Design & mise en page', desc: 'Personnalisez les couleurs, le logo et l\'experience utilisateur.' },
-            { num: '4', icon: '🚀', title: 'Mise en production', desc: 'Votre outil est deploye sur un sous-domaine dedie, pret a l\'emploi.' },
-            { num: '5', icon: '🛡️', title: 'Support & suivi', desc: 'Evolutions, support technique et monitoring en continu.' },
+            { num: '1', icon: '\u{1F4AC}', title: 'Besoin fonctionnel', desc: 'Decrivez votre besoin en francais. L\'IA structure vos exigences.' },
+            { num: '2', icon: '\u{1F4D0}', title: 'Maquette', desc: 'Choisissez vos modules et validez la structure de votre outil.' },
+            { num: '3', icon: '\u{1F3A8}', title: 'Design & mise en page', desc: 'Personnalisez les couleurs, le logo et l\'experience utilisateur.' },
+            { num: '4', icon: '\u{1F680}', title: 'Mise en production', desc: 'Votre outil est deploye sur un sous-domaine dedie, pret a l\'emploi.' },
+            { num: '5', icon: '\u{1F6E1}\uFE0F', title: 'Support & suivi', desc: 'Evolutions, support technique et monitoring en continu.' },
           ].map((step, i) => (
             <div key={i} style={{
-              flex: '1 1 180px', maxWidth: 200, padding: '2rem 1.2rem', borderRadius: 16,
+              flex: '1 1 180px', maxWidth: 200, padding: '2rem 1.4rem', borderRadius: 18,
               border: '1px solid rgba(0,212,255,0.1)', background: '#fff', textAlign: 'center',
-              transition: 'all .3s', cursor: 'default',
+              transition: 'all .3s cubic-bezier(0.4, 0, 0.2, 1)', cursor: 'default',
               boxShadow: '0 2px 12px rgba(0,0,0,0.02)',
             }}
             onMouseEnter={e => {
-              e.currentTarget.style.borderColor = 'rgba(0,212,255,0.3)'
-              e.currentTarget.style.boxShadow = '0 8px 30px rgba(0,212,255,0.1)'
+              e.currentTarget.style.borderColor = 'rgba(124,58,237,0.25)'
+              e.currentTarget.style.boxShadow = '0 12px 40px rgba(124,58,237,0.08), 0 0 0 1px rgba(124,58,237,0.1)'
               e.currentTarget.style.transform = 'translateY(-4px)'
             }}
             onMouseLeave={e => {
@@ -678,131 +851,61 @@ export default function LoginPage() {
               e.currentTarget.style.transform = 'none'
             }}>
               <div style={{
-                width: 52, height: 52, borderRadius: '50%', background: 'rgba(0,212,255,0.06)',
+                width: 56, height: 56, borderRadius: '50%',
+                background: 'linear-gradient(135deg, rgba(124,58,237,.06), rgba(0,212,255,.06))',
                 display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto .75rem',
-                fontSize: 24, border: '1px solid rgba(0,212,255,0.12)',
+                fontSize: 26, border: '1px solid rgba(124,58,237,0.1)',
               }}>{step.icon}</div>
               <div style={{
-                fontSize: '.75rem', fontWeight: 800, letterSpacing: '0.05em',
-                background: S.gradient, WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
-                backgroundClip: 'text', marginBottom: 6, textTransform: 'uppercase',
+                fontSize: '.72rem', fontWeight: 800, letterSpacing: '0.08em',
+                background: 'linear-gradient(135deg, #7C3AED, #00D4FF)',
+                WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
+                backgroundClip: 'text', marginBottom: 8, textTransform: 'uppercase',
               }}>ETAPE {step.num}</div>
-              <h4 style={{ margin: '0 0 .4rem', fontSize: '.92rem', fontWeight: 700, color: S.dark }}>{step.title}</h4>
-              <p style={{ margin: 0, fontSize: '.8rem', color: S.gray, lineHeight: 1.5 }}>{step.desc}</p>
+              <h4 style={{ margin: '0 0 .5rem', fontSize: '.95rem', fontWeight: 700, color: S.dark }}>{step.title}</h4>
+              <p style={{ margin: 0, fontSize: '.82rem', color: S.gray, lineHeight: 1.55 }}>{step.desc}</p>
             </div>
           ))}
         </div>
       </section>
 
       {/* ══════════════════════════════════════════════════════════════════
-          6. MODULES DISPONIBLES (connectors/categories)
+          6. MODULES PRETS A L'EMPLOI
       ══════════════════════════════════════════════════════════════════ */}
-      <section style={{ padding: '5rem 2rem', background: S.bgAlt }} id="connecteurs">
-        <div style={{ display: 'flex', gap: 40, maxWidth: 1200, margin: '0 auto', alignItems: 'center', flexWrap: 'wrap' }}>
-          {/* Left — BiHubVisual */}
-          <div style={{ flex: '0 0 360px', maxWidth: 400 }}>
-            <BiHubVisual />
-          </div>
-          {/* Right — Connecteurs */}
-          <div style={{ flex: 1, minWidth: 300 }}>
-        <h2 style={{
-          fontSize: 'clamp(1.4rem, 2.2vw, 1.8rem)', fontWeight: 800, color: S.dark,
-          margin: '0 0 .5rem',
-        }}>
-          30+ connecteurs disponibles
-        </h2>
-        <p style={{
-          fontSize: '1rem', color: S.gray, maxWidth: 550,
-          margin: '0 0 1.5rem', lineHeight: 1.6,
-        }}>
-          Votre application se connecte nativement a tous les outils de votre SI.
-        </p>
-
-        {/* Category tabs */}
-        <div style={{
-          display: 'flex', justifyContent: 'center', gap: 8, flexWrap: 'wrap',
-          maxWidth: 900, margin: '0 auto 2rem',
-        }}>
-          {CATEGORIES.map(cat => (
-            <button key={cat.id} onClick={() => setActiveCat(cat.id)} style={{
-              padding: '8px 16px', borderRadius: 100, border: '1px solid',
-              borderColor: activeCat === cat.id ? '#00D4FF' : '#e2e8f0',
-              background: activeCat === cat.id ? 'rgba(0,212,255,0.08)' : '#fff',
-              color: activeCat === cat.id ? S.sra : S.gray,
-              fontWeight: activeCat === cat.id ? 700 : 500, fontSize: '.82rem',
-              cursor: 'pointer', transition: 'all .2s',
-              boxShadow: activeCat === cat.id ? '0 0 15px rgba(0,212,255,0.12)' : 'none',
-            }}>
-              {cat.label}
-            </button>
-          ))}
+      <section style={{ padding: '6rem 2rem', background: S.bgAlt }} id="modules">
+        <div style={{ textAlign: 'center', marginBottom: '3.5rem' }}>
+          <p style={{
+            fontSize: '.78rem', fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase',
+            background: 'linear-gradient(135deg, #7C3AED, #00D4FF)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
+            backgroundClip: 'text', marginBottom: '.75rem',
+          }}>Catalogue</p>
+          <h2 style={{
+            fontSize: 'clamp(1.7rem, 2.8vw, 2.4rem)', fontWeight: 800, color: S.dark,
+            margin: '0 0 .75rem', letterSpacing: '-0.02em',
+          }}>
+            Des modules prets a l'emploi
+          </h2>
+          <p style={{
+            fontSize: '1.05rem', color: S.gray, maxWidth: 550,
+            margin: '0 auto', lineHeight: 1.65,
+          }}>
+            Chaque module est pre-construit et personnalisable. L'IA les adapte a votre metier.
+          </p>
         </div>
-
-        {/* Connector grid */}
         <div style={{
-          display: 'flex', justifyContent: 'center', gap: 10, flexWrap: 'wrap',
-          maxWidth: 900, margin: '0 auto',
-        }}>
-          {filteredConnectors.map(c => (
-            <div key={c.id} style={{
-              display: 'flex', alignItems: 'center', gap: 8, padding: '10px 16px',
-              borderRadius: 10, background: '#fff', border: '1px solid #e2e8f0',
-              fontSize: '.85rem', fontWeight: 500, color: S.dark, transition: 'all .2s',
-              cursor: 'default',
-            }}
-            onMouseEnter={e => {
-              e.currentTarget.style.borderColor = '#00D4FF'
-              e.currentTarget.style.boxShadow = '0 4px 15px rgba(0,212,255,0.1)'
-            }}
-            onMouseLeave={e => {
-              e.currentTarget.style.borderColor = '#e2e8f0'
-              e.currentTarget.style.boxShadow = 'none'
-            }}>
-              <span style={{
-                width: 10, height: 10, borderRadius: '50%', background: c.color,
-                flexShrink: 0,
-              }} />
-              {c.name}
-            </div>
-          ))}
-        </div>
-        <p style={{ color: S.lightGray, fontSize: '.82rem', marginTop: '1rem' }}>
-          ... et bien d'autres via <strong>Zapier</strong>, <strong>Make</strong> et notre <strong>API REST</strong> ouverte.
-        </p>
-          </div>
-        </div>
-      </section>
-
-      {/* ══════════════════════════════════════════════════════════════════
-          7. DES MODULES PRETS A L'EMPLOI
-      ══════════════════════════════════════════════════════════════════ */}
-      <section style={{ padding: '5rem 2rem', background: '#fff' }} id="modules">
-        <h2 style={{
-          fontSize: 'clamp(1.6rem, 2.5vw, 2.2rem)', fontWeight: 800, color: S.dark,
-          margin: '0 0 .5rem', textAlign: 'center',
-        }}>
-          Des modules prets a l'emploi
-        </h2>
-        <p style={{
-          fontSize: '1.05rem', color: S.gray, textAlign: 'center', maxWidth: 550,
-          margin: '0 auto 3rem', lineHeight: 1.6,
-        }}>
-          Chaque module est pre-construit et personnalisable. L'IA les adapte a votre metier.
-        </p>
-        <div style={{
-          display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
+          display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(290px, 1fr))',
           gap: 20, maxWidth: 1000, margin: '0 auto',
         }}>
           {BI_MODULES.map((m, i) => (
             <div key={i} style={{
-              padding: '2rem', borderRadius: 16, background: '#fff',
+              padding: '2rem', borderRadius: 18, background: '#fff',
               border: '1px solid rgba(0,212,255,0.1)',
-              boxShadow: '0 2px 12px rgba(0,0,0,0.02)', transition: 'all .3s',
+              boxShadow: '0 2px 12px rgba(0,0,0,0.02)', transition: 'all .3s cubic-bezier(0.4, 0, 0.2, 1)',
             }}
             onMouseEnter={e => {
-              e.currentTarget.style.borderColor = 'rgba(0,212,255,0.3)'
-              e.currentTarget.style.boxShadow = '0 8px 30px rgba(0,212,255,0.1)'
-              e.currentTarget.style.transform = 'translateY(-3px)'
+              e.currentTarget.style.borderColor = 'rgba(124,58,237,0.25)'
+              e.currentTarget.style.boxShadow = '0 12px 40px rgba(124,58,237,0.08), 0 0 0 1px rgba(124,58,237,0.08)'
+              e.currentTarget.style.transform = 'translateY(-4px)'
             }}
             onMouseLeave={e => {
               e.currentTarget.style.borderColor = 'rgba(0,212,255,0.1)'
@@ -811,88 +914,90 @@ export default function LoginPage() {
             }}>
               <span style={{
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
-                width: 48, height: 48, borderRadius: 12,
-                background: 'linear-gradient(135deg, rgba(124,58,237,.08), rgba(0,212,255,.08))',
-                fontSize: 24, marginBottom: '1rem',
-                border: '1px solid rgba(0,212,255,0.15)',
+                width: 52, height: 52, borderRadius: 14,
+                background: 'linear-gradient(135deg, rgba(124,58,237,.06), rgba(0,212,255,.06))',
+                fontSize: 26, marginBottom: '1.25rem',
+                border: '1px solid rgba(124,58,237,0.1)',
               }}>{m.icon}</span>
-              <h3 style={{ margin: '0 0 .5rem', fontSize: '1.05rem', fontWeight: 700, color: S.dark }}>{m.title}</h3>
-              <p style={{ margin: 0, fontSize: '.88rem', color: S.gray, lineHeight: 1.55 }}>{m.desc}</p>
+              <h3 style={{ margin: '0 0 .5rem', fontSize: '1.08rem', fontWeight: 700, color: S.dark }}>{m.title}</h3>
+              <p style={{ margin: 0, fontSize: '.88rem', color: S.gray, lineHeight: 1.6 }}>{m.desc}</p>
             </div>
           ))}
         </div>
       </section>
 
       {/* ══════════════════════════════════════════════════════════════════
-          8. 40 ANS D'EXPERTISE
+          7. 40 ANS D'EXPERTISE
       ══════════════════════════════════════════════════════════════════ */}
       <section style={{
-        padding: '5rem 2rem', background: S.bgAlt, textAlign: 'center', position: 'relative', overflow: 'hidden',
+        padding: '6rem 2rem', background: '#fff', textAlign: 'center', position: 'relative', overflow: 'hidden',
       }}>
-        {/* Gradient accent orb */}
         <div style={{
           position: 'absolute', top: -80, left: '50%', transform: 'translateX(-50%)',
-          width: 500, height: 250,
-          background: 'radial-gradient(circle, rgba(255,107,53,0.06) 0%, rgba(255,215,0,0.04) 40%, transparent 70%)',
+          width: 600, height: 300,
+          background: 'radial-gradient(circle, rgba(124,58,237,0.04) 0%, rgba(0,212,255,0.03) 40%, transparent 70%)',
           pointerEvents: 'none',
         }} />
         <div style={{ maxWidth: 700, margin: '0 auto', position: 'relative', zIndex: 1 }}>
           <p style={{
-            fontSize: '.82rem', fontWeight: 600, letterSpacing: '2px',
+            fontSize: '.78rem', fontWeight: 700, letterSpacing: '0.1em',
             textTransform: 'uppercase', marginBottom: '1.5rem',
-            background: S.gradient, WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
+            background: 'linear-gradient(135deg, #7C3AED, #00D4FF)',
+            WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
             backgroundClip: 'text',
           }}>
             Un produit du Groupe SRA
           </p>
           <h2 style={{
             fontSize: 'clamp(1.8rem, 3vw, 2.5rem)', fontWeight: 800, color: S.dark,
-            margin: '0 0 1.5rem',
+            margin: '0 0 1.5rem', letterSpacing: '-0.02em',
           }}>
             40 ans d'expertise{' '}
             <span style={{
-              background: S.gradient, WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
+              background: 'linear-gradient(135deg, #7C3AED, #00D4FF)',
+              WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
               backgroundClip: 'text',
             }}>
               au service de l'innovation
             </span>
           </h2>
           <p style={{
-            fontSize: '1.1rem', color: S.gray, lineHeight: 1.7, margin: '0 0 2.5rem',
+            fontSize: '1.1rem', color: S.gray, lineHeight: 1.75, margin: '0 0 2.5rem',
           }}>
             Depuis 1986, le Groupe SRA accompagne les PME et ETI dans leur transformation digitale. Cette expertise de terrain nous a permis de concevoir TimeBlast : la plateforme de vibe-coding parfaite pour creer des applications metier avec l'IA.
           </p>
           <a href="https://www.groupe-sra.fr" target="_blank" rel="noopener noreferrer"
             style={{
               display: 'inline-flex', alignItems: 'center', gap: 16, background: '#fff',
-              border: '1px solid rgba(0,212,255,0.15)', borderRadius: 14,
-              padding: '1.25rem 2.5rem', textDecoration: 'none', transition: 'all .3s',
-              boxShadow: '0 4px 16px rgba(0,212,255,0.04)',
+              border: '1px solid rgba(124,58,237,0.1)', borderRadius: 16,
+              padding: '1.5rem 2.5rem', textDecoration: 'none', transition: 'all .3s cubic-bezier(0.4, 0, 0.2, 1)',
+              boxShadow: '0 4px 20px rgba(0,0,0,0.04)',
             }}
             onMouseEnter={e => {
-              e.currentTarget.style.borderColor = '#00D4FF'
-              e.currentTarget.style.boxShadow = '0 8px 30px rgba(0,212,255,0.12)'
-              e.currentTarget.style.transform = 'translateY(-2px)'
+              e.currentTarget.style.borderColor = '#7C3AED'
+              e.currentTarget.style.boxShadow = '0 12px 40px rgba(124,58,237,0.1)'
+              e.currentTarget.style.transform = 'translateY(-3px)'
             }}
             onMouseLeave={e => {
-              e.currentTarget.style.borderColor = 'rgba(0,212,255,0.15)'
-              e.currentTarget.style.boxShadow = '0 4px 16px rgba(0,212,255,0.04)'
+              e.currentTarget.style.borderColor = 'rgba(124,58,237,0.1)'
+              e.currentTarget.style.boxShadow = '0 4px 20px rgba(0,0,0,0.04)'
               e.currentTarget.style.transform = 'none'
             }}>
-            <img src="/logo-sra.png" alt="Groupe SRA" style={{ width: 48, height: 48, borderRadius: 10, objectFit: 'contain', flexShrink: 0 }} />
+            <img src="/logo-sra.png" alt="Groupe SRA" style={{ width: 52, height: 52, borderRadius: 12, objectFit: 'contain', flexShrink: 0 }} />
             <div style={{ textAlign: 'left' }}>
-              <div style={{ fontSize: '1rem', fontWeight: 700, color: S.sra }}>
-                Groupe SRA — Partenaire digital des PME et ETI
+              <div style={{ fontSize: '1.02rem', fontWeight: 700, color: S.sra }}>
+                Groupe SRA \u2014 Partenaire digital des PME et ETI
               </div>
-              <div style={{ fontSize: '.82rem', color: S.gray, marginTop: 2 }}>
+              <div style={{ fontSize: '.82rem', color: S.gray, marginTop: 3 }}>
                 Integrateur Sage Diamond, Microsoft, HubSpot
               </div>
               <div style={{
-                fontSize: '.78rem', fontWeight: 600, marginTop: 4,
-                background: S.gradient, WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
+                fontSize: '.8rem', fontWeight: 700, marginTop: 5,
+                background: 'linear-gradient(135deg, #7C3AED, #00D4FF)',
+                WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
                 backgroundClip: 'text',
               }}>
-                Decouvrir le groupe → groupe-sra.fr
+                Decouvrir le groupe \u2192 groupe-sra.fr
               </div>
             </div>
           </a>
@@ -900,45 +1005,64 @@ export default function LoginPage() {
       </section>
 
       {/* ══════════════════════════════════════════════════════════════════
-          9. CONTACT FORM
+          8. CONTACT FORM
       ══════════════════════════════════════════════════════════════════ */}
-      <section style={{ padding: '5rem 2rem', background: '#fff' }} id="contact">
-        <h2 style={{
-          fontSize: 'clamp(1.6rem, 2.5vw, 2.2rem)', fontWeight: 800, color: S.dark,
-          margin: '0 0 .5rem', textAlign: 'center',
-        }}>
-          Demandez votre diagnostic gratuit
-        </h2>
-        <p style={{
-          fontSize: '1.05rem', color: S.gray, textAlign: 'center', maxWidth: 550,
-          margin: '0 auto 3rem', lineHeight: 1.6,
-        }}>
-          En 30 minutes, nous evaluons votre besoin et vous montrons ce que TimeBlast peut automatiser.
-        </p>
+      <section style={{ padding: '6rem 2rem', background: S.bgAlt }} id="contact">
+        <div style={{ textAlign: 'center', marginBottom: '3.5rem' }}>
+          <p style={{
+            fontSize: '.78rem', fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase',
+            background: 'linear-gradient(135deg, #7C3AED, #00D4FF)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
+            backgroundClip: 'text', marginBottom: '.75rem',
+          }}>Contact</p>
+          <h2 style={{
+            fontSize: 'clamp(1.7rem, 2.8vw, 2.4rem)', fontWeight: 800, color: S.dark,
+            margin: '0 0 .75rem', letterSpacing: '-0.02em',
+          }}>
+            Demandez votre diagnostic gratuit
+          </h2>
+          <p style={{
+            fontSize: '1.05rem', color: S.gray, maxWidth: 550,
+            margin: '0 auto', lineHeight: 1.65,
+          }}>
+            En 30 minutes, nous evaluons votre besoin et vous montrons ce que TimeBlast peut automatiser.
+          </p>
+        </div>
 
         <div style={{
-          maxWidth: 900, margin: '0 auto', display: 'grid',
+          maxWidth: 920, margin: '0 auto', display: 'grid',
           gridTemplateColumns: '1fr 1.2fr', gap: '3rem', alignItems: 'start',
         }}>
           {/* Info side */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
             {[
-              { icon: '-', title: 'Diagnostic gratuit', desc: 'Evaluation de votre maturite data en 30 min' },
-              { icon: '-', title: 'Reponse sous 24h', desc: 'Notre equipe revient vers vous rapidement' },
-              { icon: '-', title: 'Demo personnalisee', desc: 'Sur vos donnees, vos cas d\'usage' },
+              { icon: '\u{1F50D}', title: 'Diagnostic gratuit', desc: 'Evaluation de votre maturite data en 30 min' },
+              { icon: '\u26A1', title: 'Reponse sous 24h', desc: 'Notre equipe revient vers vous rapidement' },
+              { icon: '\u{1F3AF}', title: 'Demo personnalisee', desc: 'Sur vos donnees, vos cas d\'usage' },
             ].map((item, i) => (
               <div key={i} style={{
                 display: 'flex', gap: 16, padding: '1.25rem',
-                borderRadius: 14, background: S.bgAlt, border: '1px solid rgba(0,212,255,0.08)',
+                borderRadius: 16, background: '#fff', border: '1px solid rgba(124,58,237,0.06)',
+                transition: 'all .25s',
+              }}
+              onMouseEnter={e => {
+                e.currentTarget.style.borderColor = 'rgba(124,58,237,0.15)'
+                e.currentTarget.style.boxShadow = '0 8px 25px rgba(124,58,237,0.06)'
+                e.currentTarget.style.transform = 'translateY(-2px)'
+              }}
+              onMouseLeave={e => {
+                e.currentTarget.style.borderColor = 'rgba(124,58,237,0.06)'
+                e.currentTarget.style.boxShadow = 'none'
+                e.currentTarget.style.transform = 'none'
               }}>
                 <span style={{
-                  fontSize: '1.5rem', flexShrink: 0, width: 48, height: 48,
+                  fontSize: '1.4rem', flexShrink: 0, width: 48, height: 48,
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  borderRadius: 12, background: 'rgba(0,212,255,0.06)',
+                  borderRadius: 14, background: 'linear-gradient(135deg, rgba(124,58,237,.06), rgba(0,212,255,.06))',
+                  border: '1px solid rgba(124,58,237,0.08)',
                 }}>{item.icon}</span>
                 <div>
                   <strong style={{ color: S.dark, fontSize: '.95rem' }}>{item.title}</strong>
-                  <p style={{ margin: '.25rem 0 0', color: S.gray, fontSize: '.85rem' }}>{item.desc}</p>
+                  <p style={{ margin: '.3rem 0 0', color: S.gray, fontSize: '.85rem', lineHeight: 1.5 }}>{item.desc}</p>
                 </div>
               </div>
             ))}
@@ -946,15 +1070,20 @@ export default function LoginPage() {
 
           {/* Form side */}
           <form onSubmit={handleContactSubmit} style={{
-            padding: '2rem', borderRadius: 16, background: '#fff',
-            border: '1px solid rgba(0,212,255,0.12)',
-            boxShadow: '0 8px 30px rgba(0,212,255,0.06)',
+            padding: '2rem', borderRadius: 20, background: '#fff',
+            border: '1px solid rgba(124,58,237,0.08)',
+            boxShadow: '0 8px 40px rgba(0,0,0,0.04)',
           }}>
             {contactSent ? (
-              <div style={{ textAlign: 'center', padding: '2rem 0' }}>
-                <span style={{ fontSize: '1.5rem', display: 'block', marginBottom: '.75rem', color: '#22c55e' }}>OK</span>
-                <h3 style={{ margin: '0 0 .5rem', color: S.dark }}>Demande envoyee !</h3>
-                <p style={{ color: S.gray }}>Nous preparons votre diagnostic et revenons vers vous tres vite.</p>
+              <div style={{ textAlign: 'center', padding: '2.5rem 0' }}>
+                <div style={{
+                  width: 56, height: 56, borderRadius: '50%', margin: '0 auto .75rem',
+                  background: 'linear-gradient(135deg, #22c55e, #10b981)',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  fontSize: '1.5rem', color: '#fff',
+                }}>\u2713</div>
+                <h3 style={{ margin: '0 0 .5rem', color: S.dark, fontSize: '1.2rem' }}>Demande envoyee !</h3>
+                <p style={{ color: S.gray, fontSize: '.9rem' }}>Nous preparons votre diagnostic et revenons vers vous tres vite.</p>
               </div>
             ) : (
               <>
@@ -963,29 +1092,13 @@ export default function LoginPage() {
                     <label style={{ display: 'block', fontSize: '.82rem', fontWeight: 600, color: S.dark, marginBottom: 6 }}>Nom complet *</label>
                     <input type="text" required placeholder="Jean Dupont"
                       value={contactForm.name} onChange={e => setContactForm(f => ({ ...f, name: e.target.value }))}
-                      style={{
-                        width: '100%', padding: '10px 14px', borderRadius: 10,
-                        border: '1px solid #e2e8f0', fontSize: '.9rem', outline: 'none',
-                        transition: 'border-color .2s, box-shadow .2s', background: S.bgAlt,
-                        boxSizing: 'border-box',
-                      }}
-                      onFocus={e => { e.target.style.borderColor = '#00D4FF'; e.target.style.boxShadow = '0 0 0 3px rgba(0,212,255,0.1)' }}
-                      onBlur={e => { e.target.style.borderColor = '#e2e8f0'; e.target.style.boxShadow = 'none' }}
-                    />
+                      style={inputStyle} onFocus={focusInput} onBlur={blurInput} />
                   </div>
                   <div>
                     <label style={{ display: 'block', fontSize: '.82rem', fontWeight: 600, color: S.dark, marginBottom: 6 }}>Email professionnel *</label>
                     <input type="email" required placeholder="jean@entreprise.com"
                       value={contactForm.email} onChange={e => setContactForm(f => ({ ...f, email: e.target.value }))}
-                      style={{
-                        width: '100%', padding: '10px 14px', borderRadius: 10,
-                        border: '1px solid #e2e8f0', fontSize: '.9rem', outline: 'none',
-                        transition: 'border-color .2s, box-shadow .2s', background: S.bgAlt,
-                        boxSizing: 'border-box',
-                      }}
-                      onFocus={e => { e.target.style.borderColor = '#00D4FF'; e.target.style.boxShadow = '0 0 0 3px rgba(0,212,255,0.1)' }}
-                      onBlur={e => { e.target.style.borderColor = '#e2e8f0'; e.target.style.boxShadow = 'none' }}
-                    />
+                      style={inputStyle} onFocus={focusInput} onBlur={blurInput} />
                   </div>
                 </div>
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginBottom: 16 }}>
@@ -993,55 +1106,31 @@ export default function LoginPage() {
                     <label style={{ display: 'block', fontSize: '.82rem', fontWeight: 600, color: S.dark, marginBottom: 6 }}>Entreprise</label>
                     <input type="text" placeholder="Mon Entreprise SAS"
                       value={contactForm.company} onChange={e => setContactForm(f => ({ ...f, company: e.target.value }))}
-                      style={{
-                        width: '100%', padding: '10px 14px', borderRadius: 10,
-                        border: '1px solid #e2e8f0', fontSize: '.9rem', outline: 'none',
-                        transition: 'border-color .2s, box-shadow .2s', background: S.bgAlt,
-                        boxSizing: 'border-box',
-                      }}
-                      onFocus={e => { e.target.style.borderColor = '#00D4FF'; e.target.style.boxShadow = '0 0 0 3px rgba(0,212,255,0.1)' }}
-                      onBlur={e => { e.target.style.borderColor = '#e2e8f0'; e.target.style.boxShadow = 'none' }}
-                    />
+                      style={inputStyle} onFocus={focusInput} onBlur={blurInput} />
                   </div>
                   <div>
                     <label style={{ display: 'block', fontSize: '.82rem', fontWeight: 600, color: S.dark, marginBottom: 6 }}>Telephone</label>
                     <input type="tel" placeholder="06 XX XX XX XX"
                       value={contactForm.phone} onChange={e => setContactForm(f => ({ ...f, phone: e.target.value }))}
-                      style={{
-                        width: '100%', padding: '10px 14px', borderRadius: 10,
-                        border: '1px solid #e2e8f0', fontSize: '.9rem', outline: 'none',
-                        transition: 'border-color .2s, box-shadow .2s', background: S.bgAlt,
-                        boxSizing: 'border-box',
-                      }}
-                      onFocus={e => { e.target.style.borderColor = '#00D4FF'; e.target.style.boxShadow = '0 0 0 3px rgba(0,212,255,0.1)' }}
-                      onBlur={e => { e.target.style.borderColor = '#e2e8f0'; e.target.style.boxShadow = 'none' }}
-                    />
+                      style={inputStyle} onFocus={focusInput} onBlur={blurInput} />
                   </div>
                 </div>
                 <div style={{ marginBottom: 16 }}>
                   <label style={{ display: 'block', fontSize: '.82rem', fontWeight: 600, color: S.dark, marginBottom: 6 }}>Votre besoin *</label>
                   <textarea required rows={4} placeholder="Decrivez le logiciel dont vous avez besoin..."
                     value={contactForm.message} onChange={e => setContactForm(f => ({ ...f, message: e.target.value }))}
-                    style={{
-                      width: '100%', padding: '10px 14px', borderRadius: 10,
-                      border: '1px solid #e2e8f0', fontSize: '.9rem', outline: 'none',
-                      resize: 'vertical', fontFamily: 'inherit',
-                      transition: 'border-color .2s, box-shadow .2s', background: S.bgAlt,
-                      boxSizing: 'border-box',
-                    }}
-                    onFocus={e => { e.target.style.borderColor = '#00D4FF'; e.target.style.boxShadow = '0 0 0 3px rgba(0,212,255,0.1)' }}
-                    onBlur={e => { e.target.style.borderColor = '#e2e8f0'; e.target.style.boxShadow = 'none' }}
-                  />
+                    style={{ ...inputStyle, resize: 'vertical' }}
+                    onFocus={focusInput} onBlur={blurInput} />
                 </div>
                 <button type="submit" style={{
-                  width: '100%', padding: '14px', borderRadius: 10, background: '#195C82',
+                  width: '100%', padding: '14px', borderRadius: 12, background: '#195C82',
                   color: '#fff', border: 'none', fontWeight: 700, fontSize: '.95rem',
-                  cursor: 'pointer', boxShadow: '0 4px 20px rgba(0,212,255,0.3)',
+                  cursor: 'pointer', boxShadow: '0 4px 20px rgba(25,92,130,0.3)',
                   transition: 'all .25s',
                 }}
-                onMouseEnter={e => { e.target.style.boxShadow = '0 8px 30px rgba(0,212,255,0.45)'; e.target.style.transform = 'translateY(-1px)' }}
-                onMouseLeave={e => { e.target.style.boxShadow = '0 4px 20px rgba(0,212,255,0.3)'; e.target.style.transform = 'none' }}>
-                  Demander mon diagnostic gratuit →
+                onMouseEnter={e => { e.target.style.boxShadow = '0 8px 30px rgba(25,92,130,0.45)'; e.target.style.transform = 'translateY(-1px)' }}
+                onMouseLeave={e => { e.target.style.boxShadow = '0 4px 20px rgba(25,92,130,0.3)'; e.target.style.transform = 'none' }}>
+                  Demander mon diagnostic gratuit \u2192
                 </button>
               </>
             )}
@@ -1050,50 +1139,55 @@ export default function LoginPage() {
       </section>
 
       {/* ══════════════════════════════════════════════════════════════════
-          10. FINAL CTA
+          9. FINAL CTA — Blue SRA background
       ══════════════════════════════════════════════════════════════════ */}
       <section style={{
-        padding: '5rem 2rem', textAlign: 'center',
+        padding: '6rem 2rem', textAlign: 'center',
         background: '#195C82', position: 'relative', overflow: 'hidden',
       }}>
-        {/* Glow orbs */}
         <div style={{
-          position: 'absolute', top: -100, left: '50%', transform: 'translateX(-50%)',
-          width: 600, height: 300, background: 'radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%)',
+          position: 'absolute', top: -150, left: '50%', transform: 'translateX(-50%)',
+          width: 800, height: 400, background: 'radial-gradient(circle, rgba(124,58,237,0.15) 0%, rgba(0,212,255,0.1) 30%, transparent 70%)',
+          pointerEvents: 'none',
+        }} />
+        <div style={{
+          position: 'absolute', bottom: -100, right: -100, width: 400, height: 400,
+          background: 'radial-gradient(circle, rgba(0,212,255,0.1) 0%, transparent 70%)',
           pointerEvents: 'none',
         }} />
         <div style={{ position: 'relative', zIndex: 1 }}>
           <h2 style={{
-            fontSize: 'clamp(1.8rem, 3vw, 2.5rem)', fontWeight: 800, color: '#fff',
-            margin: '0 0 1rem',
+            fontSize: 'clamp(1.8rem, 3.2vw, 2.8rem)', fontWeight: 800, color: '#fff',
+            margin: '0 0 1rem', letterSpacing: '-0.02em',
           }}>
             Pret a creer votre application ?
           </h2>
           <p style={{
-            fontSize: '1.1rem', color: 'rgba(255,255,255,0.8)', maxWidth: 500,
-            margin: '0 auto 2rem', lineHeight: 1.6,
+            fontSize: '1.1rem', color: 'rgba(255,255,255,0.75)', maxWidth: 520,
+            margin: '0 auto 2.5rem', lineHeight: 1.65,
           }}>
             Creez votre logiciel de gestion sur mesure sans ecrire une ligne de code.
           </p>
           <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', flexWrap: 'wrap' }}>
             <button onClick={() => setShowLogin(true)} style={{
-              padding: '14px 32px', borderRadius: 10, background: '#fff',
+              padding: '15px 36px', borderRadius: 12, background: '#fff',
               color: S.sra, border: 'none', fontWeight: 700, fontSize: '1rem',
               cursor: 'pointer', transition: 'all .25s',
               boxShadow: '0 4px 20px rgba(0,0,0,0.15)',
+              letterSpacing: '-0.01em',
             }}
-            onMouseEnter={e => { e.target.style.transform = 'translateY(-2px)'; e.target.style.boxShadow = '0 8px 30px rgba(0,0,0,0.2)' }}
+            onMouseEnter={e => { e.target.style.transform = 'translateY(-2px)'; e.target.style.boxShadow = '0 8px 30px rgba(0,0,0,0.25)' }}
             onMouseLeave={e => { e.target.style.transform = 'none'; e.target.style.boxShadow = '0 4px 20px rgba(0,0,0,0.15)' }}>
-              Demarrer mon projet →
+              Demarrer mon projet \u2192
             </button>
             <a href="#contact" style={{
-              padding: '14px 32px', borderRadius: 10, background: 'transparent',
-              border: '1.5px solid rgba(255,255,255,0.4)', color: '#fff',
+              padding: '15px 36px', borderRadius: 12, background: 'transparent',
+              border: '1.5px solid rgba(255,255,255,0.3)', color: '#fff',
               fontWeight: 600, fontSize: '1rem', textDecoration: 'none',
               transition: 'all .25s', display: 'inline-flex', alignItems: 'center',
             }}
-            onMouseEnter={e => { e.target.style.background = 'rgba(255,255,255,0.1)'; e.target.style.borderColor = 'rgba(255,255,255,0.6)' }}
-            onMouseLeave={e => { e.target.style.background = 'transparent'; e.target.style.borderColor = 'rgba(255,255,255,0.4)' }}>
+            onMouseEnter={e => { e.target.style.background = 'rgba(255,255,255,0.1)'; e.target.style.borderColor = 'rgba(255,255,255,0.5)' }}
+            onMouseLeave={e => { e.target.style.background = 'transparent'; e.target.style.borderColor = 'rgba(255,255,255,0.3)' }}>
               Nous contacter
             </a>
           </div>
@@ -1101,22 +1195,29 @@ export default function LoginPage() {
       </section>
 
       {/* ══════════════════════════════════════════════════════════════════
-          11. FOOTER
+          10. FOOTER — Blue SRA
       ══════════════════════════════════════════════════════════════════ */}
       <footer style={{
-        background: '#195C82', padding: '2rem', textAlign: 'center',
+        background: '#12475e', padding: '2rem', borderTop: '1px solid rgba(255,255,255,0.06)',
       }}>
         <div style={{
           maxWidth: 1200, margin: '0 auto', display: 'flex', alignItems: 'center',
           justifyContent: 'space-between', flexWrap: 'wrap', gap: '1rem',
         }}>
           <img src="/logo-full-white.svg" alt="TimeBlast" style={{ height: 24, opacity: 0.8 }} />
-          <span style={{ color: 'rgba(255,255,255,0.35)', fontSize: '.82rem' }}>
-            &copy; {new Date().getFullYear()} TimeBlast.ai — Vibe-coding pour logiciels de gestion
+          <span style={{ color: 'rgba(255,255,255,0.3)', fontSize: '.82rem' }}>
+            &copy; {new Date().getFullYear()} TimeBlast.ai \u2014 Vibe-coding pour logiciels de gestion
           </span>
           <div style={{ display: 'flex', gap: '1.5rem' }}>
-            <a href="/about" style={{ color: 'rgba(255,255,255,0.4)', fontSize: '.82rem', textDecoration: 'none' }}>A propos</a>
-            <a href="https://www.groupe-sra.fr" target="_blank" rel="noopener noreferrer" style={{ color: 'rgba(255,255,255,0.4)', fontSize: '.82rem', textDecoration: 'none' }}>Groupe SRA</a>
+            <a href="/about" style={{ color: 'rgba(255,255,255,0.4)', fontSize: '.82rem', textDecoration: 'none', transition: 'color .2s' }}
+              onMouseEnter={e => e.target.style.color = 'rgba(255,255,255,0.7)'} onMouseLeave={e => e.target.style.color = 'rgba(255,255,255,0.4)'}>
+              A propos
+            </a>
+            <a href="https://www.groupe-sra.fr" target="_blank" rel="noopener noreferrer"
+              style={{ color: 'rgba(255,255,255,0.4)', fontSize: '.82rem', textDecoration: 'none', transition: 'color .2s' }}
+              onMouseEnter={e => e.target.style.color = 'rgba(255,255,255,0.7)'} onMouseLeave={e => e.target.style.color = 'rgba(255,255,255,0.4)'}>
+              Groupe SRA
+            </a>
           </div>
         </div>
       </footer>
@@ -1127,13 +1228,13 @@ export default function LoginPage() {
       {showLogin && (
         <div onClick={() => setShowLogin(false)} style={{
           position: 'fixed', inset: 0, zIndex: 9999,
-          background: 'rgba(15,23,42,0.6)', backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)',
+          background: 'rgba(15,23,42,0.6)', backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)',
           display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '2rem',
         }}>
           <div onClick={e => e.stopPropagation()} style={{
-            background: '#fff', borderRadius: 20, padding: '2.5rem', maxWidth: 420, width: '100%',
-            boxShadow: '0 25px 60px rgba(0,0,0,0.2), 0 0 40px rgba(0,212,255,0.08)',
-            border: '1px solid rgba(0,212,255,0.1)', position: 'relative',
+            background: '#fff', borderRadius: 24, padding: '2.5rem', maxWidth: 420, width: '100%',
+            boxShadow: '0 25px 80px rgba(0,0,0,0.25), 0 0 60px rgba(124,58,237,0.08)',
+            border: '1px solid rgba(124,58,237,0.08)', position: 'relative',
           }}>
             {/* Close button */}
             <button onClick={() => setShowLogin(false)} style={{
@@ -1144,16 +1245,17 @@ export default function LoginPage() {
             }}
             onMouseEnter={e => { e.currentTarget.style.background = '#fee2e2'; e.currentTarget.style.color = '#dc2626' }}
             onMouseLeave={e => { e.currentTarget.style.background = S.bgAlt; e.currentTarget.style.color = S.gray }}>
-              ✕
+              \u2715
             </button>
 
             <div style={{ textAlign: 'center', marginBottom: '1.5rem' }}>
               <div style={{
-                width: 48, height: 48, borderRadius: 14, background: 'rgba(0,212,255,0.08)',
+                width: 52, height: 52, borderRadius: 16,
+                background: 'linear-gradient(135deg, rgba(124,58,237,.08), rgba(0,212,255,.08))',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
-                margin: '0 auto .75rem', border: '1px solid rgba(0,212,255,0.15)',
+                margin: '0 auto .75rem', border: '1px solid rgba(124,58,237,0.12)',
               }}>
-                <span style={{ fontSize: '1.5rem', fontWeight: 800 }}>TB</span>
+                <span style={{ fontSize: '1.5rem', fontWeight: 800, background: 'linear-gradient(135deg, #7C3AED, #00D4FF)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>TB</span>
               </div>
               <h2 style={{ margin: '0 0 .25rem', fontSize: '1.4rem', fontWeight: 800, color: S.dark }}>Connexion</h2>
               <p style={{ color: S.gray, fontSize: '.88rem', margin: 0 }}>
@@ -1170,14 +1272,14 @@ export default function LoginPage() {
                     <button key={acc.email} onClick={() => selectRecentAccount(acc.email)}
                       style={{
                         display: 'flex', alignItems: 'center', gap: 10, padding: '10px 14px',
-                        borderRadius: 12, border: '1px solid #e2e8f0', background: S.bgAlt,
+                        borderRadius: 14, border: '1px solid #e2e8f0', background: S.bgAlt,
                         cursor: 'pointer', textAlign: 'left', width: '100%', transition: 'all .2s',
                       }}
-                      onMouseEnter={e => { e.currentTarget.style.borderColor = '#00D4FF'; e.currentTarget.style.boxShadow = '0 2px 12px rgba(0,212,255,0.08)' }}
+                      onMouseEnter={e => { e.currentTarget.style.borderColor = '#7C3AED'; e.currentTarget.style.boxShadow = '0 2px 12px rgba(124,58,237,0.08)' }}
                       onMouseLeave={e => { e.currentTarget.style.borderColor = '#e2e8f0'; e.currentTarget.style.boxShadow = 'none' }}>
                       <div style={{
                         width: 36, height: 36, borderRadius: '50%',
-                        background: S.gradient, color: '#fff', fontSize: 13, fontWeight: 700,
+                        background: 'linear-gradient(135deg, #7C3AED, #00D4FF)', color: '#fff', fontSize: 13, fontWeight: 700,
                         display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
                       }}>
                         {acc.email.slice(0, 2).toUpperCase()}
@@ -1188,7 +1290,7 @@ export default function LoginPage() {
                           {new Date(acc.lastLogin).toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' })}
                         </div>
                       </div>
-                      <span style={{ fontSize: 14, color: S.lightGray }}>→</span>
+                      <span style={{ fontSize: 14, color: S.lightGray }}>\u2192</span>
                     </button>
                   ))}
                 </div>
@@ -1196,7 +1298,7 @@ export default function LoginPage() {
                   <button onClick={() => setEmail(' ')} style={{
                     background: 'none', border: 'none', cursor: 'pointer', fontSize: '.82rem',
                     fontWeight: 600,
-                    background: S.gradient, WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
+                    background: 'linear-gradient(135deg, #7C3AED, #00D4FF)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
                     backgroundClip: 'text',
                   }}>
                     + Utiliser un autre compte
@@ -1211,41 +1313,27 @@ export default function LoginPage() {
                 <input id="email" type="email" value={email.trim()}
                   onChange={e => setEmail(e.target.value)} required autoComplete="email" autoFocus
                   placeholder="nom@entreprise.com"
-                  style={{
-                    width: '100%', padding: '11px 14px', borderRadius: 10,
-                    border: '1px solid #e2e8f0', fontSize: '.9rem', outline: 'none',
-                    transition: 'border-color .2s, box-shadow .2s', background: S.bgAlt,
-                    boxSizing: 'border-box',
-                  }}
-                  onFocus={e => { e.target.style.borderColor = '#00D4FF'; e.target.style.boxShadow = '0 0 0 3px rgba(0,212,255,0.1)' }}
-                  onBlur={e => { e.target.style.borderColor = '#e2e8f0'; e.target.style.boxShadow = 'none' }}
-                />
+                  style={inputStyle} onFocus={focusInput} onBlur={blurInput} />
               </div>
               <div style={{ marginBottom: 14 }}>
                 <label htmlFor="password" style={{ display: 'block', fontSize: '.82rem', fontWeight: 600, color: S.dark, marginBottom: 6 }}>Mot de passe</label>
                 <input id="password" type="password" value={password}
                   onChange={e => setPassword(e.target.value)} required autoComplete="current-password"
-                  placeholder="••••••••"
-                  style={{
-                    width: '100%', padding: '11px 14px', borderRadius: 10,
-                    border: '1px solid #e2e8f0', fontSize: '.9rem', outline: 'none',
-                    transition: 'border-color .2s, box-shadow .2s', background: S.bgAlt,
-                    boxSizing: 'border-box',
-                  }}
-                  onFocus={e => { e.target.style.borderColor = '#00D4FF'; e.target.style.boxShadow = '0 0 0 3px rgba(0,212,255,0.1)' }}
-                  onBlur={e => { e.target.style.borderColor = '#e2e8f0'; e.target.style.boxShadow = 'none' }}
-                />
+                  placeholder="\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022"
+                  style={inputStyle} onFocus={focusInput} onBlur={blurInput} />
               </div>
 
-              {error && <p style={{ color: '#dc2626', fontSize: '.85rem', margin: '0 0 12px', padding: '8px 12px', background: '#fef2f2', borderRadius: 8 }}>{error}</p>}
+              {error && <p style={{ color: '#dc2626', fontSize: '.85rem', margin: '0 0 12px', padding: '10px 14px', background: '#fef2f2', borderRadius: 10, border: '1px solid #fecaca' }}>{error}</p>}
 
               <button type="submit" disabled={loading} style={{
-                width: '100%', padding: '12px', borderRadius: 10, background: '#195C82',
+                width: '100%', padding: '12px', borderRadius: 12, background: '#195C82',
                 color: '#fff', border: 'none', fontWeight: 700, fontSize: '.95rem',
                 cursor: loading ? 'not-allowed' : 'pointer', opacity: loading ? 0.7 : 1,
-                boxShadow: '0 4px 20px rgba(0,212,255,0.3)', transition: 'all .25s',
-              }}>
-                {loading ? 'Connexion...' : 'Se connecter →'}
+                boxShadow: '0 4px 20px rgba(25,92,130,0.3)', transition: 'all .25s',
+              }}
+              onMouseEnter={e => { if (!loading) { e.target.style.boxShadow = '0 8px 30px rgba(25,92,130,0.45)'; e.target.style.transform = 'translateY(-1px)' }}}
+              onMouseLeave={e => { e.target.style.boxShadow = '0 4px 20px rgba(25,92,130,0.3)'; e.target.style.transform = 'none' }}>
+                {loading ? 'Connexion...' : 'Se connecter \u2192'}
               </button>
 
               {/* Divider */}
@@ -1258,12 +1346,12 @@ export default function LoginPage() {
               {/* Microsoft SSO */}
               <button type="button" onClick={handleMicrosoftLogin} disabled={loading}
                 style={{
-                  width: '100%', padding: '12px', borderRadius: 10, cursor: 'pointer',
+                  width: '100%', padding: '12px', borderRadius: 12, cursor: 'pointer',
                   border: '1px solid #e2e8f0', background: '#fff', fontSize: '.9rem',
                   display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '.5rem',
                   color: S.dark, fontWeight: 600, transition: 'all .2s',
                 }}
-                onMouseEnter={e => { e.currentTarget.style.borderColor = '#00D4FF'; e.currentTarget.style.boxShadow = '0 2px 12px rgba(0,212,255,0.08)' }}
+                onMouseEnter={e => { e.currentTarget.style.borderColor = '#7C3AED'; e.currentTarget.style.boxShadow = '0 2px 12px rgba(124,58,237,0.06)' }}
                 onMouseLeave={e => { e.currentTarget.style.borderColor = '#e2e8f0'; e.currentTarget.style.boxShadow = 'none' }}>
                 <svg width="20" height="20" viewBox="0 0 21 21">
                   <rect x="1" y="1" width="9" height="9" fill="#f25022"/>
