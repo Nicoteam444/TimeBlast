@@ -5,12 +5,12 @@ import { supabase } from '../lib/supabase'
 
 // ── Modules decisionnels ──
 const BI_MODULES = [
-  { icon: '—', title: 'Tableaux de bord', desc: 'KPIs temps reel, drill-down multi-axes, alertes automatiques sur seuils.' },
-  { icon: '—', title: 'Pilotage financier', desc: 'Tresorerie previsionnelle, marge par projet, rapprochement bancaire IA.' },
-  { icon: '—', title: 'Suivi d\'activite', desc: 'Saisie des temps, taux d\'occupation, rentabilite collaborateur.' },
-  { icon: '—', title: 'Pipeline commercial', desc: 'Kanban deals, prevision CA, scoring leads par intelligence artificielle.' },
-  { icon: '—', title: 'Connecteurs natifs', desc: '30+ integrations : Sage, Pennylane, Stripe, HubSpot, PayFit, Slack...' },
-  { icon: '—', title: 'IA decisionnelle', desc: 'Anomalies detectees, recommandations contextuelles, agents autonomes.' },
+  { letter: 'D', title: 'Tableaux de bord', desc: 'KPIs temps reel, drill-down multi-axes, alertes automatiques sur seuils.' },
+  { letter: 'F', title: 'Pilotage financier', desc: 'Tresorerie previsionnelle, marge par projet, rapprochement bancaire IA.' },
+  { letter: 'A', title: 'Suivi d\'activite', desc: 'Saisie des temps, taux d\'occupation, rentabilite collaborateur.' },
+  { letter: 'C', title: 'Pipeline commercial', desc: 'Kanban deals, prevision CA, scoring leads par intelligence artificielle.' },
+  { letter: 'I', title: 'Connecteurs natifs', desc: '30+ integrations : Sage, Pennylane, Stripe, HubSpot, PayFit, Slack...' },
+  { letter: 'AI', title: 'IA decisionnelle', desc: 'Anomalies detectees, recommandations contextuelles, agents autonomes.' },
 ]
 
 const PERSONAS = [
@@ -166,150 +166,67 @@ function BiHubVisual() {
   )
 }
 
-// ── Composant — Hero Visual (Chat + Mockup) ─────────────────────────────────
+// ── Composant — Hero Visual (Prompt bar + Mockup interactif) ─────────────────
 function HeroVisual() {
-  const SIDEBAR_ICONS = [
-    { id: 'dashboard', icon: '▦' },
-    { id: 'crm', icon: '◎' },
-    { id: 'facture', icon: '☷' },
-    { id: 'rh', icon: '⊞' },
-    { id: 'compta', icon: '∑' },
-    { id: 'projet', icon: '☰' },
-  ]
-  const KPIS = ['CA: 72 450 €', 'Pipeline: 343k €', 'Marge: 68%', 'Treso: 62k €']
+  const [active, setActive] = useState('dashboard')
 
-  const CHAT_MESSAGES = [
-    { role: 'user', text: 'Je veux un CRM avec suivi pipeline, fiche client et dashboard commercial' },
-    { role: 'ai', text: 'Je cree votre CRM personnalise avec :\n\u2713 Pipeline Kanban avec drag & drop\n\u2713 Fiches clients enrichies (SIRENE)\n\u2713 Dashboard KPI temps reel\n\u2713 3 connecteurs integres (HubSpot, Sage, Mail)\n\nDeploiement estime : 48h' },
+  const TABS = [
+    { id: 'dashboard', label: 'Dashboard', title: 'Tableau de bord', kpis: ['CA: 72 450 €', 'Pipeline: 343k €', 'Marge: 68%', 'Treso: 62k €'] },
+    { id: 'equipe', label: 'Equipe', title: 'Gestion d\'equipe', kpis: ['Effectif: 45', 'Absents: 3', 'Heures: 1 247h', 'Occupation: 94%'] },
+    { id: 'finance', label: 'Finance', title: 'Pilotage financier', kpis: ['Ecritures: 4 521', 'Rapproche: 98%', 'FEC: OK', 'Balance: 0.00 €'] },
+    { id: 'commerce', label: 'Commerce', title: 'Pipeline commercial', kpis: ['Leads: 47', 'Opportunites: 12', 'CA gagne: 185k €', 'Taux: 34%'] },
+    { id: 'calendrier', label: 'Calendrier', title: 'Calendrier', kpis: ['Reunions: 8', 'A venir: 3', 'Outlook: sync', 'Equipe: 12'] },
   ]
-
-  const FLOATING_PILLS = [
-    { label: 'Equipe', top: '8%', right: '-14%' },
-    { label: 'Finance', bottom: '8%', right: '-14%' },
-    { label: 'Commerce', top: '8%', left: '-14%' },
-    { label: 'Calendrier', bottom: '8%', left: '-14%' },
-  ]
+  const t = TABS.find(x => x.id === active)
 
   return (
-    <div className="landing-hero-dual" style={{ display: 'flex', gap: 20, alignItems: 'stretch', width: '100%' }}>
-      {/* LEFT — Chat window */}
+    <div style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: 16 }}>
+      {/* Prompt bar — factice */}
       <div style={{
-        flex: '0 0 55%', background: '#0f172a', borderRadius: 16, overflow: 'hidden',
-        display: 'flex', flexDirection: 'column',
-        boxShadow: '0 20px 60px rgba(0,0,0,0.15)',
+        display: 'flex', alignItems: 'center', gap: 12, padding: '14px 20px',
+        borderRadius: 14, border: '1px solid rgba(0,212,255,0.2)',
+        background: '#0f172a', boxShadow: '0 4px 20px rgba(0,212,255,0.08)',
       }}>
-        {/* Chat header */}
         <div style={{
-          display: 'flex', alignItems: 'center', gap: 8, padding: '10px 16px',
-          borderBottom: '1px solid rgba(255,255,255,0.06)', background: 'rgba(255,255,255,0.03)',
-        }}>
-          <div style={{ display: 'flex', gap: 5 }}>
-            <span style={{ width: 10, height: 10, borderRadius: '50%', background: '#ff5f57' }} />
-            <span style={{ width: 10, height: 10, borderRadius: '50%', background: '#ffbd2e' }} />
-            <span style={{ width: 10, height: 10, borderRadius: '50%', background: '#28c840' }} />
-          </div>
-          <span style={{ flex: 1, textAlign: 'center', fontSize: '.72rem', color: 'rgba(255,255,255,0.35)' }}>TimeBlast AI</span>
-        </div>
-
-        {/* Messages */}
-        <div style={{ flex: 1, padding: '16px', display: 'flex', flexDirection: 'column', gap: 14 }}>
-          {CHAT_MESSAGES.map((msg, i) => (
-            <div key={i} style={{
-              display: 'flex', gap: 10,
-              flexDirection: msg.role === 'user' ? 'row-reverse' : 'row',
-            }}>
-              {/* Avatar */}
-              <div style={{
-                width: 30, height: 30, borderRadius: '50%', flexShrink: 0,
-                background: msg.role === 'user' ? '#00D4FF' : 'linear-gradient(135deg, #7C3AED, #00D4FF)',
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                fontSize: '.65rem', fontWeight: 800, color: '#fff',
-              }}>
-                {msg.role === 'user' ? 'U' : 'AI'}
-              </div>
-              {/* Bubble */}
-              <div style={{
-                maxWidth: '80%', padding: '10px 14px', borderRadius: 12,
-                background: msg.role === 'user' ? 'rgba(0,212,255,0.12)' : 'rgba(255,255,255,0.06)',
-                color: msg.role === 'user' ? '#7dd3fc' : 'rgba(255,255,255,0.85)',
-                fontSize: '.78rem', lineHeight: 1.55, whiteSpace: 'pre-line',
-              }}>
-                {msg.text}
-              </div>
-            </div>
-          ))}
-
-          {/* Typing indicator */}
-          <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
-            <div style={{
-              width: 30, height: 30, borderRadius: '50%', flexShrink: 0,
-              background: 'linear-gradient(135deg, #7C3AED, #00D4FF)',
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              fontSize: '.65rem', fontWeight: 800, color: '#fff',
-            }}>AI</div>
-            <div style={{
-              display: 'flex', gap: 4, padding: '10px 14px', borderRadius: 12,
-              background: 'rgba(255,255,255,0.06)',
-            }}>
-              {[0, 1, 2].map(d => (
-                <span key={d} style={{
-                  width: 6, height: 6, borderRadius: '50%', background: 'rgba(255,255,255,0.3)',
-                  animation: `typingDot 1.4s infinite ${d * 0.2}s`,
-                }} />
-              ))}
-            </div>
-          </div>
-        </div>
-
-        {/* Input bar */}
-        <div style={{
-          padding: '10px 16px', borderTop: '1px solid rgba(255,255,255,0.06)',
-          background: 'rgba(255,255,255,0.02)',
-        }}>
-          <div style={{
-            display: 'flex', alignItems: 'center', gap: 10, padding: '10px 14px',
-            borderRadius: 10, border: '1px solid rgba(255,255,255,0.1)',
-            background: 'rgba(255,255,255,0.04)',
-          }}>
-            <span style={{ flex: 1, color: 'rgba(255,255,255,0.25)', fontSize: '.8rem' }}>
-              Decrivez votre application...
-            </span>
-            <span style={{
-              width: 28, height: 28, borderRadius: 8, background: '#195C82',
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              fontSize: '.7rem', color: '#fff', fontWeight: 700,
-            }}>-&gt;</span>
-          </div>
-        </div>
+          width: 32, height: 32, borderRadius: '50%', flexShrink: 0,
+          background: 'linear-gradient(135deg, #7C3AED, #00D4FF)',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          fontSize: '.65rem', fontWeight: 800, color: '#fff',
+        }}>AI</div>
+        <span style={{ flex: 1, color: 'rgba(255,255,255,0.4)', fontSize: '.9rem' }}>
+          Decrivez l'application de gestion que vous souhaitez creer...
+        </span>
+        <span style={{
+          padding: '6px 16px', borderRadius: 8, background: 'linear-gradient(135deg, #7C3AED, #00D4FF)',
+          color: '#fff', fontSize: '.78rem', fontWeight: 700, cursor: 'pointer',
+        }}>Generer</span>
       </div>
 
-      {/* RIGHT — Mockup browser */}
-      <div style={{ flex: '0 0 43%', position: 'relative' }}>
-        {/* Floating pills */}
-        {FLOATING_PILLS.map((pill, i) => (
-          <div key={i} style={{
-            position: 'absolute', zIndex: 2,
-            ...(pill.top ? { top: pill.top } : {}),
-            ...(pill.bottom ? { bottom: pill.bottom } : {}),
-            ...(pill.left ? { left: pill.left } : {}),
-            ...(pill.right ? { right: pill.right } : {}),
-            padding: '6px 14px', borderRadius: 100, background: '#fff',
-            border: '1px solid #e2e8f0', fontSize: '.72rem', fontWeight: 600,
-            color: '#0f172a', boxShadow: '0 4px 12px rgba(0,0,0,0.06)',
-            whiteSpace: 'nowrap',
-          }}>
-            {pill.label}
-          </div>
-        ))}
+      {/* Mockup browser — interactif */}
+      <div style={{ position: 'relative' }}>
+        {/* Floating tab buttons */}
+        <div style={{ display: 'flex', gap: 8, marginBottom: 10, justifyContent: 'center' }}>
+          {TABS.map(tab => (
+            <button key={tab.id} onClick={() => setActive(tab.id)} onMouseEnter={() => setActive(tab.id)}
+              style={{
+                padding: '6px 16px', borderRadius: 100, cursor: 'pointer', fontSize: '.78rem', fontWeight: 600,
+                border: active === tab.id ? '2px solid transparent' : '1px solid #e2e8f0',
+                background: active === tab.id ? 'linear-gradient(135deg, #7C3AED, #00D4FF)' : '#fff',
+                color: active === tab.id ? '#fff' : '#64748b',
+                boxShadow: active === tab.id ? '0 4px 15px rgba(0,212,255,0.3)' : '0 2px 8px rgba(0,0,0,0.04)',
+                transition: 'all .2s',
+              }}>
+              {tab.label}
+            </button>
+          ))}
+        </div>
 
-        {/* Browser mockup */}
+        {/* Browser chrome */}
         <div style={{
           background: '#fff', borderRadius: 16, overflow: 'hidden',
-          boxShadow: '0 20px 60px rgba(0,212,255,.08), 0 8px 32px rgba(0,0,0,.06)',
-          border: '1px solid rgba(0,212,255,0.15)', height: '100%',
-          display: 'flex', flexDirection: 'column',
+          boxShadow: '0 20px 60px rgba(0,0,0,0.08), 0 0 0 1px rgba(0,212,255,0.1)',
         }}>
-          {/* Browser bar */}
+          {/* Bar */}
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '10px 14px', background: '#f8fafc', borderBottom: '1px solid #e2e8f0' }}>
             <div style={{ display: 'flex', gap: 5 }}>
               <span style={{ width: 10, height: 10, borderRadius: '50%', background: '#ff5f57' }} />
@@ -318,44 +235,63 @@ function HeroVisual() {
             </div>
             <div style={{ flex: 1, textAlign: 'center', fontSize: '.7rem', color: '#94a3b8' }}>app.timeblast.ai</div>
           </div>
-          {/* App content */}
-          <div style={{ display: 'flex', flex: 1, minHeight: 0 }}>
-            {/* Mini sidebar */}
+          {/* App */}
+          <div style={{ display: 'flex', minHeight: 320 }}>
+            {/* Sidebar */}
             <div style={{ width: 44, background: '#0f2b42', padding: '10px 6px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4 }}>
               <img src="/logo-icon-white.svg" alt="" style={{ width: 22, height: 22, marginBottom: 8 }} />
-              {SIDEBAR_ICONS.map(m => (
-                <div key={m.id} style={{
+              {TABS.map((tab, i) => (
+                <div key={tab.id} onClick={() => setActive(tab.id)} style={{
                   width: 28, height: 28, borderRadius: 6, display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  fontSize: 12, background: m.id === 'dashboard' ? 'rgba(255,255,255,.15)' : 'transparent',
+                  fontSize: 10, fontWeight: 700, color: active === tab.id ? '#fff' : 'rgba(255,255,255,.4)',
+                  background: active === tab.id ? 'rgba(255,255,255,.15)' : 'transparent',
+                  cursor: 'pointer', transition: 'all .15s',
                 }}>
-                  {m.icon}
+                  {tab.label[0]}
                 </div>
               ))}
             </div>
-            {/* Main area */}
-            <div style={{ flex: 1, padding: '14px 18px', background: '#f8fafc' }}>
+            {/* Main content — changes with active tab */}
+            <div style={{ flex: 1, padding: '14px 18px', background: '#f8fafc', transition: 'all .2s' }}>
               <div style={{ fontSize: '.75rem', fontWeight: 700, color: '#195C82', marginBottom: 12 }}>
-                Tableau de bord
+                {t.title}
               </div>
               {/* KPIs */}
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 8, marginBottom: 14 }}>
-                {KPIS.map((kpi, i) => {
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 8, marginBottom: 14 }}>
+                {t.kpis.map((kpi, i) => {
                   const [label, val] = kpi.split(': ')
                   return (
                     <div key={i} style={{ background: '#fff', borderRadius: 8, padding: '8px 10px', border: '1px solid #e2e8f0' }}>
-                      <div style={{ fontSize: '.4rem', color: '#94a3b8', marginBottom: 2 }}>{label}</div>
+                      <div style={{ fontSize: '.38rem', color: '#94a3b8', marginBottom: 2 }}>{label}</div>
                       <div style={{ fontSize: '.7rem', fontWeight: 800, color: '#1a2332' }}>{val}</div>
                     </div>
                   )
                 })}
               </div>
-              {/* Chart */}
-              <div style={{ background: '#fff', borderRadius: 8, border: '1px solid #e2e8f0', padding: '10px' }}>
-                <svg viewBox="0 0 300 50" style={{ width: '100%' }}>
-                  <defs><linearGradient id="mg" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="#00D4FF" stopOpacity=".15" /><stop offset="100%" stopColor="#00D4FF" stopOpacity="0" /></linearGradient></defs>
-                  <path d="M0,40 30,36 60,32 90,24 120,28 150,20 180,16 210,14 240,12 270,10 300,5 300,50 0,50Z" fill="url(#mg)" />
-                  <polyline points="0,40 30,36 60,32 90,24 120,28 150,20 180,16 210,14 240,12 270,10 300,5" fill="none" stroke="#00D4FF" strokeWidth="2" strokeLinejoin="round" />
-                </svg>
+              {/* Content area */}
+              <div style={{ background: '#fff', borderRadius: 8, border: '1px solid #e2e8f0', padding: '10px', minHeight: 140 }}>
+                {active === 'dashboard' ? (
+                  <svg viewBox="0 0 300 60" style={{ width: '100%' }}>
+                    <defs><linearGradient id="mg" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="#7C3AED" stopOpacity=".15" /><stop offset="100%" stopColor="#00D4FF" stopOpacity="0" /></linearGradient></defs>
+                    <path d="M0,50 30,45 60,40 90,30 120,35 150,25 180,20 210,18 240,15 270,12 300,6 300,60 0,60Z" fill="url(#mg)" />
+                    <polyline points="0,50 30,45 60,40 90,30 120,35 150,25 180,20 210,18 240,15 270,12 300,6" fill="none" stroke="#7C3AED" strokeWidth="2" strokeLinejoin="round" />
+                    <polyline points="0,55 30,50 60,48 90,42 120,40 150,38 180,35 210,30 240,28 270,25 300,20" fill="none" stroke="#00D4FF" strokeWidth="1.5" strokeLinejoin="round" opacity=".6" />
+                  </svg>
+                ) : (
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                    {[1,2,3,4,5].map(i => (
+                      <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '5px 0', borderBottom: '1px solid #f1f5f9' }}>
+                        <div style={{ width: 22, height: 22, borderRadius: 6, background: 'linear-gradient(135deg, rgba(124,58,237,.1), rgba(0,212,255,.1))', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 9, fontWeight: 700, color: '#7C3AED' }}>
+                          {t.label[0]}
+                        </div>
+                        <div style={{ flex: 1 }}>
+                          <div style={{ height: 5, background: '#e2e8f0', borderRadius: 3, width: `${95 - i * 14}%` }} />
+                        </div>
+                        <div style={{ width: 36, height: 5, background: i <= 2 ? 'linear-gradient(90deg, #7C3AED, #00D4FF)' : '#e2e8f0', borderRadius: 3, opacity: .6 }} />
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
             </div>
           </div>
@@ -833,9 +769,12 @@ export default function LoginPage() {
             }}>
               <span style={{
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
-                width: 48, height: 48, borderRadius: 12, background: 'rgba(0,212,255,0.06)',
-                fontSize: 24, marginBottom: '1rem', border: '1px solid rgba(0,212,255,0.1)',
-              }}>{m.icon}</span>
+                width: 48, height: 48, borderRadius: 12,
+                background: 'linear-gradient(135deg, rgba(124,58,237,.08), rgba(0,212,255,.08))',
+                fontSize: 16, fontWeight: 800, marginBottom: '1rem',
+                border: '1px solid rgba(0,212,255,0.15)',
+                color: '#7C3AED',
+              }}>{m.letter}</span>
               <h3 style={{ margin: '0 0 .5rem', fontSize: '1.05rem', fontWeight: 700, color: S.dark }}>{m.title}</h3>
               <p style={{ margin: 0, fontSize: '.88rem', color: S.gray, lineHeight: 1.55 }}>{m.desc}</p>
             </div>

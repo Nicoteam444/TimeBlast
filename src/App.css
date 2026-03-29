@@ -138,6 +138,10 @@ body {
   50% { transform: translate(-5px, -20px); }
   75% { transform: translate(10px, -8px); }
 }
+@keyframes typingDot {
+  0%, 60%, 100% { opacity: 0.3; transform: translateY(0); }
+  30% { opacity: 1; transform: translateY(-3px); }
+}
 
 /* Stats — fond vert sauge léger */
 .landing-stats { display: flex; justify-content: center; gap: 3rem; padding: 3rem 2rem; background: #f5f9f6; border-top: 1px solid #dce8df; border-bottom: 1px solid #dce8df; flex-wrap: wrap; }
@@ -308,7 +312,9 @@ body {
   .landing-hero { padding: 5rem 1.25rem 2rem; }
   .landing-hero-title { font-size: 1.6rem; }
   .landing-hero-subtitle { font-size: .9rem; }
-  .landing-hero-visual { max-width: 260px; margin: 0 auto; }
+  .landing-hero-visual { max-width: 100%; margin: 0 auto; }
+  .landing-hero-dual { flex-direction: column !important; }
+  .landing-hero-dual > div { flex: 1 1 100% !important; }
   .multiprise-container { max-width: 260px; }
   .landing-features-grid { grid-template-columns: 1fr; }
   .landing-nav-links { display: none; }
