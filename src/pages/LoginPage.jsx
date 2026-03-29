@@ -249,7 +249,7 @@ function InteractiveMockup() {
   const t = TABS.find(x => x.id === active)
 
   return (
-    <div style={{ width: '100%', maxWidth: 1060, margin: '0 auto' }}>
+    <div className="landing-mockup-wrapper" style={{ width: '100%', maxWidth: 1060, margin: '0 auto', overflow: 'hidden' }}>
       {/* Main mockup: browser chrome wrapping sidebar + content + chat */}
       <div className="landing-mockup-dual" style={{
         borderRadius: 20, overflow: 'hidden',
