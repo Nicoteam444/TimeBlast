@@ -245,6 +245,7 @@ function InteractiveMockup() {
     { id: 'calendrier', label: 'Calendrier', icon: '📅', title: 'Calendrier', kpis: [{ label: 'Événements', value: '24', trend: '+5' }, { label: 'Réunions', value: '8', trend: '' }, { label: 'Échéances', value: '6', trend: '-2' }, { label: 'Disponibilité', value: '72%', trend: '+4%' }], chat: { user: 'Ajoute un calendrier partagé', ai: ['✓ Vue semaine/mois', '✓ Réservation salles', '✓ Rappels automatiques'] } },
     { id: 'projet', label: 'Projets', icon: '📋', title: 'Suivi projets', kpis: [{ label: 'Projets actifs', value: '9', trend: '+2' }, { label: 'En retard', value: '1', trend: '-1' }, { label: 'Budget conso.', value: '67%', trend: '' }, { label: 'Livraisons', value: '4', trend: '+1' }], chat: { user: 'Ajoute le suivi de projets', ai: ['✓ Planning Gantt', '✓ Suivi jalons', '✓ Allocation ressources'] } },
     { id: 'mail', label: 'Mail', icon: '✉', title: 'Messagerie', kpis: [{ label: 'Inbox', value: '142', trend: '+18' }, { label: 'Envoyés', value: '87', trend: '' }, { label: 'Brouillons', value: '5', trend: '' }, { label: 'Taux ouv.', value: '64%', trend: '+8%' }], chat: { user: 'Intègre la messagerie', ai: ['✓ Boîte de réception unifiée', '✓ Réponses suggérées IA', '✓ Classement automatique'] } },
+    { id: 'backoffice', label: 'Backoffice', icon: '⚙', title: 'Administration', kpis: [{ label: 'Utilisateurs', value: '9', trend: '' }, { label: 'Connecteurs', value: '5/8', trend: '' }, { label: 'Environnements', value: '1', trend: '' }, { label: 'Uptime', value: '99.9%', trend: '' }], chat: { user: 'Configure les accès utilisateurs', ai: ['✓ 9 utilisateurs configurés', '✓ Droits par module', '✓ Profils métier'] } },
   ]
   const t = TABS.find(x => x.id === active)
 
@@ -520,12 +521,45 @@ function InteractiveMockup() {
                     <text x="322" y="37" fontSize="5.5" fill="#64748b">Brouillons</text>
                   </svg>
                 </div>
+              ) : active === 'backoffice' ? (
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
+                  <div>
+                    <div style={{ fontSize: '.5rem', fontWeight: 600, color: '#94a3b8', marginBottom: 6 }}>Utilisateurs</div>
+                    {[
+                      { name: 'Nicolas R.', role: 'Admin', color: '#ef4444' },
+                      { name: 'Sophie M.', role: 'Manager', color: '#f59e0b' },
+                      { name: 'Thomas D.', role: 'Collab', color: '#195C82' },
+                      { name: 'Julie L.', role: 'Collab', color: '#195C82' },
+                    ].map((u, i) => (
+                      <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 5 }}>
+                        <div style={{ width: 20, height: 20, borderRadius: '50%', background: 'rgba(25,92,130,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 7, fontWeight: 700, color: '#195C82' }}>{u.name.split(' ').map(w => w[0]).join('')}</div>
+                        <span style={{ fontSize: '.44rem', color: '#0f172a', flex: 1 }}>{u.name}</span>
+                        <span style={{ fontSize: '.38rem', fontWeight: 700, color: '#fff', background: u.color, padding: '1px 5px', borderRadius: 4 }}>{u.role}</span>
+                      </div>
+                    ))}
+                  </div>
+                  <div>
+                    <div style={{ fontSize: '.5rem', fontWeight: 600, color: '#94a3b8', marginBottom: 6 }}>Connecteurs API</div>
+                    {[
+                      { name: 'Sage 100', active: true },
+                      { name: 'HubSpot CRM', active: true },
+                      { name: 'Stripe', active: true },
+                      { name: 'PayFit', active: false },
+                    ].map((c, i) => (
+                      <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 5 }}>
+                        <span style={{ width: 7, height: 7, borderRadius: '50%', background: c.active ? '#22c55e' : '#d1d5db', flexShrink: 0 }} />
+                        <span style={{ fontSize: '.44rem', color: '#0f172a', flex: 1 }}>{c.name}</span>
+                        <span style={{ fontSize: '.38rem', color: c.active ? '#22c55e' : '#94a3b8' }}>{c.active ? 'Actif' : 'Inactif'}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
               ) : null}
               {/* 2 mini-graphiques supplémentaires */}
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginTop: 8 }}>
                 <div style={{ background: '#fff', borderRadius: 8, border: '1px solid #e2e8f0', padding: '8px 10px' }}>
                   <div style={{ fontSize: '.45rem', fontWeight: 700, color: '#0f172a', marginBottom: 4 }}>
-                    {active === 'dashboard' ? 'CA par société' : active === 'equipe' ? 'Absences par mois' : active === 'finance' ? 'Charges vs Produits' : active === 'commerce' ? 'Conversion par source' : active === 'banque' ? 'Solde par compte' : active === 'calendrier' ? 'Charge semaine' : active === 'projet' ? 'Avancement projets' : 'Emails par jour'}
+                    {active === 'dashboard' ? 'CA par société' : active === 'equipe' ? 'Absences par mois' : active === 'finance' ? 'Charges vs Produits' : active === 'commerce' ? 'Conversion par source' : active === 'banque' ? 'Solde par compte' : active === 'calendrier' ? 'Charge semaine' : active === 'projet' ? 'Avancement projets' : active === 'mail' ? 'Emails par jour' : 'Activité serveur'}
                   </div>
                   {/* Mini bar chart */}
                   <div style={{ display: 'flex', alignItems: 'flex-end', gap: 3, height: 40 }}>
@@ -536,7 +570,7 @@ function InteractiveMockup() {
                 </div>
                 <div style={{ background: '#fff', borderRadius: 8, border: '1px solid #e2e8f0', padding: '8px 10px' }}>
                   <div style={{ fontSize: '.45rem', fontWeight: 700, color: '#0f172a', marginBottom: 4 }}>
-                    {active === 'dashboard' ? 'Répartition CA' : active === 'equipe' ? 'Répartition équipe' : active === 'finance' ? 'Répartition charges' : active === 'commerce' ? 'Pipeline par phase' : active === 'banque' ? 'Types opérations' : active === 'calendrier' ? 'Types événements' : active === 'projet' ? 'Budget par projet' : 'Répartition mails'}
+                    {active === 'dashboard' ? 'Répartition CA' : active === 'equipe' ? 'Répartition équipe' : active === 'finance' ? 'Répartition charges' : active === 'commerce' ? 'Pipeline par phase' : active === 'banque' ? 'Types opérations' : active === 'calendrier' ? 'Types événements' : active === 'projet' ? 'Budget par projet' : active === 'mail' ? 'Répartition mails' : 'Droits par rôle'}
                   </div>
                   {/* Mini donut */}
                   <svg viewBox="0 0 80 45" style={{ width: '100%' }}>
@@ -544,39 +578,106 @@ function InteractiveMockup() {
                     <circle cx="40" cy="25" r="16" fill="none" stroke="rgba(25,92,130,0.4)" strokeWidth="5" strokeDasharray="25 75" strokeDashoffset="-40" />
                     <circle cx="40" cy="25" r="16" fill="none" stroke="rgba(25,92,130,0.2)" strokeWidth="5" strokeDasharray="20 80" strokeDashoffset="-65" />
                     <text x="40" y="27" textAnchor="middle" fontSize="7" fontWeight="800" fill="#0f172a">
-                      {active === 'dashboard' ? '72k' : active === 'equipe' ? '45' : active === 'finance' ? '156k' : active === 'commerce' ? '12' : active === 'banque' ? '84k' : active === 'calendrier' ? '24' : active === 'projet' ? '9' : '142'}
+                      {active === 'dashboard' ? '72k' : active === 'equipe' ? '45' : active === 'finance' ? '156k' : active === 'commerce' ? '12' : active === 'banque' ? '84k' : active === 'calendrier' ? '24' : active === 'projet' ? '9' : active === 'mail' ? '142' : '9'}
                     </text>
                   </svg>
                 </div>
               </div>
-              {/* 2 widgets activité et alertes */}
+              {/* 2 widgets — unique per tab */}
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginTop: 8 }}>
-                {/* Widget activité récente */}
                 <div style={{ background: '#fff', borderRadius: 8, border: '1px solid #e2e8f0', padding: '8px 10px' }}>
-                  <div style={{ fontSize: '.48rem', fontWeight: 700, color: '#0f172a', marginBottom: 6 }}>Activité récente</div>
-                  {[
-                    { text: 'Facture #1247 envoyée', time: 'Il y a 5 min', dot: '#22c55e' },
-                    { text: 'Nouveau lead qualifié', time: 'Il y a 12 min', dot: '#195C82' },
-                    { text: 'Paiement reçu 4 200€', time: 'Il y a 1h', dot: '#22c55e' },
-                  ].map((a, i) => (
+                  <div style={{ fontSize: '.48rem', fontWeight: 700, color: '#0f172a', marginBottom: 6 }}>
+                    {active === 'dashboard' ? 'Activité récente' : active === 'equipe' ? 'Anniversaires ce mois' : active === 'finance' ? 'Factures en retard' : active === 'commerce' ? 'Deals à closer' : active === 'banque' ? 'Derniers mouvements' : active === 'calendrier' ? 'Prochains événements' : active === 'projet' ? 'Livrables cette semaine' : active === 'mail' ? 'Emails prioritaires' : 'Dernières connexions'}
+                  </div>
+                  {(active === 'dashboard' ? [
+                    { text: 'Facture #1247 envoyée', val: 'Il y a 5 min', dot: '#22c55e' },
+                    { text: 'Nouveau lead qualifié', val: 'Il y a 12 min', dot: '#195C82' },
+                    { text: 'Paiement reçu 4 200€', val: 'Il y a 1h', dot: '#22c55e' },
+                  ] : active === 'equipe' ? [
+                    { text: 'Sophie Martin', val: '12 mars', dot: '#f59e0b' },
+                    { text: 'Thomas Dupont', val: '18 mars', dot: '#f59e0b' },
+                    { text: 'Julie Leroy', val: '25 mars', dot: '#f59e0b' },
+                  ] : active === 'finance' ? [
+                    { text: 'Facture #1102 — Client A', val: '2 450 €', dot: '#ef4444' },
+                    { text: 'Facture #1087 — Client D', val: '1 800 €', dot: '#ef4444' },
+                    { text: 'Facture #1054 — Client F', val: '3 200 €', dot: '#f59e0b' },
+                  ] : active === 'commerce' ? [
+                    { text: 'Projet ERP — Dupont SA', val: '45 000 €', dot: '#22c55e' },
+                    { text: 'Licence SaaS — Moreau', val: '12 000 €', dot: '#f59e0b' },
+                    { text: 'Consulting — Petit & Co', val: '8 500 €', dot: '#195C82' },
+                  ] : active === 'banque' ? [
+                    { text: 'Virement reçu — Client B', val: '+3 200 €', dot: '#22c55e' },
+                    { text: 'Prélèvement EDF', val: '-842 €', dot: '#ef4444' },
+                    { text: 'CB Fournitures', val: '-156 €', dot: '#ef4444' },
+                  ] : active === 'calendrier' ? [
+                    { text: 'Sprint review — 14h', val: 'Aujourd\'hui', dot: '#195C82' },
+                    { text: 'Demo client Acme', val: 'Demain 10h', dot: '#f59e0b' },
+                    { text: 'Formation React', val: 'Vendredi 9h', dot: '#22c55e' },
+                  ] : active === 'projet' ? [
+                    { text: 'Maquettes v2 — Refonte site', val: 'Mar', dot: '#195C82' },
+                    { text: 'API endpoints — App mobile', val: 'Mer', dot: '#22c55e' },
+                    { text: 'Tests intégration — ERP', val: 'Ven', dot: '#f59e0b' },
+                  ] : active === 'mail' ? [
+                    { text: 'Urgent : Contrat à signer', val: 'Client A', dot: '#ef4444' },
+                    { text: 'Devis à valider #547', val: 'Fournisseur', dot: '#f59e0b' },
+                    { text: 'Relance impayé mars', val: 'Compta', dot: '#ef4444' },
+                  ] : [
+                    { text: 'Nicolas R.', val: 'Il y a 2 min', dot: '#22c55e' },
+                    { text: 'Sophie M.', val: 'Il y a 1h', dot: '#22c55e' },
+                    { text: 'Thomas D.', val: 'Hier 18h04', dot: '#94a3b8' },
+                  ]).map((a, i) => (
                     <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 3 }}>
                       <span style={{ width: 5, height: 5, borderRadius: '50%', background: a.dot, flexShrink: 0 }} />
                       <span style={{ fontSize: '.42rem', color: '#0f172a', flex: 1 }}>{a.text}</span>
-                      <span style={{ fontSize: '.38rem', color: '#94a3b8', whiteSpace: 'nowrap' }}>{a.time}</span>
+                      <span style={{ fontSize: '.38rem', color: '#94a3b8', whiteSpace: 'nowrap' }}>{a.val}</span>
                     </div>
                   ))}
                 </div>
-                {/* Widget alertes */}
                 <div style={{ background: '#fff', borderRadius: 8, border: '1px solid #e2e8f0', padding: '8px 10px' }}>
-                  <div style={{ fontSize: '.48rem', fontWeight: 700, color: '#0f172a', marginBottom: 6 }}>Alertes IA</div>
-                  {[
-                    { text: '3 factures en retard > 30j', level: '#ef4444' },
-                    { text: 'Budget projet X dépassé de 12%', level: '#f59e0b' },
-                    { text: 'Taux occupation Martin < 60%', level: '#f59e0b' },
-                  ].map((a, i) => (
+                  <div style={{ fontSize: '.48rem', fontWeight: 700, color: '#0f172a', marginBottom: 6 }}>
+                    {active === 'dashboard' ? 'Alertes IA' : active === 'equipe' ? 'Formations en cours' : active === 'finance' ? 'Échéances à venir' : active === 'commerce' ? 'Relances prévues' : active === 'banque' ? 'Rapprochements à faire' : active === 'calendrier' ? 'Disponibilité équipe' : active === 'projet' ? 'Risques identifiés' : active === 'mail' ? 'Réponses en attente' : 'Tokens API'}
+                  </div>
+                  {(active === 'dashboard' ? [
+                    { text: '3 factures en retard > 30j', val: '#ef4444' },
+                    { text: 'Budget projet X dépassé de 12%', val: '#f59e0b' },
+                    { text: 'Taux occupation Martin < 60%', val: '#f59e0b' },
+                  ] : active === 'equipe' ? [
+                    { text: 'React avancé — T. Dupont', val: '#195C82' },
+                    { text: 'Management 3.0 — S. Martin', val: '#22c55e' },
+                    { text: 'Cybersécurité — J. Leroy', val: '#f59e0b' },
+                  ] : active === 'finance' ? [
+                    { text: 'TVA trimestrielle — 15 avr.', val: '#ef4444' },
+                    { text: 'Clôture mensuelle — 5 avr.', val: '#f59e0b' },
+                    { text: 'Déclaration IS — 30 avr.', val: '#195C82' },
+                  ] : active === 'commerce' ? [
+                    { text: 'Relance devis #412 — Dupont', val: '#ef4444' },
+                    { text: 'Suivi demo — Moreau SA', val: '#f59e0b' },
+                    { text: 'Appel découverte — Petit', val: '#195C82' },
+                  ] : active === 'banque' ? [
+                    { text: 'CB #4521 — non rapprochée', val: '#ef4444' },
+                    { text: 'Virement #1087 — en attente', val: '#f59e0b' },
+                    { text: 'Prélèvement #892 — à valider', val: '#f59e0b' },
+                  ] : active === 'calendrier' ? [
+                    { text: 'Nicolas R.', val: '85%' },
+                    { text: 'Sophie M.', val: '72%' },
+                    { text: 'Thomas D.', val: '60%' },
+                  ] : active === 'projet' ? [
+                    { text: 'Retard migration ERP — 3j', val: '#ef4444' },
+                    { text: 'Budget App mobile — 92%', val: '#f59e0b' },
+                    { text: 'Dépendance API tierce', val: '#f59e0b' },
+                  ] : active === 'mail' ? [
+                    { text: 'Re: Proposition commerciale', val: 'J+3' },
+                    { text: 'Re: Demande de devis', val: 'J+2' },
+                    { text: 'Re: Support technique', val: 'J+1' },
+                  ] : [
+                    { text: 'Sage API', val: '#22c55e' },
+                    { text: 'Stripe Webhook', val: '#22c55e' },
+                    { text: 'HubSpot OAuth', val: '#f59e0b' },
+                  ]).map((a, i) => (
                     <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 3 }}>
-                      <span style={{ width: 5, height: 5, borderRadius: '50%', background: a.level, flexShrink: 0 }} />
-                      <span style={{ fontSize: '.42rem', color: '#0f172a' }}>{a.text}</span>
+                      <span style={{ width: 5, height: 5, borderRadius: '50%', background: active === 'calendrier' || active === 'mail' ? '#195C82' : a.val, flexShrink: 0 }} />
+                      <span style={{ fontSize: '.42rem', color: '#0f172a', flex: 1 }}>{a.text}</span>
+                      {(active === 'calendrier' || active === 'mail') && <span style={{ fontSize: '.38rem', color: '#94a3b8', whiteSpace: 'nowrap' }}>{a.val}</span>}
                     </div>
                   ))}
                 </div>
@@ -648,13 +749,13 @@ function InteractiveMockup() {
               {/* User message 2 */}
               <div style={{ alignSelf: 'flex-end', maxWidth: '90%' }}>
                 <div style={{ background: '#195C82', color: '#fff', padding: '5px 8px', borderRadius: '10px 10px 3px 10px', fontSize: '.55rem', lineHeight: 1.4 }}>
-                  {active === 'dashboard' ? 'Ajoute un suivi tresorerie' : active === 'equipe' ? 'Et le trombinoscope ?' : active === 'finance' ? 'Ajoute le previsionnel' : active === 'commerce' ? 'Et les devis ?' : active === 'banque' ? 'Ajoute les virements SEPA' : active === 'calendrier' ? 'Synchronise avec Outlook' : active === 'projet' ? 'Ajoute le suivi budgetaire' : 'Ajoute les templates'}
+                  {active === 'dashboard' ? 'Ajoute un suivi tresorerie' : active === 'equipe' ? 'Et le trombinoscope ?' : active === 'finance' ? 'Ajoute le previsionnel' : active === 'commerce' ? 'Et les devis ?' : active === 'banque' ? 'Ajoute les virements SEPA' : active === 'calendrier' ? 'Synchronise avec Outlook' : active === 'projet' ? 'Ajoute le suivi budgetaire' : active === 'mail' ? 'Ajoute les templates' : 'Ajoute un connecteur Stripe'}
                 </div>
               </div>
               {/* AI response 2 */}
               <div style={{ alignSelf: 'flex-start', maxWidth: '95%' }}>
                 <div style={{ background: 'rgba(255,255,255,0.06)', color: '#e2e8f0', padding: '5px 8px', borderRadius: '10px 10px 10px 3px', fontSize: '.55rem', lineHeight: 1.4, border: '1px solid rgba(255,255,255,0.06)' }}>
-                  {(active === 'dashboard' ? ['✓ Widget tresorerie ajoute', '✓ Previsionnel J+30/60/90'] : active === 'equipe' ? ['✓ Trombinoscope ajoute', '✓ Organigramme interactif'] : active === 'finance' ? ['✓ Previsionnel J+30/60/90', '✓ Alertes seuils auto'] : active === 'commerce' ? ['✓ Module devis ajoute', '✓ Conversion devis → facture'] : active === 'banque' ? ['✓ Virements SEPA', '✓ Prelevements auto'] : active === 'calendrier' ? ['✓ Sync Outlook bidirectionnelle', '✓ Invitations auto'] : active === 'projet' ? ['✓ Budget par projet', '✓ Alertes depassement'] : ['✓ Templates email', '✓ Suivi ouvertures']).map((line, i) => (
+                  {(active === 'dashboard' ? ['✓ Widget tresorerie ajoute', '✓ Previsionnel J+30/60/90'] : active === 'equipe' ? ['✓ Trombinoscope ajoute', '✓ Organigramme interactif'] : active === 'finance' ? ['✓ Previsionnel J+30/60/90', '✓ Alertes seuils auto'] : active === 'commerce' ? ['✓ Module devis ajoute', '✓ Conversion devis → facture'] : active === 'banque' ? ['✓ Virements SEPA', '✓ Prelevements auto'] : active === 'calendrier' ? ['✓ Sync Outlook bidirectionnelle', '✓ Invitations auto'] : active === 'projet' ? ['✓ Budget par projet', '✓ Alertes depassement'] : active === 'mail' ? ['✓ Templates email', '✓ Suivi ouvertures'] : ['✓ Connecteur Stripe configuré', '✓ Webhook activé']).map((line, i) => (
                     <div key={i} style={{ color: '#22c55e', marginBottom: 1 }}>{line}</div>
                   ))}
                 </div>
