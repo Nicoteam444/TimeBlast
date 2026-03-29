@@ -485,7 +485,7 @@ export default function LoginPage() {
               onMouseEnter={e => e.target.style.color = S.neon} onMouseLeave={e => e.target.style.color = S.gray}>
               A propos
             </a>
-            <a href="/facture-electronique" style={{ color: '#f59e0b', textDecoration: 'none', fontWeight: 600 }}>
+            <a href="/facture-electronique" style={{ background: 'linear-gradient(135deg, #7C3AED, #00D4FF)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', textDecoration: 'none', fontWeight: 600 }}>
               E-Facture 2026
             </a>
           </div>
@@ -517,7 +517,7 @@ export default function LoginPage() {
         <a href="https://www.groupe-sra.fr" target="_blank" rel="noopener noreferrer">Groupe SRA</a>
         <a href="#contact" onClick={() => setMobileMenu(false)}>Contact</a>
         <a href="/about" onClick={() => setMobileMenu(false)}>A propos</a>
-        <a href="/facture-electronique" style={{ color: '#f59e0b' }}>E-Facture 2026</a>
+        <a href="/facture-electronique" style={{ color: '#7C3AED' }}>E-Facture 2026</a>
         <button onClick={() => { setMobileMenu(false); setShowLogin(true) }} style={{
           marginTop: '1rem', padding: '12px 24px', borderRadius: 8, background: '#195C82',
           color: '#fff', border: 'none', fontWeight: 700, fontSize: '.95rem', cursor: 'pointer', width: '100%',
@@ -545,10 +545,7 @@ export default function LoginPage() {
           pointerEvents: 'none',
         }} />
 
-        <div className="landing-hero-grid" style={{
-          maxWidth: 1200, margin: '0 auto', padding: '0 2rem',
-          display: 'grid', gridTemplateColumns: '1fr 1.1fr', gap: '3rem', alignItems: 'center',
-        }}>
+        <div style={{ maxWidth: 1200, margin: '0 auto', padding: '0 2rem', textAlign: 'center' }}>
           <div>
             {/* Badge */}
             <a href="https://www.groupe-sra.fr" target="_blank" rel="noopener noreferrer" style={{
@@ -561,44 +558,50 @@ export default function LoginPage() {
             </a>
 
             <h1 style={{
-              fontSize: 'clamp(2rem, 3.5vw, 3rem)', fontWeight: 800, lineHeight: 1.15,
-              color: S.dark, margin: '0 0 1.25rem', letterSpacing: '-0.02em',
+              fontSize: 'clamp(2.2rem, 4vw, 3.5rem)', fontWeight: 800, lineHeight: 1.15,
+              color: S.dark, margin: '0 auto 1.5rem', letterSpacing: '-0.02em',
+              maxWidth: 800, minHeight: 'calc(clamp(2.2rem, 4vw, 3.5rem) * 2.3)',
             }}>
               Creez en un seul prompt votre{' '}
               <RotatingText />
             </h1>
 
             <p style={{
-              fontSize: '1.1rem', color: S.gray, lineHeight: 1.65, margin: '0 0 2rem', maxWidth: 520,
+              fontSize: '1.1rem', color: S.gray, lineHeight: 1.65, margin: '0 auto 2.5rem', maxWidth: 600,
             }}>
               Decrivez votre besoin. TimeBlast le genere. Nativement interconnecte a tous les logiciels de votre SI.
             </p>
 
-            <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
-              <button onClick={() => document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' })} style={{
-                padding: '14px 28px', borderRadius: 10, background: '#195C82', color: '#fff',
-                border: 'none', fontWeight: 700, fontSize: '1rem', cursor: 'pointer',
-                boxShadow: '0 4px 20px rgba(0,212,255,0.35)', transition: 'all .25s',
-              }}
-              onMouseEnter={e => { e.target.style.transform = 'translateY(-2px)'; e.target.style.boxShadow = '0 8px 30px rgba(0,212,255,0.45)' }}
-              onMouseLeave={e => { e.target.style.transform = 'none'; e.target.style.boxShadow = '0 4px 20px rgba(0,212,255,0.35)' }}>
-                Demarrer mon projet →
-              </button>
-              <a href="#comment" style={{
-                padding: '14px 28px', borderRadius: 10, background: 'transparent',
-                border: '1.5px solid #e2e8f0', color: S.dark, fontWeight: 600,
-                fontSize: '1rem', textDecoration: 'none', transition: 'all .25s',
-                display: 'inline-flex', alignItems: 'center',
-              }}
-              onMouseEnter={e => { e.target.style.borderColor = '#00D4FF'; e.target.style.color = '#00D4FF' }}
-              onMouseLeave={e => { e.target.style.borderColor = '#e2e8f0'; e.target.style.color = S.dark }}>
-                Comment ca marche
-              </a>
-            </div>
-          </div>
+            {/* Grande barre de prompt */}
+            <form onSubmit={e => { e.preventDefault(); setShowLogin(true) }} style={{
+              display: 'flex', alignItems: 'center', gap: 12, padding: '14px 20px',
+              borderRadius: 16, border: '2px solid rgba(0,212,255,0.2)',
+              background: '#0f172a', boxShadow: '0 8px 40px rgba(0,212,255,0.12)',
+              maxWidth: 700, margin: '0 auto 3rem',
+            }}>
+              <div style={{
+                width: 36, height: 36, borderRadius: '50%', flexShrink: 0,
+                background: 'linear-gradient(135deg, #7C3AED, #00D4FF)',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                fontSize: '.7rem', fontWeight: 800, color: '#fff',
+              }}>AI</div>
+              <input type="text" placeholder="Decrivez l'application que vous souhaitez creer..."
+                style={{
+                  flex: 1, background: 'transparent', border: 'none', outline: 'none',
+                  color: '#fff', fontSize: '1rem', fontWeight: 500,
+                }} />
+              <button type="submit" style={{
+                padding: '8px 20px', borderRadius: 10,
+                background: 'linear-gradient(135deg, #7C3AED, #00D4FF)',
+                color: '#fff', fontSize: '.85rem', fontWeight: 700,
+                border: 'none', cursor: 'pointer', whiteSpace: 'nowrap',
+              }}>Generer →</button>
+            </form>
 
-          <div className="landing-hero-visual" style={{ position: 'relative' }}>
-            <HeroVisual />
+            {/* Mockup interactif en dessous */}
+            <div style={{ maxWidth: 900, margin: '0 auto' }}>
+              <HeroVisual />
+            </div>
           </div>
         </div>
       </section>
