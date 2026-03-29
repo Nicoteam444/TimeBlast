@@ -628,66 +628,94 @@ export default function LoginPage() {
             Propulse par 40 ans d'expertise SRA \u2192
           </a>
 
-          <h1 style={{
-            fontSize: 'clamp(2.4rem, 4.5vw, 3.8rem)', fontWeight: 800, lineHeight: 1.12,
-            color: S.dark, margin: '0 auto 1.5rem', letterSpacing: '-0.03em',
-            maxWidth: 850, minHeight: 'calc(clamp(2.4rem, 4.5vw, 3.8rem) * 2.3)',
-          }}>
-            Creez en un seul prompt votre{' '}
-            <RotatingText />
-          </h1>
+        </div>
 
-          <p style={{
-            fontSize: '1.15rem', color: S.gray, lineHeight: 1.7, margin: '0 auto 3rem', maxWidth: 620,
-            fontWeight: 400,
-          }}>
-            Decrivez votre besoin. TimeBlast le genere. Nativement interconnecte a tous les logiciels de votre SI.
-          </p>
-
-          {/* BIG PROMPT BAR — centerpiece */}
-          <form onSubmit={e => { e.preventDefault(); setShowLogin(true) }}
-            className="landing-prompt-bar"
-            style={{
-              display: 'flex', alignItems: 'center', gap: 14, padding: '16px 22px',
-              borderRadius: 18, border: '1.5px solid rgba(25,92,130,0.2)',
-              background: '#0f172a',
-              maxWidth: 750, margin: '0 auto 1.5rem',
-              transition: 'all .3s',
+        {/* Hero grid : texte gauche + animation droite */}
+        <div style={{
+          maxWidth: 1200, margin: '0 auto', padding: '0 2rem',
+          display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '3rem', alignItems: 'center',
+        }}>
+          <div>
+            <h1 style={{
+              fontSize: 'clamp(2rem, 3.5vw, 3rem)', fontWeight: 800, lineHeight: 1.15,
+              color: S.dark, margin: '0 0 1.25rem', letterSpacing: '-0.02em',
+              minHeight: 'calc(clamp(2rem, 3.5vw, 3rem) * 2.3)',
             }}>
-            <div style={{
-              width: 40, height: 40, borderRadius: '50%', flexShrink: 0,
-              background: '#195C82',
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              fontSize: '.72rem', fontWeight: 800, color: '#fff',
-              boxShadow: '0 0 20px rgba(25,92,130,0.4)',
-            }}>AI</div>
-            <input type="text" placeholder="Decrivez l'application que vous souhaitez creer..."
-              style={{
-                flex: 1, background: 'transparent', border: 'none', outline: 'none',
-                color: 'rgba(255,255,255,0.9)', fontSize: '1.05rem', fontWeight: 500,
-                letterSpacing: '-0.01em',
-              }} />
-            <button type="submit" style={{
-              padding: '10px 24px', borderRadius: 12,
-              background: '#195C82',
-              color: '#fff', fontSize: '.88rem', fontWeight: 700,
-              border: 'none', cursor: 'pointer', whiteSpace: 'nowrap',
-              boxShadow: '0 4px 20px rgba(25,92,130,0.4)',
-              transition: 'all .25s',
-            }}
-            onMouseEnter={e => { e.target.style.transform = 'scale(1.03)'; e.target.style.boxShadow = '0 6px 28px rgba(25,92,130,0.5)' }}
-            onMouseLeave={e => { e.target.style.transform = 'none'; e.target.style.boxShadow = '0 4px 20px rgba(25,92,130,0.4)' }}>
-              Generer \u2192
-            </button>
-          </form>
+              Creez en un seul prompt votre{' '}
+              <RotatingText />
+            </h1>
 
-          <p style={{ fontSize: '.82rem', color: S.lightGray, marginBottom: '4rem' }}>
-            Essayer gratuitement \u2014 aucune carte bancaire requise
-          </p>
+            <p style={{
+              fontSize: '1.1rem', color: S.gray, lineHeight: 1.65, margin: '0 0 2rem', maxWidth: 520,
+            }}>
+              Decrivez votre besoin. TimeBlast le genere. Nativement interconnecte a tous les logiciels de votre SI.
+            </p>
 
-          {/* Animation hub central */}
-          <div style={{ maxWidth: 500, margin: '0 auto' }}>
+            <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
+              <button className="landing-btn-primary" onClick={() => setShowLogin(true)}>
+                Demarrer mon projet →
+              </button>
+              <a href="#comment" className="landing-btn-secondary">
+                Comment ca marche
+              </a>
+            </div>
+          </div>
+
+          <div>
             <BiHubVisual />
+          </div>
+        </div>
+      </section>
+
+      {/* Mockup a cheval sur stats */}
+      <section style={{ background: 'linear-gradient(to bottom, #195C82 55%, #fff 55%)', position: 'relative', padding: '0 2rem 5rem' }}>
+        <div style={{ display: 'flex', justifyContent: 'center', gap: '3rem', padding: '3rem 2rem 2.5rem', flexWrap: 'wrap', maxWidth: 1060, margin: '0 auto' }}>
+          {STATS.map((s, i) => (
+            <div key={i} style={{ textAlign: 'center' }}>
+              <span style={{ display: 'block', fontSize: '2.4rem', fontWeight: 800, color: '#fff' }}>{s.value}</span>
+              <span style={{ display: 'block', fontSize: '.85rem', color: 'rgba(255,255,255,0.6)', marginTop: '.2rem' }}>{s.label}</span>
+            </div>
+          ))}
+        </div>
+        <div style={{ maxWidth: 1060, margin: '0 auto' }}>
+          <div style={{ perspective: '1200px' }}>
+            <div style={{ transform: 'rotateX(1.5deg)', transformOrigin: 'bottom center', boxShadow: '0 25px 60px rgba(0,0,0,0.2)', borderRadius: 16, overflow: 'hidden', background: '#fff' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '10px 14px', background: '#f8fafc', borderBottom: '1px solid #e2e8f0' }}>
+                <div style={{ display: 'flex', gap: 5 }}>
+                  <span style={{ width: 10, height: 10, borderRadius: '50%', background: '#ff5f57' }} />
+                  <span style={{ width: 10, height: 10, borderRadius: '50%', background: '#ffbd2e' }} />
+                  <span style={{ width: 10, height: 10, borderRadius: '50%', background: '#28c840' }} />
+                </div>
+                <div style={{ flex: 1, textAlign: 'center', fontSize: '.7rem', color: '#94a3b8' }}>app.timeblast.ai</div>
+              </div>
+              <div style={{ display: 'flex', minHeight: 380 }}>
+                <div style={{ width: 52, background: '#0f2b42', padding: '12px 10px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4 }}>
+                  <img src="/logo-icon-white.svg" alt="" style={{ width: 28, height: 28, marginBottom: 12 }} />
+                  {['\ud83d\udcca','\u23f1','\ud83d\udcbc','\ud83e\uddfe','\ud83d\udc65','\ud83d\udccb','\ud83c\udfaf','\ud83d\udcec'].map((ic, i) => (
+                    <div key={i} style={{ width: 32, height: 32, display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: 8, fontSize: 14, background: i === 0 ? 'rgba(255,255,255,.12)' : 'transparent' }}>{ic}</div>
+                  ))}
+                </div>
+                <div style={{ flex: 1, padding: '16px', background: '#f8fafc' }}>
+                  <div style={{ fontSize: '.75rem', fontWeight: 700, color: '#195C82', marginBottom: 12 }}>Tableau de bord</div>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 8, marginBottom: 12 }}>
+                    {[{l:'CA mensuel',v:'72 450 \u20ac',t:'+18%',u:true},{l:'Pipeline',v:'343k \u20ac',t:'8 deals',u:true},{l:'Marge',v:'68%',t:'+3pts',u:true},{l:'Tresorerie',v:'62 812 \u20ac',t:'-5%',u:false},{l:'Heures',v:'1 247h',t:'94%',u:true}].map((k, i) => (
+                      <div key={i} style={{ background: '#fff', borderRadius: 8, padding: '8px 10px', border: '1px solid #e2e8f0' }}>
+                        <div style={{ fontSize: '.42rem', color: '#94a3b8', fontWeight: 600 }}>{k.l}</div>
+                        <div style={{ fontSize: '.85rem', fontWeight: 800, color: '#1a2332' }}>{k.v}</div>
+                        <span style={{ fontSize: '.4rem', fontWeight: 700, color: k.u ? '#16a34a' : '#ef4444' }}>{k.u ? '\u2191' : '\u2193'} {k.t}</span>
+                      </div>
+                    ))}
+                  </div>
+                  <div style={{ background: '#fff', borderRadius: 8, border: '1px solid #e2e8f0', padding: '10px' }}>
+                    <svg viewBox="0 0 300 70" style={{ width: '100%' }}>
+                      <defs><linearGradient id="ag2" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="#195C82" stopOpacity=".1" /><stop offset="100%" stopColor="#195C82" stopOpacity="0" /></linearGradient></defs>
+                      <path d="M0,55 25,52 50,48 75,38 100,42 125,33 150,28 175,24 200,20 225,22 250,16 275,14 300,8 300,70 0,70Z" fill="url(#ag2)" />
+                      <polyline points="0,55 25,52 50,48 75,38 100,42 125,33 150,28 175,24 200,20 225,22 250,16 275,14 300,8" fill="none" stroke="#195C82" strokeWidth="2" strokeLinejoin="round" />
+                    </svg>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </section>
