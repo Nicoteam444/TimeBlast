@@ -1102,38 +1102,34 @@ export default function LoginPage() {
 
         </div>
 
-        {/* Hero grid : texte gauche + animation droite */}
-        <div className="landing-hero-grid" style={{
-          maxWidth: 1200, margin: '0 auto', padding: '0 2rem',
-          display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '3rem', alignItems: 'center',
-        }}>
-          <div>
-            <h1 style={{
-              fontSize: 'clamp(2rem, 3.5vw, 3rem)', fontWeight: 800, lineHeight: 1.2,
-              color: S.dark, margin: '0 0 1.25rem', letterSpacing: '-0.02em',
-            }}>
-              <span style={{ display: 'block' }}>Créez en un seul prompt</span>
-              <span style={{ display: 'block', minHeight: '7rem', overflow: 'hidden' }}>votre <RotatingText /></span>
-            </h1>
+        {/* Hero : texte centré + animation + CTA */}
+        <div style={{ maxWidth: 800, margin: '0 auto', padding: '0 2rem', textAlign: 'center' }}>
+          <h1 style={{
+            fontSize: 'clamp(2rem, 4vw, 3.2rem)', fontWeight: 800, lineHeight: 1.2,
+            color: S.dark, margin: '0 0 1rem', letterSpacing: '-0.02em',
+          }}>
+            <span style={{ display: 'block' }}>Créez en un seul prompt</span>
+            <span style={{ display: 'block', minHeight: '4.5rem', overflow: 'hidden' }}>votre <RotatingText /></span>
+          </h1>
 
-            <p style={{
-              fontSize: '1.1rem', color: S.gray, lineHeight: 1.65, margin: '0 0 2rem', maxWidth: 520,
-            }}>
-              Decrivez votre besoin. TimeBlast le genere. Nativement interconnecte a tous les logiciels de votre SI.
-            </p>
+          <p style={{
+            fontSize: '1.1rem', color: S.gray, lineHeight: 1.65, margin: '0 auto 1.5rem', maxWidth: 560,
+          }}>
+            Décrivez votre besoin. TimeBlast le génère. Nativement interconnecté à tous les logiciels de votre SI.
+          </p>
 
-            <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
-              <button className="landing-btn-primary" onClick={() => setShowLogin(true)}>
-                Demarrer mon projet →
-              </button>
-              <a href="#comment" className="landing-btn-secondary">
-                Comment ca marche
-              </a>
-            </div>
+          {/* Animation entre texte et boutons */}
+          <div className="multiprise-container" style={{ maxWidth: 320, margin: '0 auto 2rem' }}>
+            <BiHubVisual />
           </div>
 
-          <div>
-            <BiHubVisual />
+          <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', justifyContent: 'center' }}>
+            <button className="landing-btn-primary" onClick={() => setShowLogin(true)}>
+              Demarrer mon projet →
+            </button>
+            <a href="#comment" className="landing-btn-secondary">
+              Comment ca marche
+            </a>
           </div>
         </div>
       </section>
@@ -1464,7 +1460,7 @@ export default function LoginPage() {
           </p>
         </div>
 
-        <div style={{
+        <div className="landing-contact-wrapper" style={{
           maxWidth: 920, margin: '0 auto', display: 'grid',
           gridTemplateColumns: '1fr 1.2fr', gap: '3rem', alignItems: 'start',
         }}>
