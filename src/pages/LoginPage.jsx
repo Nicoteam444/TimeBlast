@@ -318,14 +318,14 @@ export default function LoginPage() {
           <div className="landing-hero-text">
             <div className="landing-hero-badge">⚡ Vibe-coding pour logiciels d'entreprise</div>
             <h1 className="landing-hero-title">
-              Créez votre logiciel de gestion sur mesure
+              Créez en un seul prompt votre site internet, votre logiciel de gestion ou votre application métier
             </h1>
             <p className="landing-hero-subtitle" style={{ fontSize: '1.05rem', fontWeight: 600, color: '#64748b', marginBottom: '1rem' }}>
               Décrivez votre besoin. TimeBlast le génère.
             </p>
             <p className="landing-hero-subtitle">
-              TimeBlast est la <strong>première plateforme de vibe-coding</strong> pour logiciels de gestion.
-              CRM, facturation, RH, comptabilité — décrivez ce dont vous avez besoin,
+              TimeBlast est la <strong>première plateforme de vibe-coding</strong> pour entreprises.
+              Site web, CRM, facturation, RH, application métier — décrivez ce dont vous avez besoin,
               <strong> l'IA construit votre outil sur mesure en quelques jours</strong>.
             </p>
             <div className="landing-hero-actions">
