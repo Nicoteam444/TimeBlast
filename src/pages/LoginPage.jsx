@@ -5,19 +5,19 @@ import { supabase } from '../lib/supabase'
 
 // ── Modules decisionnels ──
 const BI_MODULES = [
-  { icon: '📊', title: 'Tableaux de bord', desc: 'KPIs temps reel, drill-down multi-axes, alertes automatiques sur seuils.' },
-  { icon: '💰', title: 'Pilotage financier', desc: 'Tresorerie previsionnelle, marge par projet, rapprochement bancaire IA.' },
-  { icon: '⏱', title: 'Suivi d\'activite', desc: 'Saisie des temps, taux d\'occupation, rentabilite collaborateur.' },
-  { icon: '🎯', title: 'Pipeline commercial', desc: 'Kanban deals, prevision CA, scoring leads par intelligence artificielle.' },
-  { icon: '🔗', title: 'Connecteurs natifs', desc: '30+ integrations : Sage, Pennylane, Stripe, HubSpot, PayFit, Slack...' },
-  { icon: '🤖', title: 'IA decisionnelle', desc: 'Anomalies detectees, recommandations contextuelles, agents autonomes.' },
+  { icon: '—', title: 'Tableaux de bord', desc: 'KPIs temps reel, drill-down multi-axes, alertes automatiques sur seuils.' },
+  { icon: '—', title: 'Pilotage financier', desc: 'Tresorerie previsionnelle, marge par projet, rapprochement bancaire IA.' },
+  { icon: '—', title: 'Suivi d\'activite', desc: 'Saisie des temps, taux d\'occupation, rentabilite collaborateur.' },
+  { icon: '—', title: 'Pipeline commercial', desc: 'Kanban deals, prevision CA, scoring leads par intelligence artificielle.' },
+  { icon: '—', title: 'Connecteurs natifs', desc: '30+ integrations : Sage, Pennylane, Stripe, HubSpot, PayFit, Slack...' },
+  { icon: '—', title: 'IA decisionnelle', desc: 'Anomalies detectees, recommandations contextuelles, agents autonomes.' },
 ]
 
 const PERSONAS = [
-  { icon: '👔', role: 'Dirigeant', need: 'Vue 360° de mon entreprise en 1 ecran', solution: 'Dashboard decisionnel avec alertes IA sur CA, tresorerie et rentabilite.' },
-  { icon: '📈', role: 'DAF / Comptable', need: 'Arretes mensuels en 2h au lieu de 2 jours', solution: 'Import FEC, rapprochement bancaire IA, previsionnel automatise.' },
-  { icon: '🎯', role: 'Commercial', need: 'Pipeline clair et previsions fiables', solution: 'Kanban deals, scoring IA, relances automatiques, suivi multi-societes.' },
-  { icon: '👥', role: 'Manager', need: 'Savoir ou en sont mes equipes en temps reel', solution: 'Taux d\'occupation, validation temps, alertes depassement budget projet.' },
+  { icon: '-', role: 'Dirigeant', need: 'Vue 360 de mon entreprise en 1 ecran', solution: 'Dashboard decisionnel avec alertes IA sur CA, tresorerie et rentabilite.' },
+  { icon: '-', role: 'DAF / Comptable', need: 'Arretes mensuels en 2h au lieu de 2 jours', solution: 'Import FEC, rapprochement bancaire IA, previsionnel automatise.' },
+  { icon: '-', role: 'Commercial', need: 'Pipeline clair et previsions fiables', solution: 'Kanban deals, scoring IA, relances automatiques, suivi multi-societes.' },
+  { icon: '-', role: 'Manager', need: 'Savoir ou en sont mes equipes en temps reel', solution: 'Taux d\'occupation, validation temps, alertes depassement budget projet.' },
 ]
 
 const STATS = [
@@ -48,7 +48,7 @@ const CONNECTORS = [
   { id: 'qonto',       name: 'Qonto',          cat: 'finance',  color: '#2A2A2A' },
   { id: 'gocardless',  name: 'GoCardless',     cat: 'finance',  color: '#1A1A2E' },
   { id: 'payfit',      name: 'PayFit',         cat: 'rh',       color: '#0066FF' },
-  { id: 'lucca',       name: 'Lucca',          cat: 'rh',       color: '#FF6B35' },
+  { id: 'lucca',       name: 'Lucca',          cat: 'rh',       color: '#7C3AED' },
   { id: 'silae',       name: 'Silae',          cat: 'rh',       color: '#4A90D9' },
   { id: 'slack',       name: 'Slack',          cat: 'comm',     color: '#4A154B' },
   { id: 'teams',       name: 'Teams',          cat: 'comm',     color: '#6264A7' },
@@ -70,15 +70,15 @@ const CONNECTORS = [
 ]
 
 const CATEGORIES = [
-  { id: 'all',     label: 'Tous',           icon: '⚡' },
-  { id: 'compta',  label: 'Comptabilite',   icon: '📊' },
-  { id: 'crm',     label: 'CRM',            icon: '🎯' },
-  { id: 'finance', label: 'Finance',        icon: '💳' },
-  { id: 'rh',      label: 'RH & Paie',     icon: '👥' },
-  { id: 'comm',    label: 'Communication',  icon: '💬' },
-  { id: 'prod',    label: 'Productivite',   icon: '🚀' },
-  { id: 'data',    label: 'Data & API',     icon: '🔗' },
-  { id: 'ia',      label: 'IA',             icon: '🤖' },
+  { id: 'all',     label: 'Tous',           icon: '' },
+  { id: 'compta',  label: 'Comptabilite',   icon: '' },
+  { id: 'crm',     label: 'CRM',            icon: '' },
+  { id: 'finance', label: 'Finance',        icon: '' },
+  { id: 'rh',      label: 'RH & Paie',     icon: '' },
+  { id: 'comm',    label: 'Communication',  icon: '' },
+  { id: 'prod',    label: 'Productivite',   icon: '' },
+  { id: 'data',    label: 'Data & API',     icon: '' },
+  { id: 'ia',      label: 'IA',             icon: '' },
 ]
 
 const BI_PREVIEWS = []
@@ -166,134 +166,200 @@ function BiHubVisual() {
   )
 }
 
-// ── Composant — Mockup interactif (style Suivi.work) ─────────────────────────
-function InteractiveMockup() {
-  const [active, setActive] = useState('dashboard')
-  const MODULES = [
-    { id: 'dashboard', label: 'Dashboard', icon: '📊', desc: 'Tableau de bord avec KPI en temps reel' },
-    { id: 'crm', label: 'CRM', icon: '🎯', desc: 'Gestion clients, contacts et pipeline commercial' },
-    { id: 'facturation', label: 'Facturation', icon: '🧾', desc: 'Devis, factures, relances et e-facture' },
-    { id: 'rh', label: 'RH & Paie', icon: '👥', desc: 'Collaborateurs, absences, temps et paie' },
-    { id: 'compta', label: 'Comptabilite', icon: '💰', desc: 'Ecritures, FEC, rapprochement bancaire' },
-    { id: 'projet', label: 'Projets', icon: '📋', desc: 'Planification, suivi et rentabilite projet' },
-    { id: 'site', label: 'Site web', icon: '🌐', desc: 'Vitrine, e-commerce, blog, portail client' },
+// ── Composant — Hero Visual (Chat + Mockup) ─────────────────────────────────
+function HeroVisual() {
+  const SIDEBAR_ICONS = [
+    { id: 'dashboard', icon: '▦' },
+    { id: 'crm', icon: '◎' },
+    { id: 'facture', icon: '☷' },
+    { id: 'rh', icon: '⊞' },
+    { id: 'compta', icon: '∑' },
+    { id: 'projet', icon: '☰' },
   ]
-  const PREVIEWS = {
-    dashboard: { title: 'Tableau de bord', kpis: ['CA: 72 450 €', 'Pipeline: 343k €', 'Marge: 68%', 'Treso: 62k €'], chart: true },
-    crm: { title: 'Pipeline commercial', kpis: ['Leads: 47', 'Opportunites: 12', 'CA gagne: 185k €', 'Taux: 34%'], chart: false },
-    facturation: { title: 'Facturation', kpis: ['Factures: 156', 'En attente: 23k €', 'En retard: 8k €', 'Payees: 245k €'], chart: false },
-    rh: { title: 'Equipe', kpis: ['Collaborateurs: 45', 'Absents: 3', 'Heures saisies: 1247h', 'Taux occ.: 94%'], chart: false },
-    compta: { title: 'Comptabilite', kpis: ['Ecritures: 4 521', 'Rapproche: 98%', 'FEC: OK', 'Balance: 0.00 €'], chart: false },
-    projet: { title: 'Projets en cours', kpis: ['Actifs: 8', 'Budget restant: 125k €', 'Retard: 1', 'Termines: 23'], chart: false },
-    site: { title: 'Site web', kpis: ['Visiteurs: 3 240', 'Pages vues: 8 901', 'Taux rebond: 42%', 'Leads: 18'], chart: false },
-  }
-  const p = PREVIEWS[active]
+  const KPIS = ['CA: 72 450 €', 'Pipeline: 343k €', 'Marge: 68%', 'Treso: 62k €']
+
+  const CHAT_MESSAGES = [
+    { role: 'user', text: 'Je veux un CRM avec suivi pipeline, fiche client et dashboard commercial' },
+    { role: 'ai', text: 'Je cree votre CRM personnalise avec :\n\u2713 Pipeline Kanban avec drag & drop\n\u2713 Fiches clients enrichies (SIRENE)\n\u2713 Dashboard KPI temps reel\n\u2713 3 connecteurs integres (HubSpot, Sage, Mail)\n\nDeploiement estime : 48h' },
+  ]
+
+  const FLOATING_PILLS = [
+    { label: 'Equipe', top: '8%', right: '-14%' },
+    { label: 'Finance', bottom: '8%', right: '-14%' },
+    { label: 'Commerce', top: '8%', left: '-14%' },
+    { label: 'Calendrier', bottom: '8%', left: '-14%' },
+  ]
 
   return (
-    <div style={{ display: 'flex', gap: 16, alignItems: 'flex-start', width: '100%' }}>
-      {/* Mockup preview — taille fixe */}
-      <div style={{ flex: '1 1 65%', minWidth: 0, background: '#fff', borderRadius: 16, boxShadow: '0 20px 60px rgba(0,212,255,.08), 0 8px 32px rgba(0,0,0,.06)', overflow: 'hidden', border: '1px solid rgba(0,212,255,0.15)' }}>
-        {/* Browser bar */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '10px 14px', background: '#f8fafc', borderBottom: '1px solid #e2e8f0' }}>
+    <div className="landing-hero-dual" style={{ display: 'flex', gap: 20, alignItems: 'stretch', width: '100%' }}>
+      {/* LEFT — Chat window */}
+      <div style={{
+        flex: '0 0 55%', background: '#0f172a', borderRadius: 16, overflow: 'hidden',
+        display: 'flex', flexDirection: 'column',
+        boxShadow: '0 20px 60px rgba(0,0,0,0.15)',
+      }}>
+        {/* Chat header */}
+        <div style={{
+          display: 'flex', alignItems: 'center', gap: 8, padding: '10px 16px',
+          borderBottom: '1px solid rgba(255,255,255,0.06)', background: 'rgba(255,255,255,0.03)',
+        }}>
           <div style={{ display: 'flex', gap: 5 }}>
             <span style={{ width: 10, height: 10, borderRadius: '50%', background: '#ff5f57' }} />
             <span style={{ width: 10, height: 10, borderRadius: '50%', background: '#ffbd2e' }} />
             <span style={{ width: 10, height: 10, borderRadius: '50%', background: '#28c840' }} />
           </div>
-          <div style={{ flex: 1, textAlign: 'center', fontSize: '.7rem', color: '#94a3b8' }}>app.timeblast.ai</div>
+          <span style={{ flex: 1, textAlign: 'center', fontSize: '.72rem', color: 'rgba(255,255,255,0.35)' }}>TimeBlast AI</span>
         </div>
-        {/* App content */}
-        <div style={{ display: 'flex', minHeight: 280 }}>
-          {/* Mini sidebar */}
-          <div style={{ width: 44, background: '#0f2b42', padding: '10px 6px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4 }}>
-            <img src="/logo-icon-white.svg" alt="" style={{ width: 22, height: 22, marginBottom: 8 }} />
-            {MODULES.map(m => (
-              <div key={m.id} style={{
-                width: 28, height: 28, borderRadius: 6, display: 'flex', alignItems: 'center', justifyContent: 'center',
-                fontSize: 12, background: active === m.id ? 'rgba(255,255,255,.15)' : 'transparent',
-                transition: 'all .2s', cursor: 'pointer',
-              }} onMouseEnter={() => setActive(m.id)}>
-                {m.icon}
+
+        {/* Messages */}
+        <div style={{ flex: 1, padding: '16px', display: 'flex', flexDirection: 'column', gap: 14 }}>
+          {CHAT_MESSAGES.map((msg, i) => (
+            <div key={i} style={{
+              display: 'flex', gap: 10,
+              flexDirection: msg.role === 'user' ? 'row-reverse' : 'row',
+            }}>
+              {/* Avatar */}
+              <div style={{
+                width: 30, height: 30, borderRadius: '50%', flexShrink: 0,
+                background: msg.role === 'user' ? '#00D4FF' : 'linear-gradient(135deg, #7C3AED, #00D4FF)',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                fontSize: '.65rem', fontWeight: 800, color: '#fff',
+              }}>
+                {msg.role === 'user' ? 'U' : 'AI'}
               </div>
-            ))}
+              {/* Bubble */}
+              <div style={{
+                maxWidth: '80%', padding: '10px 14px', borderRadius: 12,
+                background: msg.role === 'user' ? 'rgba(0,212,255,0.12)' : 'rgba(255,255,255,0.06)',
+                color: msg.role === 'user' ? '#7dd3fc' : 'rgba(255,255,255,0.85)',
+                fontSize: '.78rem', lineHeight: 1.55, whiteSpace: 'pre-line',
+              }}>
+                {msg.text}
+              </div>
+            </div>
+          ))}
+
+          {/* Typing indicator */}
+          <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
+            <div style={{
+              width: 30, height: 30, borderRadius: '50%', flexShrink: 0,
+              background: 'linear-gradient(135deg, #7C3AED, #00D4FF)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              fontSize: '.65rem', fontWeight: 800, color: '#fff',
+            }}>AI</div>
+            <div style={{
+              display: 'flex', gap: 4, padding: '10px 14px', borderRadius: 12,
+              background: 'rgba(255,255,255,0.06)',
+            }}>
+              {[0, 1, 2].map(d => (
+                <span key={d} style={{
+                  width: 6, height: 6, borderRadius: '50%', background: 'rgba(255,255,255,0.3)',
+                  animation: `typingDot 1.4s infinite ${d * 0.2}s`,
+                }} />
+              ))}
+            </div>
           </div>
-          {/* Main area */}
-          <div style={{ flex: 1, padding: '14px 18px', background: '#f8fafc', transition: 'all .3s' }}>
-            <div style={{ fontSize: '.75rem', fontWeight: 700, color: '#195C82', marginBottom: 12 }}>
-              {MODULES.find(m => m.id === active)?.icon} {p.title}
-            </div>
-            {/* KPIs */}
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 8, marginBottom: 14 }}>
-              {p.kpis.map((kpi, i) => {
-                const [label, val] = kpi.split(': ')
-                return (
-                  <div key={i} style={{ background: '#fff', borderRadius: 8, padding: '8px 10px', border: '1px solid #e2e8f0' }}>
-                    <div style={{ fontSize: '.4rem', color: '#94a3b8', marginBottom: 2 }}>{label}</div>
-                    <div style={{ fontSize: '.75rem', fontWeight: 800, color: '#1a2332' }}>{val}</div>
-                  </div>
-                )
-              })}
-            </div>
-            {/* Placeholder content */}
-            <div style={{ background: '#fff', borderRadius: 8, border: '1px solid #e2e8f0', padding: '12px', minHeight: 120 }}>
-              {p.chart ? (
-                <svg viewBox="0 0 300 60" style={{ width: '100%' }}>
-                  <defs><linearGradient id="mg" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="#00D4FF" stopOpacity=".15" /><stop offset="100%" stopColor="#00D4FF" stopOpacity="0" /></linearGradient></defs>
-                  <path d="M0,50 30,45 60,40 90,30 120,35 150,25 180,20 210,18 240,15 270,12 300,6 300,60 0,60Z" fill="url(#mg)" />
-                  <polyline points="0,50 30,45 60,40 90,30 120,35 150,25 180,20 210,18 240,15 270,12 300,6" fill="none" stroke="#00D4FF" strokeWidth="2" strokeLinejoin="round" />
-                </svg>
-              ) : (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-                  {[1,2,3,4].map(i => (
-                    <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '6px 0', borderBottom: '1px solid #f1f5f9' }}>
-                      <div style={{ width: 24, height: 24, borderRadius: 6, background: '#00D4FF10', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10 }}>
-                        {MODULES.find(m => m.id === active)?.icon}
-                      </div>
-                      <div style={{ flex: 1 }}>
-                        <div style={{ height: 6, background: '#e2e8f0', borderRadius: 3, width: `${90 - i * 15}%` }} />
-                      </div>
-                      <div style={{ width: 40, height: 6, background: i === 1 ? '#dcfce7' : '#e2e8f0', borderRadius: 3 }} />
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
+        </div>
+
+        {/* Input bar */}
+        <div style={{
+          padding: '10px 16px', borderTop: '1px solid rgba(255,255,255,0.06)',
+          background: 'rgba(255,255,255,0.02)',
+        }}>
+          <div style={{
+            display: 'flex', alignItems: 'center', gap: 10, padding: '10px 14px',
+            borderRadius: 10, border: '1px solid rgba(255,255,255,0.1)',
+            background: 'rgba(255,255,255,0.04)',
+          }}>
+            <span style={{ flex: 1, color: 'rgba(255,255,255,0.25)', fontSize: '.8rem' }}>
+              Decrivez votre application...
+            </span>
+            <span style={{
+              width: 28, height: 28, borderRadius: 8, background: '#195C82',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              fontSize: '.7rem', color: '#fff', fontWeight: 700,
+            }}>-&gt;</span>
           </div>
         </div>
       </div>
 
-      {/* Module selector — compact */}
-      <div style={{
-        background: '#fff', borderRadius: 14, padding: '1.2rem', boxShadow: '0 10px 40px rgba(0,212,255,.06)',
-        border: '1px solid rgba(0,212,255,0.12)', flex: '0 0 190px',
-      }}>
-        <h3 style={{ margin: '0 0 .75rem', fontSize: '.85rem', fontWeight: 800, color: '#0f172a', textAlign: 'center' }}>
-          Que souhaitez-vous creer ?
-        </h3>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
-          {MODULES.map(m => (
-            <div key={m.id}
-              onMouseEnter={() => setActive(m.id)}
-              style={{
-                padding: '8px 10px', borderRadius: 8, cursor: 'pointer',
-                display: 'flex', alignItems: 'center', gap: 8,
-                border: active === m.id ? '2px solid #00D4FF' : '1px solid #e2e8f0',
-                background: active === m.id ? 'rgba(0,212,255,0.04)' : '#fafbfc',
-                transition: 'all .15s',
-              }}>
-              <span style={{ fontSize: 16 }}>{m.icon}</span>
-              <span style={{ fontSize: '.75rem', fontWeight: 600, color: active === m.id ? '#195C82' : '#475569' }}>{m.label}</span>
-            </div>
-          ))}
-        </div>
-        <button onClick={() => document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' })}
-          style={{
-            width: '100%', marginTop: '.75rem', padding: '.6rem', fontSize: '.8rem',
-            background: '#00D4FF', color: '#fff', border: 'none', borderRadius: 8,
-            fontWeight: 700, cursor: 'pointer',
+      {/* RIGHT — Mockup browser */}
+      <div style={{ flex: '0 0 43%', position: 'relative' }}>
+        {/* Floating pills */}
+        {FLOATING_PILLS.map((pill, i) => (
+          <div key={i} style={{
+            position: 'absolute', zIndex: 2,
+            ...(pill.top ? { top: pill.top } : {}),
+            ...(pill.bottom ? { bottom: pill.bottom } : {}),
+            ...(pill.left ? { left: pill.left } : {}),
+            ...(pill.right ? { right: pill.right } : {}),
+            padding: '6px 14px', borderRadius: 100, background: '#fff',
+            border: '1px solid #e2e8f0', fontSize: '.72rem', fontWeight: 600,
+            color: '#0f172a', boxShadow: '0 4px 12px rgba(0,0,0,0.06)',
+            whiteSpace: 'nowrap',
           }}>
-          Demarrer
-        </button>
+            {pill.label}
+          </div>
+        ))}
+
+        {/* Browser mockup */}
+        <div style={{
+          background: '#fff', borderRadius: 16, overflow: 'hidden',
+          boxShadow: '0 20px 60px rgba(0,212,255,.08), 0 8px 32px rgba(0,0,0,.06)',
+          border: '1px solid rgba(0,212,255,0.15)', height: '100%',
+          display: 'flex', flexDirection: 'column',
+        }}>
+          {/* Browser bar */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '10px 14px', background: '#f8fafc', borderBottom: '1px solid #e2e8f0' }}>
+            <div style={{ display: 'flex', gap: 5 }}>
+              <span style={{ width: 10, height: 10, borderRadius: '50%', background: '#ff5f57' }} />
+              <span style={{ width: 10, height: 10, borderRadius: '50%', background: '#ffbd2e' }} />
+              <span style={{ width: 10, height: 10, borderRadius: '50%', background: '#28c840' }} />
+            </div>
+            <div style={{ flex: 1, textAlign: 'center', fontSize: '.7rem', color: '#94a3b8' }}>app.timeblast.ai</div>
+          </div>
+          {/* App content */}
+          <div style={{ display: 'flex', flex: 1, minHeight: 0 }}>
+            {/* Mini sidebar */}
+            <div style={{ width: 44, background: '#0f2b42', padding: '10px 6px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4 }}>
+              <img src="/logo-icon-white.svg" alt="" style={{ width: 22, height: 22, marginBottom: 8 }} />
+              {SIDEBAR_ICONS.map(m => (
+                <div key={m.id} style={{
+                  width: 28, height: 28, borderRadius: 6, display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  fontSize: 12, background: m.id === 'dashboard' ? 'rgba(255,255,255,.15)' : 'transparent',
+                }}>
+                  {m.icon}
+                </div>
+              ))}
+            </div>
+            {/* Main area */}
+            <div style={{ flex: 1, padding: '14px 18px', background: '#f8fafc' }}>
+              <div style={{ fontSize: '.75rem', fontWeight: 700, color: '#195C82', marginBottom: 12 }}>
+                Tableau de bord
+              </div>
+              {/* KPIs */}
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 8, marginBottom: 14 }}>
+                {KPIS.map((kpi, i) => {
+                  const [label, val] = kpi.split(': ')
+                  return (
+                    <div key={i} style={{ background: '#fff', borderRadius: 8, padding: '8px 10px', border: '1px solid #e2e8f0' }}>
+                      <div style={{ fontSize: '.4rem', color: '#94a3b8', marginBottom: 2 }}>{label}</div>
+                      <div style={{ fontSize: '.7rem', fontWeight: 800, color: '#1a2332' }}>{val}</div>
+                    </div>
+                  )
+                })}
+              </div>
+              {/* Chart */}
+              <div style={{ background: '#fff', borderRadius: 8, border: '1px solid #e2e8f0', padding: '10px' }}>
+                <svg viewBox="0 0 300 50" style={{ width: '100%' }}>
+                  <defs><linearGradient id="mg" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="#00D4FF" stopOpacity=".15" /><stop offset="100%" stopColor="#00D4FF" stopOpacity="0" /></linearGradient></defs>
+                  <path d="M0,40 30,36 60,32 90,24 120,28 150,20 180,16 210,14 240,12 270,10 300,5 300,50 0,50Z" fill="url(#mg)" />
+                  <polyline points="0,40 30,36 60,32 90,24 120,28 150,20 180,16 210,14 240,12 270,10 300,5" fill="none" stroke="#00D4FF" strokeWidth="2" strokeLinejoin="round" />
+                </svg>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   )
@@ -311,7 +377,7 @@ const S = {
   bgAlt: '#fafbfc',
   borderGlow: 'rgba(0,212,255,0.12)',
   shadowGlow: 'rgba(0,212,255,0.08)',
-  gradient: 'linear-gradient(135deg, #00D4FF, #195C82)',
+  gradient: 'linear-gradient(135deg, #00D4FF, #7C3AED, #00D4FF)',
 }
 
 // ── Page principale ──────────────────────────────────────────────────────────
@@ -464,7 +530,7 @@ export default function LoginPage() {
         <a href="/about" onClick={() => setMobileMenu(false)}>A propos</a>
         <a href="/facture-electronique" style={{ color: '#f59e0b' }}>E-Facture 2026</a>
         <button onClick={() => { setMobileMenu(false); setShowLogin(true) }} style={{
-          marginTop: '1rem', padding: '12px 24px', borderRadius: 8, background: '#00D4FF',
+          marginTop: '1rem', padding: '12px 24px', borderRadius: 8, background: '#195C82',
           color: '#fff', border: 'none', fontWeight: 700, fontSize: '.95rem', cursor: 'pointer', width: '100%',
         }}>
           Se connecter
@@ -501,7 +567,7 @@ export default function LoginPage() {
               borderRadius: 100, background: 'rgba(0,212,255,0.06)', border: '1px solid rgba(0,212,255,0.15)',
               fontSize: '.82rem', fontWeight: 600, color: S.sra, marginBottom: '1.5rem',
             }}>
-              <span style={{ fontSize: '1rem' }}>⚡</span> Propulse par 40 ans d'expertise SRA
+              Propulse par 40 ans d'expertise SRA
             </div>
 
             <h1 style={{
@@ -526,7 +592,7 @@ export default function LoginPage() {
 
             <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
               <button onClick={() => document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' })} style={{
-                padding: '14px 28px', borderRadius: 10, background: '#00D4FF', color: '#fff',
+                padding: '14px 28px', borderRadius: 10, background: '#195C82', color: '#fff',
                 border: 'none', fontWeight: 700, fontSize: '1rem', cursor: 'pointer',
                 boxShadow: '0 4px 20px rgba(0,212,255,0.35)', transition: 'all .25s',
               }}
@@ -548,7 +614,7 @@ export default function LoginPage() {
           </div>
 
           <div className="landing-hero-visual" style={{ position: 'relative' }}>
-            <InteractiveMockup />
+            <HeroVisual />
           </div>
         </div>
       </section>
@@ -620,11 +686,11 @@ export default function LoginPage() {
           maxWidth: 1100, margin: '0 auto',
         }}>
           {[
-            { num: '1', title: 'Besoin fonctionnel', desc: 'Decrivez votre besoin en francais. L\'IA structure vos exigences.', icon: '💬' },
-            { num: '2', title: 'Maquette', desc: 'Choisissez vos modules et validez la structure de votre outil.', icon: '📐' },
-            { num: '3', title: 'Design & mise en page', desc: 'Personnalisez les couleurs, le logo et l\'experience utilisateur.', icon: '🎨' },
-            { num: '4', title: 'Mise en production', desc: 'Votre outil est deploye sur un sous-domaine dedie, pret a l\'emploi.', icon: '🚀' },
-            { num: '5', title: 'Support & suivi', desc: 'Evolutions, support technique et monitoring en continu.', icon: '🛡️' },
+            { num: '1', title: 'Besoin fonctionnel', desc: 'Decrivez votre besoin en francais. L\'IA structure vos exigences.' },
+            { num: '2', title: 'Maquette', desc: 'Choisissez vos modules et validez la structure de votre outil.' },
+            { num: '3', title: 'Design & mise en page', desc: 'Personnalisez les couleurs, le logo et l\'experience utilisateur.' },
+            { num: '4', title: 'Mise en production', desc: 'Votre outil est deploye sur un sous-domaine dedie, pret a l\'emploi.' },
+            { num: '5', title: 'Support & suivi', desc: 'Evolutions, support technique et monitoring en continu.' },
           ].map((step, i) => (
             <div key={i} style={{
               flex: '1 1 180px', maxWidth: 200, padding: '2rem 1.2rem', borderRadius: 16,
@@ -645,8 +711,8 @@ export default function LoginPage() {
               <div style={{
                 width: 52, height: 52, borderRadius: '50%', background: 'rgba(0,212,255,0.06)',
                 display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto .75rem',
-                fontSize: 24, border: '1px solid rgba(0,212,255,0.12)',
-              }}>{step.icon}</div>
+                fontSize: 20, fontWeight: 800, color: '#195C82', border: '1px solid rgba(0,212,255,0.12)',
+              }}>{step.num}</div>
               <div style={{
                 fontSize: '.75rem', fontWeight: 800, letterSpacing: '0.05em',
                 background: S.gradient, WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
@@ -691,7 +757,7 @@ export default function LoginPage() {
               cursor: 'pointer', transition: 'all .2s',
               boxShadow: activeCat === cat.id ? '0 0 15px rgba(0,212,255,0.12)' : 'none',
             }}>
-              <span style={{ marginRight: 4 }}>{cat.icon}</span> {cat.label}
+              {cat.label}
             </button>
           ))}
         </div>
@@ -781,23 +847,38 @@ export default function LoginPage() {
           8. 40 ANS D'EXPERTISE
       ══════════════════════════════════════════════════════════════════ */}
       <section style={{
-        padding: '5rem 2rem', background: S.bgAlt, textAlign: 'center',
+        padding: '5rem 2rem', background: S.bgAlt, textAlign: 'center', position: 'relative', overflow: 'hidden',
       }}>
-        <div style={{ maxWidth: 700, margin: '0 auto' }}>
+        {/* Gradient accent orb */}
+        <div style={{
+          position: 'absolute', top: -80, left: '50%', transform: 'translateX(-50%)',
+          width: 500, height: 250,
+          background: 'radial-gradient(circle, rgba(255,107,53,0.06) 0%, rgba(255,215,0,0.04) 40%, transparent 70%)',
+          pointerEvents: 'none',
+        }} />
+        <div style={{ maxWidth: 700, margin: '0 auto', position: 'relative', zIndex: 1 }}>
           <p style={{
-            fontSize: '.82rem', color: S.lightGray, fontWeight: 600, letterSpacing: '2px',
+            fontSize: '.82rem', fontWeight: 600, letterSpacing: '2px',
             textTransform: 'uppercase', marginBottom: '1.5rem',
+            background: S.gradient, WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
+            backgroundClip: 'text',
           }}>
             Un produit du Groupe SRA
           </p>
           <h2 style={{
-            fontSize: 'clamp(1.6rem, 2.5vw, 2.2rem)', fontWeight: 800, color: S.dark,
+            fontSize: 'clamp(1.8rem, 3vw, 2.5rem)', fontWeight: 800, color: S.dark,
             margin: '0 0 1.5rem',
           }}>
-            40 ans d'expertise
+            40 ans d'expertise{' '}
+            <span style={{
+              background: S.gradient, WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
+              backgroundClip: 'text',
+            }}>
+              au service de l'innovation
+            </span>
           </h2>
           <p style={{
-            fontSize: '1.05rem', color: S.gray, lineHeight: 1.7, margin: '0 0 2rem',
+            fontSize: '1.1rem', color: S.gray, lineHeight: 1.7, margin: '0 0 2.5rem',
           }}>
             Depuis 1986, le Groupe SRA accompagne les PME et ETI dans leur transformation digitale. Cette expertise de terrain nous a permis de concevoir TimeBlast : la plateforme de vibe-coding parfaite pour creer des applications metier avec l'IA.
           </p>
@@ -862,9 +943,9 @@ export default function LoginPage() {
           {/* Info side */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
             {[
-              { icon: '📊', title: 'Diagnostic gratuit', desc: 'Evaluation de votre maturite data en 30 min' },
-              { icon: '💬', title: 'Reponse sous 24h', desc: 'Notre equipe revient vers vous rapidement' },
-              { icon: '🎯', title: 'Demo personnalisee', desc: 'Sur vos donnees, vos cas d\'usage' },
+              { icon: '-', title: 'Diagnostic gratuit', desc: 'Evaluation de votre maturite data en 30 min' },
+              { icon: '-', title: 'Reponse sous 24h', desc: 'Notre equipe revient vers vous rapidement' },
+              { icon: '-', title: 'Demo personnalisee', desc: 'Sur vos donnees, vos cas d\'usage' },
             ].map((item, i) => (
               <div key={i} style={{
                 display: 'flex', gap: 16, padding: '1.25rem',
@@ -891,7 +972,7 @@ export default function LoginPage() {
           }}>
             {contactSent ? (
               <div style={{ textAlign: 'center', padding: '2rem 0' }}>
-                <span style={{ fontSize: '2.5rem', display: 'block', marginBottom: '.75rem' }}>✅</span>
+                <span style={{ fontSize: '1.5rem', display: 'block', marginBottom: '.75rem', color: '#22c55e' }}>OK</span>
                 <h3 style={{ margin: '0 0 .5rem', color: S.dark }}>Demande envoyee !</h3>
                 <p style={{ color: S.gray }}>Nous preparons votre diagnostic et revenons vers vous tres vite.</p>
               </div>
@@ -973,7 +1054,7 @@ export default function LoginPage() {
                   />
                 </div>
                 <button type="submit" style={{
-                  width: '100%', padding: '14px', borderRadius: 10, background: '#00D4FF',
+                  width: '100%', padding: '14px', borderRadius: 10, background: '#195C82',
                   color: '#fff', border: 'none', fontWeight: 700, fontSize: '.95rem',
                   cursor: 'pointer', boxShadow: '0 4px 20px rgba(0,212,255,0.3)',
                   transition: 'all .25s',
@@ -1092,7 +1173,7 @@ export default function LoginPage() {
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
                 margin: '0 auto .75rem', border: '1px solid rgba(0,212,255,0.15)',
               }}>
-                <span style={{ fontSize: '1.5rem' }}>📊</span>
+                <span style={{ fontSize: '1.5rem', fontWeight: 800 }}>TB</span>
               </div>
               <h2 style={{ margin: '0 0 .25rem', fontSize: '1.4rem', fontWeight: 800, color: S.dark }}>Connexion</h2>
               <p style={{ color: S.gray, fontSize: '.88rem', margin: 0 }}>
@@ -1179,7 +1260,7 @@ export default function LoginPage() {
               {error && <p style={{ color: '#dc2626', fontSize: '.85rem', margin: '0 0 12px', padding: '8px 12px', background: '#fef2f2', borderRadius: 8 }}>{error}</p>}
 
               <button type="submit" disabled={loading} style={{
-                width: '100%', padding: '12px', borderRadius: 10, background: '#00D4FF',
+                width: '100%', padding: '12px', borderRadius: 10, background: '#195C82',
                 color: '#fff', border: 'none', fontWeight: 700, fontSize: '.95rem',
                 cursor: loading ? 'not-allowed' : 'pointer', opacity: loading ? 0.7 : 1,
                 boxShadow: '0 4px 20px rgba(0,212,255,0.3)', transition: 'all .25s',
