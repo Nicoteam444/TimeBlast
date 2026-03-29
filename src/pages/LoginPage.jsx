@@ -237,209 +237,183 @@ function InteractiveMockup() {
   const [active, setActive] = useState('dashboard')
 
   const TABS = [
-    { id: 'dashboard', label: 'Dashboard', icon: '📊', title: 'Tableau de bord', kpis: [{ label: 'CA mensuel', value: '72 450 €', trend: '+12%' }, { label: 'Pipeline', value: '343k €', trend: '+8%' }, { label: 'Marge nette', value: '68%', trend: '+3%' }, { label: 'Tresorerie', value: '62k €', trend: '+5%' }] },
-    { id: 'equipe', label: 'Équipe', icon: '👥', title: 'Gestion d’équipe', kpis: [{ label: 'Effectif', value: '45', trend: '' }, { label: 'Absents', value: '3', trend: '' }, { label: 'Heures', value: '1 247h', trend: '' }, { label: 'Occupation', value: '94%', trend: '+2%' }] },
-    { id: 'finance', label: 'Finance', icon: '💰', title: 'Pilotage financier', kpis: [{ label: 'Écritures', value: '4 521', trend: '' }, { label: 'Rapproché', value: '98%', trend: '+1%' }, { label: 'FEC', value: 'OK', trend: '' }, { label: 'Balance', value: '0.00 €', trend: '' }] },
-    { id: 'commerce', label: 'Commerce', icon: '🎯', title: 'Pipeline commercial', kpis: [{ label: 'Leads', value: '47', trend: '+15%' }, { label: 'Opportunités', value: '12', trend: '' }, { label: 'CA gagné', value: '185k €', trend: '+22%' }, { label: 'Taux', value: '34%', trend: '+4%' }] },
+    { id: 'dashboard', label: 'Dashboard', icon: '📊', title: 'Tableau de bord', kpis: [{ label: 'CA mensuel', value: '72 450 €', trend: '+12%' }, { label: 'Pipeline', value: '343k €', trend: '+8%' }, { label: 'Marge nette', value: '68%', trend: '+3%' }, { label: 'Trésorerie', value: '62k €', trend: '+5%' }], chat: { user: 'Je veux un dashboard avec KPI', ai: ['✓ Dashboard KPI temps réel', '✓ Graphiques CA & marge', '✓ Alertes automatiques'] } },
+    { id: 'equipe', label: 'Équipe', icon: '👥', title: "Gestion d'équipe", kpis: [{ label: 'Effectif', value: '45', trend: '' }, { label: 'Absents', value: '3', trend: '' }, { label: 'Heures', value: '1 247h', trend: '' }, { label: 'Occupation', value: '94%', trend: '+2%' }], chat: { user: "Ajoute la gestion d'équipe", ai: ['✓ Fiches collaborateurs', '✓ Calendrier absences', "✓ Taux d'occupation"] } },
+    { id: 'finance', label: 'Finance', icon: '💰', title: 'Pilotage financier', kpis: [{ label: 'Écritures', value: '4 521', trend: '' }, { label: 'Rapproché', value: '98%', trend: '+1%' }, { label: 'FEC', value: 'OK', trend: '' }, { label: 'Balance', value: '0.00 €', trend: '' }], chat: { user: 'Je veux la comptabilité FEC', ai: ['✓ Import FEC automatique', '✓ Rapprochement bancaire', '✓ Balance et écritures'] } },
+    { id: 'commerce', label: 'Commerce', icon: '🎯', title: 'Pipeline commercial', kpis: [{ label: 'Leads', value: '47', trend: '+15%' }, { label: 'Opportunités', value: '12', trend: '' }, { label: 'CA gagné', value: '185k €', trend: '+22%' }, { label: 'Taux', value: '34%', trend: '+4%' }], chat: { user: 'Ajoute un CRM avec pipeline', ai: ['✓ Pipeline Kanban', '✓ Scoring leads IA', '✓ Relances automatiques'] } },
   ]
   const t = TABS.find(x => x.id === active)
 
   return (
     <div style={{ width: '100%', maxWidth: 1060, margin: '0 auto' }}>
-      {/* Main mockup: chat left + app right */}
+      {/* Main mockup: browser chrome wrapping sidebar + content + chat */}
       <div className="landing-mockup-dual" style={{
-        display: 'flex', borderRadius: 20, overflow: 'hidden',
+        borderRadius: 20, overflow: 'hidden',
         boxShadow: '0 25px 80px rgba(0,0,0,0.15), 0 0 0 1px rgba(25,92,130,0.12)',
         transform: 'perspective(2000px) rotateX(2deg)',
         transition: 'transform .4s ease',
       }}>
-        {/* LEFT — Chat panel (40%) */}
-        <div style={{
-          flex: '0 0 40%', background: '#0f172a', display: 'flex', flexDirection: 'column',
-          borderRight: '1px solid rgba(255,255,255,0.06)', minHeight: 420,
-        }}>
-          {/* Chat header */}
+        {/* Browser bar */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '10px 14px', background: '#f8fafc', borderBottom: '1px solid #e2e8f0' }}>
+          <div style={{ display: 'flex', gap: 5 }}>
+            <span style={{ width: 10, height: 10, borderRadius: '50%', background: '#ff5f57' }} />
+            <span style={{ width: 10, height: 10, borderRadius: '50%', background: '#ffbd2e' }} />
+            <span style={{ width: 10, height: 10, borderRadius: '50%', background: '#28c840' }} />
+          </div>
           <div style={{
-            padding: '14px 18px', borderBottom: '1px solid rgba(255,255,255,0.06)',
-            display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+            flex: 1, textAlign: 'center', fontSize: '.7rem', color: '#94a3b8',
+            background: '#fff', borderRadius: 8, padding: '4px 12px', border: '1px solid #e2e8f0',
+            maxWidth: 240, margin: '0 auto',
           }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-              <div style={{
-                width: 32, height: 32, borderRadius: 10, background: '#195C82',
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                fontSize: 14, color: '#fff', fontWeight: 800,
-              }}>TB</div>
-              <span style={{ color: '#fff', fontSize: '.85rem', fontWeight: 700 }}>TimeBlast AI</span>
-            </div>
-            <div style={{ display: 'flex', gap: 4 }}>
-              <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#22c55e' }} />
-              <span style={{ width: 6, height: 6, borderRadius: '50%', background: 'rgba(255,255,255,0.15)' }} />
-              <span style={{ width: 6, height: 6, borderRadius: '50%', background: 'rgba(255,255,255,0.15)' }} />
-            </div>
+            {'🔒'} app.timeblast.ai/{active}
           </div>
-
-          {/* Chat messages */}
-          <div style={{ flex: 1, padding: '14px', display: 'flex', flexDirection: 'column', gap: 10, overflow: 'hidden' }}>
-            {/* User message 1 */}
-            <div style={{ alignSelf: 'flex-end', maxWidth: '85%' }}>
-              <div style={{ background: '#195C82', color: '#fff', padding: '8px 12px', borderRadius: '12px 12px 4px 12px', fontSize: '.72rem', lineHeight: 1.5 }}>
-                Je veux un CRM avec suivi pipeline, fiche client et dashboard commercial
-              </div>
-            </div>
-            {/* AI response 1 */}
-            <div style={{ alignSelf: 'flex-start', maxWidth: '90%' }}>
-              <div style={{ background: 'rgba(255,255,255,0.06)', color: '#e2e8f0', padding: '10px 12px', borderRadius: '12px 12px 12px 4px', fontSize: '.72rem', lineHeight: 1.6, border: '1px solid rgba(255,255,255,0.06)' }}>
-                <div style={{ color: '#22c55e', marginBottom: 1 }}>✓ Pipeline Kanban drag & drop</div>
-                <div style={{ color: '#22c55e', marginBottom: 1 }}>✓ Fiches clients enrichies SIRENE</div>
-                <div style={{ color: '#22c55e', marginBottom: 1 }}>✓ Dashboard KPI temps réel</div>
-                <div style={{ color: '#22c55e', marginBottom: 1 }}>✓ Connecteurs HubSpot, Sage, Mail</div>
-                <div style={{ color: '#94a3b8', marginTop: 6, fontSize: '.65rem' }}>Déploiement estimé : 48h</div>
-              </div>
-            </div>
-            {/* User message 2 */}
-            <div style={{ alignSelf: 'flex-end', maxWidth: '85%' }}>
-              <div style={{ background: '#195C82', color: '#fff', padding: '8px 12px', borderRadius: '12px 12px 4px 12px', fontSize: '.72rem', lineHeight: 1.5 }}>
-                Ajoute aussi la facturation et le suivi des paiements
-              </div>
-            </div>
-            {/* AI response 2 */}
-            <div style={{ alignSelf: 'flex-start', maxWidth: '90%' }}>
-              <div style={{ background: 'rgba(255,255,255,0.06)', color: '#e2e8f0', padding: '10px 12px', borderRadius: '12px 12px 12px 4px', fontSize: '.72rem', lineHeight: 1.6, border: '1px solid rgba(255,255,255,0.06)' }}>
-                <div style={{ color: '#22c55e', marginBottom: 1 }}>✓ Module facturation ajouté</div>
-                <div style={{ color: '#22c55e', marginBottom: 1 }}>✓ Suivi paiements et relances</div>
-                <div style={{ color: '#22c55e', marginBottom: 1 }}>✓ E-facture 2026 conforme</div>
-                <div style={{ color: '#94a3b8', marginTop: 6, fontSize: '.65rem' }}>6 modules · 30+ connecteurs</div>
-              </div>
-            </div>
-            {/* Typing */}
-            <div style={{ alignSelf: 'flex-start', display: 'flex', gap: 4, padding: '8px 12px', borderRadius: 12, background: 'rgba(255,255,255,0.04)' }}>
-              <span style={{ width: 5, height: 5, borderRadius: '50%', background: 'rgba(255,255,255,0.3)', animation: 'typingDot 1.4s infinite 0s' }} />
-              <span style={{ width: 5, height: 5, borderRadius: '50%', background: 'rgba(255,255,255,0.3)', animation: 'typingDot 1.4s infinite 0.2s' }} />
-              <span style={{ width: 5, height: 5, borderRadius: '50%', background: 'rgba(255,255,255,0.3)', animation: 'typingDot 1.4s infinite 0.4s' }} />
-            </div>
-          </div>
-
-          {/* Chat input */}
-          <div style={{
-            padding: '12px 18px', borderTop: '1px solid rgba(255,255,255,0.06)',
-          }}>
-            <div style={{
-              background: 'rgba(255,255,255,0.04)', borderRadius: 12, padding: '10px 14px',
-              border: '1px solid rgba(255,255,255,0.08)', display: 'flex', alignItems: 'center',
-            }}>
-              <span style={{ color: 'rgba(255,255,255,0.25)', fontSize: '.78rem' }}>Décrivez votre besoin...</span>
-            </div>
-          </div>
+          <div style={{ width: 40 }} />
         </div>
 
-        {/* RIGHT — App mockup (60%) */}
-        <div style={{ width: '60%', display: 'flex', flexDirection: 'column', background: '#fff' }}>
-          {/* Browser bar */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '10px 14px', background: '#f8fafc', borderBottom: '1px solid #e2e8f0' }}>
-            <div style={{ display: 'flex', gap: 5 }}>
-              <span style={{ width: 10, height: 10, borderRadius: '50%', background: '#ff5f57' }} />
-              <span style={{ width: 10, height: 10, borderRadius: '50%', background: '#ffbd2e' }} />
-              <span style={{ width: 10, height: 10, borderRadius: '50%', background: '#28c840' }} />
-            </div>
-            <div style={{
-              flex: 1, textAlign: 'center', fontSize: '.7rem', color: '#94a3b8',
-              background: '#fff', borderRadius: 8, padding: '4px 12px', border: '1px solid #e2e8f0',
-              maxWidth: 240, margin: '0 auto',
-            }}>
-              {'🔒'} app.timeblast.ai/{active}
-            </div>
-            <div style={{ width: 40 }} />
+        {/* App layout: sidebar + main content + chat panel */}
+        <div style={{ display: 'flex', minHeight: 420 }}>
+          {/* Sidebar */}
+          <div style={{
+            width: 48, background: 'linear-gradient(180deg, #0a1628, #0f2b42)', padding: '12px 6px',
+            display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 5, flexShrink: 0,
+          }}>
+            <img src="/logo-icon-white.svg" alt="" style={{ width: 22, height: 22, marginBottom: 10, opacity: 0.9 }} />
+            {TABS.map((tab) => (
+              <div key={tab.id} onClick={() => setActive(tab.id)} style={{
+                width: 32, height: 32, borderRadius: 7, display: 'flex', alignItems: 'center', justifyContent: 'center',
+                fontSize: 14, color: active === tab.id ? '#fff' : 'rgba(255,255,255,.35)',
+                background: active === tab.id ? 'rgba(25,92,130,.4)' : 'transparent',
+                cursor: 'pointer', transition: 'all .2s',
+              }}>
+                {tab.icon}
+              </div>
+            ))}
+            <div style={{ flex: 1 }} />
+            <div style={{ width: 24, height: 24, borderRadius: '50%', background: '#195C82', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 8, color: '#fff', fontWeight: 800 }}>NR</div>
           </div>
 
-          {/* App layout */}
-          <div style={{ display: 'flex', flex: 1 }}>
-            {/* Sidebar */}
-            <div style={{
-              width: 48, background: 'linear-gradient(180deg, #0a1628, #0f2b42)', padding: '12px 6px',
-              display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 5,
-            }}>
-              <img src="/logo-icon-white.svg" alt="" style={{ width: 22, height: 22, marginBottom: 10, opacity: 0.9 }} />
-              {TABS.map((tab) => (
-                <div key={tab.id} onClick={() => setActive(tab.id)} style={{
-                  width: 32, height: 32, borderRadius: 7, display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  fontSize: 14, color: active === tab.id ? '#fff' : 'rgba(255,255,255,.35)',
-                  background: active === tab.id ? 'rgba(25,92,130,.4)' : 'transparent',
-                  cursor: 'pointer', transition: 'all .2s',
-                }}>
-                  {tab.icon}
-                </div>
-              ))}
-              <div style={{ flex: 1 }} />
-              <div style={{ width: 24, height: 24, borderRadius: '50%', background: '#195C82', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 8, color: '#fff', fontWeight: 800 }}>NR</div>
+          {/* Main content */}
+          <div style={{ flex: 1, padding: '14px 18px', background: '#f8fafc', transition: 'all .2s', minWidth: 0 }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
+              <div style={{ fontSize: '.8rem', fontWeight: 700, color: '#0f172a' }}>
+                {t.icon} {t.title}
+              </div>
+              <div style={{ display: 'flex', gap: 5 }}>
+                <span style={{ padding: '3px 8px', borderRadius: 6, background: '#fff', border: '1px solid #e2e8f0', fontSize: '.6rem', color: '#64748b' }}>Mars 2026</span>
+                <span style={{ padding: '3px 8px', borderRadius: 6, background: '#195C82', fontSize: '.6rem', color: '#fff', fontWeight: 600 }}>Exporter</span>
+              </div>
             </div>
 
-            {/* Main content */}
-            <div style={{ flex: 1, padding: '14px 18px', background: '#f8fafc', transition: 'all .2s' }}>
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
-                <div style={{ fontSize: '.8rem', fontWeight: 700, color: '#0f172a' }}>
-                  {t.icon} {t.title}
-                </div>
-                <div style={{ display: 'flex', gap: 5 }}>
-                  <span style={{ padding: '3px 8px', borderRadius: 6, background: '#fff', border: '1px solid #e2e8f0', fontSize: '.6rem', color: '#64748b' }}>Mars 2026</span>
-                  <span style={{ padding: '3px 8px', borderRadius: 6, background: '#195C82', fontSize: '.6rem', color: '#fff', fontWeight: 600 }}>Exporter</span>
-                </div>
-              </div>
-
-              {/* KPIs */}
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 8, marginBottom: 12 }}>
-                {t.kpis.map((kpi, i) => (
-                  <div key={i} style={{
-                    background: '#fff', borderRadius: 8, padding: '10px 10px',
-                    border: '1px solid #e2e8f0', transition: 'all .2s',
-                  }}>
-                    <div style={{ fontSize: '.45rem', color: '#94a3b8', marginBottom: 3, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.04em' }}>{kpi.label}</div>
-                    <div style={{ display: 'flex', alignItems: 'baseline', gap: 4 }}>
-                      <div style={{ fontSize: '.78rem', fontWeight: 800, color: '#0f172a' }}>{kpi.value}</div>
-                      {kpi.trend && <span style={{ fontSize: '.45rem', color: '#22c55e', fontWeight: 600 }}>{kpi.trend}</span>}
-                    </div>
+            {/* KPIs */}
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 8, marginBottom: 12 }}>
+              {t.kpis.map((kpi, i) => (
+                <div key={i} style={{
+                  background: '#fff', borderRadius: 8, padding: '10px 10px',
+                  border: '1px solid #e2e8f0', transition: 'all .2s',
+                }}>
+                  <div style={{ fontSize: '.45rem', color: '#94a3b8', marginBottom: 3, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.04em' }}>{kpi.label}</div>
+                  <div style={{ display: 'flex', alignItems: 'baseline', gap: 4 }}>
+                    <div style={{ fontSize: '.78rem', fontWeight: 800, color: '#0f172a' }}>{kpi.value}</div>
+                    {kpi.trend && <span style={{ fontSize: '.45rem', color: '#22c55e', fontWeight: 600 }}>{kpi.trend}</span>}
                   </div>
-                ))}
-              </div>
+                </div>
+              ))}
+            </div>
 
-              {/* Chart / content area */}
-              <div style={{ background: '#fff', borderRadius: 8, border: '1px solid #e2e8f0', padding: '10px', minHeight: 120 }}>
-                {active === 'dashboard' ? (
-                  <svg viewBox="0 0 400 80" style={{ width: '100%' }}>
-                    <defs>
-                      <linearGradient id="mg2" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="0%" stopColor="#195C82" stopOpacity=".12" />
-                        <stop offset="100%" stopColor="#195C82" stopOpacity="0" />
-                      </linearGradient>
-                    </defs>
-                    <path d="M0,65 40,58 80,52 120,38 160,42 200,30 240,24 280,20 320,16 360,10 400,5 400,80 0,80Z" fill="url(#mg2)" />
-                    <polyline points="0,65 40,58 80,52 120,38 160,42 200,30 240,24 280,20 320,16 360,10 400,5" fill="none" stroke="#195C82" strokeWidth="2.5" strokeLinejoin="round" strokeLinecap="round" />
-                    {[[0,65],[80,52],[160,42],[240,24],[320,16],[400,5]].map(([px,py], i) => (
-                      <circle key={i} cx={px} cy={py} r="3" fill="#195C82" stroke="#fff" strokeWidth="1.5" />
-                    ))}
-                  </svg>
-                ) : (
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-                    {[1,2,3,4,5].map(i => (
-                      <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '5px 0', borderBottom: '1px solid #f1f5f9' }}>
-                        <div style={{
-                          width: 22, height: 22, borderRadius: 6,
-                          background: 'rgba(25,92,130,.06)',
-                          display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11,
-                        }}>
-                          {t.icon}
-                        </div>
-                        <div style={{ flex: 1 }}>
-                          <div style={{ height: 5, background: '#e2e8f0', borderRadius: 3, width: `${100 - i * 14}%` }} />
-                        </div>
-                        <div style={{
-                          width: 36, height: 5,
-                          background: i <= 2 ? '#195C82' : '#e2e8f0',
-                          borderRadius: 3, opacity: i <= 2 ? 0.8 : 0.4,
-                        }} />
+            {/* Chart / content area */}
+            <div style={{ background: '#fff', borderRadius: 8, border: '1px solid #e2e8f0', padding: '10px', minHeight: 120 }}>
+              {active === 'dashboard' ? (
+                <svg viewBox="0 0 400 80" style={{ width: '100%' }}>
+                  <defs>
+                    <linearGradient id="mg2" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stopColor="#195C82" stopOpacity=".12" />
+                      <stop offset="100%" stopColor="#195C82" stopOpacity="0" />
+                    </linearGradient>
+                  </defs>
+                  <path d="M0,65 40,58 80,52 120,38 160,42 200,30 240,24 280,20 320,16 360,10 400,5 400,80 0,80Z" fill="url(#mg2)" />
+                  <polyline points="0,65 40,58 80,52 120,38 160,42 200,30 240,24 280,20 320,16 360,10 400,5" fill="none" stroke="#195C82" strokeWidth="2.5" strokeLinejoin="round" strokeLinecap="round" />
+                  {[[0,65],[80,52],[160,42],[240,24],[320,16],[400,5]].map(([px,py], i) => (
+                    <circle key={i} cx={px} cy={py} r="3" fill="#195C82" stroke="#fff" strokeWidth="1.5" />
+                  ))}
+                </svg>
+              ) : (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                  {[1,2,3,4,5].map(i => (
+                    <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '5px 0', borderBottom: '1px solid #f1f5f9' }}>
+                      <div style={{
+                        width: 22, height: 22, borderRadius: 6,
+                        background: 'rgba(25,92,130,.06)',
+                        display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11,
+                      }}>
+                        {t.icon}
                       </div>
-                    ))}
-                  </div>
-                )}
+                      <div style={{ flex: 1 }}>
+                        <div style={{ height: 5, background: '#e2e8f0', borderRadius: 3, width: `${100 - i * 14}%` }} />
+                      </div>
+                      <div style={{
+                        width: 36, height: 5,
+                        background: i <= 2 ? '#195C82' : '#e2e8f0',
+                        borderRadius: 3, opacity: i <= 2 ? 0.8 : 0.4,
+                      }} />
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Chat panel — inside the mockup on the right */}
+          <div style={{
+            width: 250, background: '#0f172a', display: 'flex', flexDirection: 'column',
+            borderLeft: '1px solid rgba(255,255,255,0.06)', flexShrink: 0,
+          }}>
+            {/* Chat header */}
+            <div style={{
+              padding: '10px 12px', borderBottom: '1px solid rgba(255,255,255,0.06)',
+              display: 'flex', alignItems: 'center', gap: 8,
+            }}>
+              <div style={{
+                width: 24, height: 24, borderRadius: 7, background: '#195C82',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                fontSize: 10, color: '#fff', fontWeight: 800,
+              }}>TB</div>
+              <span style={{ color: '#fff', fontSize: '.72rem', fontWeight: 700 }}>TimeBlast AI</span>
+              <div style={{ marginLeft: 'auto' }}>
+                <span style={{ width: 5, height: 5, borderRadius: '50%', background: '#22c55e', display: 'inline-block' }} />
+              </div>
+            </div>
+
+            {/* Chat messages — changes per tab */}
+            <div style={{ flex: 1, padding: '10px', display: 'flex', flexDirection: 'column', gap: 8, overflow: 'hidden' }}>
+              {/* User message */}
+              <div style={{ alignSelf: 'flex-end', maxWidth: '90%' }}>
+                <div style={{ background: '#195C82', color: '#fff', padding: '6px 10px', borderRadius: '10px 10px 3px 10px', fontSize: '.65rem', lineHeight: 1.5 }}>
+                  {t.chat.user}
+                </div>
+              </div>
+              {/* AI response */}
+              <div style={{ alignSelf: 'flex-start', maxWidth: '95%' }}>
+                <div style={{ background: 'rgba(255,255,255,0.06)', color: '#e2e8f0', padding: '8px 10px', borderRadius: '10px 10px 10px 3px', fontSize: '.65rem', lineHeight: 1.6, border: '1px solid rgba(255,255,255,0.06)' }}>
+                  {t.chat.ai.map((line, i) => (
+                    <div key={i} style={{ color: '#22c55e', marginBottom: i < t.chat.ai.length - 1 ? 1 : 0 }}>{line}</div>
+                  ))}
+                </div>
+              </div>
+              {/* Typing indicator */}
+              <div style={{ alignSelf: 'flex-start', display: 'flex', gap: 3, padding: '6px 10px', borderRadius: 10, background: 'rgba(255,255,255,0.04)' }}>
+                <span style={{ width: 4, height: 4, borderRadius: '50%', background: 'rgba(255,255,255,0.3)', animation: 'typingDot 1.4s infinite 0s' }} />
+                <span style={{ width: 4, height: 4, borderRadius: '50%', background: 'rgba(255,255,255,0.3)', animation: 'typingDot 1.4s infinite 0.2s' }} />
+                <span style={{ width: 4, height: 4, borderRadius: '50%', background: 'rgba(255,255,255,0.3)', animation: 'typingDot 1.4s infinite 0.4s' }} />
+              </div>
+            </div>
+
+            {/* Chat input */}
+            <div style={{ padding: '8px 10px', borderTop: '1px solid rgba(255,255,255,0.06)' }}>
+              <div style={{
+                background: 'rgba(255,255,255,0.04)', borderRadius: 8, padding: '7px 10px',
+                border: '1px solid rgba(255,255,255,0.08)',
+              }}>
+                <span style={{ color: 'rgba(255,255,255,0.25)', fontSize: '.65rem' }}>Décrivez votre besoin...</span>
               </div>
             </div>
           </div>
@@ -700,7 +674,7 @@ export default function LoginPage() {
               color: S.dark, margin: '0 0 1.25rem', letterSpacing: '-0.02em',
             }}>
               <span style={{ display: 'block' }}>Créez en un seul prompt</span>
-              <span style={{ display: 'block', height: 'calc(clamp(2rem, 3.5vw, 3rem) * 1.2)', overflow: 'hidden' }}>votre <RotatingText /></span>
+              <span style={{ display: 'block', minHeight: '4.5rem', overflow: 'hidden' }}>votre <RotatingText /></span>
             </h1>
 
             <p style={{
