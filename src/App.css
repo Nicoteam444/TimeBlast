@@ -300,65 +300,57 @@ body {
 .landing-mobile-menu a { font-size: 1.2rem; font-weight: 600; color: #195C82; text-decoration: none; }
 .landing-mobile-menu .landing-mobile-close { position: absolute; top: 1rem; right: 1.5rem; font-size: 1.5rem; background: none; border: none; cursor: pointer; color: #195C82; }
 
-@media (max-width: 1100px) {
-  .landing-mockup-wrapper { transform: scale(0.8); transform-origin: top center; margin-bottom: -80px; }
-}
 @media (max-width: 900px) {
+  /* Hero : animation sous le texte */
   .landing-hero-grid { grid-template-columns: 1fr !important; text-align: center; }
   .landing-hero-text { text-align: center; }
   .landing-hero-actions { justify-content: center; }
-  .multiprise-container { max-width: 340px; margin: 0 auto; }
-  .landing-mockup-wrapper { transform: scale(0.65); transform-origin: top center; margin-bottom: -160px; }
+  .multiprise-container { max-width: 300px; margin: 0 auto; }
+  /* Mockup : pleine largeur, pas de scale */
+  .landing-mockup-wrapper { transform: none !important; margin-bottom: 0 !important; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  .landing-mockup-dual { min-width: 700px; }
+  /* Grilles en 1 colonne */
   .landing-steps-grid { grid-template-columns: 1fr; max-width: 400px; margin: 0 auto; }
-  .landing-advantages-grid { grid-template-columns: 1fr 1fr; }
+  .landing-advantages-grid { grid-template-columns: 1fr; }
   .landing-roadmap-grid { grid-template-columns: 1fr; max-width: 500px; margin: 2rem auto 0; }
   .landing-channels-grid { grid-template-columns: 1fr; max-width: 400px; margin: 2rem auto 0; }
-  .landing-contact-wrapper { grid-template-columns: 1fr; }
+  .landing-contact-wrapper { grid-template-columns: 1fr !important; }
+  .landing-features-grid { grid-template-columns: 1fr 1fr; }
   .landing-logo img { height: 40px !important; }
-  /* Mockup interactif responsive */
-  .landing-mockup-dual { flex-direction: column !important; }
-  .landing-mockup-dual > div { flex: 1 1 100% !important; min-width: 0 !important; }
-  .landing-mockup-tabs { flex-wrap: wrap; justify-content: center; }
-  .landing-mockup-browser { min-height: auto !important; }
 }
 @media (max-width: 768px) {
-  .landing-hero { padding: 5rem 1.25rem 2rem; }
+  .landing-hero { padding: 5rem 1rem 2rem; }
   .landing-hero-title { font-size: 1.6rem; }
   .landing-hero-subtitle { font-size: .9rem; }
-  .landing-hero-visual { max-width: 100%; margin: 0 auto; }
-  .landing-hero-dual { flex-direction: column !important; }
-  .landing-hero-dual > div { flex: 1 1 100% !important; }
-  .multiprise-container { max-width: 260px; margin: 0 auto; }
+  /* Animation : pleine largeur sous le texte */
+  .multiprise-container { max-width: 240px; margin: 0 auto; }
   .multiprise-svg { max-width: 100%; height: auto; }
-  .landing-features-grid { grid-template-columns: 1fr; }
+  /* Nav mobile */
   .landing-nav-links { display: none; }
   .landing-burger { display: block; }
   .landing-nav-inner { padding: .5rem 1rem; }
   .landing-logo img { height: 32px !important; }
-  .landing-stats { gap: 1rem; padding: 1.5rem 1rem; }
-  .landing-stat-value { font-size: 1.5rem; }
-  .landing-cat-tabs { gap: .3rem; }
-  .landing-cat-tab { font-size: .72rem; padding: .3rem .6rem; }
+  /* Tout prend 100% largeur */
+  .landing-features-grid { grid-template-columns: 1fr; }
   .landing-advantages-grid { grid-template-columns: 1fr; }
   .landing-contact-row { grid-template-columns: 1fr; }
   .landing-section-title { font-size: 1.4rem; }
   .landing-section-subtitle { font-size: .9rem; }
-  .landing-btn-primary { padding: .6rem 1.5rem; font-size: .9rem; }
-  .landing-btn-secondary { padding: .6rem 1.5rem; font-size: .9rem; }
+  .landing-btn-primary { padding: .6rem 1.5rem; font-size: .9rem; width: 100%; }
+  .landing-btn-secondary { padding: .6rem 1.5rem; font-size: .9rem; width: 100%; }
   .landing-cta h2 { font-size: 1.4rem; }
   .landing-footer-inner { flex-direction: column; gap: .5rem; text-align: center; }
-  /* Mockup interactif : scale down pour garder les proportions */
-  .landing-mockup-wrapper { transform: scale(0.55); transform-origin: top center; margin-bottom: -200px; }
-  .landing-mockup-dual { min-width: 0; }
-  /* Formulaire contact ne se déforme pas */
+  .landing-stats { gap: 1rem; padding: 1.5rem 1rem; }
+  .landing-stat-value { font-size: 1.5rem; }
+  .landing-cat-tabs { gap: .3rem; }
+  .landing-cat-tab { font-size: .72rem; padding: .3rem .6rem; }
+  /* Formulaire pleine largeur */
   .landing-contact-field input,
   .landing-contact-field textarea,
   .landing-contact-field select { min-width: 0 !important; width: 100% !important; box-sizing: border-box !important; }
-  /* Empêcher tout débordement global */
+  /* Anti débordement */
   .landing { overflow-x: hidden; }
   section { overflow-x: hidden; }
-  /* Contact form stack */
-  .landing-contact-wrapper { grid-template-columns: 1fr !important; }
 }
 
 .field {
