@@ -193,6 +193,134 @@ function BiHubVisual() {
   )
 }
 
+// ── Composant — Mockup interactif (style Suivi.work) ─────────────────────────
+function InteractiveMockup() {
+  const [active, setActive] = useState('dashboard')
+  const MODULES = [
+    { id: 'dashboard', label: 'Dashboard', icon: '📊', desc: 'Tableau de bord avec KPI en temps réel' },
+    { id: 'crm', label: 'CRM', icon: '🎯', desc: 'Gestion clients, contacts et pipeline commercial' },
+    { id: 'facturation', label: 'Facturation', icon: '🧾', desc: 'Devis, factures, relances et e-facture' },
+    { id: 'rh', label: 'RH & Paie', icon: '👥', desc: 'Collaborateurs, absences, temps et paie' },
+    { id: 'compta', label: 'Comptabilité', icon: '💰', desc: 'Écritures, FEC, rapprochement bancaire' },
+    { id: 'projet', label: 'Projets', icon: '📋', desc: 'Planification, suivi et rentabilité projet' },
+    { id: 'site', label: 'Site web', icon: '🌐', desc: 'Vitrine, e-commerce, blog, portail client' },
+  ]
+  const PREVIEWS = {
+    dashboard: { title: 'Tableau de bord', kpis: ['CA: 72 450 €', 'Pipeline: 343k €', 'Marge: 68%', 'Tréso: 62k €'], chart: true },
+    crm: { title: 'Pipeline commercial', kpis: ['Leads: 47', 'Opportunités: 12', 'CA gagné: 185k €', 'Taux: 34%'], chart: false },
+    facturation: { title: 'Facturation', kpis: ['Factures: 156', 'En attente: 23k €', 'En retard: 8k €', 'Payées: 245k €'], chart: false },
+    rh: { title: 'Équipe', kpis: ['Collaborateurs: 45', 'Absents: 3', 'Heures saisies: 1247h', 'Taux occ.: 94%'], chart: false },
+    compta: { title: 'Comptabilité', kpis: ['Écritures: 4 521', 'Rapproché: 98%', 'FEC: OK', 'Balance: 0.00 €'], chart: false },
+    projet: { title: 'Projets en cours', kpis: ['Actifs: 8', 'Budget restant: 125k €', 'Retard: 1', 'Terminés: 23'], chart: false },
+    site: { title: 'Site web', kpis: ['Visiteurs: 3 240', 'Pages vues: 8 901', 'Taux rebond: 42%', 'Leads: 18'], chart: false },
+  }
+  const p = PREVIEWS[active]
+
+  return (
+    <div style={{ display: 'flex', gap: 20, alignItems: 'center', width: '100%' }}>
+      {/* Mockup preview */}
+      <div style={{ flex: 1, background: '#fff', borderRadius: 16, boxShadow: '0 20px 60px rgba(0,0,0,.12)', overflow: 'hidden', border: '1px solid #e2e8f0' }}>
+        {/* Browser bar */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '10px 14px', background: '#f8fafc', borderBottom: '1px solid #e2e8f0' }}>
+          <div style={{ display: 'flex', gap: 5 }}>
+            <span style={{ width: 10, height: 10, borderRadius: '50%', background: '#ff5f57' }} />
+            <span style={{ width: 10, height: 10, borderRadius: '50%', background: '#ffbd2e' }} />
+            <span style={{ width: 10, height: 10, borderRadius: '50%', background: '#28c840' }} />
+          </div>
+          <div style={{ flex: 1, textAlign: 'center', fontSize: '.7rem', color: '#94a3b8' }}>🔒 app.timeblast.ai</div>
+        </div>
+        {/* App content */}
+        <div style={{ display: 'flex', minHeight: 280 }}>
+          {/* Mini sidebar */}
+          <div style={{ width: 44, background: '#0f2b42', padding: '10px 6px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4 }}>
+            <img src="/logo-icon-white.svg" alt="" style={{ width: 22, height: 22, marginBottom: 8 }} />
+            {MODULES.map(m => (
+              <div key={m.id} style={{
+                width: 28, height: 28, borderRadius: 6, display: 'flex', alignItems: 'center', justifyContent: 'center',
+                fontSize: 12, background: active === m.id ? 'rgba(255,255,255,.15)' : 'transparent',
+                transition: 'all .2s', cursor: 'pointer',
+              }} onMouseEnter={() => setActive(m.id)}>
+                {m.icon}
+              </div>
+            ))}
+          </div>
+          {/* Main area */}
+          <div style={{ flex: 1, padding: '14px 18px', background: '#f8fafc', transition: 'all .3s' }}>
+            <div style={{ fontSize: '.75rem', fontWeight: 700, color: '#195C82', marginBottom: 12 }}>
+              {MODULES.find(m => m.id === active)?.icon} {p.title}
+            </div>
+            {/* KPIs */}
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 8, marginBottom: 14 }}>
+              {p.kpis.map((kpi, i) => {
+                const [label, val] = kpi.split(': ')
+                return (
+                  <div key={i} style={{ background: '#fff', borderRadius: 8, padding: '8px 10px', border: '1px solid #e2e8f0' }}>
+                    <div style={{ fontSize: '.4rem', color: '#94a3b8', marginBottom: 2 }}>{label}</div>
+                    <div style={{ fontSize: '.75rem', fontWeight: 800, color: '#1a2332' }}>{val}</div>
+                  </div>
+                )
+              })}
+            </div>
+            {/* Placeholder content */}
+            <div style={{ background: '#fff', borderRadius: 8, border: '1px solid #e2e8f0', padding: '12px', minHeight: 120 }}>
+              {p.chart ? (
+                <svg viewBox="0 0 300 60" style={{ width: '100%' }}>
+                  <defs><linearGradient id="mg" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="#195C82" stopOpacity=".15" /><stop offset="100%" stopColor="#195C82" stopOpacity="0" /></linearGradient></defs>
+                  <path d="M0,50 30,45 60,40 90,30 120,35 150,25 180,20 210,18 240,15 270,12 300,6 300,60 0,60Z" fill="url(#mg)" />
+                  <polyline points="0,50 30,45 60,40 90,30 120,35 150,25 180,20 210,18 240,15 270,12 300,6" fill="none" stroke="#195C82" strokeWidth="2" strokeLinejoin="round" />
+                </svg>
+              ) : (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                  {[1,2,3,4].map(i => (
+                    <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '6px 0', borderBottom: '1px solid #f1f5f9' }}>
+                      <div style={{ width: 24, height: 24, borderRadius: 6, background: '#195C8210', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10 }}>
+                        {MODULES.find(m => m.id === active)?.icon}
+                      </div>
+                      <div style={{ flex: 1 }}>
+                        <div style={{ height: 6, background: '#e2e8f0', borderRadius: 3, width: `${90 - i * 15}%` }} />
+                      </div>
+                      <div style={{ width: 40, height: 6, background: i === 1 ? '#dcfce7' : '#e2e8f0', borderRadius: 3 }} />
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Module selector */}
+      <div style={{
+        background: '#fff', borderRadius: 16, padding: '1.5rem', boxShadow: '0 10px 40px rgba(0,0,0,.08)',
+        border: '1px solid #e2e8f0', minWidth: 220,
+      }}>
+        <h3 style={{ margin: '0 0 1rem', fontSize: '1rem', fontWeight: 800, color: '#1e293b', textAlign: 'center' }}>
+          Que souhaitez-vous créer ?
+        </h3>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 8 }}>
+          {MODULES.map(m => (
+            <div key={m.id}
+              onMouseEnter={() => setActive(m.id)}
+              style={{
+                padding: '12px 10px', borderRadius: 10, cursor: 'pointer', textAlign: 'center',
+                border: active === m.id ? '2px solid #195C82' : '1px solid #e2e8f0',
+                background: active === m.id ? '#195C8208' : '#fafbfc',
+                transition: 'all .2s',
+              }}>
+              <div style={{ fontSize: 22, marginBottom: 4 }}>{m.icon}</div>
+              <div style={{ fontSize: '.72rem', fontWeight: 700, color: active === m.id ? '#195C82' : '#475569' }}>{m.label}</div>
+            </div>
+          ))}
+        </div>
+        <button className="landing-btn-primary" onClick={() => document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' })}
+          style={{ width: '100%', marginTop: '1rem', padding: '.75rem', fontSize: '.9rem' }}>
+          Démarrer mon projet →
+        </button>
+      </div>
+    </div>
+  )
+}
+
 // ── Page principale ──────────────────────────────────────────────────────────
 export default function LoginPage() {
   const { signIn, signInWithMicrosoft } = useAuth()
@@ -339,15 +467,14 @@ export default function LoginPage() {
             </div>
           </div>
           <div className="landing-hero-visual">
-            <BiHubVisual />
+            <InteractiveMockup />
           </div>
         </div>
       </section>
 
-      {/* ── Stats + Mockup à cheval (style Kolus) ── */}
-      <section style={{ background: 'linear-gradient(to bottom, #195C82 55%, #fff 55%)', position: 'relative', padding: '0 2rem 5rem' }} id="stats">
-        {/* Stats */}
-        <div style={{ display: 'flex', justifyContent: 'center', gap: '3rem', padding: '3rem 2rem 2.5rem', flexWrap: 'wrap', maxWidth: 1060, margin: '0 auto' }}>
+      {/* ── Stats ── */}
+      <section style={{ background: '#195C82', padding: '2.5rem 2rem' }} id="stats">
+        <div style={{ display: 'flex', justifyContent: 'center', gap: '3rem', flexWrap: 'wrap', maxWidth: 1060, margin: '0 auto' }}>
           {STATS.map((s, i) => (
             <div key={i} style={{ textAlign: 'center' }}>
               <span style={{ display: 'block', fontSize: '2.4rem', fontWeight: 800, color: '#fff' }}>{s.value}</span>
