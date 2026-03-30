@@ -14,6 +14,16 @@ function useEnvPrefix() {
 
 const SECTIONS = [
   {
+    id: 'editor',
+    icon: '\u26A1',
+    label: '\u00C9diteur IA',
+    landingTo: '/editor',
+    directLink: true,
+    roles: ['admin', 'manager', 'collaborateur'],
+    items: [],
+    highlight: true,
+  },
+  {
     id: 'calendrier',
     icon: '📆',
     label: 'Calendrier',
@@ -311,7 +321,7 @@ export default function Sidebar() {
             return (
               <div
                 key={section.id}
-                className={`rail-item ${isActive ? 'rail-item--active' : ''} ${hoveredId === section.id ? 'rail-item--hover' : ''}`}
+                className={`rail-item ${isActive ? 'rail-item--active' : ''} ${hoveredId === section.id ? 'rail-item--hover' : ''} ${section.highlight ? 'rail-item--highlight' : ''}`}
                 onMouseEnter={e => (section.directTo || section.directLink || items.length <= 1) ? null : showFlyout(section.id, e)}
                 onMouseLeave={scheduleHide}
                 onClick={() => {

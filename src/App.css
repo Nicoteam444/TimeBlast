@@ -692,6 +692,8 @@ button:disabled { opacity: .6; cursor: not-allowed; }
 .rail-item:hover     { background: rgba(0,0,0,0.12); color: rgba(255,255,255,0.9); }
 .rail-item--active   { color: #fff; border-left-color: rgba(255,255,255,0.7); background: rgba(0,0,0,0.15); }
 .rail-item--hover    { background: rgba(0,0,0,0.12); color: rgba(255,255,255,0.9); }
+.rail-item--highlight { background: linear-gradient(135deg, #1a5c82, #2563eb); border-radius: 8px; margin: 2px 6px; color: #fff; }
+.rail-item--highlight:hover { background: linear-gradient(135deg, #1e6a94, #3b82f6); }
 
 .rail-item-icon  { font-size: 1rem; flex-shrink: 0; width: 20px; text-align: center; }
 .rail-item-label { font-size: .82rem; font-weight: 500; flex: 1; }
