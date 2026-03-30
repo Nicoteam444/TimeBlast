@@ -3,23 +3,57 @@ import { useParams } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
 import { supabase } from '../lib/supabase'
 
-// Les vraies pages TimeBlast pour la navigation
-const TB_PAGES = [
-  { id: 'dashboard', path: '/dashboard', label: 'Tableau de bord', icon: '📊' },
-  { id: 'calendrier', path: '/activite/saisie', label: 'Calendrier', icon: '📅' },
-  { id: 'contacts', path: '/crm/contacts', label: 'Contacts', icon: '👤' },
-  { id: 'leads', path: '/crm/leads', label: 'Leads', icon: '🎯' },
-  { id: 'entreprises', path: '/crm/entreprises', label: 'Entreprises', icon: '🏢' },
-  { id: 'pipeline', path: '/commerce/transactions', label: 'Pipeline', icon: '📈' },
-  { id: 'devis', path: '/commerce/devis', label: 'Devis', icon: '📝' },
-  { id: 'factures', path: '/finance/facturation', label: 'Facturation', icon: '🧾' },
-  { id: 'produits', path: '/commerce/produits', label: 'Produits', icon: '📦' },
-  { id: 'projets', path: '/activite/projets', label: 'Projets', icon: '📋' },
-  { id: 'equipe', path: '/activite/equipe', label: 'Équipe', icon: '👥' },
-  { id: 'compta', path: '/finance/compta', label: 'Comptabilité', icon: '💰' },
-  { id: 'documents', path: '/documents/archives', label: 'Documents', icon: '📁' },
-  { id: 'analytics', path: '/admin/analytics', label: 'Analytics', icon: '📊' },
-  { id: 'parametres', path: '/profil', label: 'Paramètres', icon: '⚙️' },
+// Sections de navigation de l'éditeur
+const NAV_SECTIONS = [
+  {
+    id: 'connexion', label: '🌐 Page de connexion', collapsed: true,
+    pages: [
+      { id: 'login', path: '/login', label: 'Page d\'accueil', icon: '🏠', external: true },
+      { id: 'inscription', path: '/inscription', label: 'Inscription', icon: '📝', external: true },
+      { id: 'efacture', path: '/facture-electronique', label: 'E-Facture 2026', icon: '📄', external: true },
+      { id: 'tarifs', path: '/tarifs', label: 'Tarifs', icon: '💎', external: true },
+    ]
+  },
+  {
+    id: 'backoffice', label: '🔧 Backoffice', collapsed: true,
+    pages: [
+      { id: 'bo-env', path: '/backoffice', label: 'Environnements', icon: '🏢', external: true },
+      { id: 'bo-import', path: '/backoffice', label: 'Import données', icon: '📥', external: true },
+      { id: 'bo-tables', path: '/backoffice', label: 'Tables', icon: '🗄', external: true },
+      { id: 'bo-integrations', path: '/backoffice', label: 'Intégrations', icon: '🔌', external: true },
+      { id: 'bo-droits', path: '/backoffice', label: 'Droits & Profils', icon: '🔐', external: true },
+    ]
+  },
+  {
+    id: 'plateforme', label: '⚡ Plateforme', collapsed: false,
+    pages: [
+      { id: 'dashboard', path: '/dashboard', label: 'Tableau de bord', icon: '📊' },
+      { id: 'calendrier', path: '/activite/saisie', label: 'Calendrier', icon: '📅' },
+      { id: 'contacts', path: '/crm/contacts', label: 'Contacts', icon: '👤' },
+      { id: 'leads', path: '/crm/leads', label: 'Leads', icon: '🎯' },
+      { id: 'entreprises', path: '/crm/entreprises', label: 'Entreprises', icon: '🏢' },
+      { id: 'pipeline', path: '/commerce/transactions', label: 'Pipeline', icon: '📈' },
+      { id: 'devis', path: '/commerce/devis', label: 'Devis', icon: '📝' },
+      { id: 'factures', path: '/finance/facturation', label: 'Facturation', icon: '🧾' },
+      { id: 'produits', path: '/commerce/produits', label: 'Produits', icon: '📦' },
+      { id: 'projets', path: '/activite/projets', label: 'Projets', icon: '📋' },
+      { id: 'equipe', path: '/activite/equipe', label: 'Équipe', icon: '👥' },
+      { id: 'compta', path: '/finance/compta', label: 'Comptabilité', icon: '💰' },
+      { id: 'documents', path: '/documents/archives', label: 'Documents', icon: '📁' },
+      { id: 'predictions', path: '/predictions-ia', label: 'Prédictions IA', icon: '🔮' },
+      { id: 'wiki', path: '/wiki', label: 'Wiki', icon: '📚' },
+      { id: 'parametres', path: '/profil', label: 'Paramètres', icon: '⚙️' },
+    ]
+  },
+  {
+    id: 'admin', label: '👥 Administration', collapsed: true,
+    pages: [
+      { id: 'utilisateurs', path: '/admin/utilisateurs', label: 'Utilisateurs', icon: '👤' },
+      { id: 'societes', path: '/admin/societes', label: 'Sociétés', icon: '🏢' },
+      { id: 'analytics', path: '/admin/analytics', label: 'Analytics', icon: '📊' },
+      { id: 'audit', path: '/admin/audit', label: 'Journal d\'audit', icon: '📋' },
+    ]
+  },
 ]
 
 const INIT_MESSAGES = [
@@ -32,7 +66,8 @@ export default function EditorPage() {
   const [messages, setMessages] = useState(INIT_MESSAGES)
   const [input, setInput] = useState('')
   const [sending, setSending] = useState(false)
-  const [activePage, setActivePage] = useState(TB_PAGES[0])
+  const [activePage, setActivePage] = useState(NAV_SECTIONS[2].pages[0])
+  const [collapsedSections, setCollapsedSections] = useState({ connexion: true, backoffice: true, plateforme: false, admin: true })
   const [previewMode, setPreviewMode] = useState('desktop')
   const [centerTab, setCenterTab] = useState('chat')
   const [fullscreen, setFullscreen] = useState(null) // null | 'chat' | 'preview'
@@ -43,7 +78,9 @@ export default function EditorPage() {
   const inputRef = useRef(null)
   const dragRef = useRef(null)
 
-  const previewUrl = `${window.location.origin}/${envId}${activePage.path}`
+  const previewUrl = activePage.external
+    ? `${window.location.origin}${activePage.path}`
+    : `${window.location.origin}/${envId}${activePage.path}`
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
@@ -109,24 +146,43 @@ export default function EditorPage() {
           <span style={{ marginLeft: 'auto', fontSize: 10, padding: '2px 8px', borderRadius: 99, background: '#22c55e', color: '#fff', fontWeight: 600 }}>IA</span>
         </div>
 
-        {/* Pages */}
-        <div style={{ padding: '8px', flex: 1, overflow: 'auto' }}>
-          <div style={{ fontSize: 10, textTransform: 'uppercase', letterSpacing: '0.08em', color: '#475569', padding: '8px 8px 6px', fontWeight: 700 }}>
-            Pages de la plateforme
-          </div>
-          {TB_PAGES.map(page => (
-            <div key={page.id} onClick={() => setActivePage(page)} style={{
-              display: 'flex', alignItems: 'center', gap: 10,
-              padding: '8px 10px', borderRadius: 8, cursor: 'pointer', marginBottom: 2,
-              background: activePage.id === page.id ? '#1e293b' : 'transparent',
-              color: activePage.id === page.id ? '#fff' : '#94a3b8',
-              transition: 'all .12s', fontSize: 13,
-            }}
-            onMouseEnter={e => { if (activePage.id !== page.id) e.currentTarget.style.background = '#1e293b40' }}
-            onMouseLeave={e => { if (activePage.id !== page.id) e.currentTarget.style.background = 'transparent' }}
-            >
-              <span style={{ fontSize: 16, width: 24, textAlign: 'center' }}>{page.icon}</span>
-              <span style={{ fontWeight: activePage.id === page.id ? 600 : 400 }}>{page.label}</span>
+        {/* Navigation sections */}
+        <div style={{ padding: '4px 8px', flex: 1, overflow: 'auto' }}>
+          {NAV_SECTIONS.map(section => (
+            <div key={section.id} style={{ marginBottom: 4 }}>
+              {/* Section header */}
+              <div
+                onClick={() => setCollapsedSections(prev => ({ ...prev, [section.id]: !prev[section.id] }))}
+                style={{
+                  display: 'flex', alignItems: 'center', gap: 6,
+                  padding: '8px 8px', borderRadius: 6, cursor: 'pointer',
+                  fontSize: 12, fontWeight: 700, color: '#94a3b8',
+                  transition: 'all .12s',
+                }}
+                onMouseEnter={e => e.currentTarget.style.color = '#e2e8f0'}
+                onMouseLeave={e => e.currentTarget.style.color = '#94a3b8'}
+              >
+                <span style={{ fontSize: 10, transition: 'transform .15s', transform: collapsedSections[section.id] ? 'rotate(-90deg)' : 'rotate(0deg)' }}>▼</span>
+                <span>{section.label}</span>
+                <span style={{ marginLeft: 'auto', fontSize: 10, color: '#475569', background: '#1e293b', padding: '1px 6px', borderRadius: 8 }}>{section.pages.length}</span>
+              </div>
+              {/* Pages */}
+              {!collapsedSections[section.id] && section.pages.map(page => (
+                <div key={page.id} onClick={() => setActivePage(page)} style={{
+                  display: 'flex', alignItems: 'center', gap: 8,
+                  padding: '6px 10px 6px 24px', borderRadius: 6, cursor: 'pointer', marginBottom: 1,
+                  background: activePage.id === page.id ? '#1e293b' : 'transparent',
+                  color: activePage.id === page.id ? '#fff' : '#94a3b8',
+                  transition: 'all .12s', fontSize: 12,
+                }}
+                onMouseEnter={e => { if (activePage.id !== page.id) e.currentTarget.style.background = '#1e293b40' }}
+                onMouseLeave={e => { if (activePage.id !== page.id) e.currentTarget.style.background = 'transparent' }}
+                >
+                  <span style={{ fontSize: 14, width: 20, textAlign: 'center' }}>{page.icon}</span>
+                  <span style={{ fontWeight: activePage.id === page.id ? 600 : 400 }}>{page.label}</span>
+                  {page.external && <span style={{ marginLeft: 'auto', fontSize: 9, color: '#475569' }}>↗</span>}
+                </div>
+              ))}
             </div>
           ))}
         </div>
