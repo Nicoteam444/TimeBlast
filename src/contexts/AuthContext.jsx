@@ -9,13 +9,25 @@ export function AuthProvider({ children }) {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
+    // Log OAuth callback errors
+    const hash = window.location.hash
+    if (hash && (hash.includes('error') || hash.includes('access_token'))) {
+      console.log('[Auth] Callback hash:', hash.substring(0, 200))
+    }
+    const params = new URLSearchParams(window.location.search)
+    if (params.get('error')) {
+      console.error('[Auth] OAuth error:', params.get('error'), params.get('error_description'))
+    }
+
     supabase.auth.getSession().then(({ data: { session } }) => {
+      console.log('[Auth] Initial session:', session?.user?.email || 'none')
       setUser(session?.user ?? null)
       if (session?.user) fetchProfile(session.user.id)
       else setLoading(false)
     })
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      console.log('[Auth] Event:', event, 'User:', session?.user?.email, 'Provider:', session?.user?.app_metadata?.provider)
       setUser(session?.user ?? null)
       if (session?.user) fetchProfile(session.user.id)
       else { setProfile(null); setLoading(false) }
