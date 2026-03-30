@@ -1476,7 +1476,7 @@ export default function LoginPage() {
           </p>
         </div>
 
-        <div style={{
+        <div className="landing-contact-wrapper" style={{
           maxWidth: 920, margin: '0 auto', display: 'grid',
           gridTemplateColumns: '1fr 1.2fr', gap: '3rem', alignItems: 'start',
         }}>
@@ -1535,7 +1535,7 @@ export default function LoginPage() {
               </div>
             ) : (
               <>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginBottom: 16 }}>
+                <div className="landing-contact-row" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginBottom: 16 }}>
                   <div>
                     <label style={{ display: 'block', fontSize: '.82rem', fontWeight: 600, color: S.dark, marginBottom: 6 }}>Nom complet *</label>
                     <input type="text" required placeholder="Jean Dupont"
@@ -1549,7 +1549,7 @@ export default function LoginPage() {
                       style={inputStyle} onFocus={focusInput} onBlur={blurInput} />
                   </div>
                 </div>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginBottom: 16 }}>
+                <div className="landing-contact-row" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginBottom: 16 }}>
                   <div>
                     <label style={{ display: 'block', fontSize: '.82rem', fontWeight: 600, color: S.dark, marginBottom: 6 }}>Entreprise</label>
                     <input type="text" placeholder="Mon Entreprise SAS"

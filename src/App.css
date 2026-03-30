@@ -311,6 +311,7 @@ body {
   /* Mockup + chat : réduit en zoom pour rester visible en entier */
   .landing-mockup-wrapper {
     overflow: hidden;
+    margin-top: 2rem;
   }
   .landing-mockup-dual { zoom: 0.38; min-width: 0 !important; }
   /* Grilles */
