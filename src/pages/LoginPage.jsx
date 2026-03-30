@@ -1123,7 +1123,7 @@ export default function LoginPage() {
             <p style={{
               fontSize: '1.1rem', color: S.gray, lineHeight: 1.65, margin: '0 0 2rem', maxWidth: 520,
             }}>
-              Décrivez votre besoin. TimeBlast le génère. Nativement interconnecté à tous les logiciels de votre SI.
+              Décrivez votre besoin, nos équipes le développent. Créez votre logiciel métier sur mesure ou confiez-le à nos experts.
             </p>
 
             <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
