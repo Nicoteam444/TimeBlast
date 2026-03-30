@@ -90,6 +90,7 @@ const ImportsPage = lazy(() => import('./pages/admin/ImportsPage'))
 const TablesPage = lazy(() => import('./pages/admin/TablesPage'))
 const IntegrationsAdminPage = lazy(() => import('./pages/admin/IntegrationsAdminPage'))
 const WikiPage = lazy(() => import('./pages/wiki/WikiPage'))
+const PricingPage = lazy(() => import('./pages/PricingPage'))
 
 // Spinner global pour lazy loading
 function LazySpinner() {
@@ -136,6 +137,7 @@ function AppRoutes() {
     <Routes>
       <Route path="/login" element={<><InviteHandler /><LoginPage /></>} />
       <Route path="/facture-electronique" element={<FactureElectroniquePage />} />
+      <Route path="/pricing" element={<PricingPage />} />
       <Route path="/client/invoice/:id" element={<ClientInvoicePortal />} />
       <Route path="/set-password" element={<SetPasswordPage />} />
       <Route path="/unauthorized" element={<UnauthorizedPage />} />
