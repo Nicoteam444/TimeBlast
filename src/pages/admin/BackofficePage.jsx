@@ -986,6 +986,7 @@ function RightsTab() {
 const TABS = [
   { id: 'envs', label: 'Environnements', icon: '🌐' },
   { id: 'users', label: 'Utilisateurs & Acces', icon: '👥' },
+  { id: 'inscriptions', label: 'Inscriptions', icon: '📋' },
   { id: 'integrations', label: 'Intégrations', icon: '🔌' },
   { id: 'imports', label: 'Import données', icon: '📥' },
   { id: 'tables', label: 'Tables', icon: '🗄' },
@@ -1052,7 +1053,72 @@ export default function BackofficePage() {
       {tab === 'tables' && <TablesTab />}
       {tab === 'rights' && <RightsTab />}
       {tab === 'monitoring' && <MonitoringTab />}
+      {tab === 'inscriptions' && <InscriptionsTab />}
       {tab === 'deploy' && <DeployTab />}
+    </div>
+  )
+}
+
+// ── Onglet Inscriptions ──
+function InscriptionsTab() {
+  const [rows, setRows] = useState([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => { load() }, [])
+
+  async function load() {
+    setLoading(true)
+    const { data } = await supabase.from('inscriptions').select('*').order('created_at', { ascending: false })
+    setRows(data || [])
+    setLoading(false)
+  }
+
+  return (
+    <div style={S.card}>
+      <div style={{ ...S.cardPad, borderBottom: '1px solid #f1f5f9', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <div>
+          <h3 style={{ margin: 0, fontSize: '1rem', fontWeight: 700 }}>📋 Demandes d'inscription</h3>
+          <p style={{ margin: '2px 0 0', fontSize: '.8rem', color: '#94a3b8' }}>{rows.length} demande{rows.length > 1 ? 's' : ''} reçue{rows.length > 1 ? 's' : ''}</p>
+        </div>
+        <button onClick={load} style={S.btn}>🔄 Actualiser</button>
+      </div>
+
+      {loading ? (
+        <div style={{ padding: '3rem', textAlign: 'center', color: '#94a3b8' }}>Chargement…</div>
+      ) : rows.length === 0 ? (
+        <div style={{ padding: '3rem', textAlign: 'center', color: '#94a3b8' }}>Aucune demande pour l'instant.</div>
+      ) : (
+        <div style={{ overflowX: 'auto' }}>
+          <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '.85rem' }}>
+            <thead>
+              <tr style={{ background: '#f8fafc' }}>
+                {['Prénom', 'Nom', 'Email', 'Téléphone', 'Message', 'Date'].map(h => (
+                  <th key={h} style={{ padding: '10px 16px', textAlign: 'left', fontWeight: 700, color: '#475569', fontSize: '.75rem', textTransform: 'uppercase', letterSpacing: .5, borderBottom: '1px solid #e2e8f0', whiteSpace: 'nowrap' }}>{h}</th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {rows.map(r => (
+                <tr key={r.id} style={{ borderBottom: '1px solid #f1f5f9' }}
+                  onMouseEnter={e => e.currentTarget.style.background = '#f8fafc'}
+                  onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>
+                  <td style={{ padding: '12px 16px', fontWeight: 600, color: '#1e293b' }}>{r.prenom}</td>
+                  <td style={{ padding: '12px 16px', color: '#1e293b' }}>{r.nom}</td>
+                  <td style={{ padding: '12px 16px' }}>
+                    <a href={`mailto:${r.email}`} style={{ color: '#195C82', textDecoration: 'none', fontWeight: 600 }}>{r.email}</a>
+                  </td>
+                  <td style={{ padding: '12px 16px', color: '#64748b' }}>{r.telephone || '—'}</td>
+                  <td style={{ padding: '12px 16px', color: '#64748b', maxWidth: 260, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}
+                    title={r.message}>{r.message || '—'}</td>
+                  <td style={{ padding: '12px 16px', color: '#94a3b8', whiteSpace: 'nowrap', fontSize: '.8rem' }}>
+                    {new Date(r.created_at).toLocaleDateString('fr-FR', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
     </div>
   )
 }

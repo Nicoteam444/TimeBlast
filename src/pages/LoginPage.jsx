@@ -100,7 +100,7 @@ function BiHubVisual() {
 
   return (
     <div className="multiprise-container">
-      <svg viewBox="0 0 500 480" className="multiprise-svg">
+      <svg viewBox="0 0 500 480" className="multiprise-svg" style={{ overflow: 'hidden' }}>
         <defs>
           <linearGradient id="hubGrad" x1="0%" y1="0%" x2="100%" y2="100%">
             <stop offset="0%" stopColor="#142d4c" />
@@ -882,7 +882,7 @@ function InteractiveMockup() {
 
 // ── Page principale ──────────────────────────────────────────────────────────
 export default function LoginPage() {
-  const { signIn, signInWithMicrosoft } = useAuth()
+  const { signIn, signInWithMicrosoft, user, loading: authLoading } = useAuth()
   const navigate = useNavigate()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -893,6 +893,34 @@ export default function LoginPage() {
   const [activeCat, setActiveCat] = useState('all')
 
   const filteredConnectors = activeCat === 'all' ? CONNECTORS : CONNECTORS.filter(c => c.cat === activeCat)
+
+  // DEBUG: afficher l'historique SSO dans la console
+  useEffect(() => {
+    try {
+      const history = JSON.parse(sessionStorage.getItem('__sso_debug') || '[]')
+      const oauthUrl = sessionStorage.getItem('__sso_oauth_url') || 'non capturé'
+      const redirectUri = sessionStorage.getItem('__sso_redirect_uri') || 'non capturé'
+      console.log('[SSO Debug] Navigation history:', JSON.stringify(history))
+      console.log('[SSO Debug] OAuth URL générée:', oauthUrl)
+      console.log('[SSO Debug] redirect_uri dans OAuth URL:', redirectUri)
+    } catch {}
+  }, [])
+
+  // Si l'utilisateur est déjà authentifié (ou vient d'un callback SSO sur /login),
+  // rediriger vers / qui s'occupera de trouver le bon environnement
+  useEffect(() => {
+    console.log('[LoginPage] authLoading=%s user=%s url=%s', authLoading, user?.email||'null', window.location.href)
+    if (authLoading) return
+    // Afficher l'erreur OAuth si présente
+    const params = new URLSearchParams(window.location.search)
+    const oauthErr = params.get('error_description') || params.get('error')
+    if (oauthErr) { setError(decodeURIComponent(oauthErr)); return }
+    // Rediriger si déjà connecté
+    if (user) {
+      console.log('[LoginPage] user authenticated, redirecting to /')
+      navigate('/', { replace: true })
+    }
+  }, [user, authLoading])
 
   // Comptes recents
   const [recentAccounts, setRecentAccounts] = useState([])
@@ -934,10 +962,18 @@ export default function LoginPage() {
   }
 
   async function handleMicrosoftLogin() {
+    console.log('[SSO] handleMicrosoftLogin appelé, loading=', loading)
     setError(null)
-    setLoading(true)
-    const { error: err } = await signInWithMicrosoft()
-    if (err) { setError(err.message); setLoading(false) }
+    setLoading(false) // forcer reset pour éviter blocage
+    try {
+      const { error: err } = await signInWithMicrosoft()
+      console.log('[SSO] signInWithMicrosoft retourné, err=', err)
+      if (err) { setError(err.message); setLoading(false) }
+    } catch(e) {
+      console.error('[SSO] Exception dans signInWithMicrosoft:', e)
+      setError(e.message)
+      setLoading(false)
+    }
   }
 
   function selectRecentAccount(accountEmail) {
@@ -1037,18 +1073,30 @@ export default function LoginPage() {
 
           <button className="landing-burger" onClick={() => setMobileMenu(true)}>☰</button>
 
-          <button onClick={() => setShowLogin(true)} style={{
-            padding: '9px 22px', borderRadius: 10,
-            background: '#195C82',
-            border: 'none', color: '#fff', fontWeight: 700,
-            fontSize: '.85rem', cursor: 'pointer', transition: 'all .25s',
-            boxShadow: '0 4px 20px rgba(25,92,130,0.3)',
-            letterSpacing: '-0.01em',
-          }}
-          onMouseEnter={e => { e.target.style.boxShadow = '0 8px 30px rgba(25,92,130,0.5)'; e.target.style.transform = 'translateY(-1px)' }}
-          onMouseLeave={e => { e.target.style.boxShadow = '0 4px 20px rgba(25,92,130,0.3)'; e.target.style.transform = 'none' }}>
-            Se connecter
-          </button>
+          <div style={{ display: 'flex', gap: '.6rem', alignItems: 'center' }}>
+            <button onClick={() => navigate('/inscription')} style={{
+              padding: '9px 18px', borderRadius: 10,
+              background: 'transparent',
+              border: '1.5px solid #195C82', color: '#195C82', fontWeight: 700,
+              fontSize: '.85rem', cursor: 'pointer', transition: 'all .25s',
+            }}
+            onMouseEnter={e => { e.target.style.background = 'rgba(25,92,130,0.06)' }}
+            onMouseLeave={e => { e.target.style.background = 'transparent' }}>
+              S'inscrire
+            </button>
+            <button onClick={() => setShowLogin(true)} style={{
+              padding: '9px 22px', borderRadius: 10,
+              background: '#195C82',
+              border: 'none', color: '#fff', fontWeight: 700,
+              fontSize: '.85rem', cursor: 'pointer', transition: 'all .25s',
+              boxShadow: '0 4px 20px rgba(25,92,130,0.3)',
+              letterSpacing: '-0.01em',
+            }}
+            onMouseEnter={e => { e.target.style.boxShadow = '0 8px 30px rgba(25,92,130,0.5)'; e.target.style.transform = 'translateY(-1px)' }}
+            onMouseLeave={e => { e.target.style.boxShadow = '0 4px 20px rgba(25,92,130,0.3)'; e.target.style.transform = 'none' }}>
+              Se connecter
+            </button>
+          </div>
         </div>
       </nav>
 
@@ -1125,9 +1173,9 @@ export default function LoginPage() {
             </p>
 
             <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
-              <a href="#contact" className="landing-btn-primary" style={{ textDecoration: 'none' }}>
+              <button onClick={() => navigate('/inscription')} className="landing-btn-primary" style={{ border: 'none', cursor: 'pointer', textDecoration: 'none' }}>
                 Démarrer mon projet →
-              </a>
+              </button>
               <a href="#contact" className="landing-btn-secondary">
                 Nous contacter →
               </a>
@@ -1630,17 +1678,17 @@ export default function LoginPage() {
             Créez votre logiciel de gestion sur mesure sans écrire une ligne de code.
           </p>
           <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', flexWrap: 'wrap' }}>
-            <a href="#contact" style={{
-              padding: '15px 36px', borderRadius: 12, background: '#fff',
+            <button onClick={() => navigate('/inscription')} style={{
+              padding: '15px 36px', borderRadius: 12, background: '#fff', border: 'none', cursor: 'pointer',
               color: S.sra, border: 'none', fontWeight: 700, fontSize: '1rem',
               cursor: 'pointer', transition: 'all .25s', textDecoration: 'none',
               boxShadow: '0 4px 20px rgba(0,0,0,0.15)',
               letterSpacing: '-0.01em', display: 'inline-flex', alignItems: 'center',
             }}
-            onMouseEnter={e => { e.target.style.transform = 'translateY(-2px)'; e.target.style.boxShadow = '0 8px 30px rgba(0,0,0,0.25)' }}
-            onMouseLeave={e => { e.target.style.transform = 'none'; e.target.style.boxShadow = '0 4px 20px rgba(0,0,0,0.15)' }}>
+            onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 8px 30px rgba(0,0,0,0.25)' }}
+            onMouseLeave={e => { e.currentTarget.style.transform = 'none'; e.currentTarget.style.boxShadow = '0 4px 20px rgba(0,0,0,0.15)' }}>
               Démarrer mon projet →
-            </a>
+            </button>
             <a href="#contact" style={{
               padding: '15px 36px', borderRadius: 12, background: 'transparent',
               border: '1.5px solid rgba(255,255,255,0.3)', color: '#fff',

@@ -1,5 +1,18 @@
 import { createContext, useContext, useEffect, useState } from 'react'
-import { supabase } from '../lib/supabase'
+import { createClient } from '@supabase/supabase-js'
+import { supabase, defaultUrl, defaultKey, resetToMasterClient } from '../lib/supabase'
+
+// Client dédié master — toujours pointe vers la base principale,
+// même si switchSupabaseClient() a reconfiguré le proxy partagé.
+// detectSessionInUrl: false → ne tente PAS d'échanger le code PKCE
+// (seul le client proxy principal gère ça, pour éviter la double tentative
+//  qui cause "Unable to exchange external code: 1.AT")
+const masterClient = createClient(defaultUrl, defaultKey, {
+  auth: {
+    detectSessionInUrl: false,
+    autoRefreshToken: false, // le client principal gère le refresh
+  }
+})
 
 const AuthContext = createContext(null)
 
@@ -9,25 +22,33 @@ export function AuthProvider({ children }) {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    // Log OAuth callback errors
-    const hash = window.location.hash
-    if (hash && (hash.includes('error') || hash.includes('access_token'))) {
-      console.log('[Auth] Callback hash:', hash.substring(0, 200))
-    }
+    // Détecter un callback PKCE (?code=) ou implicite (#access_token)
     const params = new URLSearchParams(window.location.search)
+    const hash = window.location.hash
+    const hasPKCECode = !!params.get('code')
+    const hasImplicitToken = hash.includes('access_token') || hash.includes('refresh_token')
+    const isOAuthCallback = hasPKCECode || hasImplicitToken
+
     if (params.get('error')) {
       console.error('[Auth] OAuth error:', params.get('error'), params.get('error_description'))
     }
 
+    // getSession() gère l'échange PKCE en interne et retourne la session finale
     supabase.auth.getSession().then(({ data: { session } }) => {
-      console.log('[Auth] Initial session:', session?.user?.email || 'none')
+      console.log('[Auth] getSession result:', session?.user?.email || 'null', 'isOAuth:', isOAuthCallback)
       setUser(session?.user ?? null)
       if (session?.user) fetchProfile(session.user.id)
       else setLoading(false)
     })
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      console.log('[Auth] Event:', event, 'User:', session?.user?.email, 'Provider:', session?.user?.app_metadata?.provider)
+      console.log('[Auth] event=%s user=%s isOAuthCallback=%s', event, session?.user?.email||'null', isOAuthCallback)
+      // Ignorer INITIAL_SESSION null pendant l'échange PKCE pour éviter une
+      // redirection prématurée vers /login avant que getSession() ait fini
+      if (event === 'INITIAL_SESSION' && !session && isOAuthCallback) {
+        console.log('[Auth] Skipping INITIAL_SESSION null (OAuth in progress)')
+        return
+      }
       setUser(session?.user ?? null)
       if (session?.user) fetchProfile(session.user.id)
       else { setProfile(null); setLoading(false) }
@@ -37,7 +58,7 @@ export function AuthProvider({ children }) {
   }, [])
 
   async function fetchProfile(userId, retries = 3) {
-    const { data } = await supabase.from('profiles').select('*').eq('id', userId).single()
+    const { data } = await masterClient.from('profiles').select('*').eq('id', userId).single()
     if (!data && retries > 0) {
       await new Promise(r => setTimeout(r, 500))
       return fetchProfile(userId, retries - 1)
@@ -59,7 +80,7 @@ export function AuthProvider({ children }) {
     if (error) return { error }
     // Vérifier si le compte est désactivé
     if (authData?.user) {
-      const { data: prof } = await supabase.from('profiles').select('actif').eq('id', authData.user.id).single()
+      const { data: prof } = await masterClient.from('profiles').select('actif').eq('id', authData.user.id).single()
       if (prof && prof.actif === false) {
         await supabase.auth.signOut()
         return { error: { message: 'Votre compte a été désactivé. Contactez votre administrateur.' } }
@@ -69,12 +90,22 @@ export function AuthProvider({ children }) {
   }
 
   async function signInWithMicrosoft() {
-    const { error } = await supabase.auth.signInWithOAuth({
+    resetToMasterClient() // S'assurer qu'on utilise le client master (Azure configuré ici)
+    const { data, error } = await supabase.auth.signInWithOAuth({
       provider: 'azure',
       options: {
-        scopes: 'openid email profile Calendars.ReadWrite',
+        scopes: 'openid email profile',
         redirectTo: window.location.origin + '/'}
     })
+    // Sauvegarder l'URL OAuth dans sessionStorage (survit à la navigation)
+    try {
+      const url = data?.url || 'null'
+      sessionStorage.setItem('__sso_oauth_url', url)
+      // Extraire redirect_to du paramètre state ou de l'URL directement
+      const parsed = url !== 'null' ? new URL(url) : null
+      const redirectUri = parsed?.searchParams?.get('redirect_uri') || parsed?.searchParams?.get('redirect_to') || 'non trouvé'
+      sessionStorage.setItem('__sso_redirect_uri', redirectUri)
+    } catch {}
     return { error }
   }
 
@@ -85,6 +116,7 @@ export function AuthProvider({ children }) {
 
   async function signOut() {
     await supabase.auth.signOut()
+    resetToMasterClient() // Remettre sur master après déconnexion
   }
 
   const hasRole = (...roles) => profile && roles.includes(profile.role)

@@ -21,6 +21,7 @@ export function EnvProvider({ children }) {
 
   useEffect(() => {
     if (!user) { setLoading(false); return }
+    setLoading(true)
     loadEnvironments()
   }, [user?.id])
 

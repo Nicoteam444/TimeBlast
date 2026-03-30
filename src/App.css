@@ -103,8 +103,8 @@ body {
 .landing-btn-lg { padding: 1rem 2.5rem; font-size: 1.1rem; }
 
 /* ── Multiprise SVG ── */
-.multiprise-container { width: 100%; max-width: 480px; margin: 0 auto; background: rgba(15,76,117,0.03); border-radius: 50%; padding: 1rem; }
-.multiprise-svg { width: 100%; height: auto; }
+.multiprise-container { width: 100%; max-width: 480px; margin: 0 auto; background: rgba(15,76,117,0.03); border-radius: 50%; padding: 1rem; overflow: hidden; }
+.multiprise-svg { width: 100%; height: auto; display: block; overflow: hidden; }
 .multiprise-hub { animation: pulse-hub 3s ease-in-out infinite; }
 .multiprise-ambient { animation: pulse-ambient 4s ease-in-out infinite; }
 .multiprise-line--active { animation: line-glow .8s ease-out; }

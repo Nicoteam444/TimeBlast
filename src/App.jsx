@@ -1,4 +1,4 @@
-import { useEffect, lazy, Suspense } from 'react'
+import { useEffect, useRef, lazy, Suspense } from 'react'
 import { BrowserRouter, Routes, Route, Navigate, useNavigate } from 'react-router-dom'
 import { AuthProvider } from './contexts/AuthContext'
 import { DemoProvider } from './contexts/DemoContext'
@@ -91,6 +91,7 @@ const TablesPage = lazy(() => import('./pages/admin/TablesPage'))
 const IntegrationsAdminPage = lazy(() => import('./pages/admin/IntegrationsAdminPage'))
 const WikiPage = lazy(() => import('./pages/wiki/WikiPage'))
 const PricingPage = lazy(() => import('./pages/PricingPage'))
+const InscriptionPage = lazy(() => import('./pages/InscriptionPage'))
 
 // Spinner global pour lazy loading
 function LazySpinner() {
@@ -119,16 +120,33 @@ function EnvDefaultRedirect() {
   const { user, loading: authLoading } = useAuth()
   const navigate = useNavigate()
 
+  // Capturer l'état OAuth AU MONTAGE (avant que Supabase efface ?code= ou #hash de l'URL)
+  const isOAuthCallbackRef = useRef((() => {
+    const p = new URLSearchParams(window.location.search)
+    const h = window.location.hash
+    return !!p.get('code') || h.includes('access_token') || h.includes('refresh_token')
+  })())
+  const oauthErrorRef = useRef(new URLSearchParams(window.location.search).get('error'))
+
   useEffect(() => {
+    console.log('[Redirect] authLoading=%s loading=%s user=%s envs=%s isOAuth=%s oauthErr=%s url=%s hash=%s',
+      authLoading, loading, user?.email||'null', environments?.length,
+      isOAuthCallbackRef.current, oauthErrorRef.current,
+      window.location.search, window.location.hash.substring(0,50))
     if (authLoading || loading) return
-    // Ne pas rediriger vers /login si on est en plein callback OAuth
-    const hash = window.location.hash
-    const isOAuthCallback = hash.includes('access_token') || hash.includes('error') || hash.includes('refresh_token')
-    if (!user && !isOAuthCallback) { navigate('/login', { replace: true }); return }
-    if (!user) return // Attendre que le callback OAuth finisse
+    // Erreur OAuth explicite → login
+    if (!user && oauthErrorRef.current) { console.log('[Redirect] → /login (oauth error)'); navigate('/login', { replace: true }); return }
+    // Pas d'user et pas de callback OAuth → login
+    if (!user && !isOAuthCallbackRef.current) { console.log('[Redirect] → /login (no user, no oauth)'); navigate('/login', { replace: true }); return }
+    // Callback en cours mais user pas encore set → attendre
+    if (!user) { console.log('[Redirect] waiting for user (oauth in progress)'); return }
     if (environments?.length > 0) {
       const defaultEnv = environments.find(e => e.is_production) || environments[0]
+      console.log('[Redirect] → /' + defaultEnv.env_code)
       navigate(`/${defaultEnv.env_code}`, { replace: true })
+    } else {
+      console.log('[Redirect] → /login (no environments for user', user?.email, ')')
+      navigate('/login', { replace: true })
     }
   }, [environments, loading, authLoading, user])
 
@@ -142,6 +160,7 @@ function AppRoutes() {
       <Route path="/login" element={<><InviteHandler /><LoginPage /></>} />
       <Route path="/facture-electronique" element={<FactureElectroniquePage />} />
       <Route path="/pricing" element={<PricingPage />} />
+      <Route path="/inscription" element={<InscriptionPage />} />
       <Route path="/client/invoice/:id" element={<ClientInvoicePortal />} />
       <Route path="/set-password" element={<SetPasswordPage />} />
       <Route path="/unauthorized" element={<UnauthorizedPage />} />
