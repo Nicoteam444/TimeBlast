@@ -78,7 +78,7 @@ export default function FactureElectroniquePage() {
           <div style={{ cursor: 'pointer', flexShrink: 0 }} onClick={() => navigate('/login')}>
             <img src="/logo-full.svg" alt="TimeBlast" style={{ height: 40 }} />
           </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '2rem', fontSize: '.85rem', fontWeight: 500 }} className="landing-nav-links">
+          <div style={{ alignItems: 'center', gap: '2rem', fontSize: '.85rem', fontWeight: 500 }} className="landing-nav-links">
             <a href="/login" style={{ color: '#64748b', textDecoration: 'none' }}>Accueil</a>
             <a href="#probleme" style={{ color: '#64748b', textDecoration: 'none' }}>Le problème</a>
             <a href="#solution" style={{ color: '#64748b', textDecoration: 'none' }}>La solution</a>

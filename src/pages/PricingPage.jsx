@@ -195,7 +195,7 @@ export default function PricingPage() {
             <img src="/logo-full.svg" alt="TimeBlast" style={{ height: 40 }} />
           </div>
 
-          <div style={{ display: 'flex', alignItems: 'center', gap: '2rem', fontSize: '.85rem', fontWeight: 500 }} className="landing-nav-links">
+          <div style={{ alignItems: 'center', gap: '2rem', fontSize: '.85rem', fontWeight: 500 }} className="landing-nav-links">
             <a href="/login#comment" style={{ color: S.gray, textDecoration: 'none' }}>Comment ça marche</a>
             <a href="/login#modules" style={{ color: S.gray, textDecoration: 'none' }}>Modules</a>
             <span style={{ color: S.neon, fontWeight: 700, cursor: 'default' }}>Tarifs</span>
