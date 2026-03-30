@@ -111,6 +111,177 @@ function SectionHeader({ icon, title, linkLabel, onLink }) {
   )
 }
 
+// ── Barre de prompt IA ──────────────────────────────────────────────────────
+function AiPromptBar({ navigate }) {
+  const [prompt, setPrompt] = useState('')
+  const [messages, setMessages] = useState([])
+  const [loading, setLoading] = useState(false)
+  const [expanded, setExpanded] = useState(false)
+  const inputRef = useRef(null)
+
+  const SUGGESTIONS = [
+    { icon: '📊', text: 'Crée un tableau de bord pour suivre mon CA par mois' },
+    { icon: '👥', text: 'Ajoute un module de gestion des candidatures RH' },
+    { icon: '📦', text: 'Génère un suivi de stock avec alertes de réapprovisionnement' },
+    { icon: '📈', text: 'Montre-moi la rentabilité par projet sur les 6 derniers mois' },
+  ]
+
+  async function handleSubmit(e) {
+    e?.preventDefault()
+    if (!prompt.trim() || loading) return
+    const userMsg = prompt.trim()
+    setPrompt('')
+    setExpanded(true)
+    setMessages(prev => [...prev, { role: 'user', text: userMsg }])
+    setLoading(true)
+    try {
+      const res = await supabase.functions.invoke('chat-ai', {
+        body: { message: userMsg, context: 'dashboard-prompt' }
+      })
+      const aiText = res?.data?.reply || res?.data?.message || 'Je vais analyser votre demande et préparer les modifications.'
+      setMessages(prev => [...prev, { role: 'ai', text: aiText }])
+    } catch {
+      setMessages(prev => [...prev, { role: 'ai', text: 'Demande enregistrée ! L\'IA va préparer votre module. Consultez vos notifications pour suivre l\'avancement.' }])
+    }
+    setLoading(false)
+  }
+
+  function handleSuggestion(text) {
+    setPrompt(text)
+    setTimeout(() => inputRef.current?.focus(), 50)
+  }
+
+  const barStyle = {
+    background: '#0f172a',
+    borderRadius: 16,
+    padding: expanded ? '1.25rem' : '.75rem 1.25rem',
+    marginBottom: '1.25rem',
+    transition: 'all .3s ease',
+  }
+  const inputContainerStyle = {
+    display: 'flex', alignItems: 'center', gap: '.75rem',
+    background: '#1e293b', borderRadius: 12,
+    padding: '.6rem 1rem',
+    border: '1px solid rgba(99,102,241,.3)',
+    transition: 'border-color .2s',
+  }
+  const inputStyle = {
+    flex: 1, background: 'transparent', border: 'none', outline: 'none',
+    color: '#fff', fontSize: '.95rem', fontFamily: 'inherit',
+  }
+  const btnStyle = {
+    background: 'linear-gradient(135deg, #6366f1, #8b5cf6)',
+    color: '#fff', border: 'none', borderRadius: 10,
+    padding: '.55rem 1.2rem', fontWeight: 600, fontSize: '.85rem',
+    cursor: 'pointer', whiteSpace: 'nowrap',
+    transition: 'transform .15s, box-shadow .15s',
+  }
+
+  return (
+    <div style={barStyle}>
+      {/* Prompt input */}
+      <form onSubmit={handleSubmit} style={inputContainerStyle}>
+        <div style={{
+          width: 32, height: 32, borderRadius: '50%',
+          background: 'linear-gradient(135deg, #6366f1, #8b5cf6)',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          flexShrink: 0, fontSize: '14px',
+        }}>
+          ⚡
+        </div>
+        <input
+          ref={inputRef}
+          value={prompt}
+          onChange={e => setPrompt(e.target.value)}
+          placeholder="Demandez à l'IA de créer ou modifier un module..."
+          style={inputStyle}
+          onFocus={() => !expanded && messages.length === 0 && setExpanded(true)}
+        />
+        <button type="submit" style={{
+          ...btnStyle,
+          opacity: prompt.trim() ? 1 : 0.5,
+          cursor: prompt.trim() ? 'pointer' : 'default',
+        }} disabled={!prompt.trim() || loading}>
+          {loading ? '...' : 'Générer'}
+        </button>
+      </form>
+
+      {/* Suggestions — visibles quand pas de messages */}
+      {expanded && messages.length === 0 && (
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '.5rem', marginTop: '.75rem' }}>
+          {SUGGESTIONS.map((s, i) => (
+            <button key={i} onClick={() => handleSuggestion(s.text)} style={{
+              background: '#1e293b', border: '1px solid rgba(99,102,241,.2)',
+              borderRadius: 10, padding: '.4rem .85rem', color: '#94a3b8',
+              fontSize: '.8rem', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '.35rem',
+              transition: 'all .15s',
+            }}
+            onMouseEnter={e => { e.target.style.borderColor = '#6366f1'; e.target.style.color = '#e2e8f0' }}
+            onMouseLeave={e => { e.target.style.borderColor = 'rgba(99,102,241,.2)'; e.target.style.color = '#94a3b8' }}
+            >
+              <span>{s.icon}</span> {s.text}
+            </button>
+          ))}
+        </div>
+      )}
+
+      {/* Conversation */}
+      {messages.length > 0 && (
+        <div style={{ marginTop: '.75rem', maxHeight: 300, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '.5rem' }}>
+          {messages.map((m, i) => (
+            <div key={i} style={{
+              display: 'flex', gap: '.6rem', alignItems: 'flex-start',
+              justifyContent: m.role === 'user' ? 'flex-end' : 'flex-start',
+            }}>
+              {m.role === 'ai' && (
+                <div style={{
+                  width: 28, height: 28, borderRadius: '50%', flexShrink: 0,
+                  background: 'linear-gradient(135deg, #6366f1, #8b5cf6)',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  fontSize: '12px', color: '#fff',
+                }}>TB</div>
+              )}
+              <div style={{
+                background: m.role === 'user' ? '#6366f1' : '#1e293b',
+                color: '#fff', borderRadius: 12, padding: '.6rem 1rem',
+                fontSize: '.85rem', lineHeight: 1.5, maxWidth: '75%',
+                border: m.role === 'ai' ? '1px solid rgba(99,102,241,.2)' : 'none',
+              }}>
+                {m.text}
+              </div>
+            </div>
+          ))}
+          {loading && (
+            <div style={{ display: 'flex', gap: '.6rem', alignItems: 'center' }}>
+              <div style={{
+                width: 28, height: 28, borderRadius: '50%', flexShrink: 0,
+                background: 'linear-gradient(135deg, #6366f1, #8b5cf6)',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                fontSize: '12px', color: '#fff',
+              }}>TB</div>
+              <div style={{ color: '#64748b', fontSize: '.85rem' }}>
+                <span className="typing-dot">●</span> <span className="typing-dot" style={{ animationDelay: '.2s' }}>●</span> <span className="typing-dot" style={{ animationDelay: '.4s' }}>●</span>
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Réduire */}
+      {expanded && messages.length > 0 && (
+        <div style={{ textAlign: 'center', marginTop: '.5rem' }}>
+          <button onClick={() => { setExpanded(false); setMessages([]) }} style={{
+            background: 'none', border: 'none', color: '#475569', fontSize: '.75rem',
+            cursor: 'pointer',
+          }}>
+            Fermer la conversation
+          </button>
+        </div>
+      )}
+    </div>
+  )
+}
+
 // ── Main Dashboard ──
 export default function DashboardPage() {
   const { user, profile } = useAuth()
@@ -1434,6 +1605,9 @@ export default function DashboardPage() {
           <div style={{ fontSize: '.7rem', marginTop: 4, color: 'rgba(255,255,255,.7)' }}>Semaine</div>
         </div>
       </div>
+
+      {/* ═══ BARRE PROMPT IA ═══ */}
+      <AiPromptBar navigate={navigate} />
 
       {/* ═══ Reset button ═══ */}
       <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '.5rem' }}>
