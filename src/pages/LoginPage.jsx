@@ -1130,8 +1130,8 @@ export default function LoginPage() {
               <a href="#contact" className="landing-btn-primary" style={{ textDecoration: 'none' }}>
                 Démarrer mon projet →
               </a>
-              <a href="#comment" className="landing-btn-secondary">
-                Comment ça marche
+              <a href="#contact" className="landing-btn-secondary">
+                Nous contacter →
               </a>
             </div>
           </div>
