@@ -37,13 +37,13 @@ const TIMELINE = [
     date: '22 mars 2026', day: 'Jour 2', title: "L'acceleration", color: '#16a34a', icon: '🚀',
     summary: '12 modules deployes en une seule journee',
     details: [
-      'Module Facturation complet (Ventes + Achats) avec previsualisation A4',
-      'Module Equipe : Collaborateurs, Absences, Notes de frais, Competences',
+      'Module Facturation complet (Ventes + Achats) avec prévisualisation A4',
+      'Module Équipe : Collaborateurs, Absences, Notes de frais, Compétences',
       'Trombinoscope et Organigramme interactif',
       'Gestion de Projet avec Kanban drag and drop',
       'Module Commerce : Clients, Transactions, Devis, Produits, Stock, Abonnements',
-      'Systeme de favoris persistants en base de donnees',
-      'Module Finance : Comptabilite, FEC, Previsionnel, Immobilisations',
+      'Système de favoris persistants en base de données',
+      'Module Finance : Comptabilité, FEC, Prévisionnel, Immobilisations',
       'Tri par colonnes sur tous les tableaux',
     ]
   },
@@ -78,7 +78,7 @@ const TIMELINE = [
     ]
   },
   {
-    date: '25-26 mars 2026', day: 'Jour 5', title: 'Securite et Deploiement', color: '#dc2626', icon: '🔒',
+    date: '25-26 mars 2026', day: 'Jour 5', title: 'Sécurité et Déploiement', color: '#dc2626', icon: '🔒',
     summary: 'Production-ready en 48h',
     details: [
       'Audit securite complet (isolation donnees par utilisateur et societe)',
@@ -256,7 +256,7 @@ const PHASES = [
     ]
   },
   {
-    title: 'Phase 4 — Multi-tenant et Securite', icon: '🏢', color: '#ea580c',
+    title: 'Phase 4 — Multi-tenant et Sécurité', icon: '🏢', color: '#ea580c',
     items: [
       { s: 'done', t: 'Multi-societes avec selecteur' },
       { s: 'done', t: 'Gestion des droits par role et profils metier' },

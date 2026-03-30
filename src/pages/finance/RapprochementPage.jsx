@@ -291,7 +291,7 @@ export default function RapprochementPage() {
                 Exporter ecarts
               </button>
               <button className="btn-secondary" style={{ color: '#dc2626', borderColor: '#fca5a5' }} onClick={handleClear}>
-                Reinitialiser
+                Réinitialiser
               </button>
             </>
           )}

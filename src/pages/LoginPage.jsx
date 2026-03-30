@@ -5,24 +5,24 @@ import { supabase } from '../lib/supabase'
 
 // ── Modules decisionnels ──
 const BI_MODULES = [
-  { icon: '📊', title: 'Tableaux de bord', desc: 'KPIs temps reel, drill-down multi-axes, alertes automatiques sur seuils.' },
-  { icon: '💰', title: 'Pilotage financier', desc: 'Tresorerie previsionnelle, marge par projet, rapprochement bancaire IA.' },
-  { icon: '⏱', title: 'Suivi d\'activite', desc: 'Saisie des temps, taux d\'occupation, rentabilite collaborateur.' },
-  { icon: '🎯', title: 'Pipeline commercial', desc: 'Kanban deals, prevision CA, scoring leads par intelligence artificielle.' },
-  { icon: '🔗', title: 'Connecteurs natifs', desc: '30+ integrations : Sage, Pennylane, Stripe, HubSpot, PayFit, Slack...' },
-  { icon: '🤖', title: 'IA decisionnelle', desc: 'Anomalies detectees, recommandations contextuelles, agents autonomes.' },
+  { icon: '📊', title: 'Tableaux de bord', desc: 'KPIs temps réel, drill-down multi-axes, alertes automatiques sur seuils.' },
+  { icon: '💰', title: 'Pilotage financier', desc: 'Trésorerie prévisionnelle, marge par projet, rapprochement bancaire IA.' },
+  { icon: '⏱', title: 'Suivi d\'activité', desc: 'Saisie des temps, taux d\'occupation, rentabilité collaborateur.' },
+  { icon: '🎯', title: 'Pipeline commercial', desc: 'Kanban deals, prévision CA, scoring leads par intelligence artificielle.' },
+  { icon: '🔗', title: 'Connecteurs natifs', desc: '30+ intégrations : Sage, Pennylane, Stripe, HubSpot, PayFit, Slack...' },
+  { icon: '🤖', title: 'IA décisionnelle', desc: 'Anomalies détectées, recommandations contextuelles, agents autonomes.' },
 ]
 
 const PERSONAS = [
-  { icon: '👔', role: 'Dirigeant', need: 'Vue 360 de mon entreprise en 1 ecran', solution: 'Dashboard decisionnel avec alertes IA sur CA, tresorerie et rentabilite.' },
-  { icon: '📈', role: 'DAF / Comptable', need: 'Arretes mensuels en 2h au lieu de 2 jours', solution: 'Import FEC, rapprochement bancaire IA, previsionnel automatise.' },
-  { icon: '🎯', role: 'Commercial', need: 'Pipeline clair et previsions fiables', solution: 'Kanban deals, scoring IA, relances automatiques, suivi multi-societes.' },
-  { icon: '👥', role: 'Manager', need: 'Savoir ou en sont mes equipes en temps reel', solution: 'Taux d\'occupation, validation temps, alertes depassement budget projet.' },
+  { icon: '👔', role: 'Dirigeant', need: 'Vue 360 de mon entreprise en 1 écran', solution: 'Dashboard décisionnel avec alertes IA sur CA, trésorerie et rentabilité.' },
+  { icon: '📈', role: 'DAF / Comptable', need: 'Arrêtés mensuels en 2h au lieu de 2 jours', solution: 'Import FEC, rapprochement bancaire IA, prévisionnel automatisé.' },
+  { icon: '🎯', role: 'Commercial', need: 'Pipeline clair et prévisions fiables', solution: 'Kanban deals, scoring IA, relances automatiques, suivi multi-sociétés.' },
+  { icon: '👥', role: 'Manager', need: 'Savoir où en sont mes équipes en temps réel', solution: 'Taux d\'occupation, validation temps, alertes dépassement budget projet.' },
 ]
 
 const STATS = [
-  { value: '48h', label: 'pour generer votre outil' },
-  { value: '11', label: 'modules metier disponibles' },
+  { value: '48h', label: 'pour générer votre outil' },
+  { value: '11', label: 'modules métier disponibles' },
   { value: '0', label: 'ligne de code requise' },
   { value: 'IA', label: 'qui code pour vous' },
 ]
@@ -71,12 +71,12 @@ const CONNECTORS = [
 
 const CATEGORIES = [
   { id: 'all',     label: 'Tous',           icon: '' },
-  { id: 'compta',  label: 'Comptabilite',   icon: '' },
+  { id: 'compta',  label: 'Comptabilité',   icon: '' },
   { id: 'crm',     label: 'CRM',            icon: '' },
   { id: 'finance', label: 'Finance',        icon: '' },
   { id: 'rh',      label: 'RH & Paie',     icon: '' },
   { id: 'comm',    label: 'Communication',  icon: '' },
-  { id: 'prod',    label: 'Productivite',   icon: '' },
+  { id: 'prod',    label: 'Productivité',   icon: '' },
   { id: 'data',    label: 'Data & API',     icon: '' },
   { id: 'ia',      label: 'IA',             icon: '' },
 ]
@@ -172,10 +172,10 @@ function RotatingText() {
     'application de gestion',
     'logiciel de facturation',
     'CRM sur mesure',
-    'outil de comptabilite',
+    'outil de comptabilité',
     'plateforme RH',
     'tableau de bord',
-    'logiciel metier',
+    'logiciel métier',
   ]
   const [index, setIndex] = useState(0)
   const [displayed, setDisplayed] = useState('')
@@ -329,7 +329,7 @@ function InteractiveMockup() {
             <div style={{ background: '#fff', borderRadius: 8, border: '1px solid #e2e8f0', padding: '10px', minHeight: 120 }}>
               {active === 'dashboard' ? (
                 <div>
-                  <div style={{ fontSize: '.5rem', fontWeight: 600, color: '#94a3b8', marginBottom: 6 }}>Evolution CA mensuel (k€)</div>
+                  <div style={{ fontSize: '.5rem', fontWeight: 600, color: '#94a3b8', marginBottom: 6 }}>Évolution CA mensuel (k€)</div>
                   <svg viewBox="0 0 400 90" style={{ width: '100%' }}>
                     <defs>
                       <linearGradient id="mg2" x1="0" y1="0" x2="0" y2="1">
@@ -339,7 +339,7 @@ function InteractiveMockup() {
                     </defs>
                     <path d="M30,70 80,63 140,57 200,43 260,47 320,35 370,22 370,85 30,85Z" fill="url(#mg2)" />
                     <polyline points="30,70 80,63 140,57 200,43 260,47 320,35 370,22" fill="none" stroke="#195C82" strokeWidth="2.5" strokeLinejoin="round" strokeLinecap="round" />
-                    {[[30,70,'Oct'],[80,63,'Nov'],[140,57,'Dec'],[200,43,'Jan'],[260,47,'Fev'],[320,35,'Mar'],[370,22,'Avr']].map(([px,py,lbl], i) => (
+                    {[[30,70,'Oct'],[80,63,'Nov'],[140,57,'Déc'],[200,43,'Jan'],[260,47,'Fév'],[320,35,'Mar'],[370,22,'Avr']].map(([px,py,lbl], i) => (
                       <g key={i}>
                         <circle cx={px} cy={py} r="3" fill="#195C82" stroke="#fff" strokeWidth="1.5" />
                         <text x={px} y={88} textAnchor="middle" fontSize="6" fill="#94a3b8">{lbl}</text>
@@ -349,7 +349,7 @@ function InteractiveMockup() {
                 </div>
               ) : active === 'equipe' ? (
                 <div>
-                  <div style={{ fontSize: '.5rem', fontWeight: 600, color: '#94a3b8', marginBottom: 6 }}>Heures travaillees vs disponibles</div>
+                  <div style={{ fontSize: '.5rem', fontWeight: 600, color: '#94a3b8', marginBottom: 6 }}>Heures travaillées vs disponibles</div>
                   <svg viewBox="0 0 400 100" style={{ width: '100%' }}>
                     {[{name:'Martin',worked:70,avail:25},{name:'Dupont',worked:60,avail:35},{name:'Leroy',worked:50,avail:45},{name:'Moreau',worked:65,avail:30},{name:'Petit',worked:40,avail:55}].map((d, i) => {
                       const x = 30 + i * 72
@@ -365,16 +365,16 @@ function InteractiveMockup() {
                       )
                     })}
                     <rect x="330" y="8" width="8" height="8" rx={1} fill="#195C82" />
-                    <text x="342" y="15" fontSize="6" fill="#64748b">Travaille</text>
+                    <text x="342" y="15" fontSize="6" fill="#64748b">Travaillé</text>
                     <rect x="330" y="20" width="8" height="8" rx={1} fill="#94a3b8" opacity={0.3} />
                     <text x="342" y="27" fontSize="6" fill="#64748b">Dispo.</text>
                   </svg>
                 </div>
               ) : active === 'finance' ? (
                 <div>
-                  <div style={{ fontSize: '.5rem', fontWeight: 600, color: '#94a3b8', marginBottom: 6 }}>Waterfall tresorerie (k€)</div>
+                  <div style={{ fontSize: '.5rem', fontWeight: 600, color: '#94a3b8', marginBottom: 6 }}>Waterfall trésorerie (k€)</div>
                   <svg viewBox="0 0 400 100" style={{ width: '100%' }}>
-                    {[{label:'Jan',val:40,type:'up'},{label:'Fev',val:25,type:'up'},{label:'Charges',val:-18,type:'down'},{label:'Salaires',val:-30,type:'down'},{label:'Subv.',val:15,type:'up'},{label:'Loyer',val:-10,type:'down'},{label:'Mars',val:22,type:'up'}].map((d, i) => {
+                    {[{label:'Jan',val:40,type:'up'},{label:'Fév',val:25,type:'up'},{label:'Charges',val:-18,type:'down'},{label:'Salaires',val:-30,type:'down'},{label:'Subv.',val:15,type:'up'},{label:'Loyer',val:-10,type:'down'},{label:'Mars',val:22,type:'up'}].map((d, i) => {
                       const x = 10 + i * 55
                       const baseline = 65
                       const barH = Math.abs(d.val) * 0.8
@@ -394,7 +394,7 @@ function InteractiveMockup() {
                 <div>
                   <div style={{ fontSize: '.5rem', fontWeight: 600, color: '#94a3b8', marginBottom: 6 }}>Funnel commercial</div>
                   <svg viewBox="0 0 400 90" style={{ width: '100%' }}>
-                    {[{label:'Prospection',pct:100,color:'#195C82'},{label:'Qualification',pct:72,color:'#2d8ab8'},{label:'Proposition',pct:50,color:'#f59e0b'},{label:'Negociation',pct:32,color:'#22c55e'},{label:'Gagne',pct:18,color:'#16a34a'}].map((d, i) => {
+                    {[{label:'Prospection',pct:100,color:'#195C82'},{label:'Qualification',pct:72,color:'#2d8ab8'},{label:'Proposition',pct:50,color:'#f59e0b'},{label:'Négociation',pct:32,color:'#22c55e'},{label:'Gagné',pct:18,color:'#16a34a'}].map((d, i) => {
                       const y = 2 + i * 17
                       const w = d.pct / 100 * 300
                       const xOff = (300 - w) / 2 + 70
@@ -410,9 +410,9 @@ function InteractiveMockup() {
                 </div>
               ) : active === 'banque' ? (
                 <div>
-                  <div style={{ fontSize: '.5rem', fontWeight: 600, color: '#94a3b8', marginBottom: 6 }}>Entrees vs Sorties par mois (k€)</div>
+                  <div style={{ fontSize: '.5rem', fontWeight: 600, color: '#94a3b8', marginBottom: 6 }}>Entrées vs Sorties par mois (k€)</div>
                   <svg viewBox="0 0 400 100" style={{ width: '100%' }}>
-                    {[{m:'Oct',e:32,s:24},{m:'Nov',e:28,s:30},{m:'Dec',e:45,s:35},{m:'Jan',e:38,s:27},{m:'Fev',e:42,s:31},{m:'Mar',e:50,s:28}].map((d, i) => {
+                    {[{m:'Oct',e:32,s:24},{m:'Nov',e:28,s:30},{m:'Déc',e:45,s:35},{m:'Jan',e:38,s:27},{m:'Fév',e:42,s:31},{m:'Mar',e:50,s:28}].map((d, i) => {
                       const x = 25 + i * 62
                       const baseY = 78
                       const eH = d.e * 0.9
@@ -426,7 +426,7 @@ function InteractiveMockup() {
                       )
                     })}
                     <rect x="330" y="6" width="8" height="8" rx={1} fill="#22c55e" opacity={0.85} />
-                    <text x="342" y="13" fontSize="6" fill="#64748b">Entrees</text>
+                    <text x="342" y="13" fontSize="6" fill="#64748b">Entrées</text>
                     <rect x="330" y="18" width="8" height="8" rx={1} fill="#ef4444" opacity={0.85} />
                     <text x="342" y="25" fontSize="6" fill="#64748b">Sorties</text>
                   </svg>
@@ -445,7 +445,7 @@ function InteractiveMockup() {
                       )
                     })}
                     {[
-                      {x:12,y:18,w:66,h:14,color:'#195C82',t:'Reunion equipe'},
+                      {x:12,y:18,w:66,h:14,color:'#195C82',t:'Réunion équipe'},
                       {x:90,y:18,w:66,h:14,color:'#f59e0b',t:'Point client'},
                       {x:168,y:36,w:66,h:14,color:'#22c55e',t:'Formation'},
                       {x:246,y:18,w:66,h:14,color:'#8b5cf6',t:'Sprint review'},
@@ -465,7 +465,7 @@ function InteractiveMockup() {
                 <div>
                   <div style={{ fontSize: '.5rem', fontWeight: 600, color: '#94a3b8', marginBottom: 6 }}>Planning projets (Gantt)</div>
                   <svg viewBox="0 0 400 100" style={{ width: '100%' }}>
-                    {['Jan','Fev','Mar','Avr','Mai','Jun'].map((m, i) => (
+                    {['Jan','Fév','Mar','Avr','Mai','Jun'].map((m, i) => (
                       <g key={i}>
                         <text x={100 + i * 50 + 25} y={10} textAnchor="middle" fontSize="6" fill="#94a3b8">{m}</text>
                         <line x1={100 + i * 50} y1={14} x2={100 + i * 50} y2={95} stroke="#e2e8f0" strokeWidth="0.5" />
@@ -490,7 +490,7 @@ function InteractiveMockup() {
                 </div>
               ) : active === 'mail' ? (
                 <div>
-                  <div style={{ fontSize: '.5rem', fontWeight: 600, color: '#94a3b8', marginBottom: 6 }}>Volume par categorie</div>
+                  <div style={{ fontSize: '.5rem', fontWeight: 600, color: '#94a3b8', marginBottom: 6 }}>Volume par catégorie</div>
                   <svg viewBox="0 0 400 100" style={{ width: '100%' }}>
                     {[
                       {cat:'Clients',inbox:45,sent:30,draft:5},
@@ -514,9 +514,9 @@ function InteractiveMockup() {
                       )
                     })}
                     <rect x="310" y="6" width="8" height="8" rx={1} fill="#195C82" opacity={0.85} />
-                    <text x="322" y="13" fontSize="5.5" fill="#64748b">Recus</text>
+                    <text x="322" y="13" fontSize="5.5" fill="#64748b">Reçus</text>
                     <rect x="310" y="18" width="8" height="8" rx={1} fill="#22c55e" opacity={0.7} />
-                    <text x="322" y="25" fontSize="5.5" fill="#64748b">Envoyes</text>
+                    <text x="322" y="25" fontSize="5.5" fill="#64748b">Envoyés</text>
                     <rect x="310" y="30" width="8" height="8" rx={1} fill="#94a3b8" opacity={0.4} />
                     <text x="322" y="37" fontSize="5.5" fill="#64748b">Brouillons</text>
                   </svg>
@@ -833,13 +833,13 @@ function InteractiveMockup() {
               {/* User message 2 */}
               <div style={{ alignSelf: 'flex-end', maxWidth: '90%' }}>
                 <div style={{ background: '#195C82', color: '#fff', padding: '5px 8px', borderRadius: '10px 10px 3px 10px', fontSize: '.55rem', lineHeight: 1.4 }}>
-                  {active === 'dashboard' ? 'Ajoute un suivi tresorerie' : active === 'equipe' ? 'Et le trombinoscope ?' : active === 'finance' ? 'Ajoute le previsionnel' : active === 'commerce' ? 'Et les devis ?' : active === 'banque' ? 'Ajoute les virements SEPA' : active === 'calendrier' ? 'Synchronise avec Outlook' : active === 'projet' ? 'Ajoute le suivi budgetaire' : active === 'mail' ? 'Ajoute les templates' : 'Ajoute un connecteur Stripe'}
+                  {active === 'dashboard' ? 'Ajoute un suivi trésorerie' : active === 'equipe' ? 'Et le trombinoscope ?' : active === 'finance' ? 'Ajoute le prévisionnel' : active === 'commerce' ? 'Et les devis ?' : active === 'banque' ? 'Ajoute les virements SEPA' : active === 'calendrier' ? 'Synchronise avec Outlook' : active === 'projet' ? 'Ajoute le suivi budgétaire' : active === 'mail' ? 'Ajoute les templates' : 'Ajoute un connecteur Stripe'}
                 </div>
               </div>
               {/* AI response 2 */}
               <div style={{ alignSelf: 'flex-start', maxWidth: '95%' }}>
                 <div style={{ background: 'rgba(255,255,255,0.06)', color: '#e2e8f0', padding: '5px 8px', borderRadius: '10px 10px 10px 3px', fontSize: '.55rem', lineHeight: 1.4, border: '1px solid rgba(255,255,255,0.06)' }}>
-                  {(active === 'dashboard' ? ['✓ Widget tresorerie ajoute', '✓ Previsionnel J+30/60/90'] : active === 'equipe' ? ['✓ Trombinoscope ajoute', '✓ Organigramme interactif'] : active === 'finance' ? ['✓ Previsionnel J+30/60/90', '✓ Alertes seuils auto'] : active === 'commerce' ? ['✓ Module devis ajoute', '✓ Conversion devis → facture'] : active === 'banque' ? ['✓ Virements SEPA', '✓ Prelevements auto'] : active === 'calendrier' ? ['✓ Sync Outlook bidirectionnelle', '✓ Invitations auto'] : active === 'projet' ? ['✓ Budget par projet', '✓ Alertes depassement'] : active === 'mail' ? ['✓ Templates email', '✓ Suivi ouvertures'] : ['✓ Connecteur Stripe configuré', '✓ Webhook activé']).map((line, i) => (
+                  {(active === 'dashboard' ? ['✓ Widget trésorerie ajouté', '✓ Prévisionnel J+30/60/90'] : active === 'equipe' ? ['✓ Trombinoscope ajouté', '✓ Organigramme interactif'] : active === 'finance' ? ['✓ Prévisionnel J+30/60/90', '✓ Alertes seuils auto'] : active === 'commerce' ? ['✓ Module devis ajouté', '✓ Conversion devis → facture'] : active === 'banque' ? ['✓ Virements SEPA', '✓ Prélèvements auto'] : active === 'calendrier' ? ['✓ Sync Outlook bidirectionnelle', '✓ Invitations auto'] : active === 'projet' ? ['✓ Budget par projet', '✓ Alertes dépassement'] : active === 'mail' ? ['✓ Templates email', '✓ Suivi ouvertures'] : ['✓ Connecteur Stripe configuré', '✓ Webhook activé']).map((line, i) => (
                     <div key={i} style={{ color: '#22c55e', marginBottom: 1 }}>{line}</div>
                   ))}
                 </div>
@@ -1012,7 +1012,7 @@ export default function LoginPage() {
           }} className="landing-nav-links">
             <a href="#comment" style={{ color: S.gray, textDecoration: 'none', transition: 'color .2s' }}
               onMouseEnter={e => e.target.style.color = S.dark} onMouseLeave={e => e.target.style.color = S.gray}>
-              Comment ca marche
+              Comment ça marche
             </a>
             <a href="#modules" style={{ color: S.gray, textDecoration: 'none', transition: 'color .2s' }}
               onMouseEnter={e => e.target.style.color = S.dark} onMouseLeave={e => e.target.style.color = S.gray}>
@@ -1058,7 +1058,7 @@ export default function LoginPage() {
       <div className={`landing-mobile-menu ${mobileMenu ? 'open' : ''}`}>
         <button className="landing-mobile-close" onClick={() => setMobileMenu(false)}>✕</button>
         <img src="/logo-full.svg" alt="TimeBlast" style={{ height: 40, marginBottom: '1rem' }} />
-        <a href="#comment" onClick={() => setMobileMenu(false)}>Comment ca marche</a>
+        <a href="#comment" onClick={() => setMobileMenu(false)}>Comment ça marche</a>
         <a href="#modules" onClick={() => setMobileMenu(false)}>Modules</a>
         <a href="https://www.groupe-sra.fr" target="_blank" rel="noopener noreferrer">Groupe SRA</a>
         <a href="#contact" onClick={() => setMobileMenu(false)}>Contact</a>
@@ -1123,15 +1123,15 @@ export default function LoginPage() {
             <p style={{
               fontSize: '1.1rem', color: S.gray, lineHeight: 1.65, margin: '0 0 2rem', maxWidth: 520,
             }}>
-              Decrivez votre besoin. TimeBlast le genere. Nativement interconnecte a tous les logiciels de votre SI.
+              Décrivez votre besoin. TimeBlast le génère. Nativement interconnecté à tous les logiciels de votre SI.
             </p>
 
             <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
-              <button className="landing-btn-primary" onClick={() => setShowLogin(true)}>
-                Demarrer mon projet →
-              </button>
+              <a href="#contact" className="landing-btn-primary" style={{ textDecoration: 'none' }}>
+                Démarrer mon projet →
+              </a>
               <a href="#comment" className="landing-btn-secondary">
-                Comment ca marche
+                Comment ça marche
               </a>
             </div>
           </div>
@@ -1171,7 +1171,7 @@ export default function LoginPage() {
               fontSize: '.78rem', fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase',
               background: '#195C82', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
               backgroundClip: 'text', marginBottom: '.75rem',
-            }}>Nativement connecte</p>
+            }}>Nativement connecté</p>
             <h2 style={{
               fontSize: 'clamp(1.5rem, 2.5vw, 2rem)', fontWeight: 800, color: S.dark,
               margin: '0 0 .5rem', letterSpacing: '-0.02em',
@@ -1182,7 +1182,7 @@ export default function LoginPage() {
               fontSize: '1rem', color: S.gray, maxWidth: 550,
               margin: '0 0 2rem', lineHeight: 1.65,
             }}>
-              Votre application se connecte nativement a tous les outils de votre SI.
+              Votre application se connecte nativement à tous les outils de votre SI.
             </p>
 
             {/* Category tabs */}
@@ -1253,13 +1253,13 @@ export default function LoginPage() {
             fontSize: 'clamp(1.7rem, 2.8vw, 2.4rem)', fontWeight: 800, color: S.dark,
             margin: '0 0 .75rem', letterSpacing: '-0.02em',
           }}>
-            Comment ca marche
+            Comment ça marche
           </h2>
           <p style={{
             fontSize: '1.05rem', color: S.gray, maxWidth: 500,
             margin: '0 auto', lineHeight: 1.65,
           }}>
-            5 etapes pour passer de l'idee a l'outil en production
+            5 étapes pour passer de l'idée à l'outil en production
           </p>
         </div>
         <div style={{
@@ -1267,12 +1267,12 @@ export default function LoginPage() {
           maxWidth: 1100, margin: '0 auto',
         }}>
           {[
-            { num: '1', icon: '🔌', title: 'Connexion a vos outils', desc: 'TimeBlast se connecte a votre ERP, CRM, compta, paie et tous vos logiciels.' },
-            { num: '2', icon: '💬', title: 'Besoin fonctionnel', desc: 'Decrivez votre besoin en francais. L\'IA structure vos exigences.' },
-            { num: '3', icon: '🤖', title: 'Creation du logiciel', desc: 'L\'IA genere votre application sur mesure a partir de vos donnees.' },
+            { num: '1', icon: '🔌', title: 'Connexion à vos outils', desc: 'TimeBlast se connecte à votre ERP, CRM, compta, paie et tous vos logiciels.' },
+            { num: '2', icon: '💬', title: 'Besoin fonctionnel', desc: 'Décrivez votre besoin en français. L\'IA structure vos exigences.' },
+            { num: '3', icon: '🤖', title: 'Création du logiciel', desc: 'L\'IA génère votre application sur mesure à partir de vos données.' },
             { num: '4', icon: '📐', title: 'Maquette & design', desc: 'Validez la structure, personnalisez les couleurs et le logo.' },
-            { num: '5', icon: '🚀', title: 'Mise en production', desc: 'Votre outil est deploye sur un sous-domaine dedie, pret a l\'emploi.' },
-            { num: '6', icon: '🛡️', title: 'Support & suivi', desc: 'Evolutions, support technique et monitoring en continu.' },
+            { num: '5', icon: '🚀', title: 'Mise en production', desc: 'Votre outil est déployé sur un sous-domaine dédié, prêt à l\'emploi.' },
+            { num: '6', icon: '🛡️', title: 'Support & suivi', desc: 'Évolutions, support technique et monitoring en continu.' },
           ].map((step, i) => (
             <div key={i} style={{
               flex: '1 1 180px', maxWidth: 200, padding: '2rem 1.4rem', borderRadius: 18,
@@ -1301,7 +1301,7 @@ export default function LoginPage() {
                 background: '#195C82',
                 WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
                 backgroundClip: 'text', marginBottom: 8, textTransform: 'uppercase',
-              }}>ETAPE {step.num}</div>
+              }}>ÉTAPE {step.num}</div>
               <h4 style={{ margin: '0 0 .5rem', fontSize: '.95rem', fontWeight: 700, color: S.dark }}>{step.title}</h4>
               <p style={{ margin: 0, fontSize: '.82rem', color: S.gray, lineHeight: 1.55 }}>{step.desc}</p>
             </div>
@@ -1323,13 +1323,13 @@ export default function LoginPage() {
             fontSize: 'clamp(1.7rem, 2.8vw, 2.4rem)', fontWeight: 800, color: S.dark,
             margin: '0 0 .75rem', letterSpacing: '-0.02em',
           }}>
-            Des modules prets a l'emploi
+            Des modules prêts à l'emploi
           </h2>
           <p style={{
             fontSize: '1.05rem', color: S.gray, maxWidth: 550,
             margin: '0 auto', lineHeight: 1.65,
           }}>
-            Chaque module est pre-construit et personnalisable. L'IA les adapte a votre metier.
+            Chaque module est pré-construit et personnalisable. L'IA les adapte à votre métier.
           </p>
         </div>
         <div style={{
@@ -1404,7 +1404,7 @@ export default function LoginPage() {
           <p style={{
             fontSize: '1.1rem', color: S.gray, lineHeight: 1.75, margin: '0 0 2.5rem',
           }}>
-            Depuis 1986, le Groupe SRA accompagne les PME et ETI dans leur transformation digitale. Cette expertise de terrain nous a permis de concevoir TimeBlast : la plateforme de vibe-coding parfaite pour creer des applications metier avec l'IA.
+            Depuis 1986, le Groupe SRA accompagne les PME et ETI dans leur transformation digitale. Cette expertise de terrain nous a permis de concevoir TimeBlast : la plateforme de vibe-coding parfaite pour créer des applications métier avec l'IA.
           </p>
           <a href="https://www.groupe-sra.fr" target="_blank" rel="noopener noreferrer"
             style={{
@@ -1429,7 +1429,7 @@ export default function LoginPage() {
                 Groupe SRA — Partenaire digital des PME et ETI
               </div>
               <div style={{ fontSize: '.82rem', color: S.gray, marginTop: 3 }}>
-                Integrateur Sage Diamond, Microsoft, HubSpot
+                Intégrateur Sage Diamond, Microsoft, HubSpot
               </div>
               <div style={{
                 fontSize: '.8rem', fontWeight: 700, marginTop: 5,
@@ -1437,10 +1437,38 @@ export default function LoginPage() {
                 WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
                 backgroundClip: 'text',
               }}>
-                Decouvrir le groupe → groupe-sra.fr
+                Découvrir le groupe → groupe-sra.fr
               </div>
             </div>
           </a>
+
+          {/* Encart Jean-Luc Marini — Advisory */}
+          <div style={{
+            display: 'flex', alignItems: 'center', gap: '2rem', marginTop: '2.5rem',
+            background: '#fff', borderRadius: 16, padding: '2rem 2.5rem',
+            border: '1px solid rgba(25,92,130,0.1)',
+            boxShadow: '0 4px 20px rgba(0,0,0,0.04)',
+            flexWrap: 'wrap', justifyContent: 'center',
+          }}>
+            <div style={{
+              width: 120, height: 120, borderRadius: '50%', overflow: 'hidden',
+              border: '3px solid #e2e8f0', boxShadow: '0 4px 15px rgba(0,0,0,0.08)',
+              flexShrink: 0,
+            }}>
+              <img src="/team/jean-luc-marigny.jpg" alt="Jean-Luc Marini" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+            </div>
+            <div style={{ flex: 1, minWidth: 240 }}>
+              <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 700, color: S.dark }}>Jean-Luc Marini</h3>
+              <p style={{ margin: '4px 0 .75rem', fontSize: '.85rem', color: '#195C82', fontWeight: 600 }}>Conseiller stratégique IA & Innovation</p>
+              <p style={{ margin: 0, fontSize: '.85rem', color: S.gray, lineHeight: 1.65 }}>
+                Fort de plus de 36 ans d'expérience dans le secteur IT, Jean-Luc a créé et dirigé plusieurs entreprises technologiques. Membre du Conseil scientifique du Commandement du combat futur et réserviste citoyen (IHEDN), il apporte à TimeBlast sa vision stratégique en intelligence artificielle.
+              </p>
+              <a href="https://www.linkedin.com/in/jean-luc-marini-82319710/" target="_blank" rel="noopener noreferrer"
+                style={{ display: 'inline-flex', alignItems: 'center', gap: 6, marginTop: '.75rem', fontSize: '.82rem', color: '#195C82', fontWeight: 600, textDecoration: 'none' }}>
+                Voir le profil LinkedIn →
+              </a>
+            </div>
+          </div>
         </div>
       </section>
 
@@ -1464,7 +1492,7 @@ export default function LoginPage() {
             fontSize: '1.05rem', color: S.gray, maxWidth: 550,
             margin: '0 auto', lineHeight: 1.65,
           }}>
-            En 30 minutes, nous evaluons votre besoin et vous montrons ce que TimeBlast peut automatiser.
+            En 30 minutes, nous évaluons votre besoin et vous montrons ce que TimeBlast peut automatiser.
           </p>
         </div>
 
@@ -1475,9 +1503,9 @@ export default function LoginPage() {
           {/* Info side */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
             {[
-              { icon: '🔍', title: 'Diagnostic gratuit', desc: 'Evaluation de votre maturite data en 30 min' },
-              { icon: '⚡', title: 'Reponse sous 24h', desc: 'Notre equipe revient vers vous rapidement' },
-              { icon: '🎯', title: 'Demo personnalisee', desc: 'Sur vos donnees, vos cas d\'usage' },
+              { icon: '🔍', title: 'Diagnostic gratuit', desc: 'Évaluation de votre maturité data en 30 min' },
+              { icon: '⚡', title: 'Réponse sous 24h', desc: 'Notre équipe revient vers vous rapidement' },
+              { icon: '🎯', title: 'Démo personnalisée', desc: 'Sur vos données, vos cas d\'usage' },
             ].map((item, i) => (
               <div key={i} style={{
                 display: 'flex', gap: 16, padding: '1.25rem',
@@ -1522,8 +1550,8 @@ export default function LoginPage() {
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                   fontSize: '1.5rem', color: '#fff',
                 }}>✓</div>
-                <h3 style={{ margin: '0 0 .5rem', color: S.dark, fontSize: '1.2rem' }}>Demande envoyee !</h3>
-                <p style={{ color: S.gray, fontSize: '.9rem' }}>Nous preparons votre diagnostic et revenons vers vous tres vite.</p>
+                <h3 style={{ margin: '0 0 .5rem', color: S.dark, fontSize: '1.2rem' }}>Demande envoyée !</h3>
+                <p style={{ color: S.gray, fontSize: '.9rem' }}>Nous préparons votre diagnostic et revenons vers vous très vite.</p>
               </div>
             ) : (
               <>
@@ -1549,7 +1577,7 @@ export default function LoginPage() {
                       style={inputStyle} onFocus={focusInput} onBlur={blurInput} />
                   </div>
                   <div>
-                    <label style={{ display: 'block', fontSize: '.82rem', fontWeight: 600, color: S.dark, marginBottom: 6 }}>Telephone</label>
+                    <label style={{ display: 'block', fontSize: '.82rem', fontWeight: 600, color: S.dark, marginBottom: 6 }}>Téléphone</label>
                     <input type="tel" placeholder="06 XX XX XX XX"
                       value={contactForm.phone} onChange={e => setContactForm(f => ({ ...f, phone: e.target.value }))}
                       style={inputStyle} onFocus={focusInput} onBlur={blurInput} />
@@ -1557,7 +1585,7 @@ export default function LoginPage() {
                 </div>
                 <div style={{ marginBottom: 16 }}>
                   <label style={{ display: 'block', fontSize: '.82rem', fontWeight: 600, color: S.dark, marginBottom: 6 }}>Votre besoin *</label>
-                  <textarea required rows={4} placeholder="Decrivez le logiciel dont vous avez besoin..."
+                  <textarea required rows={4} placeholder="Décrivez le logiciel dont vous avez besoin..."
                     value={contactForm.message} onChange={e => setContactForm(f => ({ ...f, message: e.target.value }))}
                     style={{ ...inputStyle, resize: 'vertical' }}
                     onFocus={focusInput} onBlur={blurInput} />
@@ -1600,26 +1628,26 @@ export default function LoginPage() {
             fontSize: 'clamp(1.8rem, 3.2vw, 2.8rem)', fontWeight: 800, color: '#fff',
             margin: '0 0 1rem', letterSpacing: '-0.02em',
           }}>
-            Pret a creer votre application ?
+            Prêt à créer votre application ?
           </h2>
           <p style={{
             fontSize: '1.1rem', color: 'rgba(255,255,255,0.75)', maxWidth: 520,
             margin: '0 auto 2.5rem', lineHeight: 1.65,
           }}>
-            Creez votre logiciel de gestion sur mesure sans ecrire une ligne de code.
+            Créez votre logiciel de gestion sur mesure sans écrire une ligne de code.
           </p>
           <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', flexWrap: 'wrap' }}>
-            <button onClick={() => setShowLogin(true)} style={{
+            <a href="#contact" style={{
               padding: '15px 36px', borderRadius: 12, background: '#fff',
               color: S.sra, border: 'none', fontWeight: 700, fontSize: '1rem',
-              cursor: 'pointer', transition: 'all .25s',
+              cursor: 'pointer', transition: 'all .25s', textDecoration: 'none',
               boxShadow: '0 4px 20px rgba(0,0,0,0.15)',
-              letterSpacing: '-0.01em',
+              letterSpacing: '-0.01em', display: 'inline-flex', alignItems: 'center',
             }}
             onMouseEnter={e => { e.target.style.transform = 'translateY(-2px)'; e.target.style.boxShadow = '0 8px 30px rgba(0,0,0,0.25)' }}
             onMouseLeave={e => { e.target.style.transform = 'none'; e.target.style.boxShadow = '0 4px 20px rgba(0,0,0,0.15)' }}>
-              Demarrer mon projet →
-            </button>
+              Démarrer mon projet →
+            </a>
             <a href="#contact" style={{
               padding: '15px 36px', borderRadius: 12, background: 'transparent',
               border: '1.5px solid rgba(255,255,255,0.3)', color: '#fff',
@@ -1695,14 +1723,14 @@ export default function LoginPage() {
               </div>
               <h2 style={{ margin: '0 0 .25rem', fontSize: '1.4rem', fontWeight: 800, color: S.dark }}>Connexion</h2>
               <p style={{ color: S.gray, fontSize: '.88rem', margin: 0 }}>
-                Accedez a votre espace decisionnel
+                Accédez à votre espace décisionnel
               </p>
             </div>
 
             {/* Recent accounts */}
             {recentAccounts.length > 0 && !email && (
               <div style={{ marginBottom: 20 }}>
-                <div style={{ fontSize: '.75rem', color: S.gray, fontWeight: 600, marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Comptes recents</div>
+                <div style={{ fontSize: '.75rem', color: S.gray, fontWeight: 600, marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Comptes récents</div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
                   {recentAccounts.map(acc => (
                     <button key={acc.email} onClick={() => selectRecentAccount(acc.email)}

@@ -517,8 +517,8 @@ export default function AutomationWorkflowsPage() {
                 <SortableHeader label="Declencheur" field="trigger_type" sortKey={sortKey} sortDir={sortDir} onSort={requestSort} />
                 <th>Actions</th>
                 <SortableHeader label="Statut" field="active" sortKey={sortKey} sortDir={sortDir} onSort={requestSort} />
-                <SortableHeader label="Cree le" field="created_at" sortKey={sortKey} sortDir={sortDir} onSort={requestSort} />
-                <th>Gerer</th>
+                <SortableHeader label="Créé le" field="created_at" sortKey={sortKey} sortDir={sortDir} onSort={requestSort} />
+                <th>Gérer</th>
               </tr>
             </thead>
             <tbody>

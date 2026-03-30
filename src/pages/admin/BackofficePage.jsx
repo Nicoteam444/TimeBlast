@@ -182,7 +182,7 @@ function EnvsTab() {
                   <div style={{ display: 'flex', gap: 6, flexShrink: 0, marginLeft: 16 }}>
                     <button onClick={() => setEditEnv({ ...env })} style={S.btn}>✏️ Modifier</button>
                     <button onClick={() => toggleActive(env)} style={env.is_active ? S.btnDanger : S.btnSuccess}>
-                      {env.is_active ? '⏸ Desactiver' : '▶ Activer'}
+                      {env.is_active ? '⏸ Désactiver' : '▶ Activer'}
                     </button>
                   </div>
                 </div>

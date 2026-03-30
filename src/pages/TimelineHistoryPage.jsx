@@ -33,13 +33,13 @@ const TIMELINE = [
     icon: '🚀',
     summary: '12 modules deployes en une seule journee',
     details: [
-      'Module Facturation complet (Ventes + Achats) avec previsualisation A4',
-      'Module Equipe : Collaborateurs, Absences, Notes de frais, Competences',
+      'Module Facturation complet (Ventes + Achats) avec prévisualisation A4',
+      'Module Équipe : Collaborateurs, Absences, Notes de frais, Compétences',
       'Trombinoscope et Organigramme interactif',
       'Gestion de Projet avec Kanban drag & drop',
       'Module Commerce : Clients, Transactions, Devis, Produits, Stock, Abonnements',
-      'Systeme de favoris persistants en base de donnees',
-      'Module Finance : Comptabilite, FEC, Previsionnel, Immobilisations, Rapprochement',
+      'Système de favoris persistants en base de données',
+      'Module Finance : Comptabilité, FEC, Prévisionnel, Immobilisations, Rapprochement',
       'Tri par colonnes sur tous les tableaux',
     ]
   },

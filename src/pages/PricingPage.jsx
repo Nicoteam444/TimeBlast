@@ -191,7 +191,7 @@ export default function PricingPage() {
           maxWidth: 1200, margin: '0 auto', padding: '0 2rem',
           display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: 64,
         }}>
-          <div style={{ cursor: 'pointer', flexShrink: 0 }} onClick={() => navigate('/login')}>
+          <div style={{ cursor: 'pointer', flexShrink: 0 }} onClick={() => navigate('/login#contact')}>
             <img src="/logo-full.svg" alt="TimeBlast" style={{ height: 40 }} />
           </div>
 
@@ -206,7 +206,7 @@ export default function PricingPage() {
             display: 'none', background: 'none', border: 'none', fontSize: '1.5rem', cursor: 'pointer', color: S.dark,
           }}>☰</button>
 
-          <button onClick={() => navigate('/login')} style={{
+          <button onClick={() => navigate('/login#contact')} style={{
             padding: '9px 22px', borderRadius: 10, background: S.neon,
             border: 'none', color: '#fff', fontWeight: 700, fontSize: '.85rem', cursor: 'pointer',
             boxShadow: '0 4px 20px rgba(25,92,130,0.3)', transition: 'all .25s',
@@ -226,7 +226,7 @@ export default function PricingPage() {
           <a href="/login#modules" style={{ fontSize: '1.2rem', color: S.dark, textDecoration: 'none', fontWeight: 600 }}>Modules</a>
           <span style={{ fontSize: '1.2rem', color: S.neon, fontWeight: 700 }}>Tarifs</span>
           <a href="/facture-electronique" style={{ fontSize: '1.2rem', color: S.dark, textDecoration: 'none', fontWeight: 600 }}>E-Facture 2026</a>
-          <button onClick={() => { setMobileMenu(false); navigate('/login') }} style={{ padding: '12px 32px', borderRadius: 10, background: S.neon, border: 'none', color: '#fff', fontWeight: 700, fontSize: '1rem', cursor: 'pointer' }}>Se connecter</button>
+          <button onClick={() => { setMobileMenu(false); navigate('/login#contact') }} style={{ padding: '12px 32px', borderRadius: 10, background: S.neon, border: 'none', color: '#fff', fontWeight: 700, fontSize: '1rem', cursor: 'pointer' }}>Se connecter</button>
         </div>
       )}
 
@@ -320,7 +320,7 @@ export default function PricingPage() {
                 </div>
 
                 <button
-                  onClick={() => navigate('/login')}
+                  onClick={() => navigate('/login#contact')}
                   style={{
                     width: '100%', padding: '12px 0', borderRadius: 10, fontWeight: 700, fontSize: '.9rem',
                     cursor: 'pointer', transition: 'all .25s', marginBottom: '1.5rem', border: 'none',
@@ -413,49 +413,6 @@ export default function PricingPage() {
 
 
       {/* ══════════════════════════════════════════════════════════════════
-          ÉQUIPE
-      ══════════════════════════════════════════════════════════════════ */}
-      <section style={{ padding: '5rem 1.5rem', background: '#fff' }}>
-        <div style={{ maxWidth: 900, margin: '0 auto', textAlign: 'center' }}>
-          <p style={{ fontSize: '.85rem', fontWeight: 600, color: S.neon, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '.5rem' }}>L'équipe</p>
-          <h2 style={{ fontSize: 'clamp(1.5rem, 3vw, 2rem)', fontWeight: 800, color: S.dark, marginBottom: '.75rem', letterSpacing: '-0.02em' }}>
-            Des experts métier à votre service
-          </h2>
-          <p style={{ color: S.gray, fontSize: '1rem', marginBottom: '3rem', maxWidth: 550, margin: '0 auto 3rem' }}>
-            Une équipe pluridisciplinaire qui comprend vos enjeux et vous accompagne dans votre transformation digitale.
-          </p>
-
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: '2rem', maxWidth: 800, margin: '0 auto' }}>
-            {[
-              { name: 'Nicolas NABHAN', role: 'Directeur', photo: '/team/nicolas-nabhan.jpg' },
-              { name: 'Jean-Luc MARIGNY', role: 'Expert IA', photo: '/team/jean-luc-marigny.jpg' },
-              { name: 'Fred GARCIA', role: 'Expert BI', photo: '/team/fred-garcia.jpg' },
-              { name: 'Sandrine MAYZOU', role: 'Experte CRM', photo: '/team/sandrine-mayzou.jpg' },
-              { name: 'Vincent RASPIENGEAS', role: 'Expert ERP', photo: '/team/vincent-raspiengeas.jpg' },
-            ].map(member => (
-              <div key={member.name} style={{ textAlign: 'center' }}>
-                <div style={{
-                  width: 120, height: 120, borderRadius: '50%', margin: '0 auto 1rem',
-                  overflow: 'hidden', border: '3px solid #e2e8f0',
-                  boxShadow: '0 4px 15px rgba(0,0,0,0.08)',
-                  background: '#f1f5f9',
-                }}>
-                  <img
-                    src={member.photo}
-                    alt={member.name}
-                    style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                    onError={e => { e.target.style.display = 'none'; e.target.parentElement.innerHTML = `<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:2rem;color:#94a3b8;font-weight:700">${member.name.split(' ').map(n => n[0]).join('')}</div>` }}
-                  />
-                </div>
-                <h3 style={{ margin: 0, fontSize: '.95rem', fontWeight: 700, color: S.dark }}>{member.name}</h3>
-                <p style={{ margin: '4px 0 0', fontSize: '.8rem', color: S.neon, fontWeight: 600 }}>{member.role}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ══════════════════════════════════════════════════════════════════
           FAQ
       ══════════════════════════════════════════════════════════════════ */}
       <section style={{ padding: '4rem 1.5rem 5rem', background: S.bgAlt }}>
@@ -507,7 +464,7 @@ export default function PricingPage() {
           Essayez gratuitement pendant 14 jours. Aucune carte bancaire requise.
         </p>
         <div style={{ display: 'flex', justifyContent: 'center', gap: '1rem', marginTop: '2rem', flexWrap: 'wrap' }}>
-          <button onClick={() => navigate('/login')} style={{
+          <button onClick={() => navigate('/login#contact')} style={{
             padding: '14px 36px', borderRadius: 12, background: S.neon, border: 'none',
             color: '#fff', fontWeight: 700, fontSize: '1rem', cursor: 'pointer',
             boxShadow: '0 4px 20px rgba(25,92,130,0.3)', transition: 'all .25s',

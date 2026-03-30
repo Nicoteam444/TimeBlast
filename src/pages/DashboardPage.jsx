@@ -732,7 +732,7 @@ export default function DashboardPage() {
           })}
         </div>
         <div style={{ marginTop: '.5rem', fontSize: '.7rem', color: 'var(--text-muted)', textAlign: 'center' }}>
-          Genere automatiquement selon vos donnees · Reinitialise chaque jour
+          Généré automatiquement selon vos données · Réinitialisé chaque jour
         </div>
       </>
     ),
@@ -1138,7 +1138,7 @@ export default function DashboardPage() {
     ),
     activity: (
       <>
-        <SectionHeader icon="🕐" title="Activite Recente" />
+        <SectionHeader icon="🕐" title="Activité Récente" />
         {activityTimeline.length === 0 ? (
           <div style={{ color: 'var(--text-muted)', fontSize: '.85rem', textAlign: 'center', padding: '1rem 0' }}>
             Aucune activite recente
@@ -1438,7 +1438,7 @@ export default function DashboardPage() {
       {/* ═══ Reset button ═══ */}
       <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '.5rem' }}>
         <button onClick={resetLayout} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '.75rem', color: 'var(--text-muted)' }}>
-          🔄 Reinitialiser
+          🔄 Réinitialiser
         </button>
       </div>
 
