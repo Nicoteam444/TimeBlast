@@ -427,7 +427,7 @@ export default function PricingPage() {
 
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: '2rem', maxWidth: 800, margin: '0 auto' }}>
             {[
-              { name: 'Nicolas NABHAN', role: 'Directeur TimeBlast', photo: '/team/nicolas-nabhan.jpg' },
+              { name: 'Nicolas NABHAN', role: 'Directeur', photo: '/team/nicolas-nabhan.jpg' },
               { name: 'Jean-Luc MARIGNY', role: 'Expert IA', photo: '/team/jean-luc-marigny.jpg' },
               { name: 'Fred GARCIA', role: 'Expert BI', photo: '/team/fred-garcia.jpg' },
               { name: 'Sandrine MAYZOU', role: 'Experte CRM', photo: '/team/sandrine-mayzou.jpg' },
