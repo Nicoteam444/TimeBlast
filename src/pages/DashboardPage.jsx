@@ -136,12 +136,15 @@ function AiPromptBar({ navigate }) {
     setLoading(true)
     try {
       const res = await supabase.functions.invoke('chat-ai', {
-        body: { message: userMsg, context: 'dashboard-prompt' }
+        body: {
+          messages: [{ role: 'user', content: [{ type: 'text', text: userMsg }] }],
+          system: 'Tu es l\'assistant IA de TimeBlast. Aide l\'utilisateur à modifier sa plateforme. Réponds en français.'
+        }
       })
-      const aiText = res?.data?.reply || res?.data?.message || 'Je vais analyser votre demande et préparer les modifications.'
+      const aiText = res?.data?.text || res?.data?.reply || 'Je vais analyser votre demande et préparer les modifications.'
       setMessages(prev => [...prev, { role: 'ai', text: aiText }])
     } catch {
-      setMessages(prev => [...prev, { role: 'ai', text: 'Demande enregistrée ! L\'IA va préparer votre module. Consultez vos notifications pour suivre l\'avancement.' }])
+      setMessages(prev => [...prev, { role: 'ai', text: 'Erreur : crédits API insuffisants. Rechargez sur console.anthropic.com' }])
     }
     setLoading(false)
   }

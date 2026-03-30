@@ -106,13 +106,26 @@ export default function EditorPage() {
     setInput('')
     setSending(true)
     try {
+      const systemPrompt = `Tu es l'assistant IA de TimeBlast, une plateforme de création d'applications de gestion par IA.
+L'utilisateur est en train de modifier la page "${activePage.label}" (route: ${activePage.path}).
+Tu dois l'aider à modifier, améliorer ou créer des fonctionnalités sur cette page.
+Réponds en français, de manière concise et professionnelle. Utilise des ✅ pour les actions réalisées.`
+
+      const apiMessages = messages
+        .filter(m => m.role === 'user' || m.role === 'ai')
+        .map(m => ({
+          role: m.role === 'ai' ? 'assistant' : 'user',
+          content: [{ type: 'text', text: m.content }]
+        }))
+      apiMessages.push({ role: 'user', content: [{ type: 'text', text: userMsg.content }] })
+
       const { data, error } = await supabase.functions.invoke('chat-ai', {
-        body: { message: userMsg.content, context: 'editor', page: activePage.label }
+        body: { messages: apiMessages, system: systemPrompt }
       })
       if (error) throw error
-      setMessages(prev => [...prev, { role: 'ai', content: data?.reply || 'Modification prise en compte. Rechargez l\'aperçu pour voir les changements.' }])
+      setMessages(prev => [...prev, { role: 'ai', content: data?.text || data?.reply || 'Modification prise en compte.' }])
     } catch (err) {
-      setMessages(prev => [...prev, { role: 'ai', content: 'Demande enregistrée. L\'IA va traiter votre modification.' }])
+      setMessages(prev => [...prev, { role: 'ai', content: 'Erreur : crédits API insuffisants. Rechargez votre compte Anthropic sur console.anthropic.com/settings/plans' }])
     } finally {
       setSending(false)
     }
