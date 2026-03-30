@@ -250,7 +250,7 @@ function InteractiveMockup() {
   const t = TABS.find(x => x.id === active)
 
   return (
-    <div className="landing-mockup-wrapper" style={{ width: '100%', maxWidth: 1060, margin: '0 auto', overflow: 'hidden' }}>
+    <div className="landing-mockup-wrapper" style={{ width: '100%', maxWidth: 1060, margin: '2rem auto 0', overflow: 'hidden' }}>
       {/* Main mockup: browser chrome wrapping sidebar + content + chat */}
       <div className="landing-mockup-dual" style={{
         borderRadius: 20, overflow: 'hidden',
@@ -1461,62 +1461,77 @@ export default function LoginPage() {
             fontSize: '.78rem', fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase',
             background: '#195C82', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
             backgroundClip: 'text', marginBottom: '.75rem',
-          }}>Contact</p>
+          }}>Deux façons de commencer</p>
           <h2 style={{
             fontSize: 'clamp(1.7rem, 2.8vw, 2.4rem)', fontWeight: 800, color: S.dark,
             margin: '0 0 .75rem', letterSpacing: '-0.02em',
           }}>
-            Demandez votre diagnostic gratuit
+            Choisissez votre approche
           </h2>
           <p style={{
-            fontSize: '1.05rem', color: S.gray, maxWidth: 550,
+            fontSize: '1.05rem', color: S.gray, maxWidth: 600,
             margin: '0 auto', lineHeight: 1.65,
           }}>
-            En 30 minutes, nous évaluons votre besoin et vous montrons ce que TimeBlast peut automatiser.
+            Développez votre application vous-même ou confiez-la à nos experts.
           </p>
         </div>
 
+        {/* ── Deux options côte à côte ── */}
         <div className="landing-contact-wrapper" style={{
-          maxWidth: 920, margin: '0 auto', display: 'grid',
-          gridTemplateColumns: '1fr 1.2fr', gap: '3rem', alignItems: 'start',
+          maxWidth: 920, margin: '2rem auto 0', display: 'grid',
+          gridTemplateColumns: '1fr 1fr', gap: '1.5rem', alignItems: 'stretch',
         }}>
-          {/* Info side */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-            {[
-              { icon: '🔍', title: 'Diagnostic gratuit', desc: 'Évaluation de votre maturité data en 30 min' },
-              { icon: '⚡', title: 'Réponse sous 24h', desc: 'Notre équipe revient vers vous rapidement' },
-              { icon: '🎯', title: 'Démo personnalisée', desc: 'Sur vos données, vos cas d\'usage' },
-            ].map((item, i) => (
-              <div key={i} style={{
-                display: 'flex', gap: 16, padding: '1.25rem',
-                borderRadius: 16, background: '#fff', border: '1px solid rgba(25,92,130,0.06)',
-                transition: 'all .25s',
-              }}
-              onMouseEnter={e => {
-                e.currentTarget.style.borderColor = 'rgba(25,92,130,0.15)'
-                e.currentTarget.style.boxShadow = '0 8px 25px rgba(25,92,130,0.06)'
-                e.currentTarget.style.transform = 'translateY(-2px)'
-              }}
-              onMouseLeave={e => {
-                e.currentTarget.style.borderColor = 'rgba(25,92,130,0.06)'
-                e.currentTarget.style.boxShadow = 'none'
-                e.currentTarget.style.transform = 'none'
-              }}>
-                <span style={{
-                  fontSize: '1.4rem', flexShrink: 0, width: 48, height: 48,
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  borderRadius: 14, background: 'linear-gradient(135deg, rgba(25,92,130,.06), rgba(25,92,130,.06))',
-                  border: '1px solid rgba(25,92,130,0.08)',
-                }}>{item.icon}</span>
-                <div>
-                  <strong style={{ color: S.dark, fontSize: '.95rem' }}>{item.title}</strong>
-                  <p style={{ margin: '.3rem 0 0', color: S.gray, fontSize: '.85rem', lineHeight: 1.5 }}>{item.desc}</p>
-                </div>
-              </div>
-            ))}
+          {/* Option 1 — Self-service */}
+          <div style={{
+            background: '#fff', borderRadius: 20, padding: '2.5rem 2rem', textAlign: 'center',
+            border: '2px solid rgba(25,92,130,0.1)', transition: 'all .3s',
+            display: 'flex', flexDirection: 'column', alignItems: 'center',
+          }}
+          onMouseEnter={e => { e.currentTarget.style.borderColor = '#195C82'; e.currentTarget.style.boxShadow = '0 12px 40px rgba(25,92,130,0.1)'; e.currentTarget.style.transform = 'translateY(-4px)' }}
+          onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(25,92,130,0.1)'; e.currentTarget.style.boxShadow = 'none'; e.currentTarget.style.transform = 'none' }}>
+            <div style={{ fontSize: '2.5rem', marginBottom: '1rem' }}>🚀</div>
+            <h3 style={{ margin: '0 0 .5rem', fontSize: '1.2rem', fontWeight: 700, color: S.dark }}>Je crée mon application</h3>
+            <p style={{ fontSize: '.88rem', color: S.gray, lineHeight: 1.6, marginBottom: '1.5rem', flex: 1 }}>
+              Accédez à la plateforme TimeBlast et développez votre logiciel métier en un prompt. Autonome, rapide, sans code.
+            </p>
+            <button onClick={() => setShowLogin(true)} style={{
+              padding: '14px 32px', borderRadius: 12, background: '#195C82', color: '#fff',
+              fontWeight: 700, fontSize: '.95rem', border: 'none', cursor: 'pointer', width: '100%',
+              boxShadow: '0 4px 20px rgba(25,92,130,0.3)', transition: 'all .25s',
+            }}
+            onMouseEnter={e => { e.target.style.boxShadow = '0 8px 30px rgba(25,92,130,0.4)' }}
+            onMouseLeave={e => { e.target.style.boxShadow = '0 4px 20px rgba(25,92,130,0.3)' }}>
+              S'inscrire / Se connecter →
+            </button>
           </div>
 
-          {/* Form side */}
+          {/* Option 2 — Accompagnement SRA */}
+          <div style={{
+            background: '#fff', borderRadius: 20, padding: '2.5rem 2rem', textAlign: 'center',
+            border: '2px solid rgba(25,92,130,0.1)', transition: 'all .3s',
+            display: 'flex', flexDirection: 'column', alignItems: 'center',
+          }}
+          onMouseEnter={e => { e.currentTarget.style.borderColor = '#195C82'; e.currentTarget.style.boxShadow = '0 12px 40px rgba(25,92,130,0.1)'; e.currentTarget.style.transform = 'translateY(-4px)' }}
+          onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(25,92,130,0.1)'; e.currentTarget.style.boxShadow = 'none'; e.currentTarget.style.transform = 'none' }}>
+            <div style={{ fontSize: '2.5rem', marginBottom: '1rem' }}>🏢</div>
+            <h3 style={{ margin: '0 0 .5rem', fontSize: '1.2rem', fontWeight: 700, color: S.dark }}>L'équipe SRA s'en charge</h3>
+            <p style={{ fontSize: '.88rem', color: S.gray, lineHeight: 1.6, marginBottom: '1.5rem', flex: 1 }}>
+              Confiez le développement et la maintenance de votre plateforme IA à nos experts. Accompagnement sur mesure.
+            </p>
+            <a href="#contact-form" style={{
+              padding: '14px 32px', borderRadius: 12, background: 'transparent',
+              border: '2px solid #195C82', color: '#195C82',
+              fontWeight: 700, fontSize: '.95rem', cursor: 'pointer', width: '100%',
+              textDecoration: 'none', display: 'block', textAlign: 'center', transition: 'all .25s',
+              boxSizing: 'border-box',
+            }}>
+              Nous contacter →
+            </a>
+          </div>
+        </div>
+
+        {/* ── Formulaire de contact ── */}
+        <div id="contact-form" style={{ maxWidth: 700, margin: '3rem auto 0' }}>
           <form onSubmit={handleContactSubmit} style={{
             padding: '2rem', borderRadius: 20, background: '#fff',
             border: '1px solid rgba(25,92,130,0.08)',
