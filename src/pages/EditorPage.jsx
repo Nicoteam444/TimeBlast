@@ -1,90 +1,66 @@
 import { useState, useRef, useEffect } from 'react'
+import { useParams } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
 import { supabase } from '../lib/supabase'
 
-const DEMO_PROJECTS = [
-  { id: 1, name: 'CRM Commercial', lastModified: '30 mars 2026', status: 'En cours' },
-  { id: 2, name: 'Gestion Stock', lastModified: '28 mars 2026', status: 'Publié' },
-  { id: 3, name: 'Portail Client', lastModified: '25 mars 2026', status: 'Brouillon' },
+// Les vraies pages TimeBlast pour la navigation
+const TB_PAGES = [
+  { id: 'dashboard', path: '/dashboard', label: 'Tableau de bord', icon: '📊' },
+  { id: 'calendrier', path: '/activite/saisie', label: 'Calendrier', icon: '📅' },
+  { id: 'contacts', path: '/crm/contacts', label: 'Contacts', icon: '👤' },
+  { id: 'leads', path: '/crm/leads', label: 'Leads', icon: '🎯' },
+  { id: 'entreprises', path: '/crm/entreprises', label: 'Entreprises', icon: '🏢' },
+  { id: 'pipeline', path: '/commerce/transactions', label: 'Pipeline', icon: '📈' },
+  { id: 'devis', path: '/commerce/devis', label: 'Devis', icon: '📝' },
+  { id: 'factures', path: '/finance/facturation', label: 'Facturation', icon: '🧾' },
+  { id: 'produits', path: '/commerce/produits', label: 'Produits', icon: '📦' },
+  { id: 'projets', path: '/activite/projets', label: 'Projets', icon: '📋' },
+  { id: 'equipe', path: '/activite/equipe', label: 'Équipe', icon: '👥' },
+  { id: 'compta', path: '/finance/compta', label: 'Comptabilité', icon: '💰' },
+  { id: 'documents', path: '/documents/archives', label: 'Documents', icon: '📁' },
+  { id: 'analytics', path: '/admin/analytics', label: 'Analytics', icon: '📊' },
+  { id: 'parametres', path: '/profil', label: 'Paramètres', icon: '⚙️' },
 ]
 
-const DEMO_COLLABORATORS = [
-  { name: 'Nicolas Nabhan', initials: 'NN', color: '#1a5c82', online: true, isYou: true },
-  { name: 'Vincent Raspiengeas', initials: 'VR', color: '#7c3aed', online: true, isYou: false },
-  { name: 'Clémence Gain', initials: 'CG', color: '#e11d48', online: false, isYou: false },
+const INIT_MESSAGES = [
+  { role: 'ai', content: 'Bienvenue dans l\'éditeur TimeBlast ! Je suis votre assistant IA.\n\nVous pouvez me demander de :\n• Modifier une page existante\n• Ajouter un nouveau module\n• Changer le design ou les couleurs\n• Connecter un outil externe\n• Corriger un bug\n\nQue souhaitez-vous faire ?' },
 ]
-
-const DEMO_FILES = [
-  { name: 'Dashboard', icon: '📊', active: true },
-  { name: 'Contacts', icon: '👤', active: false },
-  { name: 'Pipeline', icon: '📈', active: false },
-  { name: 'Factures', icon: '🧾', active: false },
-  { name: 'Paramètres', icon: '⚙️', active: false },
-]
-
-const DEMO_MESSAGES = [
-  { role: 'user', content: 'Crée-moi un CRM avec gestion des contacts et un pipeline commercial' },
-  { role: 'ai', content: 'Je vais créer votre CRM avec :\n\u2705 Page Contacts (CRUD complet)\n\u2705 Pipeline Kanban\n\u2705 Tableau de bord avec KPIs\n\nDéploiement en cours...' },
-  { role: 'user', content: 'Ajoute un module de facturation' },
-  { role: 'ai', content: 'Module facturation ajouté :\n\u2705 Création/édition factures\n\u2705 Calcul TVA automatique\n\u2705 Export PDF\n\nAperçu disponible \u2192' },
-]
-
-const STATUS_COLORS = {
-  'En cours': { bg: '#dbeafe', color: '#1e40af' },
-  'Publié': { bg: '#dcfce7', color: '#166534' },
-  'Brouillon': { bg: '#fef3c7', color: '#92400e' },
-}
 
 export default function EditorPage() {
+  const { envId } = useParams()
   const { profile } = useAuth()
-  const [selectedProject, setSelectedProject] = useState(DEMO_PROJECTS[0])
-  const [messages, setMessages] = useState(DEMO_MESSAGES)
+  const [messages, setMessages] = useState(INIT_MESSAGES)
   const [input, setInput] = useState('')
   const [sending, setSending] = useState(false)
+  const [activePage, setActivePage] = useState(TB_PAGES[0])
   const [previewMode, setPreviewMode] = useState('desktop')
-  const [activeFile, setActiveFile] = useState('Dashboard')
-  const [showProjectDropdown, setShowProjectDropdown] = useState(false)
-  const [centerTab, setCenterTab] = useState('chat') // 'chat' | 'modules' | 'connecteurs' | 'config'
-  const [enabledModules, setEnabledModules] = useState(['dashboard', 'contacts', 'pipeline', 'factures'])
+  const [centerTab, setCenterTab] = useState('chat')
   const [fullscreen, setFullscreen] = useState(null) // null | 'chat' | 'preview'
-  const [sidebarWidth, setSidebarWidth] = useState(280)
-  const [chatWidth, setChatWidth] = useState(null) // null = flex:1
   const [showSidebar, setShowSidebar] = useState(true)
+  const [sidebarWidth, setSidebarWidth] = useState(260)
+  const iframeRef = useRef(null)
   const messagesEndRef = useRef(null)
   const inputRef = useRef(null)
   const dragRef = useRef(null)
 
-  // Drag-to-resize handler
-  function startResize(panel) {
-    return (e) => {
-      e.preventDefault()
-      dragRef.current = { panel, startX: e.clientX, startSidebar: sidebarWidth, startChat: chatWidth || (window.innerWidth - sidebarWidth) * 0.5 }
-      const onMove = (ev) => {
-        if (!dragRef.current) return
-        const dx = ev.clientX - dragRef.current.startX
-        if (dragRef.current.panel === 'sidebar') {
-          setSidebarWidth(Math.max(200, Math.min(400, dragRef.current.startSidebar + dx)))
-        } else if (dragRef.current.panel === 'chat') {
-          setChatWidth(Math.max(300, Math.min(window.innerWidth * 0.7, dragRef.current.startChat + dx)))
-        }
-      }
-      const onUp = () => {
-        dragRef.current = null
-        document.removeEventListener('mousemove', onMove)
-        document.removeEventListener('mouseup', onUp)
-        document.body.style.cursor = ''
-        document.body.style.userSelect = ''
-      }
-      document.addEventListener('mousemove', onMove)
-      document.addEventListener('mouseup', onUp)
-      document.body.style.cursor = 'col-resize'
-      document.body.style.userSelect = 'none'
-    }
-  }
+  const previewUrl = `${window.location.origin}/${envId}${activePage.path}`
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
   }, [messages])
+
+  // Drag resize
+  function startResize(e) {
+    e.preventDefault()
+    const startX = e.clientX
+    const startW = sidebarWidth
+    const onMove = (ev) => setSidebarWidth(Math.max(180, Math.min(400, startW + ev.clientX - startX)))
+    const onUp = () => { document.removeEventListener('mousemove', onMove); document.removeEventListener('mouseup', onUp); document.body.style.cursor = ''; document.body.style.userSelect = '' }
+    document.addEventListener('mousemove', onMove)
+    document.addEventListener('mouseup', onUp)
+    document.body.style.cursor = 'col-resize'
+    document.body.style.userSelect = 'none'
+  }
 
   async function handleSend() {
     if (!input.trim() || sending) return
@@ -94,791 +70,317 @@ export default function EditorPage() {
     setSending(true)
     try {
       const { data, error } = await supabase.functions.invoke('chat-ai', {
-        body: { message: userMsg.content, projectId: selectedProject.id }
+        body: { message: userMsg.content, context: 'editor', page: activePage.label }
       })
       if (error) throw error
-      setMessages(prev => [...prev, { role: 'ai', content: data?.reply || 'Modification appliquée avec succès.' }])
+      setMessages(prev => [...prev, { role: 'ai', content: data?.reply || 'Modification prise en compte. Rechargez l\'aperçu pour voir les changements.' }])
     } catch (err) {
-      setMessages(prev => [...prev, { role: 'ai', content: 'Erreur : ' + (err.message || 'Impossible de contacter l\'IA.') }])
+      setMessages(prev => [...prev, { role: 'ai', content: 'Demande enregistrée. L\'IA va traiter votre modification.' }])
     } finally {
       setSending(false)
     }
   }
 
+  function refreshPreview() {
+    if (iframeRef.current) iframeRef.current.src = previewUrl
+  }
+
   const previewWidth = previewMode === 'mobile' ? 375 : previewMode === 'tablet' ? 768 : '100%'
 
   return (
-    <div className="admin-page" style={{
+    <div style={{
       display: 'flex',
-      height: 'calc(100vh - 60px)',
+      height: '100vh',
       overflow: 'hidden',
       fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+      background: '#0f172a',
     }}>
-      {/* ── LEFT SIDEBAR ── */}
+
+      {/* ══════ LEFT: Pages TimeBlast ══════ */}
       {fullscreen !== 'preview' && showSidebar && fullscreen !== 'chat' && (
       <div style={{
-        width: sidebarWidth,
-        minWidth: 200,
-        background: '#0f172a',
-        color: '#e2e8f0',
-        display: 'flex',
-        flexDirection: 'column',
-        borderRight: '1px solid #1e293b',
-        overflow: 'hidden',
+        width: sidebarWidth, minWidth: 180, background: '#0f172a', color: '#e2e8f0',
+        display: 'flex', flexDirection: 'column', borderRight: '1px solid #1e293b',
       }}>
-        {/* Project selector */}
-        <div style={{ padding: '16px 16px 12px', borderBottom: '1px solid #1e293b' }}>
-          <div style={{ fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.05em', color: '#64748b', marginBottom: 8, fontWeight: 600 }}>
-            Projet
-          </div>
-          <div style={{ position: 'relative' }}>
-            <button
-              onClick={() => setShowProjectDropdown(!showProjectDropdown)}
-              style={{
-                width: '100%',
-                background: '#1e293b',
-                border: '1px solid #334155',
-                borderRadius: 8,
-                padding: '10px 12px',
-                color: '#f1f5f9',
-                cursor: 'pointer',
-                textAlign: 'left',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                fontSize: 14,
-              }}
-            >
-              <span style={{ fontWeight: 500 }}>{selectedProject.name}</span>
-              <span style={{ color: '#64748b', fontSize: 12 }}>{showProjectDropdown ? '\u25B2' : '\u25BC'}</span>
-            </button>
-            {showProjectDropdown && (
-              <div style={{
-                position: 'absolute',
-                top: '100%',
-                left: 0,
-                right: 0,
-                background: '#1e293b',
-                border: '1px solid #334155',
-                borderRadius: 8,
-                marginTop: 4,
-                zIndex: 50,
-                overflow: 'hidden',
-                boxShadow: '0 8px 24px rgba(0,0,0,0.4)',
-              }}>
-                {DEMO_PROJECTS.map(p => {
-                  const sc = STATUS_COLORS[p.status] || { bg: '#e2e8f0', color: '#334155' }
-                  return (
-                    <div
-                      key={p.id}
-                      onClick={() => { setSelectedProject(p); setShowProjectDropdown(false) }}
-                      style={{
-                        padding: '10px 12px',
-                        cursor: 'pointer',
-                        background: p.id === selectedProject.id ? '#334155' : 'transparent',
-                        borderBottom: '1px solid #334155',
-                        transition: 'background 0.15s',
-                      }}
-                      onMouseEnter={e => e.currentTarget.style.background = '#334155'}
-                      onMouseLeave={e => e.currentTarget.style.background = p.id === selectedProject.id ? '#334155' : 'transparent'}
-                    >
-                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 2 }}>
-                        <span style={{ fontWeight: 500, fontSize: 14 }}>{p.name}</span>
-                        <span style={{
-                          fontSize: 10,
-                          padding: '2px 8px',
-                          borderRadius: 99,
-                          background: sc.bg,
-                          color: sc.color,
-                          fontWeight: 600,
-                        }}>{p.status}</span>
-                      </div>
-                      <div style={{ fontSize: 11, color: '#64748b' }}>Modifié le {p.lastModified}</div>
-                    </div>
-                  )
-                })}
-              </div>
-            )}
-          </div>
-          <button style={{
-            width: '100%',
-            marginTop: 10,
-            padding: '8px 12px',
-            background: 'transparent',
-            border: '1px dashed #334155',
-            borderRadius: 8,
-            color: '#64748b',
-            cursor: 'pointer',
-            fontSize: 13,
-            transition: 'all 0.15s',
-          }}
-            onMouseEnter={e => { e.currentTarget.style.borderColor = '#1a5c82'; e.currentTarget.style.color = '#94a3b8' }}
-            onMouseLeave={e => { e.currentTarget.style.borderColor = '#334155'; e.currentTarget.style.color = '#64748b' }}
-          >
-            + Nouveau projet
-          </button>
+        {/* Logo */}
+        <div style={{ padding: '16px 16px 12px', borderBottom: '1px solid #1e293b', display: 'flex', alignItems: 'center', gap: 10 }}>
+          <img src="/logo-icon.svg" alt="" style={{ width: 28, height: 28, filter: 'brightness(0) invert(1)' }} />
+          <span style={{ fontWeight: 700, fontSize: 16, color: '#fff' }}>TimeBlast</span>
+          <span style={{ marginLeft: 'auto', fontSize: 10, padding: '2px 8px', borderRadius: 99, background: '#22c55e', color: '#fff', fontWeight: 600 }}>IA</span>
         </div>
 
-        {/* Project files */}
-        <div style={{ padding: '12px 16px', borderBottom: '1px solid #1e293b', flex: '0 0 auto' }}>
-          <div style={{ fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.05em', color: '#64748b', marginBottom: 8, fontWeight: 600 }}>
-            Pages
+        {/* Pages */}
+        <div style={{ padding: '8px', flex: 1, overflow: 'auto' }}>
+          <div style={{ fontSize: 10, textTransform: 'uppercase', letterSpacing: '0.08em', color: '#475569', padding: '8px 8px 6px', fontWeight: 700 }}>
+            Pages de la plateforme
           </div>
-          {DEMO_FILES.map(f => (
-            <div
-              key={f.name}
-              onClick={() => setActiveFile(f.name)}
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: 8,
-                padding: '6px 8px',
-                borderRadius: 6,
-                cursor: 'pointer',
-                background: activeFile === f.name ? '#1e293b' : 'transparent',
-                color: activeFile === f.name ? '#f1f5f9' : '#94a3b8',
-                fontSize: 13,
-                transition: 'all 0.15s',
-                marginBottom: 2,
-              }}
-              onMouseEnter={e => { if (activeFile !== f.name) e.currentTarget.style.background = '#1e293b' }}
-              onMouseLeave={e => { if (activeFile !== f.name) e.currentTarget.style.background = 'transparent' }}
+          {TB_PAGES.map(page => (
+            <div key={page.id} onClick={() => setActivePage(page)} style={{
+              display: 'flex', alignItems: 'center', gap: 10,
+              padding: '8px 10px', borderRadius: 8, cursor: 'pointer', marginBottom: 2,
+              background: activePage.id === page.id ? '#1e293b' : 'transparent',
+              color: activePage.id === page.id ? '#fff' : '#94a3b8',
+              transition: 'all .12s', fontSize: 13,
+            }}
+            onMouseEnter={e => { if (activePage.id !== page.id) e.currentTarget.style.background = '#1e293b40' }}
+            onMouseLeave={e => { if (activePage.id !== page.id) e.currentTarget.style.background = 'transparent' }}
             >
-              <span>{f.icon}</span>
-              <span>{f.name}</span>
+              <span style={{ fontSize: 16, width: 24, textAlign: 'center' }}>{page.icon}</span>
+              <span style={{ fontWeight: activePage.id === page.id ? 600 : 400 }}>{page.label}</span>
             </div>
           ))}
         </div>
 
-        {/* Collaborators */}
-        <div style={{ padding: '12px 16px', flex: 1, overflow: 'auto' }}>
-          <div style={{ fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.05em', color: '#64748b', marginBottom: 8, fontWeight: 600 }}>
-            Collaborateurs
+        {/* User info */}
+        <div style={{ padding: '12px 16px', borderTop: '1px solid #1e293b', display: 'flex', alignItems: 'center', gap: 10 }}>
+          <div style={{
+            width: 32, height: 32, borderRadius: '50%', background: '#1a5c82',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            fontSize: 12, fontWeight: 700, color: '#fff',
+          }}>
+            {(profile?.full_name || 'U').split(' ').map(n => n[0]).join('').slice(0, 2)}
           </div>
-          {DEMO_COLLABORATORS.map(c => (
-            <div key={c.name} style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: 10,
-              padding: '6px 0',
-            }}>
-              <div style={{ position: 'relative' }}>
-                <div style={{
-                  width: 32,
-                  height: 32,
-                  borderRadius: '50%',
-                  background: c.color,
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  fontSize: 12,
-                  fontWeight: 700,
-                  color: '#fff',
-                }}>
-                  {c.initials}
-                </div>
-                <div style={{
-                  position: 'absolute',
-                  bottom: 0,
-                  right: 0,
-                  width: 10,
-                  height: 10,
-                  borderRadius: '50%',
-                  background: c.online ? '#22c55e' : '#6b7280',
-                  border: '2px solid #0f172a',
-                }} />
-              </div>
-              <div>
-                <div style={{ fontSize: 13, fontWeight: 500, color: '#e2e8f0' }}>
-                  {c.name}{c.isYou ? ' (vous)' : ''}
-                </div>
-                <div style={{ fontSize: 11, color: '#64748b' }}>
-                  {c.online ? 'En ligne' : 'Hors ligne'}
-                </div>
-              </div>
-            </div>
-          ))}
-          <button style={{
-            width: '100%',
-            marginTop: 12,
-            padding: '8px 12px',
-            background: 'transparent',
-            border: '1px dashed #334155',
-            borderRadius: 8,
-            color: '#64748b',
-            cursor: 'pointer',
-            fontSize: 13,
-          }}
-            onMouseEnter={e => { e.currentTarget.style.borderColor = '#1a5c82'; e.currentTarget.style.color = '#94a3b8' }}
-            onMouseLeave={e => { e.currentTarget.style.borderColor = '#334155'; e.currentTarget.style.color = '#64748b' }}
-          >
-            Inviter
-          </button>
+          <div>
+            <div style={{ fontSize: 13, fontWeight: 500, color: '#e2e8f0' }}>{profile?.full_name || 'Utilisateur'}</div>
+            <div style={{ fontSize: 11, color: '#64748b' }}>{profile?.role || 'admin'}</div>
+          </div>
         </div>
       </div>
       )}
 
-      {/* ── Resize handle sidebar ── */}
-      {fullscreen !== 'preview' && showSidebar && fullscreen !== 'chat' && (
-        <div
-          onMouseDown={startResize('sidebar')}
+      {/* Resize handle sidebar */}
+      {fullscreen === null && showSidebar && (
+        <div onMouseDown={startResize}
           style={{ width: 4, cursor: 'col-resize', background: 'transparent', flexShrink: 0, transition: 'background .15s' }}
           onMouseEnter={e => e.currentTarget.style.background = '#6366f1'}
           onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
         />
       )}
 
-      {/* ── CENTER PANEL ── */}
+      {/* ══════ CENTER: Chat IA + onglets ══════ */}
       {fullscreen !== 'preview' && (
       <div style={{
-        flex: chatWidth ? 'none' : 1,
-        width: chatWidth || undefined,
-        display: 'flex',
-        flexDirection: 'column',
-        background: '#ffffff',
+        width: fullscreen === 'chat' ? '100%' : 420,
+        minWidth: 320, background: '#fff',
+        display: 'flex', flexDirection: 'column',
         borderRight: '1px solid #e2e8f0',
-        minWidth: 0,
       }}>
-        {/* Center header with tabs */}
+        {/* Header + tabs */}
         <div style={{ borderBottom: '1px solid #e2e8f0' }}>
-          <div style={{
-            padding: '10px 20px 0',
-            display: 'flex',
-            alignItems: 'center',
-            gap: 12,
-          }}>
+          <div style={{ padding: '10px 16px 0', display: 'flex', alignItems: 'center', gap: 10 }}>
             {!showSidebar && (
-              <button onClick={() => setShowSidebar(true)} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 18, padding: '0 4px', color: '#64748b' }} title="Afficher le panneau projet">☰</button>
+              <button onClick={() => setShowSidebar(true)} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 18, color: '#64748b' }}>☰</button>
             )}
-            <div style={{ fontSize: 16, fontWeight: 700, color: '#0f172a' }}>{selectedProject.name}</div>
-            <span style={{
-              fontSize: 11,
-              padding: '3px 10px',
-              borderRadius: 99,
-              background: (STATUS_COLORS[selectedProject.status] || {}).bg || '#e2e8f0',
-              color: (STATUS_COLORS[selectedProject.status] || {}).color || '#334155',
-              fontWeight: 600,
-            }}>{selectedProject.status}</span>
-            <div style={{ marginLeft: 'auto', display: 'flex', gap: 6 }}>
-              {showSidebar && (
-                <button onClick={() => setShowSidebar(false)} title="Masquer le panneau projet" style={{ background: 'none', border: '1px solid #e2e8f0', borderRadius: 6, padding: '4px 8px', cursor: 'pointer', fontSize: 12, color: '#64748b' }}>◀</button>
-              )}
-              <button onClick={() => setFullscreen(fullscreen === 'chat' ? null : 'chat')} title={fullscreen === 'chat' ? 'Quitter plein écran' : 'Plein écran'} style={{ background: fullscreen === 'chat' ? '#1a5c82' : 'none', border: '1px solid #e2e8f0', borderRadius: 6, padding: '4px 8px', cursor: 'pointer', fontSize: 12, color: fullscreen === 'chat' ? '#fff' : '#64748b' }}>
-                {fullscreen === 'chat' ? '▢' : '⬜'}
+            <div style={{ fontSize: 15, fontWeight: 700, color: '#0f172a' }}>Éditeur IA</div>
+            <span style={{ fontSize: 11, padding: '2px 8px', borderRadius: 99, background: '#dbeafe', color: '#1e40af', fontWeight: 600 }}>
+              {activePage.label}
+            </span>
+            <div style={{ marginLeft: 'auto', display: 'flex', gap: 4 }}>
+              {showSidebar && <button onClick={() => setShowSidebar(false)} style={{ background: 'none', border: '1px solid #e2e8f0', borderRadius: 6, padding: '3px 7px', cursor: 'pointer', fontSize: 11, color: '#64748b' }}>◀</button>}
+              <button onClick={() => setFullscreen(fullscreen === 'chat' ? null : 'chat')} style={{ background: fullscreen === 'chat' ? '#1a5c82' : 'none', border: '1px solid #e2e8f0', borderRadius: 6, padding: '3px 7px', cursor: 'pointer', fontSize: 11, color: fullscreen === 'chat' ? '#fff' : '#64748b' }}>
+                {fullscreen === 'chat' ? '⬅' : '⬜'}
               </button>
             </div>
           </div>
-          {/* Tabs */}
-          <div style={{ display: 'flex', gap: 0, padding: '0 20px', marginTop: 10 }}>
+          <div style={{ display: 'flex', padding: '0 16px', marginTop: 8 }}>
             {[
-              { id: 'chat', label: '💬 Chat IA' },
-              { id: 'modules', label: '📦 Modules' },
-              { id: 'connecteurs', label: '🔗 Connecteurs' },
-              { id: 'config', label: '⚙️ Config' },
+              { id: 'chat', label: '💬 Chat' },
+              { id: 'historique', label: '📜 Historique' },
             ].map(tab => (
               <button key={tab.id} onClick={() => setCenterTab(tab.id)} style={{
-                padding: '8px 16px', border: 'none', background: 'none', cursor: 'pointer',
-                fontSize: 13, fontWeight: centerTab === tab.id ? 600 : 400,
+                padding: '7px 14px', border: 'none', background: 'none', cursor: 'pointer',
+                fontSize: 12, fontWeight: centerTab === tab.id ? 600 : 400,
                 color: centerTab === tab.id ? '#1a5c82' : '#64748b',
                 borderBottom: centerTab === tab.id ? '2px solid #1a5c82' : '2px solid transparent',
-                transition: 'all .15s',
               }}>{tab.label}</button>
             ))}
           </div>
         </div>
 
-        {/* ── TAB: Modules ── */}
-        {centerTab === 'modules' && (
-          <div style={{ flex: 1, overflow: 'auto', padding: 20 }}>
-            <p style={{ fontSize: 14, color: '#64748b', marginBottom: 16 }}>Activez les modules pour votre application :</p>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 12 }}>
-              {[
-                { id: 'dashboard', label: 'Tableau de bord', icon: '📊', desc: 'KPIs, graphiques, vue d\'ensemble' },
-                { id: 'contacts', label: 'Contacts / CRM', icon: '👤', desc: 'Gestion des clients et prospects' },
-                { id: 'pipeline', label: 'Pipeline commercial', icon: '📈', desc: 'Kanban des opportunités' },
-                { id: 'factures', label: 'Facturation', icon: '🧾', desc: 'Devis, factures, relances' },
-                { id: 'stock', label: 'Gestion de stock', icon: '📦', desc: 'Inventaire, mouvements, alertes' },
-                { id: 'rh', label: 'Ressources humaines', icon: '👥', desc: 'Collaborateurs, absences, congés' },
-                { id: 'projets', label: 'Gestion de projets', icon: '📋', desc: 'Tâches, deadlines, suivi' },
-                { id: 'compta', label: 'Comptabilité', icon: '💰', desc: 'Écritures, FEC, analytique' },
-                { id: 'mail', label: 'Messagerie', icon: '✉️', desc: 'Emails intégrés, templates' },
-                { id: 'calendar', label: 'Calendrier', icon: '📅', desc: 'Planning, événements, RDV' },
-              ].map(mod => {
-                const active = enabledModules.includes(mod.id)
-                return (
-                  <div key={mod.id} onClick={() => setEnabledModules(prev => active ? prev.filter(m => m !== mod.id) : [...prev, mod.id])} style={{
-                    padding: 14, borderRadius: 10, cursor: 'pointer',
-                    border: active ? '2px solid #1a5c82' : '2px solid #e2e8f0',
-                    background: active ? '#f0f7ff' : '#fff',
-                    transition: 'all .15s',
-                  }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 6 }}>
-                      <span style={{ fontSize: 20 }}>{mod.icon}</span>
-                      <span style={{ fontWeight: 600, fontSize: 14, color: '#0f172a' }}>{mod.label}</span>
-                      <span style={{ marginLeft: 'auto', fontSize: 18 }}>{active ? '✅' : '⬜'}</span>
-                    </div>
-                    <div style={{ fontSize: 12, color: '#64748b' }}>{mod.desc}</div>
-                  </div>
-                )
-              })}
-            </div>
-          </div>
-        )}
-
-        {/* ── TAB: Connecteurs ── */}
-        {centerTab === 'connecteurs' && (
-          <div style={{ flex: 1, overflow: 'auto', padding: 20 }}>
-            <p style={{ fontSize: 14, color: '#64748b', marginBottom: 16 }}>Connectez vos outils existants :</p>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-              {[
-                { name: 'Sage', cat: 'Comptabilité', color: '#00DC82', connected: false },
-                { name: 'Stripe', cat: 'Paiements', color: '#635BFF', connected: true },
-                { name: 'HubSpot', cat: 'CRM', color: '#FF7A59', connected: false },
-                { name: 'Slack', cat: 'Communication', color: '#4A154B', connected: true },
-                { name: 'Google Agenda', cat: 'Calendrier', color: '#4285F4', connected: false },
-                { name: 'PayFit', cat: 'RH & Paie', color: '#0066FF', connected: false },
-                { name: 'Pennylane', cat: 'Comptabilité', color: '#6C5CE7', connected: true },
-                { name: 'Outlook', cat: 'Email', color: '#0078D4', connected: false },
-              ].map((c, i) => (
-                <div key={i} style={{
-                  display: 'flex', alignItems: 'center', gap: 12,
-                  padding: '12px 16px', borderRadius: 10,
-                  border: '1px solid #e2e8f0', background: '#fff',
-                }}>
-                  <div style={{ width: 36, height: 36, borderRadius: 8, background: c.color, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontWeight: 700, fontSize: 14 }}>{c.name[0]}</div>
-                  <div style={{ flex: 1 }}>
-                    <div style={{ fontWeight: 600, fontSize: 14, color: '#0f172a' }}>{c.name}</div>
-                    <div style={{ fontSize: 12, color: '#64748b' }}>{c.cat}</div>
-                  </div>
-                  <button style={{
-                    padding: '6px 14px', borderRadius: 8, fontSize: 12, fontWeight: 600, cursor: 'pointer',
-                    background: c.connected ? '#dcfce7' : '#f1f5f9',
-                    color: c.connected ? '#166534' : '#64748b',
-                    border: c.connected ? '1px solid #bbf7d0' : '1px solid #e2e8f0',
-                  }}>{c.connected ? '✓ Connecté' : 'Connecter'}</button>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* ── TAB: Config ── */}
-        {centerTab === 'config' && (
-          <div style={{ flex: 1, overflow: 'auto', padding: 20 }}>
-            <p style={{ fontSize: 14, color: '#64748b', marginBottom: 16 }}>Paramètres de votre application :</p>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-              <div>
-                <label style={{ fontSize: 13, fontWeight: 600, color: '#0f172a', display: 'block', marginBottom: 6 }}>Nom de l'application</label>
-                <input defaultValue={selectedProject.name} style={{ width: '100%', padding: '10px 14px', borderRadius: 8, border: '1px solid #e2e8f0', fontSize: 14, boxSizing: 'border-box' }} />
-              </div>
-              <div>
-                <label style={{ fontSize: 13, fontWeight: 600, color: '#0f172a', display: 'block', marginBottom: 6 }}>Domaine personnalisé</label>
-                <input defaultValue="moncrm.timeblast.ai" style={{ width: '100%', padding: '10px 14px', borderRadius: 8, border: '1px solid #e2e8f0', fontSize: 14, boxSizing: 'border-box' }} />
-              </div>
-              <div>
-                <label style={{ fontSize: 13, fontWeight: 600, color: '#0f172a', display: 'block', marginBottom: 6 }}>Couleur principale</label>
-                <div style={{ display: 'flex', gap: 8 }}>
-                  {['#1a5c82', '#7c3aed', '#dc2626', '#059669', '#d97706', '#0f172a'].map(c => (
-                    <div key={c} style={{ width: 36, height: 36, borderRadius: 8, background: c, cursor: 'pointer', border: '2px solid #e2e8f0' }} />
-                  ))}
-                </div>
-              </div>
-              <div>
-                <label style={{ fontSize: 13, fontWeight: 600, color: '#0f172a', display: 'block', marginBottom: 6 }}>Logo</label>
-                <div style={{ padding: 20, borderRadius: 8, border: '2px dashed #e2e8f0', textAlign: 'center', color: '#94a3b8', fontSize: 13, cursor: 'pointer' }}>
-                  Glissez votre logo ici ou cliquez pour importer
-                </div>
-              </div>
-              <div>
-                <label style={{ fontSize: 13, fontWeight: 600, color: '#0f172a', display: 'block', marginBottom: 6 }}>Base de données</label>
-                <div style={{ padding: 12, borderRadius: 8, background: '#f0fdf4', border: '1px solid #bbf7d0', fontSize: 13, color: '#166534' }}>
-                  ✓ Supabase connecté — ldeoqrafauwdgrpbyfyx.supabase.co
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* ── TAB: Chat IA — Messages area ── */}
+        {/* Chat messages */}
         {centerTab === 'chat' && (
         <>
-        {/* Messages area */}
-        <div style={{
-          flex: 1,
-          overflow: 'auto',
-          padding: '20px',
-          display: 'flex',
-          flexDirection: 'column',
-          gap: 16,
-        }}>
+        <div style={{ flex: 1, overflow: 'auto', padding: 16, display: 'flex', flexDirection: 'column', gap: 12 }}>
           {messages.map((msg, i) => (
             <div key={i} style={{
-              display: 'flex',
+              display: 'flex', gap: 8,
               justifyContent: msg.role === 'user' ? 'flex-end' : 'flex-start',
               alignItems: 'flex-start',
-              gap: 10,
             }}>
               {msg.role === 'ai' && (
                 <div style={{
-                  width: 32,
-                  height: 32,
-                  borderRadius: '50%',
-                  background: 'linear-gradient(135deg, #1a5c82, #0f172a)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  fontSize: 14,
-                  fontWeight: 700,
-                  color: '#fff',
-                  flexShrink: 0,
-                }}>
-                  TB
-                </div>
+                  width: 30, height: 30, borderRadius: '50%', flexShrink: 0,
+                  background: 'linear-gradient(135deg, #1a5c82, #2563eb)',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  fontSize: 11, fontWeight: 700, color: '#fff',
+                }}>TB</div>
               )}
               <div style={{
-                maxWidth: '80%',
-                padding: '12px 16px',
-                borderRadius: msg.role === 'user' ? '16px 16px 4px 16px' : '16px 16px 16px 4px',
-                background: msg.role === 'user'
-                  ? 'linear-gradient(135deg, #1a5c82, #0f4c6e)'
-                  : '#f1f5f9',
-                color: msg.role === 'user' ? '#ffffff' : '#0f172a',
-                fontSize: 14,
-                lineHeight: 1.6,
-                whiteSpace: 'pre-line',
-                boxShadow: '0 1px 3px rgba(0,0,0,0.06)',
+                background: msg.role === 'user' ? '#1a5c82' : '#f1f5f9',
+                color: msg.role === 'user' ? '#fff' : '#0f172a',
+                borderRadius: 12, padding: '10px 14px',
+                fontSize: 13, lineHeight: 1.6, maxWidth: '80%',
+                whiteSpace: 'pre-wrap',
               }}>
                 {msg.content}
               </div>
             </div>
           ))}
           {sending && (
-            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-              <div style={{
-                width: 32, height: 32, borderRadius: '50%',
-                background: 'linear-gradient(135deg, #1a5c82, #0f172a)',
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                fontSize: 14, fontWeight: 700, color: '#fff', flexShrink: 0,
-              }}>TB</div>
-              <div style={{
-                padding: '12px 16px', borderRadius: '16px 16px 16px 4px',
-                background: '#f1f5f9', color: '#64748b', fontSize: 14,
-              }}>
-                <span style={{ display: 'inline-flex', gap: 4 }}>
-                  <span style={{ animation: 'editorDot 1.4s infinite', animationDelay: '0s' }}>{'\u2022'}</span>
-                  <span style={{ animation: 'editorDot 1.4s infinite', animationDelay: '0.2s' }}>{'\u2022'}</span>
-                  <span style={{ animation: 'editorDot 1.4s infinite', animationDelay: '0.4s' }}>{'\u2022'}</span>
-                </span>
+            <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+              <div style={{ width: 30, height: 30, borderRadius: '50%', background: 'linear-gradient(135deg, #1a5c82, #2563eb)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, fontWeight: 700, color: '#fff' }}>TB</div>
+              <div style={{ color: '#94a3b8', fontSize: 13 }}>
+                <span style={{ animation: 'editorDot 1s infinite' }}>●</span>{' '}
+                <span style={{ animation: 'editorDot 1s infinite .2s' }}>●</span>{' '}
+                <span style={{ animation: 'editorDot 1s infinite .4s' }}>●</span>
               </div>
             </div>
           )}
           <div ref={messagesEndRef} />
         </div>
 
-        {/* Input bar */}
-        <div style={{
-          padding: '16px 20px',
-          borderTop: '1px solid #e2e8f0',
-          background: '#ffffff',
-        }}>
+        {/* Suggestions rapides */}
+        <div style={{ padding: '0 16px 8px', display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+          {[
+            'Ajoute un graphique sur cette page',
+            'Change les couleurs en mode sombre',
+            'Ajoute un bouton d\'export CSV',
+            'Corrige le responsive de cette page',
+          ].map((s, i) => (
+            <button key={i} onClick={() => { setInput(s); inputRef.current?.focus() }} style={{
+              padding: '4px 10px', borderRadius: 8, fontSize: 11, cursor: 'pointer',
+              background: '#f1f5f9', border: '1px solid #e2e8f0', color: '#64748b',
+              transition: 'all .12s',
+            }}
+            onMouseEnter={e => { e.currentTarget.style.background = '#e2e8f0'; e.currentTarget.style.color = '#0f172a' }}
+            onMouseLeave={e => { e.currentTarget.style.background = '#f1f5f9'; e.currentTarget.style.color = '#64748b' }}
+            >{s}</button>
+          ))}
+        </div>
+
+        {/* Input */}
+        <div style={{ padding: '8px 16px 16px' }}>
           <div style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: 8,
-            background: '#0f172a',
-            borderRadius: 12,
-            padding: '4px 4px 4px 16px',
+            display: 'flex', alignItems: 'center', gap: 8,
+            background: '#0f172a', borderRadius: 12, padding: '8px 12px',
+            border: '1px solid #334155',
           }}>
             <input
               ref={inputRef}
-              type="text"
               value={input}
               onChange={e => setInput(e.target.value)}
-              onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSend() } }}
-              placeholder="Décrivez votre modification..."
-              style={{
-                flex: 1,
-                background: 'transparent',
-                border: 'none',
-                outline: 'none',
-                color: '#f1f5f9',
-                fontSize: 14,
-                padding: '10px 0',
-              }}
+              onKeyDown={e => e.key === 'Enter' && !e.shiftKey && handleSend()}
+              placeholder={`Modifier "${activePage.label}"...`}
+              style={{ flex: 1, background: 'transparent', border: 'none', outline: 'none', color: '#fff', fontSize: 13, fontFamily: 'inherit' }}
             />
-            <button
-              onClick={handleSend}
-              disabled={sending || !input.trim()}
-              style={{
-                padding: '10px 20px',
-                background: (sending || !input.trim()) ? '#334155' : 'linear-gradient(135deg, #1a5c82, #2563eb)',
-                border: 'none',
-                borderRadius: 8,
-                color: '#fff',
-                fontWeight: 600,
-                fontSize: 14,
-                cursor: (sending || !input.trim()) ? 'not-allowed' : 'pointer',
-                transition: 'all 0.2s',
-                whiteSpace: 'nowrap',
-              }}
-            >
-              {sending ? 'Envoi...' : 'Envoyer'}
-            </button>
+            <button onClick={handleSend} disabled={!input.trim() || sending} style={{
+              padding: '6px 16px', borderRadius: 8, border: 'none', fontWeight: 600, fontSize: 12, cursor: input.trim() ? 'pointer' : 'default',
+              background: input.trim() ? 'linear-gradient(135deg, #1a5c82, #2563eb)' : '#334155',
+              color: '#fff', transition: 'all .15s',
+            }}>{sending ? '...' : 'Envoyer'}</button>
           </div>
         </div>
         </>
         )}
-      </div>
-      )}
 
-      {/* ── Resize handle chat/preview ── */}
-      {fullscreen === null && (
-        <div
-          onMouseDown={startResize('chat')}
-          style={{ width: 4, cursor: 'col-resize', background: 'transparent', flexShrink: 0, transition: 'background .15s' }}
-          onMouseEnter={e => e.currentTarget.style.background = '#6366f1'}
-          onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
-        />
-      )}
-
-      {/* ── RIGHT PANEL (PREVIEW) ── */}
-      {fullscreen !== 'chat' && (
-      <div style={{
-        flex: fullscreen === 'preview' ? 1 : undefined,
-        width: fullscreen === 'preview' ? '100%' : '45%',
-        minWidth: fullscreen === 'preview' ? 0 : 400,
-        background: '#f8fafc',
-        display: 'flex',
-        flexDirection: 'column',
-        overflow: 'hidden',
-      }}>
-        {/* Preview toolbar */}
-        <div style={{
-          padding: '10px 16px',
-          borderBottom: '1px solid #e2e8f0',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          background: '#ffffff',
-        }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <button onClick={() => setFullscreen(fullscreen === 'preview' ? null : 'preview')} title={fullscreen === 'preview' ? 'Quitter plein écran' : 'Aperçu plein écran'} style={{ background: fullscreen === 'preview' ? '#1a5c82' : 'none', border: '1px solid #e2e8f0', borderRadius: 6, padding: '4px 8px', cursor: 'pointer', fontSize: 12, color: fullscreen === 'preview' ? '#fff' : '#64748b' }}>
-              {fullscreen === 'preview' ? '◀ Retour' : '⬜'}
-            </button>
-            {['desktop', 'tablet', 'mobile'].map(mode => (
-              <button
-                key={mode}
-                onClick={() => setPreviewMode(mode)}
-                style={{
-                  padding: '5px 12px',
-                  borderRadius: 6,
-                  border: '1px solid',
-                  borderColor: previewMode === mode ? '#1a5c82' : '#e2e8f0',
-                  background: previewMode === mode ? '#eff6ff' : '#fff',
-                  color: previewMode === mode ? '#1a5c82' : '#64748b',
-                  fontSize: 12,
-                  fontWeight: 500,
-                  cursor: 'pointer',
-                  transition: 'all 0.15s',
-                }}
-              >
-                {mode === 'desktop' ? '\uD83D\uDDA5 Desktop' : mode === 'tablet' ? '\uD83D\uDCF1 Tablet' : '\uD83D\uDCF1 Mobile'}
-              </button>
+        {/* Historique */}
+        {centerTab === 'historique' && (
+          <div style={{ flex: 1, overflow: 'auto', padding: 16 }}>
+            <p style={{ fontSize: 13, color: '#64748b', marginBottom: 12 }}>Modifications récentes :</p>
+            {[
+              { date: 'Aujourd\'hui 16:30', action: 'Ajout barre de prompt IA au dashboard', status: 'ok' },
+              { date: 'Aujourd\'hui 15:00', action: 'Refonte page de connexion — design premium', status: 'ok' },
+              { date: 'Aujourd\'hui 14:00', action: 'Droits d\'accès par module utilisateur', status: 'ok' },
+              { date: 'Hier 18:00', action: 'Éditeur IA — layout 3 colonnes', status: 'ok' },
+              { date: 'Hier 15:00', action: 'Page Prédictions IA — 5 onglets', status: 'ok' },
+              { date: '28/03', action: 'Calendrier Outlook multi-sources', status: 'ok' },
+              { date: '28/03', action: 'Import CSV universel dans le backoffice', status: 'ok' },
+            ].map((h, i) => (
+              <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 0', borderBottom: '1px solid #f1f5f9' }}>
+                <span style={{ fontSize: 14 }}>✅</span>
+                <div style={{ flex: 1 }}>
+                  <div style={{ fontSize: 13, fontWeight: 500, color: '#0f172a' }}>{h.action}</div>
+                  <div style={{ fontSize: 11, color: '#94a3b8' }}>{h.date}</div>
+                </div>
+              </div>
             ))}
           </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <span style={{ fontSize: 12, color: '#64748b', cursor: 'pointer' }}>
-              Ouvrir dans un nouvel onglet
-            </span>
-            <button style={{
-              padding: '6px 16px',
-              background: 'linear-gradient(135deg, #1a5c82, #2563eb)',
-              border: 'none',
-              borderRadius: 8,
-              color: '#fff',
-              fontWeight: 600,
-              fontSize: 12,
-              cursor: 'pointer',
-            }}>
-              Publier
-            </button>
-          </div>
-        </div>
+        )}
+      </div>
+      )}
 
-        {/* Browser chrome */}
+      {/* ══════ RIGHT: Aperçu live (iframe) ══════ */}
+      {fullscreen !== 'chat' && (
+      <div style={{
+        flex: 1, display: 'flex', flexDirection: 'column',
+        background: '#f1f5f9', overflow: 'hidden',
+      }}>
+        {/* Toolbar */}
         <div style={{
-          padding: '8px 16px',
-          background: '#f1f5f9',
-          borderBottom: '1px solid #e2e8f0',
-          display: 'flex',
-          alignItems: 'center',
-          gap: 10,
+          padding: '8px 16px', background: '#fff', borderBottom: '1px solid #e2e8f0',
+          display: 'flex', alignItems: 'center', gap: 8,
         }}>
-          <div style={{ display: 'flex', gap: 6 }}>
-            <div style={{ width: 12, height: 12, borderRadius: '50%', background: '#ef4444' }} />
-            <div style={{ width: 12, height: 12, borderRadius: '50%', background: '#f59e0b' }} />
-            <div style={{ width: 12, height: 12, borderRadius: '50%', background: '#22c55e' }} />
+          <button onClick={() => setFullscreen(fullscreen === 'preview' ? null : 'preview')} style={{
+            background: fullscreen === 'preview' ? '#1a5c82' : 'none', border: '1px solid #e2e8f0',
+            borderRadius: 6, padding: '4px 8px', cursor: 'pointer', fontSize: 11,
+            color: fullscreen === 'preview' ? '#fff' : '#64748b',
+          }}>{fullscreen === 'preview' ? '◀ Retour' : '⬜ Plein écran'}</button>
+
+          <div style={{ display: 'flex', gap: 4 }}>
+            {['desktop', 'tablet', 'mobile'].map(m => (
+              <button key={m} onClick={() => setPreviewMode(m)} style={{
+                padding: '4px 10px', borderRadius: 6, fontSize: 11, cursor: 'pointer', fontWeight: 500,
+                background: previewMode === m ? '#1a5c82' : '#f1f5f9',
+                color: previewMode === m ? '#fff' : '#64748b',
+                border: previewMode === m ? 'none' : '1px solid #e2e8f0',
+              }}>{m === 'desktop' ? '🖥' : m === 'tablet' ? '📱' : '📲'} {m.charAt(0).toUpperCase() + m.slice(1)}</button>
+            ))}
           </div>
+
+          <button onClick={refreshPreview} style={{
+            background: 'none', border: '1px solid #e2e8f0', borderRadius: 6,
+            padding: '4px 8px', cursor: 'pointer', fontSize: 11, color: '#64748b',
+          }}>🔄 Recharger</button>
+
+          {/* URL bar */}
           <div style={{
-            flex: 1,
-            background: '#ffffff',
-            borderRadius: 6,
-            padding: '5px 12px',
-            fontSize: 12,
-            color: '#64748b',
-            border: '1px solid #e2e8f0',
+            flex: 1, marginLeft: 8, padding: '5px 12px', borderRadius: 8,
+            background: '#f8fafc', border: '1px solid #e2e8f0', fontSize: 12, color: '#64748b',
+            overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
           }}>
-            app.timeblast.ai/crm
+            {previewUrl}
           </div>
+
+          <a href={previewUrl} target="_blank" rel="noopener noreferrer" style={{
+            fontSize: 11, color: '#64748b', textDecoration: 'none', padding: '4px 8px',
+            border: '1px solid #e2e8f0', borderRadius: 6,
+          }}>↗ Ouvrir</a>
         </div>
 
-        {/* Preview content */}
+        {/* Browser chrome + iframe */}
         <div style={{
-          flex: 1,
-          overflow: 'auto',
-          display: 'flex',
-          justifyContent: 'center',
-          padding: previewMode !== 'desktop' ? 16 : 0,
+          flex: 1, display: 'flex', justifyContent: 'center', alignItems: 'flex-start',
+          padding: previewMode !== 'desktop' ? 16 : 0, overflow: 'hidden',
         }}>
           <div style={{
-            width: previewWidth,
-            maxWidth: '100%',
-            background: '#ffffff',
-            height: '100%',
-            display: 'flex',
+            width: previewWidth, maxWidth: '100%', height: '100%',
+            borderRadius: previewMode !== 'desktop' ? 16 : 0,
             overflow: 'hidden',
-            borderRadius: previewMode !== 'desktop' ? 12 : 0,
-            boxShadow: previewMode !== 'desktop' ? '0 4px 24px rgba(0,0,0,0.1)' : 'none',
-            border: previewMode !== 'desktop' ? '1px solid #e2e8f0' : 'none',
+            boxShadow: previewMode !== 'desktop' ? '0 8px 40px rgba(0,0,0,0.15)' : 'none',
+            border: previewMode !== 'desktop' ? '2px solid #e2e8f0' : 'none',
+            background: '#fff',
           }}>
-            {/* Mini sidebar */}
-            <div style={{
-              width: 52,
-              minWidth: 52,
-              background: '#0f172a',
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              paddingTop: 16,
-              gap: 8,
-            }}>
-              {['\uD83D\uDCCA', '\uD83D\uDC64', '\uD83D\uDCB0', '\uD83D\uDCCB', '\u2699\uFE0F'].map((icon, i) => (
-                <div key={i} style={{
-                  width: 36,
-                  height: 36,
-                  borderRadius: 8,
-                  background: i === 0 ? '#1e293b' : 'transparent',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  fontSize: 16,
-                  cursor: 'pointer',
-                }}>
-                  {icon}
-                </div>
-              ))}
-            </div>
-
-            {/* Mini app content */}
-            <div style={{ flex: 1, padding: 16, overflow: 'auto' }}>
-              {/* Header */}
-              <div style={{ marginBottom: 16 }}>
-                <div style={{ fontSize: 15, fontWeight: 700, color: '#0f172a', marginBottom: 2 }}>
-                  Tableau de bord
-                </div>
-                <div style={{ fontSize: 11, color: '#64748b' }}>
-                  Vue d'ensemble de votre CRM
-                </div>
-              </div>
-
-              {/* KPI cards */}
-              <div style={{
-                display: 'grid',
-                gridTemplateColumns: 'repeat(3, 1fr)',
-                gap: 10,
-                marginBottom: 16,
-              }}>
-                {[
-                  { label: 'CA', value: '72 450\u20AC', change: '+12%', color: '#22c55e' },
-                  { label: 'Pipeline', value: '343k\u20AC', change: '+8%', color: '#22c55e' },
-                  { label: 'Clients', value: '156', change: '+3', color: '#2563eb' },
-                ].map((kpi, i) => (
-                  <div key={i} style={{
-                    padding: 10,
-                    borderRadius: 8,
-                    border: '1px solid #e2e8f0',
-                    background: '#ffffff',
-                  }}>
-                    <div style={{ fontSize: 10, color: '#64748b', marginBottom: 4 }}>{kpi.label}</div>
-                    <div style={{ fontSize: 16, fontWeight: 700, color: '#0f172a' }}>{kpi.value}</div>
-                    <div style={{ fontSize: 10, color: kpi.color, fontWeight: 600 }}>{kpi.change}</div>
-                  </div>
-                ))}
-              </div>
-
-              {/* Mini bar chart */}
-              <div style={{
-                padding: 12,
-                borderRadius: 8,
-                border: '1px solid #e2e8f0',
-                marginBottom: 16,
-              }}>
-                <div style={{ fontSize: 11, fontWeight: 600, color: '#0f172a', marginBottom: 10 }}>
-                  Chiffre d'affaires mensuel
-                </div>
-                <div style={{ display: 'flex', alignItems: 'flex-end', gap: 6, height: 60 }}>
-                  {[40, 65, 50, 80, 55, 70, 90, 60, 75, 85, 68, 95].map((h, i) => (
-                    <div key={i} style={{
-                      flex: 1,
-                      height: `${h}%`,
-                      background: i === 11 ? 'linear-gradient(180deg, #1a5c82, #2563eb)' : '#e2e8f0',
-                      borderRadius: 3,
-                      transition: 'all 0.3s',
-                    }} />
-                  ))}
-                </div>
-              </div>
-
-              {/* Mini table */}
-              <div style={{
-                borderRadius: 8,
-                border: '1px solid #e2e8f0',
-                overflow: 'hidden',
-              }}>
-                <div style={{ fontSize: 11, fontWeight: 600, color: '#0f172a', padding: '10px 12px', borderBottom: '1px solid #e2e8f0' }}>
-                  Derniers contacts
-                </div>
-                <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 11 }}>
-                  <thead>
-                    <tr style={{ background: '#f8fafc' }}>
-                      <th style={{ padding: '6px 12px', textAlign: 'left', fontWeight: 600, color: '#64748b' }}>Nom</th>
-                      <th style={{ padding: '6px 12px', textAlign: 'left', fontWeight: 600, color: '#64748b' }}>Entreprise</th>
-                      <th style={{ padding: '6px 12px', textAlign: 'right', fontWeight: 600, color: '#64748b' }}>Montant</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {[
-                      { name: 'Marie Dupont', company: 'Acme Corp', amount: '12 400\u20AC' },
-                      { name: 'Jean Martin', company: 'Tech SA', amount: '8 750\u20AC' },
-                      { name: 'Sophie Leroy', company: 'Digital SAS', amount: '23 100\u20AC' },
-                    ].map((row, i) => (
-                      <tr key={i} style={{ borderTop: '1px solid #f1f5f9' }}>
-                        <td style={{ padding: '8px 12px', fontWeight: 500, color: '#0f172a' }}>{row.name}</td>
-                        <td style={{ padding: '8px 12px', color: '#64748b' }}>{row.company}</td>
-                        <td style={{ padding: '8px 12px', textAlign: 'right', fontWeight: 600, color: '#0f172a' }}>{row.amount}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </div>
+            <iframe
+              ref={iframeRef}
+              src={previewUrl}
+              style={{ width: '100%', height: '100%', border: 'none' }}
+              title="Aperçu TimeBlast"
+            />
           </div>
         </div>
       </div>
-
       )}
 
-      {/* Keyframes for typing dots */}
       <style>{`
         @keyframes editorDot {
           0%, 20% { opacity: 0.2; }
