@@ -61,24 +61,35 @@ const FAQ = [
 export default function FactureElectroniquePage() {
   const navigate = useNavigate()
   const [expandedFaq, setExpandedFaq] = useState(null)
-  const [showLogin, setShowLogin] = useState(false)
 
   return (
-    <div className="landing">
-      {/* ── Navbar ── */}
-      <nav className="landing-nav">
-        <div className="landing-nav-inner">
-          <div className="landing-logo" onClick={() => { navigate('/login'); window.scrollTo({ top: 0 }) }} style={{ cursor: 'pointer' }}>
-            <img src="/logo-full.svg" alt="TimeBlast" style={{ height: 64 }} />
+    <div style={{ background: '#fff', minHeight: '100vh', fontFamily: "'Inter', -apple-system, sans-serif" }}>
+      {/* ── Navbar — même style que landing principale ── */}
+      <nav style={{
+        position: 'fixed', top: 0, left: 0, right: 0, zIndex: 1000,
+        background: 'rgba(255,255,255,0.75)', backdropFilter: 'blur(24px) saturate(180%)', WebkitBackdropFilter: 'blur(24px) saturate(180%)',
+        borderBottom: '1px solid rgba(25,92,130,0.08)',
+      }}>
+        <div style={{
+          maxWidth: 1200, margin: '0 auto', padding: '0 2rem',
+          display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: 64,
+        }}>
+          <div style={{ cursor: 'pointer', flexShrink: 0 }} onClick={() => navigate('/login')}>
+            <img src="/logo-full.svg" alt="TimeBlast" style={{ height: 40 }} />
           </div>
-          <div className="landing-nav-links">
-            <a href="/login">Accueil</a>
-            <a href="#probleme">Le problème</a>
-            <a href="#solution">La solution BI</a>
-            <a href="#enrichissement">Enrichissement</a>
-            <a href="#faq">FAQ</a>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '2rem', fontSize: '.85rem', fontWeight: 500 }} className="landing-nav-links">
+            <a href="/login" style={{ color: '#64748b', textDecoration: 'none' }}>Accueil</a>
+            <a href="#probleme" style={{ color: '#64748b', textDecoration: 'none' }}>Le problème</a>
+            <a href="#solution" style={{ color: '#64748b', textDecoration: 'none' }}>La solution</a>
+            <span style={{ color: '#195C82', fontWeight: 700, cursor: 'default' }}>E-Facture 2026</span>
           </div>
-          <button className="landing-nav-btn" onClick={() => setShowLogin(true)}>
+          <button onClick={() => navigate('/login')} style={{
+            padding: '9px 22px', borderRadius: 10, background: '#195C82',
+            border: 'none', color: '#fff', fontWeight: 700, fontSize: '.85rem', cursor: 'pointer',
+            boxShadow: '0 4px 20px rgba(25,92,130,0.3)', transition: 'all .25s',
+          }}
+          onMouseEnter={e => { e.target.style.boxShadow = '0 8px 30px rgba(25,92,130,0.5)'; e.target.style.transform = 'translateY(-1px)' }}
+          onMouseLeave={e => { e.target.style.boxShadow = '0 4px 20px rgba(25,92,130,0.3)'; e.target.style.transform = 'none' }}>
             Se connecter
           </button>
         </div>
@@ -87,23 +98,47 @@ export default function FactureElectroniquePage() {
       {/* ══════════════════════════════════════════════════════════════════
           HERO — TimeBlast BI + e-facture
       ══════════════════════════════════════════════════════════════════ */}
-      <section className="landing-hero">
-        <div className="landing-hero-bg" />
-        <div className="landing-hero-grid">
-          <div className="landing-hero-text">
-            <div className="landing-hero-badge">⚡ Généré par TimeBlast en 48h</div>
-            <h1 className="landing-hero-title">
-              Votre outil de facturation conforme e-facture, créé sur mesure
+      <section style={{
+        paddingTop: 140, paddingBottom: '3rem', background: 'linear-gradient(180deg, #f0f6fa 0%, #fff 100%)',
+        position: 'relative', overflow: 'hidden',
+      }}>
+        <div style={{
+          maxWidth: 1200, margin: '0 auto', padding: '0 2rem',
+          display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '3rem', alignItems: 'center',
+        }} className="landing-hero-grid">
+          <div>
+            <div style={{
+              display: 'inline-flex', alignItems: 'center', gap: 8, padding: '8px 18px',
+              borderRadius: 30, border: '1px solid rgba(25,92,130,0.15)', background: 'rgba(25,92,130,0.04)',
+              fontSize: '.82rem', fontWeight: 600, color: '#195C82', marginBottom: '1.5rem',
+            }}>⚡ Réforme e-facture 2026</div>
+            <h1 style={{
+              fontSize: 'clamp(2rem, 3.5vw, 3rem)', fontWeight: 800, color: '#0f172a',
+              lineHeight: 1.12, letterSpacing: '-0.03em', margin: '0 0 1.25rem',
+            }}>
+              Vos données sont-elles prêtes pour la{' '}
+              <span style={{ color: '#195C82' }}>facture électronique</span> ?
             </h1>
-            <p className="landing-hero-subtitle">
-              <strong>La réforme e-facture 2026 approche.</strong> Décrivez votre besoin, TimeBlast génère votre outil de facturation
-              conforme : enrichissement données, normalisation, validation SIRENE, génération XML — tout est automatisé.
+            <p style={{ fontSize: '1.1rem', color: '#64748b', lineHeight: 1.65, margin: '0 0 2rem', maxWidth: 520 }}>
+              <strong>Sept. 2026 : réception obligatoire. Sept. 2027 : émission pour les PME.</strong>{' '}
+              TimeBlast enrichit, normalise et vérifie vos données pour une conformité automatique.
             </p>
-            <div className="landing-hero-actions">
-              <button className="landing-btn-primary" onClick={() => navigate('/login#contact')}>
-                Créer mon outil de facturation →
-              </button>
-              <a href="#solution" className="landing-btn-secondary">
+            <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
+              <a href="/login#contact" style={{
+                padding: '14px 28px', borderRadius: 12, background: '#195C82', color: '#fff',
+                fontWeight: 700, fontSize: '.95rem', textDecoration: 'none', border: 'none',
+                boxShadow: '0 4px 20px rgba(25,92,130,0.3)', transition: 'all .25s',
+                display: 'inline-flex', alignItems: 'center',
+              }}
+              onMouseEnter={e => { e.target.style.transform = 'translateY(-2px)'; e.target.style.boxShadow = '0 8px 30px rgba(25,92,130,0.4)' }}
+              onMouseLeave={e => { e.target.style.transform = 'none'; e.target.style.boxShadow = '0 4px 20px rgba(25,92,130,0.3)' }}>
+                Diagnostic gratuit →
+              </a>
+              <a href="#solution" style={{
+                padding: '14px 28px', borderRadius: 12, background: 'transparent',
+                border: '2px solid #195C82', color: '#195C82', fontWeight: 700,
+                fontSize: '.95rem', textDecoration: 'none', transition: 'all .25s',
+              }}>
                 Comment ça marche
               </a>
             </div>
@@ -517,7 +552,7 @@ export default function FactureElectroniquePage() {
             <button className="landing-btn-primary landing-btn-lg" onClick={() => navigate('/login#contact')}>
               Diagnostic data gratuit →
             </button>
-            <button className="landing-btn-secondary landing-btn-lg" onClick={() => setShowLogin(true)}
+            <button className="landing-btn-secondary landing-btn-lg" onClick={() => navigate('/login')}
               style={{ color: '#fff', borderColor: 'rgba(255,255,255,0.4)' }}>
               Se connecter
             </button>
@@ -535,34 +570,6 @@ export default function FactureElectroniquePage() {
         </div>
       </footer>
 
-      {/* ── Login Modal ── */}
-      {showLogin && (
-        <div className="landing-modal-overlay" onClick={() => setShowLogin(false)}>
-          <div className="landing-login-card" onClick={e => e.stopPropagation()}>
-            <button className="landing-login-close" onClick={() => setShowLogin(false)}>✕</button>
-            <div style={{ textAlign: 'center', marginBottom: '1.5rem' }}>
-              <span style={{ fontSize: '2rem' }}>📊</span>
-              <h2 style={{ margin: '.25rem 0 0' }}>Connexion</h2>
-              <p style={{ color: '#64748b', fontSize: '.88rem', margin: '.25rem 0 0' }}>
-                Accédez à votre espace décisionnel
-              </p>
-            </div>
-            <form>
-              <div className="field">
-                <label htmlFor="email-ef">Email</label>
-                <input id="email-ef" type="email" placeholder="nom@entreprise.com" autoFocus />
-              </div>
-              <div className="field">
-                <label htmlFor="password-ef">Mot de passe</label>
-                <input id="password-ef" type="password" placeholder="••••••••" />
-              </div>
-              <button type="button" className="landing-btn-primary" style={{ width: '100%', marginTop: '.75rem' }}>
-                Se connecter →
-              </button>
-            </form>
-          </div>
-        </div>
-      )}
     </div>
   )
 }
