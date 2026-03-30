@@ -265,7 +265,7 @@ body {
 .landing-footer-inner { max-width: 1200px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; }
 
 /* Mockup browser — scale via zoom (pas de trou) */
-.mockup-wrapper { width: 100%; display: flex; justify-content: center; }
+.mockup-wrapper { width: 100%; display: flex; justify-content: center; overflow: hidden; }
 .mockup-scale { width: 1000px; }
 .mockup-browser { background: #fff; border-radius: 12px; box-shadow: 0 20px 60px rgba(0,0,0,0.12), 0 0 0 1px rgba(0,0,0,0.06); overflow: hidden; width: 1000px; }
 .mockup-previews { width: 960px; }
@@ -308,12 +308,11 @@ body {
   }
   .landing-hero-actions { justify-content: center; }
   .multiprise-container { max-width: 280px; margin: 1rem auto 0; }
-  /* Mockup + chat : INDÉFORMABLE, scroll horizontal si besoin */
+  /* Mockup + chat : réduit en zoom pour rester visible en entier */
   .landing-mockup-wrapper {
-    transform: none !important; margin-bottom: 0 !important;
-    overflow-x: auto; -webkit-overflow-scrolling: touch; padding: 0 0 1rem;
+    overflow: hidden;
   }
-  .landing-mockup-dual { min-width: 900px !important; }
+  .landing-mockup-dual { zoom: 0.38; min-width: 0 !important; }
   /* Grilles */
   .landing-steps-grid { grid-template-columns: 1fr 1fr; }
   .landing-advantages-grid { grid-template-columns: 1fr; }
