@@ -1035,9 +1035,7 @@ export default function LoginPage() {
             </a>
           </div>
 
-          <button className="landing-burger" onClick={() => setMobileMenu(true)} style={{
-            display: 'none', background: 'none', border: 'none', fontSize: '1.5rem', cursor: 'pointer', color: S.dark,
-          }}>☰</button>
+          <button className="landing-burger" onClick={() => setMobileMenu(true)}>☰</button>
 
           <button onClick={() => setShowLogin(true)} style={{
             padding: '9px 22px', borderRadius: 10,

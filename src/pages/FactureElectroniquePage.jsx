@@ -61,6 +61,7 @@ const FAQ = [
 export default function FactureElectroniquePage() {
   const navigate = useNavigate()
   const [expandedFaq, setExpandedFaq] = useState(null)
+  const [mobileMenu, setMobileMenu] = useState(false)
 
   return (
     <div style={{ background: '#fff', minHeight: '100vh', fontFamily: "'Inter', -apple-system, sans-serif" }}>
@@ -83,6 +84,7 @@ export default function FactureElectroniquePage() {
             <a href="#solution" style={{ color: '#64748b', textDecoration: 'none' }}>La solution</a>
             <span style={{ color: '#195C82', fontWeight: 700, cursor: 'default' }}>E-Facture 2026</span>
           </div>
+          <button className="landing-burger" onClick={() => setMobileMenu(true)}>☰</button>
           <button onClick={() => navigate('/login')} style={{
             padding: '9px 22px', borderRadius: 10, background: '#195C82',
             border: 'none', color: '#fff', fontWeight: 700, fontSize: '.85rem', cursor: 'pointer',
@@ -94,6 +96,18 @@ export default function FactureElectroniquePage() {
           </button>
         </div>
       </nav>
+
+      {/* ── Menu mobile ── */}
+      {mobileMenu && (
+        <div style={{ position: 'fixed', inset: 0, zIndex: 2000, background: 'rgba(255,255,255,0.97)', backdropFilter: 'blur(20px)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '2rem' }}>
+          <button onClick={() => setMobileMenu(false)} style={{ position: 'absolute', top: 20, right: 20, background: 'none', border: 'none', fontSize: '1.8rem', cursor: 'pointer' }}>✕</button>
+          <a href="/login" style={{ fontSize: '1.2rem', color: '#0f172a', textDecoration: 'none', fontWeight: 600 }}>Accueil</a>
+          <a href="#probleme" onClick={() => setMobileMenu(false)} style={{ fontSize: '1.2rem', color: '#0f172a', textDecoration: 'none', fontWeight: 600 }}>Le problème</a>
+          <a href="#solution" onClick={() => setMobileMenu(false)} style={{ fontSize: '1.2rem', color: '#0f172a', textDecoration: 'none', fontWeight: 600 }}>La solution</a>
+          <span style={{ fontSize: '1.2rem', color: '#195C82', fontWeight: 700 }}>E-Facture 2026</span>
+          <button onClick={() => { setMobileMenu(false); navigate('/login') }} style={{ padding: '12px 32px', borderRadius: 10, background: '#195C82', border: 'none', color: '#fff', fontWeight: 700, fontSize: '1rem', cursor: 'pointer' }}>Se connecter</button>
+        </div>
+      )}
 
       {/* ══════════════════════════════════════════════════════════════════
           HERO — TimeBlast BI + e-facture

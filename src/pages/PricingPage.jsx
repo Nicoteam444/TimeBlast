@@ -202,9 +202,7 @@ export default function PricingPage() {
             <a href="/facture-electronique" style={{ color: S.gray, textDecoration: 'none', fontWeight: 600 }}>E-Facture 2026</a>
           </div>
 
-          <button className="landing-burger" onClick={() => setMobileMenu(true)} style={{
-            display: 'none', background: 'none', border: 'none', fontSize: '1.5rem', cursor: 'pointer', color: S.dark,
-          }}>☰</button>
+          <button className="landing-burger" onClick={() => setMobileMenu(true)}>☰</button>
 
           <button onClick={() => navigate('/login#contact')} style={{
             padding: '9px 22px', borderRadius: 10, background: S.neon,
