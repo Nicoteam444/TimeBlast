@@ -44,6 +44,8 @@ export default function EditorPage() {
   const [previewMode, setPreviewMode] = useState('desktop')
   const [activeFile, setActiveFile] = useState('Dashboard')
   const [showProjectDropdown, setShowProjectDropdown] = useState(false)
+  const [centerTab, setCenterTab] = useState('chat') // 'chat' | 'modules' | 'connecteurs' | 'config'
+  const [enabledModules, setEnabledModules] = useState(['dashboard', 'contacts', 'pipeline', 'factures'])
   const [fullscreen, setFullscreen] = useState(null) // null | 'chat' | 'preview'
   const [sidebarWidth, setSidebarWidth] = useState(280)
   const [chatWidth, setChatWidth] = useState(null) // null = flex:1
@@ -337,36 +339,169 @@ export default function EditorPage() {
         borderRight: '1px solid #e2e8f0',
         minWidth: 0,
       }}>
-        {/* Chat header */}
-        <div style={{
-          padding: '14px 20px',
-          borderBottom: '1px solid #e2e8f0',
-          display: 'flex',
-          alignItems: 'center',
-          gap: 12,
-        }}>
-          {!showSidebar && (
-            <button onClick={() => setShowSidebar(true)} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 18, padding: '0 4px', color: '#64748b' }} title="Afficher le panneau projet">☰</button>
-          )}
-          <div style={{ fontSize: 16, fontWeight: 700, color: '#0f172a' }}>{selectedProject.name}</div>
-          <span style={{
-            fontSize: 11,
-            padding: '3px 10px',
-            borderRadius: 99,
-            background: (STATUS_COLORS[selectedProject.status] || {}).bg || '#e2e8f0',
-            color: (STATUS_COLORS[selectedProject.status] || {}).color || '#334155',
-            fontWeight: 600,
-          }}>{selectedProject.status}</span>
-          <div style={{ marginLeft: 'auto', display: 'flex', gap: 6 }}>
-            {showSidebar && (
-              <button onClick={() => setShowSidebar(false)} title="Masquer le panneau projet" style={{ background: 'none', border: '1px solid #e2e8f0', borderRadius: 6, padding: '4px 8px', cursor: 'pointer', fontSize: 12, color: '#64748b' }}>◀</button>
+        {/* Center header with tabs */}
+        <div style={{ borderBottom: '1px solid #e2e8f0' }}>
+          <div style={{
+            padding: '10px 20px 0',
+            display: 'flex',
+            alignItems: 'center',
+            gap: 12,
+          }}>
+            {!showSidebar && (
+              <button onClick={() => setShowSidebar(true)} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 18, padding: '0 4px', color: '#64748b' }} title="Afficher le panneau projet">☰</button>
             )}
-            <button onClick={() => setFullscreen(fullscreen === 'chat' ? null : 'chat')} title={fullscreen === 'chat' ? 'Quitter plein écran' : 'Chat plein écran'} style={{ background: fullscreen === 'chat' ? '#1a5c82' : 'none', border: '1px solid #e2e8f0', borderRadius: 6, padding: '4px 8px', cursor: 'pointer', fontSize: 12, color: fullscreen === 'chat' ? '#fff' : '#64748b' }}>
-              {fullscreen === 'chat' ? '▢' : '⬜'}
-            </button>
+            <div style={{ fontSize: 16, fontWeight: 700, color: '#0f172a' }}>{selectedProject.name}</div>
+            <span style={{
+              fontSize: 11,
+              padding: '3px 10px',
+              borderRadius: 99,
+              background: (STATUS_COLORS[selectedProject.status] || {}).bg || '#e2e8f0',
+              color: (STATUS_COLORS[selectedProject.status] || {}).color || '#334155',
+              fontWeight: 600,
+            }}>{selectedProject.status}</span>
+            <div style={{ marginLeft: 'auto', display: 'flex', gap: 6 }}>
+              {showSidebar && (
+                <button onClick={() => setShowSidebar(false)} title="Masquer le panneau projet" style={{ background: 'none', border: '1px solid #e2e8f0', borderRadius: 6, padding: '4px 8px', cursor: 'pointer', fontSize: 12, color: '#64748b' }}>◀</button>
+              )}
+              <button onClick={() => setFullscreen(fullscreen === 'chat' ? null : 'chat')} title={fullscreen === 'chat' ? 'Quitter plein écran' : 'Plein écran'} style={{ background: fullscreen === 'chat' ? '#1a5c82' : 'none', border: '1px solid #e2e8f0', borderRadius: 6, padding: '4px 8px', cursor: 'pointer', fontSize: 12, color: fullscreen === 'chat' ? '#fff' : '#64748b' }}>
+                {fullscreen === 'chat' ? '▢' : '⬜'}
+              </button>
+            </div>
+          </div>
+          {/* Tabs */}
+          <div style={{ display: 'flex', gap: 0, padding: '0 20px', marginTop: 10 }}>
+            {[
+              { id: 'chat', label: '💬 Chat IA' },
+              { id: 'modules', label: '📦 Modules' },
+              { id: 'connecteurs', label: '🔗 Connecteurs' },
+              { id: 'config', label: '⚙️ Config' },
+            ].map(tab => (
+              <button key={tab.id} onClick={() => setCenterTab(tab.id)} style={{
+                padding: '8px 16px', border: 'none', background: 'none', cursor: 'pointer',
+                fontSize: 13, fontWeight: centerTab === tab.id ? 600 : 400,
+                color: centerTab === tab.id ? '#1a5c82' : '#64748b',
+                borderBottom: centerTab === tab.id ? '2px solid #1a5c82' : '2px solid transparent',
+                transition: 'all .15s',
+              }}>{tab.label}</button>
+            ))}
           </div>
         </div>
 
+        {/* ── TAB: Modules ── */}
+        {centerTab === 'modules' && (
+          <div style={{ flex: 1, overflow: 'auto', padding: 20 }}>
+            <p style={{ fontSize: 14, color: '#64748b', marginBottom: 16 }}>Activez les modules pour votre application :</p>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 12 }}>
+              {[
+                { id: 'dashboard', label: 'Tableau de bord', icon: '📊', desc: 'KPIs, graphiques, vue d\'ensemble' },
+                { id: 'contacts', label: 'Contacts / CRM', icon: '👤', desc: 'Gestion des clients et prospects' },
+                { id: 'pipeline', label: 'Pipeline commercial', icon: '📈', desc: 'Kanban des opportunités' },
+                { id: 'factures', label: 'Facturation', icon: '🧾', desc: 'Devis, factures, relances' },
+                { id: 'stock', label: 'Gestion de stock', icon: '📦', desc: 'Inventaire, mouvements, alertes' },
+                { id: 'rh', label: 'Ressources humaines', icon: '👥', desc: 'Collaborateurs, absences, congés' },
+                { id: 'projets', label: 'Gestion de projets', icon: '📋', desc: 'Tâches, deadlines, suivi' },
+                { id: 'compta', label: 'Comptabilité', icon: '💰', desc: 'Écritures, FEC, analytique' },
+                { id: 'mail', label: 'Messagerie', icon: '✉️', desc: 'Emails intégrés, templates' },
+                { id: 'calendar', label: 'Calendrier', icon: '📅', desc: 'Planning, événements, RDV' },
+              ].map(mod => {
+                const active = enabledModules.includes(mod.id)
+                return (
+                  <div key={mod.id} onClick={() => setEnabledModules(prev => active ? prev.filter(m => m !== mod.id) : [...prev, mod.id])} style={{
+                    padding: 14, borderRadius: 10, cursor: 'pointer',
+                    border: active ? '2px solid #1a5c82' : '2px solid #e2e8f0',
+                    background: active ? '#f0f7ff' : '#fff',
+                    transition: 'all .15s',
+                  }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 6 }}>
+                      <span style={{ fontSize: 20 }}>{mod.icon}</span>
+                      <span style={{ fontWeight: 600, fontSize: 14, color: '#0f172a' }}>{mod.label}</span>
+                      <span style={{ marginLeft: 'auto', fontSize: 18 }}>{active ? '✅' : '⬜'}</span>
+                    </div>
+                    <div style={{ fontSize: 12, color: '#64748b' }}>{mod.desc}</div>
+                  </div>
+                )
+              })}
+            </div>
+          </div>
+        )}
+
+        {/* ── TAB: Connecteurs ── */}
+        {centerTab === 'connecteurs' && (
+          <div style={{ flex: 1, overflow: 'auto', padding: 20 }}>
+            <p style={{ fontSize: 14, color: '#64748b', marginBottom: 16 }}>Connectez vos outils existants :</p>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+              {[
+                { name: 'Sage', cat: 'Comptabilité', color: '#00DC82', connected: false },
+                { name: 'Stripe', cat: 'Paiements', color: '#635BFF', connected: true },
+                { name: 'HubSpot', cat: 'CRM', color: '#FF7A59', connected: false },
+                { name: 'Slack', cat: 'Communication', color: '#4A154B', connected: true },
+                { name: 'Google Agenda', cat: 'Calendrier', color: '#4285F4', connected: false },
+                { name: 'PayFit', cat: 'RH & Paie', color: '#0066FF', connected: false },
+                { name: 'Pennylane', cat: 'Comptabilité', color: '#6C5CE7', connected: true },
+                { name: 'Outlook', cat: 'Email', color: '#0078D4', connected: false },
+              ].map((c, i) => (
+                <div key={i} style={{
+                  display: 'flex', alignItems: 'center', gap: 12,
+                  padding: '12px 16px', borderRadius: 10,
+                  border: '1px solid #e2e8f0', background: '#fff',
+                }}>
+                  <div style={{ width: 36, height: 36, borderRadius: 8, background: c.color, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontWeight: 700, fontSize: 14 }}>{c.name[0]}</div>
+                  <div style={{ flex: 1 }}>
+                    <div style={{ fontWeight: 600, fontSize: 14, color: '#0f172a' }}>{c.name}</div>
+                    <div style={{ fontSize: 12, color: '#64748b' }}>{c.cat}</div>
+                  </div>
+                  <button style={{
+                    padding: '6px 14px', borderRadius: 8, fontSize: 12, fontWeight: 600, cursor: 'pointer',
+                    background: c.connected ? '#dcfce7' : '#f1f5f9',
+                    color: c.connected ? '#166534' : '#64748b',
+                    border: c.connected ? '1px solid #bbf7d0' : '1px solid #e2e8f0',
+                  }}>{c.connected ? '✓ Connecté' : 'Connecter'}</button>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* ── TAB: Config ── */}
+        {centerTab === 'config' && (
+          <div style={{ flex: 1, overflow: 'auto', padding: 20 }}>
+            <p style={{ fontSize: 14, color: '#64748b', marginBottom: 16 }}>Paramètres de votre application :</p>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+              <div>
+                <label style={{ fontSize: 13, fontWeight: 600, color: '#0f172a', display: 'block', marginBottom: 6 }}>Nom de l'application</label>
+                <input defaultValue={selectedProject.name} style={{ width: '100%', padding: '10px 14px', borderRadius: 8, border: '1px solid #e2e8f0', fontSize: 14, boxSizing: 'border-box' }} />
+              </div>
+              <div>
+                <label style={{ fontSize: 13, fontWeight: 600, color: '#0f172a', display: 'block', marginBottom: 6 }}>Domaine personnalisé</label>
+                <input defaultValue="moncrm.timeblast.ai" style={{ width: '100%', padding: '10px 14px', borderRadius: 8, border: '1px solid #e2e8f0', fontSize: 14, boxSizing: 'border-box' }} />
+              </div>
+              <div>
+                <label style={{ fontSize: 13, fontWeight: 600, color: '#0f172a', display: 'block', marginBottom: 6 }}>Couleur principale</label>
+                <div style={{ display: 'flex', gap: 8 }}>
+                  {['#1a5c82', '#7c3aed', '#dc2626', '#059669', '#d97706', '#0f172a'].map(c => (
+                    <div key={c} style={{ width: 36, height: 36, borderRadius: 8, background: c, cursor: 'pointer', border: '2px solid #e2e8f0' }} />
+                  ))}
+                </div>
+              </div>
+              <div>
+                <label style={{ fontSize: 13, fontWeight: 600, color: '#0f172a', display: 'block', marginBottom: 6 }}>Logo</label>
+                <div style={{ padding: 20, borderRadius: 8, border: '2px dashed #e2e8f0', textAlign: 'center', color: '#94a3b8', fontSize: 13, cursor: 'pointer' }}>
+                  Glissez votre logo ici ou cliquez pour importer
+                </div>
+              </div>
+              <div>
+                <label style={{ fontSize: 13, fontWeight: 600, color: '#0f172a', display: 'block', marginBottom: 6 }}>Base de données</label>
+                <div style={{ padding: 12, borderRadius: 8, background: '#f0fdf4', border: '1px solid #bbf7d0', fontSize: 13, color: '#166534' }}>
+                  ✓ Supabase connecté — ldeoqrafauwdgrpbyfyx.supabase.co
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* ── TAB: Chat IA — Messages area ── */}
+        {centerTab === 'chat' && (
+        <>
         {/* Messages area */}
         <div style={{
           flex: 1,
@@ -491,6 +626,8 @@ export default function EditorPage() {
             </button>
           </div>
         </div>
+        </>
+        )}
       </div>
       )}
 
