@@ -1262,50 +1262,48 @@ export default function LoginPage() {
             5 étapes pour passer de l'idée à l'outil en production
           </p>
         </div>
-        <div style={{
-          display: 'flex', justifyContent: 'center', gap: 20, flexWrap: 'wrap',
-          maxWidth: 1100, margin: '0 auto',
-        }}>
-          {[
-            { num: '1', icon: '🔌', title: 'Connexion à vos outils', desc: 'TimeBlast se connecte à votre ERP, CRM, compta, paie et tous vos logiciels.' },
-            { num: '2', icon: '💬', title: 'Besoin fonctionnel', desc: 'Décrivez votre besoin en français. L\'IA structure vos exigences.' },
-            { num: '3', icon: '🤖', title: 'Création du logiciel', desc: 'L\'IA génère votre application sur mesure à partir de vos données.' },
-            { num: '4', icon: '📐', title: 'Maquette & design', desc: 'Validez la structure, personnalisez les couleurs et le logo.' },
-            { num: '5', icon: '🚀', title: 'Mise en production', desc: 'Votre outil est déployé sur un sous-domaine dédié, prêt à l\'emploi.' },
-            { num: '6', icon: '🛡️', title: 'Support & suivi', desc: 'Évolutions, support technique et monitoring en continu.' },
-          ].map((step, i) => (
-            <div key={i} style={{
-              flex: '1 1 180px', maxWidth: 200, padding: '2rem 1.4rem', borderRadius: 18,
-              border: '1px solid rgba(25,92,130,0.1)', background: '#fff', textAlign: 'center',
-              transition: 'all .3s cubic-bezier(0.4, 0, 0.2, 1)', cursor: 'default',
-              boxShadow: '0 2px 12px rgba(0,0,0,0.02)',
-            }}
-            onMouseEnter={e => {
-              e.currentTarget.style.borderColor = 'rgba(25,92,130,0.25)'
-              e.currentTarget.style.boxShadow = '0 12px 40px rgba(25,92,130,0.08), 0 0 0 1px rgba(25,92,130,0.1)'
-              e.currentTarget.style.transform = 'translateY(-4px)'
-            }}
-            onMouseLeave={e => {
-              e.currentTarget.style.borderColor = 'rgba(25,92,130,0.1)'
-              e.currentTarget.style.boxShadow = '0 2px 12px rgba(0,0,0,0.02)'
-              e.currentTarget.style.transform = 'none'
-            }}>
-              <div style={{
-                width: 56, height: 56, borderRadius: '50%',
-                background: 'linear-gradient(135deg, rgba(25,92,130,.06), rgba(25,92,130,.06))',
-                display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto .75rem',
-                fontSize: 26, border: '1px solid rgba(25,92,130,0.1)',
-              }}>{step.icon}</div>
-              <div style={{
-                fontSize: '.72rem', fontWeight: 800, letterSpacing: '0.08em',
-                background: '#195C82',
-                WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
-                backgroundClip: 'text', marginBottom: 8, textTransform: 'uppercase',
-              }}>ÉTAPE {step.num}</div>
-              <h4 style={{ margin: '0 0 .5rem', fontSize: '.95rem', fontWeight: 700, color: S.dark }}>{step.title}</h4>
-              <p style={{ margin: 0, fontSize: '.82rem', color: S.gray, lineHeight: 1.55 }}>{step.desc}</p>
-            </div>
-          ))}
+        <div style={{ maxWidth: 1200, margin: '0 auto', overflowX: 'auto', padding: '0 0 1rem' }}>
+          <div style={{ display: 'flex', alignItems: 'flex-start', minWidth: 900 }}>
+            {[
+              { num: '1', icon: '🔌', title: 'Connexion', desc: 'Vos outils ERP, CRM, compta, paie' },
+              { num: '2', icon: '💬', title: 'Expression', desc: 'Décrivez votre besoin en français' },
+              { num: '3', icon: '🤖', title: 'Génération', desc: 'L\'IA crée votre application' },
+              { num: '4', icon: '📐', title: 'Validation', desc: 'Personnalisez design et structure' },
+              { num: '5', icon: '🚀', title: 'Production', desc: 'Déploiement sur votre domaine' },
+              { num: '6', icon: '🛡️', title: 'Support', desc: 'Évolutions et monitoring continu' },
+            ].map((step, i) => (
+              <div key={i} style={{ display: 'flex', alignItems: 'flex-start', flex: 1 }}>
+                {/* Card étape */}
+                <div style={{
+                  flex: 1, textAlign: 'center', padding: '1.5rem 1rem', borderRadius: 16,
+                  border: '1px solid rgba(25,92,130,0.1)', background: '#fff',
+                  transition: 'all .3s', cursor: 'default',
+                  boxShadow: '0 2px 12px rgba(0,0,0,0.02)',
+                }}
+                onMouseEnter={e => { e.currentTarget.style.borderColor = '#195C82'; e.currentTarget.style.transform = 'translateY(-4px)'; e.currentTarget.style.boxShadow = '0 12px 30px rgba(25,92,130,0.1)' }}
+                onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(25,92,130,0.1)'; e.currentTarget.style.transform = 'none'; e.currentTarget.style.boxShadow = '0 2px 12px rgba(0,0,0,0.02)' }}>
+                  <div style={{
+                    width: 48, height: 48, borderRadius: '50%', margin: '0 auto .6rem',
+                    background: '#195C82', color: '#fff',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    fontSize: '1.1rem', fontWeight: 800,
+                    boxShadow: '0 4px 12px rgba(25,92,130,0.3)',
+                  }}>{step.num}</div>
+                  <div style={{ fontSize: 22, marginBottom: '.4rem' }}>{step.icon}</div>
+                  <h4 style={{ margin: '0 0 .35rem', fontSize: '.88rem', fontWeight: 700, color: S.dark }}>{step.title}</h4>
+                  <p style={{ margin: 0, fontSize: '.78rem', color: S.gray, lineHeight: 1.5 }}>{step.desc}</p>
+                </div>
+                {/* Flèche de connexion */}
+                {i < 5 && (
+                  <div style={{
+                    display: 'flex', alignItems: 'center', padding: '0 4px', marginTop: 44,
+                    color: '#195C82', fontSize: '1.2rem', fontWeight: 700, opacity: .4,
+                    flexShrink: 0,
+                  }}>→</div>
+                )}
+              </div>
+            ))}
+          </div>
         </div>
       </section>
 
@@ -1406,68 +1404,50 @@ export default function LoginPage() {
           }}>
             Depuis 1986, le Groupe SRA accompagne les PME et ETI dans leur transformation digitale. Cette expertise de terrain nous a permis de concevoir TimeBlast : la plateforme de vibe-coding parfaite pour créer des applications métier avec l'IA.
           </p>
-          <a href="https://www.groupe-sra.fr" target="_blank" rel="noopener noreferrer"
-            style={{
-              display: 'inline-flex', alignItems: 'center', gap: 16, background: '#fff',
-              border: '1px solid rgba(25,92,130,0.1)', borderRadius: 16,
-              padding: '1.5rem 2.5rem', textDecoration: 'none', transition: 'all .3s cubic-bezier(0.4, 0, 0.2, 1)',
-              boxShadow: '0 4px 20px rgba(0,0,0,0.04)',
-            }}
-            onMouseEnter={e => {
-              e.currentTarget.style.borderColor = '#195C82'
-              e.currentTarget.style.boxShadow = '0 12px 40px rgba(25,92,130,0.1)'
-              e.currentTarget.style.transform = 'translateY(-3px)'
-            }}
-            onMouseLeave={e => {
-              e.currentTarget.style.borderColor = 'rgba(25,92,130,0.1)'
-              e.currentTarget.style.boxShadow = '0 4px 20px rgba(0,0,0,0.04)'
-              e.currentTarget.style.transform = 'none'
-            }}>
-            <img src="/logo-sra.png" alt="Groupe SRA" style={{ width: 52, height: 52, borderRadius: 12, objectFit: 'contain', flexShrink: 0 }} />
-            <div style={{ textAlign: 'left' }}>
-              <div style={{ fontSize: '1.02rem', fontWeight: 700, color: S.sra }}>
-                Groupe SRA — Partenaire digital des PME et ETI
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '1.5rem' }}>
+            {/* Encart Groupe SRA */}
+            <a href="https://www.groupe-sra.fr" target="_blank" rel="noopener noreferrer"
+              style={{
+                display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center',
+                background: '#fff', border: '1px solid rgba(25,92,130,0.1)', borderRadius: 16,
+                padding: '2rem 2rem', textDecoration: 'none', transition: 'all .3s cubic-bezier(0.4, 0, 0.2, 1)',
+                boxShadow: '0 4px 20px rgba(0,0,0,0.04)',
+              }}
+              onMouseEnter={e => { e.currentTarget.style.borderColor = '#195C82'; e.currentTarget.style.boxShadow = '0 12px 40px rgba(25,92,130,0.1)'; e.currentTarget.style.transform = 'translateY(-3px)' }}
+              onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(25,92,130,0.1)'; e.currentTarget.style.boxShadow = '0 4px 20px rgba(0,0,0,0.04)'; e.currentTarget.style.transform = 'none' }}>
+              <img src="/logo-sra.png" alt="Groupe SRA" style={{ width: 80, height: 80, borderRadius: 16, objectFit: 'contain', marginBottom: '1rem' }} />
+              <div style={{ fontSize: '1.1rem', fontWeight: 700, color: S.sra }}>Groupe SRA</div>
+              <div style={{ fontSize: '.85rem', color: S.gray, marginTop: 4 }}>Partenaire digital des PME et ETI</div>
+              <div style={{ fontSize: '.82rem', color: S.gray, marginTop: '.75rem', lineHeight: 1.6 }}>
+                Intégrateur Sage Diamond, Microsoft, HubSpot. Depuis 1986, le Groupe SRA accompagne les entreprises dans leur transformation digitale.
               </div>
-              <div style={{ fontSize: '.82rem', color: S.gray, marginTop: 3 }}>
-                Intégrateur Sage Diamond, Microsoft, HubSpot
+              <div style={{ fontSize: '.82rem', fontWeight: 700, marginTop: '.75rem', color: '#195C82' }}>
+                Découvrir le groupe →
               </div>
-              <div style={{
-                fontSize: '.8rem', fontWeight: 700, marginTop: 5,
-                background: '#195C82',
-                WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
-                backgroundClip: 'text',
-              }}>
-                Découvrir le groupe → groupe-sra.fr
-              </div>
-            </div>
-          </a>
+            </a>
 
-          {/* Encart Jean-Luc Marini — Advisory */}
-          <div style={{
-            display: 'flex', alignItems: 'center', gap: '2rem', marginTop: '2.5rem',
-            background: '#fff', borderRadius: 16, padding: '2rem 2.5rem',
-            border: '1px solid rgba(25,92,130,0.1)',
-            boxShadow: '0 4px 20px rgba(0,0,0,0.04)',
-            flexWrap: 'wrap', justifyContent: 'center',
-          }}>
-            <div style={{
-              width: 120, height: 120, borderRadius: '50%', overflow: 'hidden',
-              border: '3px solid #e2e8f0', boxShadow: '0 4px 15px rgba(0,0,0,0.08)',
-              flexShrink: 0,
-            }}>
-              <img src="/team/jean-luc-marigny.jpg" alt="Jean-Luc Marini" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-            </div>
-            <div style={{ flex: 1, minWidth: 240 }}>
-              <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 700, color: S.dark }}>Jean-Luc Marini</h3>
-              <p style={{ margin: '4px 0 .75rem', fontSize: '.85rem', color: '#195C82', fontWeight: 600 }}>Conseiller stratégique IA & Innovation</p>
-              <p style={{ margin: 0, fontSize: '.85rem', color: S.gray, lineHeight: 1.65 }}>
-                Fort de plus de 36 ans d'expérience dans le secteur IT, Jean-Luc a créé et dirigé plusieurs entreprises technologiques. Membre du Conseil scientifique du Commandement du combat futur et réserviste citoyen (IHEDN), il apporte à TimeBlast sa vision stratégique en intelligence artificielle.
-              </p>
-              <a href="https://www.linkedin.com/in/jean-luc-marini-82319710/" target="_blank" rel="noopener noreferrer"
-                style={{ display: 'inline-flex', alignItems: 'center', gap: 6, marginTop: '.75rem', fontSize: '.82rem', color: '#195C82', fontWeight: 600, textDecoration: 'none' }}>
+            {/* Encart Jean-Luc Marini */}
+            <a href="https://www.linkedin.com/in/jean-luc-marini-82319710/" target="_blank" rel="noopener noreferrer"
+              style={{
+                display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center',
+                background: '#fff', border: '1px solid rgba(25,92,130,0.1)', borderRadius: 16,
+                padding: '2rem 2rem', textDecoration: 'none', transition: 'all .3s cubic-bezier(0.4, 0, 0.2, 1)',
+                boxShadow: '0 4px 20px rgba(0,0,0,0.04)',
+              }}
+              onMouseEnter={e => { e.currentTarget.style.borderColor = '#195C82'; e.currentTarget.style.boxShadow = '0 12px 40px rgba(25,92,130,0.1)'; e.currentTarget.style.transform = 'translateY(-3px)' }}
+              onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(25,92,130,0.1)'; e.currentTarget.style.boxShadow = '0 4px 20px rgba(0,0,0,0.04)'; e.currentTarget.style.transform = 'none' }}>
+              <div style={{ width: 80, height: 80, borderRadius: '50%', overflow: 'hidden', border: '3px solid #e2e8f0', marginBottom: '1rem' }}>
+                <img src="/team/jean-luc-marigny.jpg" alt="Jean-Luc Marini" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+              </div>
+              <div style={{ fontSize: '1.1rem', fontWeight: 700, color: S.dark }}>Jean-Luc Marini</div>
+              <div style={{ fontSize: '.85rem', color: '#195C82', fontWeight: 600, marginTop: 4 }}>Conseiller stratégique IA & Innovation</div>
+              <div style={{ fontSize: '.82rem', color: S.gray, marginTop: '.75rem', lineHeight: 1.6 }}>
+                36 ans d'expérience IT. Membre du Conseil scientifique du Commandement du combat futur. Réserviste citoyen IHEDN.
+              </div>
+              <div style={{ fontSize: '.82rem', fontWeight: 700, marginTop: '.75rem', color: '#195C82' }}>
                 Voir le profil LinkedIn →
-              </a>
-            </div>
+              </div>
+            </a>
           </div>
         </div>
       </section>
