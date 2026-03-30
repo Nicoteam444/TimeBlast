@@ -121,7 +121,11 @@ function EnvDefaultRedirect() {
 
   useEffect(() => {
     if (authLoading || loading) return
-    if (!user) { navigate('/login', { replace: true }); return }
+    // Ne pas rediriger vers /login si on est en plein callback OAuth
+    const hash = window.location.hash
+    const isOAuthCallback = hash.includes('access_token') || hash.includes('error') || hash.includes('refresh_token')
+    if (!user && !isOAuthCallback) { navigate('/login', { replace: true }); return }
+    if (!user) return // Attendre que le callback OAuth finisse
     if (environments?.length > 0) {
       const defaultEnv = environments.find(e => e.is_production) || environments[0]
       navigate(`/${defaultEnv.env_code}`, { replace: true })
