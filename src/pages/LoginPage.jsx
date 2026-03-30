@@ -1143,8 +1143,8 @@ export default function LoginPage() {
       {/* ══════════════════════════════════════════════════════════════════
           3. STATS BAR + INTERACTIVE MOCKUP
       ══════════════════════════════════════════════════════════════════ */}
-      <section style={{ background: '#195C82', padding: '3rem 2rem 0' }}>
-        <div style={{ display: 'flex', justifyContent: 'center', gap: '3rem', flexWrap: 'wrap', maxWidth: 1060, margin: '0 auto', paddingBottom: '2.5rem' }}>
+      <section style={{ background: '#195C82', padding: '3rem 2rem 3rem' }}>
+        <div style={{ display: 'flex', justifyContent: 'center', gap: '3rem', flexWrap: 'wrap', maxWidth: 1060, margin: '0 auto' }}>
           {STATS.map((s, i) => (
             <div key={i} style={{ textAlign: 'center' }}>
               <span style={{ display: 'block', fontSize: '2.4rem', fontWeight: 800, color: '#fff' }}>{s.value}</span>
@@ -1153,8 +1153,8 @@ export default function LoginPage() {
           ))}
         </div>
       </section>
-      <section style={{ background: '#fff', padding: '0 2rem 5rem', position: 'relative' }}>
-        <div style={{ maxWidth: 1060, margin: '0 auto', transform: 'translateY(-2rem)' }}>
+      <section style={{ background: '#fff', padding: '2rem 2rem 5rem', position: 'relative' }}>
+        <div style={{ maxWidth: 1060, margin: '0 auto' }}>
           <InteractiveMockup />
         </div>
       </section>
