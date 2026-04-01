@@ -172,7 +172,6 @@ function RotatingText() {
     'application de gestion',
     'logiciel de facturation',
     'CRM sur mesure',
-    'outil de comptabilité',
     'plateforme RH',
     'tableau de bord',
     'logiciel métier',
