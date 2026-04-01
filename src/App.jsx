@@ -181,7 +181,7 @@ function AppRoutes() {
       <Route path="/:envId" element={<EnvRouteWrapper />}>
 
       <Route index element={
-        <ProtectedRoute><EditorPage /></ProtectedRoute>
+        <ProtectedRoute><Layout><DashboardPage /></Layout></ProtectedRoute>
       } />
       <Route path="dashboard" element={
         <ProtectedRoute><Layout><DashboardPage /></Layout></ProtectedRoute>
