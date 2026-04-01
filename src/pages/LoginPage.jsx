@@ -1059,10 +1059,6 @@ export default function LoginPage() {
               onMouseEnter={e => e.target.style.color = S.dark} onMouseLeave={e => e.target.style.color = S.gray}>
               Groupe SRA
             </a>
-            <a href="/pricing" style={{ color: S.gray, textDecoration: 'none', transition: 'color .2s', fontWeight: 600 }}
-              onMouseEnter={e => e.target.style.color = S.dark} onMouseLeave={e => e.target.style.color = S.gray}>
-              Tarifs
-            </a>
           </div>
 
           <button className="landing-burger" onClick={() => setMobileMenu(true)}>☰</button>
@@ -1102,7 +1098,6 @@ export default function LoginPage() {
         <a href="#modules" onClick={() => setMobileMenu(false)}>Modules</a>
         <a href="https://www.groupe-sra.fr" target="_blank" rel="noopener noreferrer">Groupe SRA</a>
         <a href="#contact" onClick={() => setMobileMenu(false)}>Contact</a>
-        <a href="/pricing" style={{ color: '#195C82', fontWeight: 600 }}>Tarifs</a>
         <button onClick={() => { setMobileMenu(false); setShowLogin(true) }} style={{
           marginTop: '1rem', padding: '14px 24px', borderRadius: 10, background: '#195C82',
           color: '#fff', border: 'none', fontWeight: 700, fontSize: '.95rem', cursor: 'pointer', width: '100%',
