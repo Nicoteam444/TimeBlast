@@ -90,7 +90,6 @@ const ImportsPage = lazy(() => import('./pages/admin/ImportsPage'))
 const TablesPage = lazy(() => import('./pages/admin/TablesPage'))
 const IntegrationsAdminPage = lazy(() => import('./pages/admin/IntegrationsAdminPage'))
 const WikiPage = lazy(() => import('./pages/wiki/WikiPage'))
-const EditorPage = lazy(() => import('./pages/EditorPage'))
 const PricingPage = lazy(() => import('./pages/PricingPage'))
 const InscriptionPage = lazy(() => import('./pages/InscriptionPage'))
 
@@ -426,9 +425,6 @@ function AppRoutes() {
         <ProtectedRoute><Layout><NotificationsPage /></Layout></ProtectedRoute>
       } />
 
-      <Route path="editor" element={
-        <ProtectedRoute><Layout><EditorPage /></Layout></ProtectedRoute>
-      } />
 
       <Route path="recherche" element={
         <ProtectedRoute><Layout><SearchPage /></Layout></ProtectedRoute>
