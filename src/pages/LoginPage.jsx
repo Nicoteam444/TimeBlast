@@ -1841,31 +1841,6 @@ export default function LoginPage() {
                 {loading ? 'Connexion...' : 'Se connecter →'}
               </button>
 
-              {/* Divider */}
-              <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', margin: '1.25rem 0' }}>
-                <div style={{ flex: 1, height: 1, background: '#e2e8f0' }} />
-                <span style={{ color: S.lightGray, fontSize: '.8rem' }}>ou</span>
-                <div style={{ flex: 1, height: 1, background: '#e2e8f0' }} />
-              </div>
-
-              {/* Microsoft SSO */}
-              <button type="button" onClick={handleMicrosoftLogin} disabled={loading}
-                style={{
-                  width: '100%', padding: '12px', borderRadius: 12, cursor: 'pointer',
-                  border: '1px solid #e2e8f0', background: '#fff', fontSize: '.9rem',
-                  display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '.5rem',
-                  color: S.dark, fontWeight: 600, transition: 'all .2s',
-                }}
-                onMouseEnter={e => { e.currentTarget.style.borderColor = '#195C82'; e.currentTarget.style.boxShadow = '0 2px 12px rgba(25,92,130,0.06)' }}
-                onMouseLeave={e => { e.currentTarget.style.borderColor = '#e2e8f0'; e.currentTarget.style.boxShadow = 'none' }}>
-                <svg width="20" height="20" viewBox="0 0 21 21">
-                  <rect x="1" y="1" width="9" height="9" fill="#f25022"/>
-                  <rect x="11" y="1" width="9" height="9" fill="#7fba00"/>
-                  <rect x="1" y="11" width="9" height="9" fill="#00a4ef"/>
-                  <rect x="11" y="11" width="9" height="9" fill="#ffb900"/>
-                </svg>
-                Se connecter avec Microsoft
-              </button>
             </form>
           </div>
         </div>

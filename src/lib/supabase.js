@@ -4,9 +4,8 @@ export const defaultUrl = import.meta.env.VITE_SUPABASE_URL
 export const defaultKey = import.meta.env.VITE_SUPABASE_ANON_KEY
 
 // Client Supabase mutable — peut être reconfiguré pour pointer vers un autre env
-// flowType: 'implicit' → le token arrive dans le hash (#access_token=xxx)
-// au lieu du flow PKCE qui nécessite un échange serveur (cause de l'erreur 1.AT Azure)
-let _client = createClient(defaultUrl, defaultKey, { auth: { flowType: 'implicit' } })
+// flowType: 'pkce' requis pour Azure AD (pas d'implicit grant)
+let _client = createClient(defaultUrl, defaultKey, { auth: { flowType: 'pkce' } })
 let _currentUrl = defaultUrl
 
 export const supabase = new Proxy({}, {
@@ -26,7 +25,7 @@ export function switchSupabaseClient(url, anonKey) {
 // Remettre le client sur la base master (appelé au sign-out et avant sign-in)
 export function resetToMasterClient() {
   if (_currentUrl === defaultUrl) return
-  _client = createClient(defaultUrl, defaultKey, { auth: { flowType: 'implicit' } })
+  _client = createClient(defaultUrl, defaultKey, { auth: { flowType: 'pkce' } })
   _currentUrl = defaultUrl
   console.log('[Supabase] Client resetté sur master')
 }
