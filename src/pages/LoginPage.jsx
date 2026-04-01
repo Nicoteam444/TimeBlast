@@ -1063,12 +1063,6 @@ export default function LoginPage() {
               onMouseEnter={e => e.target.style.color = S.dark} onMouseLeave={e => e.target.style.color = S.gray}>
               Tarifs
             </a>
-            <a href="/facture-electronique" style={{
-              background: '#195C82', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
-              backgroundClip: 'text', textDecoration: 'none', fontWeight: 700,
-            }}>
-              E-Facture 2026
-            </a>
           </div>
 
           <button className="landing-burger" onClick={() => setMobileMenu(true)}>☰</button>
@@ -1109,7 +1103,6 @@ export default function LoginPage() {
         <a href="https://www.groupe-sra.fr" target="_blank" rel="noopener noreferrer">Groupe SRA</a>
         <a href="#contact" onClick={() => setMobileMenu(false)}>Contact</a>
         <a href="/pricing" style={{ color: '#195C82', fontWeight: 600 }}>Tarifs</a>
-        <a href="/facture-electronique" style={{ color: '#195C82' }}>E-Facture 2026</a>
         <button onClick={() => { setMobileMenu(false); setShowLogin(true) }} style={{
           marginTop: '1rem', padding: '14px 24px', borderRadius: 10, background: '#195C82',
           color: '#fff', border: 'none', fontWeight: 700, fontSize: '.95rem', cursor: 'pointer', width: '100%',
