@@ -1063,7 +1063,7 @@ export default function LoginPage() {
           <button className="landing-burger" onClick={() => setMobileMenu(true)}>☰</button>
 
           <div style={{ display: 'flex', gap: '.6rem', alignItems: 'center' }}>
-            <button onClick={() => navigate('/inscription')} style={{
+            <button onClick={() => window.open('https://www.groupe-sra.fr/contact/', '_blank')} style={{
               padding: '9px 18px', borderRadius: 10,
               background: 'transparent',
               border: '1.5px solid #195C82', color: '#195C82', fontWeight: 700,
@@ -1160,10 +1160,10 @@ export default function LoginPage() {
             </p>
 
             <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
-              <button onClick={() => navigate('/inscription')} className="landing-btn-primary" style={{ border: 'none', cursor: 'pointer', textDecoration: 'none' }}>
+              <button onClick={() => window.open('https://www.groupe-sra.fr/contact/', '_blank')} className="landing-btn-primary" style={{ border: 'none', cursor: 'pointer', textDecoration: 'none' }}>
                 Démarrer mon projet →
               </button>
-              <a href="#contact" className="landing-btn-secondary">
+              <a href="https://www.groupe-sra.fr/contact/" target="_blank" rel="noopener noreferrer" className="landing-btn-secondary">
                 Nous contacter →
               </a>
             </div>
@@ -1527,14 +1527,14 @@ export default function LoginPage() {
             <p style={{ fontSize: '.88rem', color: S.gray, lineHeight: 1.6, marginBottom: '1.5rem', flex: 1 }}>
               Accédez à la plateforme TimeBlast et développez votre logiciel métier en un prompt. Autonome, rapide, sans code.
             </p>
-            <button onClick={() => setShowLogin(true)} style={{
+            <button onClick={() => window.open('https://www.groupe-sra.fr/contact/', '_blank')} style={{
               padding: '14px 32px', borderRadius: 12, background: '#195C82', color: '#fff',
               fontWeight: 700, fontSize: '.95rem', border: 'none', cursor: 'pointer', width: '100%',
               boxShadow: '0 4px 20px rgba(25,92,130,0.3)', transition: 'all .25s',
             }}
             onMouseEnter={e => { e.target.style.boxShadow = '0 8px 30px rgba(25,92,130,0.4)' }}
             onMouseLeave={e => { e.target.style.boxShadow = '0 4px 20px rgba(25,92,130,0.3)' }}>
-              S'inscrire / Se connecter →
+              S'inscrire →
             </button>
           </div>
 
@@ -1665,7 +1665,7 @@ export default function LoginPage() {
             Créez votre logiciel de gestion sur mesure sans écrire une ligne de code.
           </p>
           <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', flexWrap: 'wrap' }}>
-            <button onClick={() => navigate('/inscription')} style={{
+            <button onClick={() => window.open('https://www.groupe-sra.fr/contact/', '_blank')} style={{
               padding: '15px 36px', borderRadius: 12, background: '#fff', border: 'none', cursor: 'pointer',
               color: S.sra, border: 'none', fontWeight: 700, fontSize: '1rem',
               cursor: 'pointer', transition: 'all .25s', textDecoration: 'none',
