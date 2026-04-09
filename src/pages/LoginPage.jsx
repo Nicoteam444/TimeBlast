@@ -5,26 +5,26 @@ import { supabase } from '../lib/supabase'
 
 // ── Modules decisionnels ──
 const BI_MODULES = [
-  { icon: '📊', title: 'Tableaux de bord', desc: 'KPIs temps réel, drill-down multi-axes, alertes automatiques sur seuils.' },
-  { icon: '💰', title: 'Pilotage financier', desc: 'Trésorerie prévisionnelle, marge par projet, rapprochement bancaire IA.' },
-  { icon: '⏱', title: 'Suivi d\'activité', desc: 'Saisie des temps, taux d\'occupation, rentabilité collaborateur.' },
-  { icon: '🎯', title: 'Pipeline commercial', desc: 'Kanban deals, prévision CA, scoring leads par intelligence artificielle.' },
+  { icon: '📊', title: 'Tableaux de bord', desc: 'Unifie les KPIs de tous vos outils en un seul écran.' },
+  { icon: '💰', title: 'Pilotage financier', desc: 'Croise automatiquement compta, banque et facturation.' },
+  { icon: '⏱', title: 'Suivi d\'activité', desc: 'Agrège les temps saisis dans vos outils existants.' },
+  { icon: '🎯', title: 'Pipeline commercial', desc: 'Enrichit votre CRM avec du scoring IA et des alertes.' },
   { icon: '🔗', title: 'Connecteurs natifs', desc: '30+ intégrations : Sage, Pennylane, Stripe, HubSpot, PayFit, Slack...' },
-  { icon: '🤖', title: 'IA décisionnelle', desc: 'Anomalies détectées, recommandations contextuelles, agents autonomes.' },
+  { icon: '🤖', title: 'IA décisionnelle', desc: 'Détecte anomalies et opportunités dans vos données existantes.' },
 ]
 
 const PERSONAS = [
-  { icon: '👔', role: 'Dirigeant', need: 'Vue 360 de mon entreprise en 1 écran', solution: 'Dashboard décisionnel avec alertes IA sur CA, trésorerie et rentabilité.' },
-  { icon: '📈', role: 'DAF / Comptable', need: 'Arrêtés mensuels en 2h au lieu de 2 jours', solution: 'Import FEC, rapprochement bancaire IA, prévisionnel automatisé.' },
-  { icon: '🎯', role: 'Commercial', need: 'Pipeline clair et prévisions fiables', solution: 'Kanban deals, scoring IA, relances automatiques, suivi multi-sociétés.' },
-  { icon: '👥', role: 'Manager', need: 'Savoir où en sont mes équipes en temps réel', solution: 'Taux d\'occupation, validation temps, alertes dépassement budget projet.' },
+  { icon: '👔', role: 'Dirigeant', need: 'Vue 360 de mon entreprise en 1 écran', solution: 'TimeBlast connecte vos outils et fait remonter CA, trésorerie et alertes en un écran.' },
+  { icon: '📈', role: 'DAF / Comptable', need: 'Arrêtés mensuels en 2h au lieu de 2 jours', solution: 'Import auto depuis votre compta, rapprochement IA, prévisionnel sans ressaisie.' },
+  { icon: '🎯', role: 'Commercial', need: 'Pipeline clair et prévisions fiables', solution: 'Se branche sur votre CRM, ajoute le scoring IA et les relances automatiques.' },
+  { icon: '👥', role: 'Manager', need: 'Savoir où en sont mes équipes en temps réel', solution: 'Agrège les données équipe de vos outils RH et gestion de projet.' },
 ]
 
 const STATS = [
-  { value: '48h', label: 'pour générer votre outil' },
-  { value: '11', label: 'modules métier disponibles' },
-  { value: '0', label: 'ligne de code requise' },
-  { value: 'IA', label: 'qui code pour vous' },
+  { value: '30+', label: 'connecteurs disponibles' },
+  { value: '5 min', label: 'pour connecter vos outils' },
+  { value: '0', label: 'donnée perdue' },
+  { value: 'IA', label: 'qui analyse pour vous' },
 ]
 
 const CONNECTORS_LIST = [
@@ -169,12 +169,12 @@ function BiHubVisual() {
 // ── Composant — Texte rotatif dans le hero ──────────────────────────────────
 function RotatingText() {
   const WORDS = [
-    'application de gestion',
-    'logiciel de facturation',
-    'CRM sur mesure',
-    'plateforme RH',
-    'tableau de bord',
-    'logiciel métier',
+    'tableau de bord intelligent',
+    'copilote financier',
+    'assistant commercial IA',
+    'alertes temps réel',
+    'analyse prédictive',
+    'pilotage unifié',
   ]
   const [index, setIndex] = useState(0)
   const [displayed, setDisplayed] = useState('')
@@ -1149,19 +1149,19 @@ export default function LoginPage() {
               fontSize: 'clamp(2rem, 3.5vw, 3rem)', fontWeight: 800, lineHeight: 1.2,
               color: S.dark, margin: '0 0 1.25rem', letterSpacing: '-0.02em',
             }}>
-              <span style={{ display: 'block' }}>Créez en un seul prompt</span>
-              <span style={{ display: 'block', minHeight: '7rem', overflow: 'hidden' }}>votre <RotatingText /></span>
+              <span style={{ display: 'block' }}>Activez l'intelligence cachée</span>
+              <span style={{ display: 'block', minHeight: '7rem', overflow: 'hidden' }}>dans vos outils : <RotatingText /></span>
             </h1>
 
             <p style={{
               fontSize: '1.1rem', color: S.gray, lineHeight: 1.65, margin: '0 0 2rem', maxWidth: 520,
             }}>
-              Décrivez votre besoin, nos équipes le développent. Créez votre logiciel métier sur mesure ou confiez-le à nos experts.
+              TimeBlast se connecte à votre CRM, ERP et outils métier pour révéler les données dormantes et vous donner une vision 360 pilotée par l'IA.
             </p>
 
             <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
               <button onClick={() => window.open('https://www.groupe-sra.fr/contact/', '_blank')} className="landing-btn-primary" style={{ border: 'none', cursor: 'pointer', textDecoration: 'none' }}>
-                Démarrer mon projet →
+                Connecter mes outils →
               </button>
               <a href="https://www.groupe-sra.fr/contact/" target="_blank" rel="noopener noreferrer" className="landing-btn-secondary">
                 Nous contacter →
@@ -1292,18 +1292,18 @@ export default function LoginPage() {
             fontSize: '1.05rem', color: S.gray, maxWidth: 500,
             margin: '0 auto', lineHeight: 1.65,
           }}>
-            5 étapes pour passer de l'idée à l'outil en production
+            De la connexion à l'intelligence en quelques minutes
           </p>
         </div>
         <div style={{ maxWidth: 1200, margin: '0 auto', overflowX: 'auto', padding: '0 0 1rem' }}>
           <div style={{ display: 'flex', alignItems: 'flex-start', minWidth: 900 }}>
             {[
-              { num: '1', icon: '🔌', title: 'Connexion', desc: 'Vos outils ERP, CRM, compta, paie' },
-              { num: '2', icon: '💬', title: 'Expression', desc: 'Décrivez votre besoin en français' },
-              { num: '3', icon: '🤖', title: 'Génération', desc: 'L\'IA crée votre application' },
-              { num: '4', icon: '📐', title: 'Validation', desc: 'Personnalisez design et structure' },
-              { num: '5', icon: '🚀', title: 'Production', desc: 'Déploiement sur votre domaine' },
-              { num: '6', icon: '🛡️', title: 'Support', desc: 'Évolutions et monitoring continu' },
+              { num: '1', icon: '🔌', title: 'Connexion', desc: 'Vos outils en 5 minutes' },
+              { num: '2', icon: '🔄', title: 'Synchronisation', desc: 'Vos données unifiées' },
+              { num: '3', icon: '🤖', title: 'Analyse', desc: 'L\'IA détecte les insights' },
+              { num: '4', icon: '📊', title: 'Tableaux de bord', desc: 'Vision 360 temps réel' },
+              { num: '5', icon: '🔔', title: 'Alertes', desc: 'Notifications intelligentes' },
+              { num: '6', icon: '🚀', title: 'Évolution', desc: 'Nouveaux connecteurs en continu' },
             ].map((step, i) => (
               <div key={i} style={{ display: 'flex', alignItems: 'flex-start', flex: 1 }}>
                 {/* Card étape */}
@@ -1354,13 +1354,13 @@ export default function LoginPage() {
             fontSize: 'clamp(1.7rem, 2.8vw, 2.4rem)', fontWeight: 800, color: S.dark,
             margin: '0 0 .75rem', letterSpacing: '-0.02em',
           }}>
-            Des modules prêts à l'emploi
+            Une couche d'intelligence sur vos outils
           </h2>
           <p style={{
             fontSize: '1.05rem', color: S.gray, maxWidth: 550,
             margin: '0 auto', lineHeight: 1.65,
           }}>
-            Chaque module est pré-construit et personnalisable. L'IA les adapte à votre métier.
+            L'IA analyse vos données existantes et fait émerger les insights que vos outils ne montrent pas.
           </p>
         </div>
         <div style={{
@@ -1435,7 +1435,7 @@ export default function LoginPage() {
           <p style={{
             fontSize: '1.1rem', color: S.gray, lineHeight: 1.75, margin: '0 0 2.5rem',
           }}>
-            Depuis 1986, le Groupe SRA accompagne les PME et ETI dans leur transformation digitale. Cette expertise de terrain nous a permis de concevoir TimeBlast : la plateforme de vibe-coding parfaite pour créer des applications métier avec l'IA.
+            Depuis 1986, le Groupe SRA accompagne les PME et ETI dans leur transformation digitale. Cette expertise de terrain nous a permis de concevoir TimeBlast : la couche d'intelligence IA qui se branche sur vos outils existants pour activer vos données dormantes.
           </p>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '1.5rem' }}>
             {/* Encart Groupe SRA */}
@@ -1505,7 +1505,7 @@ export default function LoginPage() {
             fontSize: '1.05rem', color: S.gray, maxWidth: 600,
             margin: '0 auto', lineHeight: 1.65,
           }}>
-            Développez votre application vous-même ou confiez-la à nos experts.
+            Connectez vos outils vous-même ou confiez la configuration à nos experts.
           </p>
         </div>
 
@@ -1523,9 +1523,9 @@ export default function LoginPage() {
           onMouseEnter={e => { e.currentTarget.style.borderColor = '#195C82'; e.currentTarget.style.boxShadow = '0 12px 40px rgba(25,92,130,0.1)'; e.currentTarget.style.transform = 'translateY(-4px)' }}
           onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(25,92,130,0.1)'; e.currentTarget.style.boxShadow = 'none'; e.currentTarget.style.transform = 'none' }}>
             <div style={{ fontSize: '2.5rem', marginBottom: '1rem' }}>🚀</div>
-            <h3 style={{ margin: '0 0 .5rem', fontSize: '1.2rem', fontWeight: 700, color: S.dark }}>Je crée mon application</h3>
+            <h3 style={{ margin: '0 0 .5rem', fontSize: '1.2rem', fontWeight: 700, color: S.dark }}>Je connecte mes outils</h3>
             <p style={{ fontSize: '.88rem', color: S.gray, lineHeight: 1.6, marginBottom: '1.5rem', flex: 1 }}>
-              Accédez à la plateforme TimeBlast et développez votre logiciel métier en un prompt. Autonome, rapide, sans code.
+              Branchez TimeBlast sur votre stack en 5 minutes. L'IA commence à analyser immédiatement.
             </p>
             <button onClick={() => window.open('https://www.groupe-sra.fr/contact/', '_blank')} style={{
               padding: '14px 32px', borderRadius: 12, background: '#195C82', color: '#fff',
@@ -1547,9 +1547,9 @@ export default function LoginPage() {
           onMouseEnter={e => { e.currentTarget.style.borderColor = '#195C82'; e.currentTarget.style.boxShadow = '0 12px 40px rgba(25,92,130,0.1)'; e.currentTarget.style.transform = 'translateY(-4px)' }}
           onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(25,92,130,0.1)'; e.currentTarget.style.boxShadow = 'none'; e.currentTarget.style.transform = 'none' }}>
             <div style={{ fontSize: '2.5rem', marginBottom: '1rem' }}>🏢</div>
-            <h3 style={{ margin: '0 0 .5rem', fontSize: '1.2rem', fontWeight: 700, color: S.dark }}>L'équipe SRA s'en charge</h3>
+            <h3 style={{ margin: '0 0 .5rem', fontSize: '1.2rem', fontWeight: 700, color: S.dark }}>L'équipe SRA m'accompagne</h3>
             <p style={{ fontSize: '.88rem', color: S.gray, lineHeight: 1.6, marginBottom: '1.5rem', flex: 1 }}>
-              Confiez le développement et la maintenance de votre plateforme IA à nos experts. Accompagnement sur mesure.
+              Nos experts configurent vos connecteurs et paramètrent vos tableaux de bord sur mesure.
             </p>
             <a href="#contact-form" style={{
               padding: '14px 32px', borderRadius: 12, background: 'transparent',
@@ -1656,13 +1656,13 @@ export default function LoginPage() {
             fontSize: 'clamp(1.8rem, 3.2vw, 2.8rem)', fontWeight: 800, color: '#fff',
             margin: '0 0 1rem', letterSpacing: '-0.02em',
           }}>
-            Prêt à créer votre application ?
+            Prêt à révéler le potentiel de vos données ?
           </h2>
           <p style={{
             fontSize: '1.1rem', color: 'rgba(255,255,255,0.75)', maxWidth: 520,
             margin: '0 auto 2.5rem', lineHeight: 1.65,
           }}>
-            Créez votre logiciel de gestion sur mesure sans écrire une ligne de code.
+            Connectez vos outils existants et laissez l'IA faire émerger l'intelligence cachée.
           </p>
           <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', flexWrap: 'wrap' }}>
             <button onClick={() => window.open('https://www.groupe-sra.fr/contact/', '_blank')} style={{
@@ -1674,7 +1674,7 @@ export default function LoginPage() {
             }}
             onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 8px 30px rgba(0,0,0,0.25)' }}
             onMouseLeave={e => { e.currentTarget.style.transform = 'none'; e.currentTarget.style.boxShadow = '0 4px 20px rgba(0,0,0,0.15)' }}>
-              Démarrer mon projet →
+              Connecter mes outils →
             </button>
             <a href="#contact" style={{
               padding: '15px 36px', borderRadius: 12, background: 'transparent',
@@ -1702,7 +1702,7 @@ export default function LoginPage() {
         }}>
           <img src="/logo-full-white.svg" alt="TimeBlast" style={{ height: 24, opacity: 0.8 }} />
           <span style={{ color: 'rgba(255,255,255,0.3)', fontSize: '.82rem' }}>
-            &copy; {new Date().getFullYear()} TimeBlast.ai — Vibe-coding pour logiciels de gestion
+            &copy; {new Date().getFullYear()} TimeBlast.ai — L'intelligence IA au-dessus de vos outils
           </span>
           <div style={{ display: 'flex', gap: '1.5rem' }}>
             <a href="https://www.groupe-sra.fr" target="_blank" rel="noopener noreferrer"
@@ -1751,7 +1751,7 @@ export default function LoginPage() {
               </div>
               <h2 style={{ margin: '0 0 .25rem', fontSize: '1.4rem', fontWeight: 800, color: S.dark }}>Connexion</h2>
               <p style={{ color: S.gray, fontSize: '.88rem', margin: 0 }}>
-                Accédez à votre espace décisionnel
+                Accédez à votre espace TimeBlast
               </p>
             </div>
 
