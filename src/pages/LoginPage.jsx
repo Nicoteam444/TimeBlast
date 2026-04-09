@@ -5,12 +5,12 @@ import { supabase } from '../lib/supabase'
 
 // ── Modules decisionnels ──
 const BI_MODULES = [
-  { icon: '📊', title: 'Tableaux de bord', desc: 'Unifie les KPIs de tous vos outils en un seul écran.' },
-  { icon: '💰', title: 'Pilotage financier', desc: 'Croise automatiquement compta, banque et facturation.' },
-  { icon: '⏱', title: 'Suivi d\'activité', desc: 'Agrège les temps saisis dans vos outils existants.' },
-  { icon: '🎯', title: 'Pipeline commercial', desc: 'Enrichit votre CRM avec du scoring IA et des alertes.' },
-  { icon: '🔗', title: 'Connecteurs natifs', desc: '30+ intégrations : Sage, Pennylane, Stripe, HubSpot, PayFit, Slack...' },
-  { icon: '🤖', title: 'IA décisionnelle', desc: 'Détecte anomalies et opportunités dans vos données existantes.' },
+  { icon: '📊', title: 'Tableaux de bord', desc: 'Unifie les KPIs de tous vos outils en un seul écran.', detail: 'CA, trésorerie, pipeline, RH — tout en un seul écran actualisé en temps réel.' },
+  { icon: '💰', title: 'Pilotage financier', desc: 'Croise automatiquement compta, banque et facturation.', detail: 'Rapprochement bancaire intelligent, prévisionnel J+30/60/90, détection d\'anomalies.' },
+  { icon: '⏱', title: 'Suivi d\'activité', desc: 'Agrège les temps saisis dans vos outils existants.', detail: 'Taux d\'occupation, rentabilité par projet, alertes dépassement budgétaire.' },
+  { icon: '🎯', title: 'Pipeline commercial', desc: 'Enrichit votre CRM avec du scoring IA et des alertes.', detail: 'Prévision CA pondérée, relances automatiques, historique client unifié.' },
+  { icon: '🔗', title: 'Connecteurs natifs', desc: '30+ intégrations : Sage, Pennylane, Stripe, HubSpot, PayFit, Slack...', detail: 'Connexion en quelques clics, synchronisation continue, aucune intervention technique.' },
+  { icon: '🤖', title: 'IA décisionnelle', desc: 'Détecte anomalies et opportunités dans vos données existantes.', detail: 'Recommandations contextuelles, agents autonomes, apprentissage continu.' },
 ]
 
 const PERSONAS = [
@@ -22,8 +22,8 @@ const PERSONAS = [
 
 const STATS = [
   { value: '30+', label: 'connecteurs disponibles' },
-  { value: '5 min', label: 'pour connecter vos outils' },
-  { value: '0', label: 'donnée perdue' },
+  { value: '0', label: 'migration requise' },
+  { value: '360°', label: 'vision unifiée' },
   { value: 'IA', label: 'qui analyse pour vous' },
 ]
 
@@ -1063,16 +1063,17 @@ export default function LoginPage() {
           <button className="landing-burger" onClick={() => setMobileMenu(true)}>☰</button>
 
           <div style={{ display: 'flex', gap: '.6rem', alignItems: 'center' }}>
-            <button onClick={() => window.open('https://www.groupe-sra.fr/contact/', '_blank')} style={{
+            <a href="https://www.groupe-sra.fr/contact/" target="_blank" rel="noopener noreferrer" style={{
               padding: '9px 18px', borderRadius: 10,
               background: 'transparent',
               border: '1.5px solid #195C82', color: '#195C82', fontWeight: 700,
               fontSize: '.85rem', cursor: 'pointer', transition: 'all .25s',
+              textDecoration: 'none',
             }}
             onMouseEnter={e => { e.target.style.background = 'rgba(25,92,130,0.06)' }}
             onMouseLeave={e => { e.target.style.background = 'transparent' }}>
-              S'inscrire
-            </button>
+              Nous contacter
+            </a>
             <button onClick={() => setShowLogin(true)} style={{
               padding: '9px 22px', borderRadius: 10,
               background: '#195C82',
@@ -1149,8 +1150,8 @@ export default function LoginPage() {
               fontSize: 'clamp(2rem, 3.5vw, 3rem)', fontWeight: 800, lineHeight: 1.2,
               color: S.dark, margin: '0 0 1.25rem', letterSpacing: '-0.02em',
             }}>
-              <span style={{ display: 'block' }}>Activez l'intelligence cachée</span>
-              <span style={{ display: 'block', minHeight: '7rem', overflow: 'hidden' }}>dans vos outils : <RotatingText /></span>
+              <span style={{ display: 'block' }}>La plateforme IA</span>
+              <span style={{ display: 'block', minHeight: '7rem', overflow: 'hidden' }}>qui active vos données : <RotatingText /></span>
             </h1>
 
             <p style={{
@@ -1158,6 +1159,27 @@ export default function LoginPage() {
             }}>
               TimeBlast se connecte à votre CRM, ERP et outils métier pour révéler les données dormantes et vous donner une vision 360 pilotée par l'IA.
             </p>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '.6rem', margin: '0 0 2rem' }}>
+              {[
+                { text: 'Gardez vos outils actuels', sub: 'pas de migration, pas de switching' },
+                { text: 'Zéro perturbation', sub: 'aucun changement dans vos habitudes de travail' },
+                { text: 'IA qui apprend', sub: 'insights de plus en plus pertinents avec le temps' },
+              ].map((b, i) => (
+                <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '.6rem' }}>
+                  <span style={{
+                    width: 22, height: 22, borderRadius: '50%', flexShrink: 0,
+                    background: 'rgba(25,92,130,0.08)', color: '#195C82',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    fontSize: '.7rem', fontWeight: 800,
+                  }}>✓</span>
+                  <span style={{ fontSize: '.95rem', color: S.dark }}>
+                    <strong>{b.text}</strong>
+                    <span style={{ color: S.gray }}> — {b.sub}</span>
+                  </span>
+                </div>
+              ))}
+            </div>
 
             <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
               <button onClick={() => window.open('https://www.groupe-sra.fr/contact/', '_blank')} className="landing-btn-primary" style={{ border: 'none', cursor: 'pointer', textDecoration: 'none' }}>
@@ -1195,6 +1217,62 @@ export default function LoginPage() {
       </section>
 
       {/* ══════════════════════════════════════════════════════════════════
+          3b. POURQUOI UNE COUCHE IA — Argumentation en 3 colonnes
+      ══════════════════════════════════════════════════════════════════ */}
+      <section style={{ padding: '5rem 2rem', background: '#fff' }}>
+        <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
+          <p style={{
+            fontSize: '.78rem', fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase',
+            background: '#195C82', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
+            backgroundClip: 'text', marginBottom: '.75rem',
+          }}>Pourquoi TimeBlast</p>
+          <h2 style={{
+            fontSize: 'clamp(1.7rem, 2.8vw, 2.4rem)', fontWeight: 800, color: S.dark,
+            margin: '0 0 .75rem', letterSpacing: '-0.02em',
+          }}>
+            Ne remplacez plus vos outils.{' '}
+            <span style={{ background: '#195C82', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
+              Révélez leur potentiel.
+            </span>
+          </h2>
+          <p style={{ fontSize: '1.05rem', color: S.gray, maxWidth: 650, margin: '0 auto', lineHeight: 1.65 }}>
+            Chaque PME utilise en moyenne 8 outils métier. Le problème n'est pas les outils — c'est le silence entre eux.
+          </p>
+        </div>
+        <div style={{
+          display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
+          gap: '1.5rem', maxWidth: 1060, margin: '0 auto',
+        }}>
+          {[
+            {
+              icon: '🔴', title: 'Le problème',
+              text: 'Vos données sont éparpillées dans 5 à 10 outils. Chacun fait bien son job, mais aucun ne parle aux autres. Résultat : vous pilotez à l\'aveugle, les anomalies passent inaperçues, et les décisions prennent des jours au lieu de minutes.',
+              color: '#fef2f2', border: '#fecaca',
+            },
+            {
+              icon: '🔵', title: 'La solution TimeBlast',
+              text: 'TimeBlast se branche au-dessus de votre stack existante. Sans rien remplacer, sans migration, sans perturbation. L\'IA croise vos données comptables, CRM, RH et bancaires pour faire émerger les signaux faibles que personne ne voit.',
+              color: 'rgba(25,92,130,0.04)', border: 'rgba(25,92,130,0.15)',
+            },
+            {
+              icon: '🟢', title: 'Le résultat',
+              text: 'Un cockpit unifié qui transforme vos données dormantes en décisions éclairées. Anomalies détectées en temps réel, prévisions fiables, alertes intelligentes — le tout sans changer une seule habitude de travail.',
+              color: '#f0fdf4', border: '#bbf7d0',
+            },
+          ].map((c, i) => (
+            <div key={i} style={{
+              padding: '2rem', borderRadius: 18, background: c.color,
+              border: `1px solid ${c.border}`, transition: 'all .3s',
+            }}>
+              <div style={{ fontSize: '1.5rem', marginBottom: '.75rem' }}>{c.icon}</div>
+              <h3 style={{ margin: '0 0 .75rem', fontSize: '1.1rem', fontWeight: 700, color: S.dark }}>{c.title}</h3>
+              <p style={{ margin: 0, fontSize: '.9rem', color: S.gray, lineHeight: 1.7 }}>{c.text}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* ══════════════════════════════════════════════════════════════════
           4. NATIVEMENT CONNECTE — BiHubVisual + connectors
       ══════════════════════════════════════════════════════════════════ */}
       <section style={{ padding: '6rem 2rem', background: S.bgAlt }} id="connecteurs">
@@ -1215,7 +1293,7 @@ export default function LoginPage() {
               fontSize: '1rem', color: S.gray, maxWidth: 550,
               margin: '0 0 2rem', lineHeight: 1.65,
             }}>
-              Votre application se connecte nativement à tous les outils de votre SI.
+              Pas besoin de changer vos outils. TimeBlast s'y connecte et en extrait l'intelligence. Aucune migration, aucune perturbation de vos process.
             </p>
 
             {/* Category tabs */}
@@ -1298,7 +1376,7 @@ export default function LoginPage() {
         <div style={{ maxWidth: 1200, margin: '0 auto', overflowX: 'auto', padding: '0 0 1rem' }}>
           <div style={{ display: 'flex', alignItems: 'flex-start', minWidth: 900 }}>
             {[
-              { num: '1', icon: '🔌', title: 'Connexion', desc: 'Vos outils en 5 minutes' },
+              { num: '1', icon: '🔌', title: 'Connexion', desc: 'Branchez vos outils existants' },
               { num: '2', icon: '🔄', title: 'Synchronisation', desc: 'Vos données unifiées' },
               { num: '3', icon: '🤖', title: 'Analyse', desc: 'L\'IA détecte les insights' },
               { num: '4', icon: '📊', title: 'Tableaux de bord', desc: 'Vision 360 temps réel' },
@@ -1337,6 +1415,49 @@ export default function LoginPage() {
               </div>
             ))}
           </div>
+        </div>
+      </section>
+
+      {/* ══════════════════════════════════════════════════════════════════
+          5b. PERSONAS — Pour chaque rôle, une réponse concrète
+      ══════════════════════════════════════════════════════════════════ */}
+      <section style={{ padding: '5rem 2rem', background: '#fff' }}>
+        <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
+          <p style={{
+            fontSize: '.78rem', fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase',
+            background: '#195C82', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
+            backgroundClip: 'text', marginBottom: '.75rem',
+          }}>Cas d'usage</p>
+          <h2 style={{
+            fontSize: 'clamp(1.7rem, 2.8vw, 2.4rem)', fontWeight: 800, color: S.dark,
+            margin: '0 0 .75rem', letterSpacing: '-0.02em',
+          }}>
+            Pour chaque rôle, une réponse concrète
+          </h2>
+          <p style={{ fontSize: '1.05rem', color: S.gray, maxWidth: 550, margin: '0 auto', lineHeight: 1.65 }}>
+            TimeBlast s'adapte à votre métier. Voici ce que chaque profil y gagne dès le premier jour.
+          </p>
+        </div>
+        <div style={{
+          display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))',
+          gap: '1.25rem', maxWidth: 1060, margin: '0 auto',
+        }}>
+          {PERSONAS.map((p, i) => (
+            <div key={i} style={{
+              padding: '2rem', borderRadius: 18, background: '#fff',
+              border: '1px solid rgba(25,92,130,0.1)',
+              boxShadow: '0 2px 12px rgba(0,0,0,0.02)', transition: 'all .3s',
+            }}
+            onMouseEnter={e => { e.currentTarget.style.borderColor = 'rgba(25,92,130,0.25)'; e.currentTarget.style.transform = 'translateY(-4px)'; e.currentTarget.style.boxShadow = '0 12px 40px rgba(25,92,130,0.08)' }}
+            onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(25,92,130,0.1)'; e.currentTarget.style.transform = 'none'; e.currentTarget.style.boxShadow = '0 2px 12px rgba(0,0,0,0.02)' }}>
+              <div style={{ fontSize: '2rem', marginBottom: '.75rem' }}>{p.icon}</div>
+              <h3 style={{ margin: '0 0 .25rem', fontSize: '1.05rem', fontWeight: 700, color: S.dark }}>{p.role}</h3>
+              <p style={{ margin: '0 0 .75rem', fontSize: '.85rem', color: '#195C82', fontWeight: 600, fontStyle: 'italic' }}>
+                « {p.need} »
+              </p>
+              <p style={{ margin: 0, fontSize: '.88rem', color: S.gray, lineHeight: 1.6 }}>{p.solution}</p>
+            </div>
+          ))}
         </div>
       </section>
 
@@ -1391,7 +1512,8 @@ export default function LoginPage() {
                 border: '1px solid rgba(25,92,130,0.1)',
               }}>{m.icon}</span>
               <h3 style={{ margin: '0 0 .5rem', fontSize: '1.08rem', fontWeight: 700, color: S.dark }}>{m.title}</h3>
-              <p style={{ margin: 0, fontSize: '.88rem', color: S.gray, lineHeight: 1.6 }}>{m.desc}</p>
+              <p style={{ margin: '0 0 .5rem', fontSize: '.88rem', color: S.gray, lineHeight: 1.6 }}>{m.desc}</p>
+              {m.detail && <p style={{ margin: 0, fontSize: '.82rem', color: S.lightGray, lineHeight: 1.5 }}>{m.detail}</p>}
             </div>
           ))}
         </div>
@@ -1525,7 +1647,7 @@ export default function LoginPage() {
             <div style={{ fontSize: '2.5rem', marginBottom: '1rem' }}>🚀</div>
             <h3 style={{ margin: '0 0 .5rem', fontSize: '1.2rem', fontWeight: 700, color: S.dark }}>Je connecte mes outils</h3>
             <p style={{ fontSize: '.88rem', color: S.gray, lineHeight: 1.6, marginBottom: '1.5rem', flex: 1 }}>
-              Branchez TimeBlast sur votre stack en 5 minutes. L'IA commence à analyser immédiatement.
+              Branchez TimeBlast sur votre stack existante. L'IA commence à analyser immédiatement.
             </p>
             <button onClick={() => window.open('https://www.groupe-sra.fr/contact/', '_blank')} style={{
               padding: '14px 32px', borderRadius: 12, background: '#195C82', color: '#fff',
@@ -1534,7 +1656,7 @@ export default function LoginPage() {
             }}
             onMouseEnter={e => { e.target.style.boxShadow = '0 8px 30px rgba(25,92,130,0.4)' }}
             onMouseLeave={e => { e.target.style.boxShadow = '0 4px 20px rgba(25,92,130,0.3)' }}>
-              S'inscrire →
+              Nous contacter →
             </button>
           </div>
 
@@ -1551,7 +1673,7 @@ export default function LoginPage() {
             <p style={{ fontSize: '.88rem', color: S.gray, lineHeight: 1.6, marginBottom: '1.5rem', flex: 1 }}>
               Nos experts configurent vos connecteurs et paramètrent vos tableaux de bord sur mesure.
             </p>
-            <a href="#contact-form" style={{
+            <a href="https://www.groupe-sra.fr/contact/" target="_blank" rel="noopener noreferrer" style={{
               padding: '14px 32px', borderRadius: 12, background: 'transparent',
               border: '2px solid #195C82', color: '#195C82',
               fontWeight: 700, fontSize: '.95rem', cursor: 'pointer', width: '100%',
@@ -1563,75 +1685,7 @@ export default function LoginPage() {
           </div>
         </div>
 
-        {/* ── Formulaire de contact ── */}
-        <div id="contact-form" style={{ maxWidth: 700, margin: '3rem auto 0' }}>
-          <form onSubmit={handleContactSubmit} style={{
-            padding: '2rem', borderRadius: 20, background: '#fff',
-            border: '1px solid rgba(25,92,130,0.08)',
-            boxShadow: '0 8px 40px rgba(0,0,0,0.04)',
-          }}>
-            {contactSent ? (
-              <div style={{ textAlign: 'center', padding: '2.5rem 0' }}>
-                <div style={{
-                  width: 56, height: 56, borderRadius: '50%', margin: '0 auto .75rem',
-                  background: 'linear-gradient(135deg, #22c55e, #10b981)',
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  fontSize: '1.5rem', color: '#fff',
-                }}>✓</div>
-                <h3 style={{ margin: '0 0 .5rem', color: S.dark, fontSize: '1.2rem' }}>Demande envoyée !</h3>
-                <p style={{ color: S.gray, fontSize: '.9rem' }}>Nous préparons votre diagnostic et revenons vers vous très vite.</p>
-              </div>
-            ) : (
-              <>
-                <div className="landing-contact-row" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginBottom: 16 }}>
-                  <div>
-                    <label style={{ display: 'block', fontSize: '.82rem', fontWeight: 600, color: S.dark, marginBottom: 6 }}>Nom complet *</label>
-                    <input type="text" required placeholder="Jean Dupont"
-                      value={contactForm.name} onChange={e => setContactForm(f => ({ ...f, name: e.target.value }))}
-                      style={inputStyle} onFocus={focusInput} onBlur={blurInput} />
-                  </div>
-                  <div>
-                    <label style={{ display: 'block', fontSize: '.82rem', fontWeight: 600, color: S.dark, marginBottom: 6 }}>Email professionnel *</label>
-                    <input type="email" required placeholder="jean@entreprise.com"
-                      value={contactForm.email} onChange={e => setContactForm(f => ({ ...f, email: e.target.value }))}
-                      style={inputStyle} onFocus={focusInput} onBlur={blurInput} />
-                  </div>
-                </div>
-                <div className="landing-contact-row" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginBottom: 16 }}>
-                  <div>
-                    <label style={{ display: 'block', fontSize: '.82rem', fontWeight: 600, color: S.dark, marginBottom: 6 }}>Entreprise</label>
-                    <input type="text" placeholder="Mon Entreprise SAS"
-                      value={contactForm.company} onChange={e => setContactForm(f => ({ ...f, company: e.target.value }))}
-                      style={inputStyle} onFocus={focusInput} onBlur={blurInput} />
-                  </div>
-                  <div>
-                    <label style={{ display: 'block', fontSize: '.82rem', fontWeight: 600, color: S.dark, marginBottom: 6 }}>Téléphone</label>
-                    <input type="tel" placeholder="06 XX XX XX XX"
-                      value={contactForm.phone} onChange={e => setContactForm(f => ({ ...f, phone: e.target.value }))}
-                      style={inputStyle} onFocus={focusInput} onBlur={blurInput} />
-                  </div>
-                </div>
-                <div style={{ marginBottom: 16 }}>
-                  <label style={{ display: 'block', fontSize: '.82rem', fontWeight: 600, color: S.dark, marginBottom: 6 }}>Votre besoin *</label>
-                  <textarea required rows={4} placeholder="Décrivez le logiciel dont vous avez besoin..."
-                    value={contactForm.message} onChange={e => setContactForm(f => ({ ...f, message: e.target.value }))}
-                    style={{ ...inputStyle, resize: 'vertical' }}
-                    onFocus={focusInput} onBlur={blurInput} />
-                </div>
-                <button type="submit" style={{
-                  width: '100%', padding: '14px', borderRadius: 12, background: '#195C82',
-                  color: '#fff', border: 'none', fontWeight: 700, fontSize: '.95rem',
-                  cursor: 'pointer', boxShadow: '0 4px 20px rgba(25,92,130,0.3)',
-                  transition: 'all .25s',
-                }}
-                onMouseEnter={e => { e.target.style.boxShadow = '0 8px 30px rgba(25,92,130,0.45)'; e.target.style.transform = 'translateY(-1px)' }}
-                onMouseLeave={e => { e.target.style.boxShadow = '0 4px 20px rgba(25,92,130,0.3)'; e.target.style.transform = 'none' }}>
-                  Demander mon diagnostic gratuit →
-                </button>
-              </>
-            )}
-          </form>
-        </div>
+        {/* Formulaire supprimé — redirection vers groupe-sra.fr/contact */}
       </section>
 
       {/* ══════════════════════════════════════════════════════════════════
