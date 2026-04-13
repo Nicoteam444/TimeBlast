@@ -50,10 +50,15 @@ export default function ApplicationsPage() {
   async function handleSave() {
     const payload = { ...form, societe_id: societeId }
     delete payload.id; delete payload.created_at; delete payload.updated_at; delete payload.metadata
+    let error
     if (editing) {
-      await supabase.from('si_applications').update(payload).eq('id', editing.id)
+      ({ error } = await supabase.from('si_applications').update(payload).eq('id', editing.id))
     } else {
-      await supabase.from('si_applications').insert(payload)
+      ({ error } = await supabase.from('si_applications').insert(payload))
+    }
+    if (error) {
+      alert('Erreur : ' + error.message + '\n\nLa table si_applications n\'existe peut-etre pas encore. Executez la migration SQL.')
+      return
     }
     setShowModal(false)
     load()

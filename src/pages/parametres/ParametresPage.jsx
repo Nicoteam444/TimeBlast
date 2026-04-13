@@ -13,7 +13,7 @@ function AffichageTab() {
     if (!file) return
     if (file.size > 500 * 1024) { alert('Fichier trop lourd (max 500 Ko)'); return }
     const reader = new FileReader()
-    reader.onload = ev => update({ logoUrl: ev.target.result })
+    reader.onload = ev => updateAndSave({ logoUrl: ev.target.result })
     reader.readAsDataURL(file)
   }
 
@@ -46,7 +46,7 @@ function AffichageTab() {
             <button
               key={t.id}
               className={`param-theme-btn ${settings.theme === t.id ? 'param-theme-btn--active' : ''}`}
-              onClick={() => update({ theme: t.id })}
+              onClick={() => updateAndSave({ theme: t.id })}
             >
               <span className="param-theme-icon">{t.icon}</span>
               <span>{t.label}</span>
@@ -70,7 +70,7 @@ function AffichageTab() {
             <button
               key={f.id}
               className={`param-font-btn ${settings.fontSize === f.id ? 'param-font-btn--active' : ''}`}
-              onClick={() => update({ fontSize: f.id })}
+              onClick={() => updateAndSave({ fontSize: f.id })}
             >
               <span style={{ fontSize: f.id === 'sm' ? '1em' : f.id === 'lg' ? '1.5em' : '1.2em', fontWeight: 700 }}>{f.sample}</span>
               <span style={{ fontSize: '.75rem', color: 'var(--text-muted)' }}>{f.label}</span>
@@ -94,7 +94,7 @@ function AffichageTab() {
             <button
               key={d.id}
               className={`param-chip ${settings.density === d.id ? 'param-chip--active' : ''}`}
-              onClick={() => update({ density: d.id })}
+              onClick={() => updateAndSave({ density: d.id })}
             >
               {d.label}
             </button>
@@ -163,7 +163,7 @@ function AffichageTab() {
           value={settings.platformName || ''}
           maxLength={32}
           placeholder="Ex : MonApp"
-          onChange={e => update({ platformName: e.target.value })}
+          onChange={e => updateAndSave({ platformName: e.target.value })}
         />
       </div>
 
@@ -185,7 +185,7 @@ function AffichageTab() {
               Choisir un fichier…
             </button>
             {settings.logoUrl && (
-              <button className="btn-secondary" onClick={() => update({ logoUrl: null })}>
+              <button className="btn-secondary" onClick={() => updateAndSave({ logoUrl: null })}>
                 Supprimer
               </button>
             )}
