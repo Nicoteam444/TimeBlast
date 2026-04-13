@@ -934,12 +934,16 @@ function FluxMetierTab() {
           {/* Cartes étapes */}
           {allSteps.map(step => {
             const color = step.available ? B : GREY
+            const isDark = document.documentElement.getAttribute('data-theme') === 'dark'
+            const cardBg = isDark ? '#111111' : '#fff'
+            const textColor = isDark ? (step.available ? '#e2e8f0' : '#64748b') : (step.available ? '#1a2332' : '#94a3b8')
+            const subColor = isDark ? (step.available ? '#94a3b8' : '#4a5568') : (step.available ? '#64748b' : '#cbd5e1')
             return (
               <g key={step.id} style={{ cursor: step.available ? 'pointer' : 'default' }} onClick={() => step.available && navigate(step.route)}>
-                <rect x={step.x} y={step.y} width={W} height={H} rx={8} fill="#fff" stroke={color} strokeWidth={step.available ? 1.5 : 1} filter="url(#cardSh)" />
+                <rect x={step.x} y={step.y} width={W} height={H} rx={8} fill={cardBg} stroke={isDark ? '#1e1e1e' : color} strokeWidth={step.available ? 1.5 : 1} filter="url(#cardSh)" />
                 {step.available && <rect x={step.x} y={step.y} width={4} height={H} rx="2 0 0 2" fill={color} />}
-                <text x={step.x + W / 2} y={step.y + 20} textAnchor="middle" fill={step.available ? '#1a2332' : '#94a3b8'} fontSize="8" fontWeight="700">{step.label}</text>
-                <text x={step.x + W / 2} y={step.y + 34} textAnchor="middle" fill={step.available ? '#64748b' : '#cbd5e1'} fontSize="6.5" fontWeight="500">{step.sub}</text>
+                <text x={step.x + W / 2} y={step.y + 20} textAnchor="middle" fill={textColor} fontSize="8" fontWeight="700">{step.label}</text>
+                <text x={step.x + W / 2} y={step.y + 34} textAnchor="middle" fill={subColor} fontSize="6.5" fontWeight="500">{step.sub}</text>
                 {step.available && <circle cx={step.x + W - 10} cy={step.y + 10} r="3" fill={B} opacity="0.5" />}
                 {!step.available && <circle cx={step.x + W - 10} cy={step.y + 10} r="3" fill={GREY} opacity="0.3" />}
               </g>
