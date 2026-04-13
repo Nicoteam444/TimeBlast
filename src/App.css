@@ -6962,3 +6962,144 @@ button:disabled { opacity: .6; cursor: not-allowed; }
 
 /* HR */
 [data-theme="dark"] hr { border-color: #1e1e1e; }
+
+/* ── FORCE dark on ALL inline-styled elements ──
+   Many components use inline style={{ background: '#fff' }}.
+   We need !important on wildcard selectors to override them. */
+
+/* Any element with white/light background → force dark */
+[data-theme="dark"] [style*="background: #fff"],
+[data-theme="dark"] [style*="background: white"],
+[data-theme="dark"] [style*="background: rgb(255"],
+[data-theme="dark"] [style*="background:#fff"],
+[data-theme="dark"] [style*="background:white"],
+[data-theme="dark"] [style*="background: #FFF"],
+[data-theme="dark"] [style*="background: #FFFFFF"] {
+  background: #111 !important;
+}
+
+/* Light grays used as card backgrounds */
+[data-theme="dark"] [style*="background: #f8fafc"],
+[data-theme="dark"] [style*="background: #f1f5f9"],
+[data-theme="dark"] [style*="background: #f9fafb"],
+[data-theme="dark"] [style*="background:#f8fafc"],
+[data-theme="dark"] [style*="background:#f1f5f9"] {
+  background: #0a0a0a !important;
+}
+
+/* var(--card-bg) fallback for inline */
+[data-theme="dark"] [style*="var(--card-bg"] {
+  background: #111 !important;
+}
+
+/* Force all text inside app-content to respect dark theme */
+[data-theme="dark"] .app-content,
+[data-theme="dark"] .app-content * {
+  color: inherit;
+}
+/* But keep explicit color overrides for badges, buttons etc */
+[data-theme="dark"] .app-content [style*="color: #fff"],
+[data-theme="dark"] .app-content [style*="color: white"],
+[data-theme="dark"] .app-content [style*="color:#fff"] {
+  color: #fff !important;
+}
+
+/* Force dark on divs/sections that use inline white backgrounds */
+[data-theme="dark"] .app-content div[style],
+[data-theme="dark"] .app-content section[style],
+[data-theme="dark"] .app-content main[style] {
+  border-color: #1e1e1e !important;
+}
+
+/* Table rows and cells with inline backgrounds */
+[data-theme="dark"] table,
+[data-theme="dark"] thead,
+[data-theme="dark"] tbody,
+[data-theme="dark"] tr,
+[data-theme="dark"] td,
+[data-theme="dark"] th {
+  background: transparent !important;
+  color: #e2e8f0 !important;
+  border-color: #1e1e1e !important;
+}
+[data-theme="dark"] tr:hover {
+  background: rgba(255,255,255,0.03) !important;
+}
+
+/* Force dark on all h1-h6 */
+[data-theme="dark"] h1,
+[data-theme="dark"] h2,
+[data-theme="dark"] h3,
+[data-theme="dark"] h4 {
+  color: #e2e8f0 !important;
+}
+
+/* Force dark on paragraph text */
+[data-theme="dark"] p {
+  color: #94a3b8 !important;
+}
+
+/* Strong / bold text */
+[data-theme="dark"] strong,
+[data-theme="dark"] b {
+  color: #e2e8f0 !important;
+}
+
+/* Spans that might have dark text on light bg */
+[data-theme="dark"] .app-content span {
+  /* Don't override colored badges — only default text spans */
+}
+
+/* Labels */
+[data-theme="dark"] label {
+  color: #94a3b8 !important;
+}
+
+/* SVG text elements */
+[data-theme="dark"] svg text {
+  fill: #94a3b8 !important;
+}
+
+/* Buttons with light backgrounds */
+[data-theme="dark"] button[style*="background: #f"],
+[data-theme="dark"] button[style*="background: transparent"],
+[data-theme="dark"] button[style*="background:transparent"] {
+  color: #e2e8f0 !important;
+  border-color: #2a2a2a !important;
+}
+[data-theme="dark"] button:hover {
+  color: #fff !important;
+}
+
+/* Recharts overrides */
+[data-theme="dark"] .recharts-cartesian-axis-tick-value { fill: #94a3b8 !important; }
+[data-theme="dark"] .recharts-cartesian-grid line { stroke: #1e1e1e !important; }
+[data-theme="dark"] .recharts-tooltip-wrapper .recharts-default-tooltip {
+  background: #111 !important;
+  border-color: #1e1e1e !important;
+  color: #e2e8f0 !important;
+}
+
+/* Cards using inline cardStyle */
+[data-theme="dark"] div[style*="border-radius: 12"] {
+  background: #111 !important;
+  border-color: #1e1e1e !important;
+}
+[data-theme="dark"] div[style*="borderRadius: 12"],
+[data-theme="dark"] div[style*="border-radius:12"] {
+  background: #111 !important;
+  border-color: #1e1e1e !important;
+}
+
+/* Gradient banners (like the dashboard header) — darken */
+[data-theme="dark"] [style*="linear-gradient(135deg, #0f172a"],
+[data-theme="dark"] [style*="linear-gradient(135deg, #f0fdf4"] {
+  background: linear-gradient(135deg, #0a0a0a, #111) !important;
+  border-color: #1e1e1e !important;
+}
+
+/* Chat widget bubble */
+[data-theme="dark"] .chat-widget-bubble {
+  background: #111 !important;
+  border-color: #1e1e1e !important;
+}
