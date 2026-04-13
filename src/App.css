@@ -7257,3 +7257,55 @@ button:disabled { opacity: .6; cursor: not-allowed; }
   background: #111 !important;
   border-color: #1e1e1e !important;
 }
+
+/* ── Buttons: fond bleu SRA + texte blanc en dark mode ── */
+[data-theme="dark"] .app-content button {
+  color: #e2e8f0 !important;
+}
+/* Primary / accent buttons — bleu SRA */
+[data-theme="dark"] .app-content button[style*="background: var(--accent"],
+[data-theme="dark"] .app-content button[style*="background: var(--primary"],
+[data-theme="dark"] .app-content button[style*="background: #1D9BF0"],
+[data-theme="dark"] .app-content button[style*="background: #195C82"],
+[data-theme="dark"] .app-content button[style*="linear-gradient"] {
+  background: #195C82 !important;
+  color: #fff !important;
+  border-color: #195C82 !important;
+}
+/* Secondary / outline buttons — bordure bleue, fond sombre */
+[data-theme="dark"] .app-content button[style*="background: transparent"],
+[data-theme="dark"] .app-content button[style*="background: none"],
+[data-theme="dark"] .app-content button[style*="background: var(--surface"] {
+  background: #0a0a0a !important;
+  border-color: #2a3a4a !important;
+  color: #93c5fd !important;
+}
+/* Hover state for all buttons */
+[data-theme="dark"] .app-content button:hover {
+  color: #fff !important;
+}
+/* Toggle/tab buttons (Kanban/Liste, Annee/T1/T2, etc) */
+[data-theme="dark"] .app-content button[style*="border-radius"][style*="border: 1px"] {
+  background: #111 !important;
+  border-color: #2a3a4a !important;
+  color: #94a3b8 !important;
+}
+/* Active toggle buttons */
+[data-theme="dark"] .app-content button[style*="background: #2d6a4f"],
+[data-theme="dark"] .app-content button[style*="background: #195C82"],
+[data-theme="dark"] .app-content button[style*="background: var(--accent"] {
+  background: #195C82 !important;
+  color: #fff !important;
+}
+/* Delete/danger buttons keep their red */
+[data-theme="dark"] .app-content button[style*="background: #dc2626"],
+[data-theme="dark"] .app-content button[style*="background: #ef4444"] {
+  background: #991b1b !important;
+  color: #fff !important;
+}
+/* Success/green buttons */
+[data-theme="dark"] .app-content button[style*="background: #16a34a"],
+[data-theme="dark"] .app-content button[style*="background: #22c55e"] {
+  background: #166534 !important;
+  color: #fff !important;
+}

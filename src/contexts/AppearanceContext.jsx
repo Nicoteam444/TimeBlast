@@ -47,17 +47,46 @@ function setupDarkModeObserver(isDark) {
   if (!isDark) return
 
   const WHITE_BG = new Set(['rgb(255, 255, 255)', 'rgb(248, 250, 252)', 'rgb(241, 245, 249)', 'rgb(226, 232, 240)', 'rgb(249, 250, 251)'])
+  const LIGHT_BG = new Set(['rgb(248, 250, 252)', 'rgb(241, 245, 249)', 'rgb(249, 250, 251)', 'rgba(0, 0, 0, 0)'])
   const DARK_TEXT = new Set(['rgb(13, 27, 36)', 'rgb(26, 35, 50)', 'rgb(30, 41, 59)', 'rgb(51, 65, 85)', 'rgb(71, 85, 105)', 'rgb(55, 65, 81)'])
 
   function fixElement(el) {
     if (!el || !el.style) return
     const cs = getComputedStyle(el)
-    if (WHITE_BG.has(cs.backgroundColor)) {
+    const bg = cs.backgroundColor
+
+    // Fix white/light backgrounds → dark
+    if (WHITE_BG.has(bg)) {
       el.style.setProperty('background-color', '#111111', 'important')
       el.style.setProperty('border-color', '#1e1e1e', 'important')
     }
+
+    // Fix dark text on dark background → light
     if (DARK_TEXT.has(cs.color) && !el.closest('[style*="gradient"]')) {
       el.style.setProperty('color', '#e2e8f0', 'important')
+    }
+
+    // Fix buttons specifically
+    if (el.tagName === 'BUTTON') {
+      // Buttons with transparent/white/light bg → give them dark bg + visible text
+      if (bg === 'rgba(0, 0, 0, 0)' || WHITE_BG.has(bg) || LIGHT_BG.has(bg)) {
+        const bc = cs.borderColor
+        if (bc && bc !== 'rgb(30, 30, 30)') {
+          el.style.setProperty('background-color', '#0f1a2e', 'important')
+          el.style.setProperty('border-color', '#1e3a5f', 'important')
+          el.style.setProperty('color', '#93c5fd', 'important')
+        }
+      }
+      if (DARK_TEXT.has(cs.color)) {
+        el.style.setProperty('color', '#e2e8f0', 'important')
+      }
+    }
+
+    // Fix gradient banners (dashboard welcome, etc.) — light gradients → dark
+    const bgImage = cs.backgroundImage
+    if (bgImage && bgImage.includes('linear-gradient') && (bgImage.includes('86, 180, 232') || bgImage.includes('45, 139, 201') || bgImage.includes('56b4e8') || bgImage.includes('2d8bc9'))) {
+      el.style.setProperty('background', 'linear-gradient(135deg, #0a0a0a 0%, #111827 60%, #1e293b 100%)', 'important')
+      el.style.setProperty('border', '1px solid #1e1e1e', 'important')
     }
   }
 
