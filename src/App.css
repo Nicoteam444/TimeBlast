@@ -7103,3 +7103,157 @@ button:disabled { opacity: .6; cursor: not-allowed; }
   background: #111 !important;
   border-color: #1e1e1e !important;
 }
+
+/* ── NUCLEAR DARK: force all remaining white backgrounds ── */
+
+/* Kanban cards */
+[data-theme="dark"] .kanban-card {
+  background: #111 !important;
+  border-color: #1e1e1e !important;
+  color: #e2e8f0 !important;
+}
+[data-theme="dark"] .kanban-card-title,
+[data-theme="dark"] .kanban-card-name { color: #e2e8f0 !important; }
+[data-theme="dark"] .kanban-card-client,
+[data-theme="dark"] .kanban-card-assignee { color: #94a3b8 !important; }
+[data-theme="dark"] .kanban-card-montant { color: #60a5fa !important; }
+
+/* Calendar / saisie grids — any inline #fff or #f8fafc */
+[data-theme="dark"] .app-content div[style*="background: '#fff'"],
+[data-theme="dark"] .app-content div[style*="background: '#f8fafc'"],
+[data-theme="dark"] .app-content div[style*="background: '#f1f5f9'"],
+[data-theme="dark"] .app-content div[style*="background: '#e2e8f0'"] {
+  background: #111 !important;
+  border-color: #1e1e1e !important;
+}
+
+/* MEGA override: any div/section in app-content with inline background that looks white */
+[data-theme="dark"] .app-content [style*="rgb(255, 255, 255)"],
+[data-theme="dark"] .app-content [style*="rgb(248, 250, 252)"],
+[data-theme="dark"] .app-content [style*="rgb(241, 245, 249)"],
+[data-theme="dark"] .app-content [style*="rgb(226, 232, 240)"] {
+  background-color: #111 !important;
+}
+
+/* Force via attribute substring: JSX inline styles become style="...background: #fff..." */
+[data-theme="dark"] [style*="background: #fff"],
+[data-theme="dark"] [style*="background:#fff"],
+[data-theme="dark"] [style*="background: #FFF"],
+[data-theme="dark"] [style*="background: white"] {
+  background: #111 !important;
+  color: #e2e8f0 !important;
+}
+[data-theme="dark"] [style*="background: #f8fafc"],
+[data-theme="dark"] [style*="background:#f8fafc"],
+[data-theme="dark"] [style*="background: #f1f5f9"],
+[data-theme="dark"] [style*="background:#f1f5f9"],
+[data-theme="dark"] [style*="background: #f9fafb"],
+[data-theme="dark"] [style*="background: #e2e8f0"],
+[data-theme="dark"] [style*="background:#e2e8f0"] {
+  background: #0a0a0a !important;
+  color: #e2e8f0 !important;
+}
+
+/* Borders that use light colors inline */
+[data-theme="dark"] [style*="border: 1px solid #e2e8f0"],
+[data-theme="dark"] [style*="border-bottom: 1px solid #e2e8f0"],
+[data-theme="dark"] [style*="borderBottom: 1px solid #e2e8f0"],
+[data-theme="dark"] [style*="border-right: 1px solid #e2e8f0"],
+[data-theme="dark"] [style*="borderRight: 1px solid #e2e8f0"],
+[data-theme="dark"] [style*="border: 1px solid #cbd5e1"] {
+  border-color: #1e1e1e !important;
+}
+
+/* Calendar specific: grid backgrounds */
+[data-theme="dark"] [style*="gap: 1"][style*="background: #e2e8f0"],
+[data-theme="dark"] [style*="gap: 1"][style*="background:#e2e8f0"] {
+  background: #1e1e1e !important;
+}
+
+/* Text colors that are dark on now-dark backgrounds */
+[data-theme="dark"] [style*="color: #1a2332"],
+[data-theme="dark"] [style*="color:#1a2332"],
+[data-theme="dark"] [style*="color: #0D1B24"],
+[data-theme="dark"] [style*="color:#0D1B24"],
+[data-theme="dark"] [style*="color: #1e293b"],
+[data-theme="dark"] [style*="color:#1e293b"],
+[data-theme="dark"] [style*="color: #334155"],
+[data-theme="dark"] [style*="color: #475569"],
+[data-theme="dark"] [style*="color: #374151"] {
+  color: #e2e8f0 !important;
+}
+[data-theme="dark"] [style*="color: #64748b"],
+[data-theme="dark"] [style*="color:#64748b"],
+[data-theme="dark"] [style*="color: #5a7080"],
+[data-theme="dark"] [style*="color: #6b7280"] {
+  color: #94a3b8 !important;
+}
+
+/* Option elements in selects */
+[data-theme="dark"] option {
+  background: #111 !important;
+  color: #e2e8f0 !important;
+}
+
+/* ── Category cards (landing pages) ── */
+[data-theme="dark"] .category-card {
+  background: #111 !important;
+  border-color: #1e1e1e !important;
+}
+[data-theme="dark"] .category-card:hover {
+  border-color: #60a5fa !important;
+  box-shadow: 0 4px 12px rgba(0,0,0,.3) !important;
+}
+[data-theme="dark"] .category-card-icon {
+  background: #0a0a0a !important;
+}
+
+/* ── Kanban columns ── */
+[data-theme="dark"] .kanban-col,
+[data-theme="dark"] [class*="kanban-col"] {
+  background: #0a0a0a !important;
+  border-color: #1e1e1e !important;
+}
+
+/* ── Calendar / Saisie — force dark on all white inline cells ── */
+[data-theme="dark"] .app-content div[style*="min-height: 80"],
+[data-theme="dark"] .app-content div[style*="minHeight: 80"],
+[data-theme="dark"] .app-content div[style*="minHeight:"] {
+  background: #111 !important;
+  border-color: #1e1e1e !important;
+}
+
+/* ── NUCLEAR: override ALL computed white backgrounds via class ── */
+/* This injects a tiny JS-like CSS workaround for inline styles */
+[data-theme="dark"] .app-content div,
+[data-theme="dark"] .app-content section,
+[data-theme="dark"] .app-content article,
+[data-theme="dark"] .app-content aside,
+[data-theme="dark"] .app-content form,
+[data-theme="dark"] .app-content header,
+[data-theme="dark"] .app-content footer,
+[data-theme="dark"] .app-content nav {
+  /* Use CSS custom property cascade — if element has no explicit bg, inherit dark */
+  background-color: inherit;
+}
+
+/* Param buttons (Petite/Normale/Grande, theme) */
+[data-theme="dark"] .param-theme-btn,
+[data-theme="dark"] .param-chip,
+[data-theme="dark"] [class*="param-"] button {
+  background: #111 !important;
+  border-color: #2a2a2a !important;
+  color: #e2e8f0 !important;
+}
+[data-theme="dark"] .param-theme-btn--active {
+  background: #1e1e1e !important;
+  border-color: #60a5fa !important;
+}
+
+/* Misc: any remaining white surfaces */
+[data-theme="dark"] .card,
+[data-theme="dark"] [class*="-card"],
+[data-theme="dark"] [class*="_card"] {
+  background: #111 !important;
+  border-color: #1e1e1e !important;
+}

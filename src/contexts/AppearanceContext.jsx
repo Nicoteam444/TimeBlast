@@ -40,6 +40,37 @@ function load(userId) {
   } catch { return DEFAULTS }
 }
 
+// Force dark backgrounds on elements with white inline styles
+let darkModeObserver = null
+function setupDarkModeObserver(isDark) {
+  if (darkModeObserver) { darkModeObserver.disconnect(); darkModeObserver = null }
+  if (!isDark) return
+
+  const WHITE_BG = new Set(['rgb(255, 255, 255)', 'rgb(248, 250, 252)', 'rgb(241, 245, 249)', 'rgb(226, 232, 240)', 'rgb(249, 250, 251)'])
+  const DARK_TEXT = new Set(['rgb(13, 27, 36)', 'rgb(26, 35, 50)', 'rgb(30, 41, 59)', 'rgb(51, 65, 85)', 'rgb(71, 85, 105)', 'rgb(55, 65, 81)'])
+
+  function fixElement(el) {
+    if (!el || !el.style) return
+    const cs = getComputedStyle(el)
+    if (WHITE_BG.has(cs.backgroundColor)) {
+      el.style.setProperty('background-color', '#111111', 'important')
+      el.style.setProperty('border-color', '#1e1e1e', 'important')
+    }
+    if (DARK_TEXT.has(cs.color) && !el.closest('[style*="gradient"]')) {
+      el.style.setProperty('color', '#e2e8f0', 'important')
+    }
+  }
+
+  function fixAll() {
+    document.querySelectorAll('.app-content *').forEach(fixElement)
+  }
+
+  // Fix on initial load and after DOM mutations
+  requestAnimationFrame(fixAll)
+  darkModeObserver = new MutationObserver(() => requestAnimationFrame(fixAll))
+  darkModeObserver.observe(document.body, { childList: true, subtree: true, attributes: true, attributeFilter: ['style', 'class'] })
+}
+
 function applyToDOM(settings) {
   const root = document.documentElement
   root.setAttribute('data-theme', settings.theme)
@@ -85,6 +116,9 @@ function applyToDOM(settings) {
     root.style.setProperty('--error', '#dc2626')
     root.style.setProperty('--success', '#16a34a')
   }
+
+  // Setup/teardown dark mode observer for inline style overrides
+  setupDarkModeObserver(settings.theme === 'dark')
 }
 
 export function AppearanceProvider({ children }) {
