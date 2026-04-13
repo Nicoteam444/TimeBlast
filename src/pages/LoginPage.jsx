@@ -891,6 +891,16 @@ export default function LoginPage() {
   const [mobileMenu, setMobileMenu] = useState(false)
   const [activeCat, setActiveCat] = useState('all')
 
+  // Force light mode on login/landing page — always
+  useEffect(() => {
+    const prev = document.documentElement.getAttribute('data-theme')
+    document.documentElement.setAttribute('data-theme', 'light')
+    document.body.style.background = '#fff'
+    return () => {
+      if (prev) document.documentElement.setAttribute('data-theme', prev)
+    }
+  }, [])
+
   const filteredConnectors = activeCat === 'all' ? CONNECTORS : CONNECTORS.filter(c => c.cat === activeCat)
 
   // DEBUG: afficher l'historique SSO dans la console
