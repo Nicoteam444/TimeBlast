@@ -1159,9 +1159,11 @@ export default function LoginPage() {
             <h1 style={{
               fontSize: 'clamp(2rem, 3.5vw, 3rem)', fontWeight: 800, lineHeight: 1.2,
               color: S.dark, margin: '0 0 1.25rem', letterSpacing: '-0.02em',
+              height: 'clamp(7rem, 10vw, 9rem)', overflow: 'hidden',
             }}>
               <span style={{ display: 'block' }}>La plateforme IA</span>
-              <span style={{ display: 'block', minHeight: '7rem', overflow: 'hidden' }}>qui active vos données : <RotatingText /></span>
+              <span style={{ display: 'block', height: '3.6rem', overflow: 'hidden' }}>qui active vos données :</span>
+              <span style={{ display: 'block', height: '2rem', overflow: 'hidden', color: '#1D9BF0' }}><RotatingText /></span>
             </h1>
 
             <p style={{
