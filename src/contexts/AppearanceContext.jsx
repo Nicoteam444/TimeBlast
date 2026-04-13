@@ -53,15 +53,38 @@ function applyToDOM(settings) {
   const surface = settings.surfaceColor || DEFAULTS.surfaceColor
   const bg      = settings.bgColor      || DEFAULTS.bgColor
 
-  root.style.setProperty('--primary', menu)
-  root.style.setProperty('--primary-hover', menu)
-  root.style.setProperty('--primary-light', menu + '18')
-  root.style.setProperty('--accent', accent)
-  root.style.setProperty('--accent-hover', accent)
-  root.style.setProperty('--accent-light', accent + '18')
-  root.style.setProperty('--text', title)
-  root.style.setProperty('--surface', surface)
-  root.style.setProperty('--bg', bg)
+  if (settings.theme === 'dark') {
+    // Dark mode — Claude Code style: tout noir
+    root.style.setProperty('--primary', '#93c5fd')
+    root.style.setProperty('--primary-hover', '#60a5fa')
+    root.style.setProperty('--primary-light', 'rgba(147,197,253,0.1)')
+    root.style.setProperty('--accent', '#60a5fa')
+    root.style.setProperty('--accent-hover', '#93c5fd')
+    root.style.setProperty('--accent-light', 'rgba(96,165,250,0.1)')
+    root.style.setProperty('--text', '#e2e8f0')
+    root.style.setProperty('--text-muted', '#94a3b8')
+    root.style.setProperty('--surface', '#0a0a0a')
+    root.style.setProperty('--card-bg', '#111111')
+    root.style.setProperty('--bg', '#000000')
+    root.style.setProperty('--border', '#1e1e1e')
+    root.style.setProperty('--error', '#f87171')
+    root.style.setProperty('--success', '#4ade80')
+  } else {
+    root.style.setProperty('--primary', menu)
+    root.style.setProperty('--primary-hover', menu)
+    root.style.setProperty('--primary-light', menu + '18')
+    root.style.setProperty('--accent', accent)
+    root.style.setProperty('--accent-hover', accent)
+    root.style.setProperty('--accent-light', accent + '18')
+    root.style.setProperty('--text', title)
+    root.style.setProperty('--surface', surface)
+    root.style.setProperty('--card-bg', surface)
+    root.style.setProperty('--bg', bg)
+    root.style.setProperty('--border', '#e2e8f0')
+    root.style.setProperty('--text-muted', '#5a7080')
+    root.style.setProperty('--error', '#dc2626')
+    root.style.setProperty('--success', '#16a34a')
+  }
 }
 
 export function AppearanceProvider({ children }) {

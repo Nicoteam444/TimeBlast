@@ -6776,3 +6776,189 @@ button:disabled { opacity: .6; cursor: not-allowed; }
 
 /* Module access toggle */
 .module-toggle-on { border-color: #195C82 !important; background: #eef6fb !important; }
+
+/* ============================================================
+   COCKPIT SI — Styles specifiques
+   ============================================================ */
+
+/* Cockpit cards animation */
+@keyframes cockpitFadeIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+.cockpit-card { animation: cockpitFadeIn .45s ease both; transition: transform .2s, box-shadow .2s; }
+.cockpit-card:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(0,0,0,.08) !important; }
+
+/* DSI button in TopBar */
+.topbar-btn--dsi {
+  background: linear-gradient(135deg, rgba(25,92,130,0.08), rgba(29,155,240,0.08)) !important;
+  border: 1px solid rgba(29,155,240,0.2) !important;
+  border-radius: 8px !important;
+  padding: 4px 10px !important;
+}
+.topbar-btn--dsi:hover {
+  background: linear-gradient(135deg, rgba(25,92,130,0.15), rgba(29,155,240,0.15)) !important;
+  border-color: rgba(29,155,240,0.4) !important;
+}
+
+/* Cockpit responsive */
+@media (max-width: 1024px) {
+  .cockpit-card { padding: 1rem !important; }
+}
+@media (max-width: 768px) {
+  .cockpit-card { padding: .75rem !important; }
+}
+
+/* ============================================================
+   DARK MODE — Claude Code style (pure black)
+   ============================================================ */
+[data-theme="dark"] body {
+  background: #000 !important;
+  color: #e2e8f0;
+}
+
+/* Sidebar */
+[data-theme="dark"] .sidebar {
+  background: #0a0a0a !important;
+  border-right: 1px solid #1e1e1e;
+}
+[data-theme="dark"] .sidebar-logo { border-bottom-color: #1e1e1e; }
+[data-theme="dark"] .rail-item { color: rgba(226,232,240,0.6); }
+[data-theme="dark"] .rail-item:hover { background: rgba(255,255,255,0.05); color: #e2e8f0; }
+[data-theme="dark"] .rail-item--active { color: #fff; background: rgba(255,255,255,0.08); border-left-color: #60a5fa; }
+[data-theme="dark"] .rail-item--highlight { background: rgba(96,165,250,0.12) !important; }
+[data-theme="dark"] .rail-item--highlight:hover { background: rgba(96,165,250,0.2) !important; }
+[data-theme="dark"] .sidebar-toggle-btn { border-color: #1e1e1e; }
+[data-theme="dark"] .sidebar-toggle-btn:hover { background: rgba(255,255,255,0.06); }
+[data-theme="dark"] .sidebar-separator { background: #1e1e1e; }
+
+/* Flyout */
+[data-theme="dark"] .rail-flyout {
+  background: #111 !important;
+  border-color: #1e1e1e !important;
+  box-shadow: 4px 0 20px rgba(0,0,0,.5) !important;
+}
+[data-theme="dark"] .rail-flyout-header { color: #94a3b8; border-bottom-color: #1e1e1e; }
+[data-theme="dark"] .rail-flyout-link { color: #cbd5e1; }
+[data-theme="dark"] .rail-flyout-link:hover { background: rgba(255,255,255,0.05); color: #fff; }
+[data-theme="dark"] .rail-flyout-link--active { background: rgba(96,165,250,0.1); color: #60a5fa; }
+[data-theme="dark"] .rail-flyout-fav { color: #64748b; }
+
+/* TopBar */
+[data-theme="dark"] .topbar {
+  background: #0a0a0a !important;
+  border-bottom: 1px solid #1e1e1e !important;
+  box-shadow: none !important;
+}
+[data-theme="dark"] .topbar-btn { border-color: #2a2a2a; color: #94a3b8; }
+[data-theme="dark"] .topbar-btn:hover { border-color: #444; color: #e2e8f0; }
+[data-theme="dark"] .topbar-btn--dsi {
+  background: rgba(96,165,250,0.08) !important;
+  border-color: rgba(96,165,250,0.2) !important;
+}
+
+/* Search */
+[data-theme="dark"] .topbar input[type="text"],
+[data-theme="dark"] .topbar input[type="search"] {
+  background: #111 !important;
+  border-color: #2a2a2a !important;
+  color: #e2e8f0 !important;
+}
+
+/* Content area */
+[data-theme="dark"] .app-content {
+  background: #000;
+}
+
+/* Dropdowns & menus */
+[data-theme="dark"] .topbar-user-menu,
+[data-theme="dark"] .notif-dropdown {
+  background: #111 !important;
+  border-color: #1e1e1e !important;
+  box-shadow: 0 8px 30px rgba(0,0,0,.6) !important;
+}
+[data-theme="dark"] .topbar-user-menu-item:hover,
+[data-theme="dark"] .notif-item:hover {
+  background: rgba(255,255,255,0.05) !important;
+}
+[data-theme="dark"] .notif-header { border-bottom-color: #1e1e1e; }
+
+/* Cards & surfaces */
+[data-theme="dark"] .dash-card,
+[data-theme="dark"] .cockpit-card {
+  background: #111 !important;
+  border-color: #1e1e1e !important;
+}
+[data-theme="dark"] .dash-card:hover,
+[data-theme="dark"] .cockpit-card:hover {
+  box-shadow: 0 8px 25px rgba(0,0,0,.3) !important;
+}
+
+/* Tables */
+[data-theme="dark"] table { color: #e2e8f0; }
+[data-theme="dark"] th { color: #94a3b8 !important; border-bottom-color: #1e1e1e !important; }
+[data-theme="dark"] td { border-bottom-color: #1a1a1a !important; }
+[data-theme="dark"] tr:hover td { background: rgba(255,255,255,0.02); }
+
+/* Inputs & forms */
+[data-theme="dark"] input,
+[data-theme="dark"] select,
+[data-theme="dark"] textarea {
+  background: #0a0a0a !important;
+  border-color: #2a2a2a !important;
+  color: #e2e8f0 !important;
+}
+[data-theme="dark"] input:focus,
+[data-theme="dark"] select:focus,
+[data-theme="dark"] textarea:focus {
+  border-color: #60a5fa !important;
+  outline: none;
+}
+[data-theme="dark"] input::placeholder,
+[data-theme="dark"] textarea::placeholder {
+  color: #4a5568 !important;
+}
+
+/* Modals */
+[data-theme="dark"] .modal-overlay,
+[data-theme="dark"] [style*="rgba(0,0,0,.4)"] { background: rgba(0,0,0,.7) !important; }
+
+/* Scrollbars */
+[data-theme="dark"] ::-webkit-scrollbar { width: 8px; height: 8px; }
+[data-theme="dark"] ::-webkit-scrollbar-track { background: #0a0a0a; }
+[data-theme="dark"] ::-webkit-scrollbar-thumb { background: #2a2a2a; border-radius: 4px; }
+[data-theme="dark"] ::-webkit-scrollbar-thumb:hover { background: #3a3a3a; }
+
+/* Breadcrumb */
+[data-theme="dark"] .breadcrumb-link { color: #64748b; }
+[data-theme="dark"] .breadcrumb-link:hover { color: #94a3b8; }
+[data-theme="dark"] .breadcrumb-separator { color: #333; }
+
+/* Quick-add dropdown */
+[data-theme="dark"] .topbar-quickadd-dropdown {
+  background: #111 !important;
+  border-color: #1e1e1e !important;
+}
+
+/* Command palette / search dropdown */
+[data-theme="dark"] .cmd-dropdown,
+[data-theme="dark"] .search-dropdown {
+  background: #111 !important;
+  border-color: #1e1e1e !important;
+}
+
+/* Favorites bar */
+[data-theme="dark"] .topbar-favbar {
+  background: rgba(255,255,255,0.03) !important;
+  border-color: #1e1e1e !important;
+}
+
+/* Selection */
+[data-theme="dark"] ::selection {
+  background: rgba(96,165,250,0.3);
+  color: #fff;
+}
+
+/* Links */
+[data-theme="dark"] a { color: #60a5fa; }
+[data-theme="dark"] a:hover { color: #93c5fd; }
+
+/* HR */
+[data-theme="dark"] hr { border-color: #1e1e1e; }

@@ -93,6 +93,15 @@ const WikiPage = lazy(() => import('./pages/wiki/WikiPage'))
 const PricingPage = lazy(() => import('./pages/PricingPage'))
 const InscriptionPage = lazy(() => import('./pages/InscriptionPage'))
 
+// Cockpit SI
+const CockpitDashboardPage = lazy(() => import('./pages/cockpit/CockpitDashboardPage'))
+const ArchitectureViewerPage = lazy(() => import('./pages/cockpit/ArchitectureViewerPage'))
+const CockpitApplicationsPage = lazy(() => import('./pages/cockpit/ApplicationsPage'))
+const CockpitInfrastructurePage = lazy(() => import('./pages/cockpit/InfrastructurePage'))
+const CockpitDataFlowsPage = lazy(() => import('./pages/cockpit/DataFlowsPage'))
+const CockpitAgentsPage = lazy(() => import('./pages/cockpit/AgentsPage'))
+const CockpitRecommendationsPage = lazy(() => import('./pages/cockpit/RecommendationsPage'))
+
 // Spinner global pour lazy loading
 function LazySpinner() {
   return (
@@ -184,6 +193,29 @@ function AppRoutes() {
       } />
       <Route path="dashboard" element={
         <ProtectedRoute><Layout><DashboardPage /></Layout></ProtectedRoute>
+      } />
+
+      {/* Cockpit SI */}
+      <Route path="cockpit" element={
+        <ProtectedRoute roles={['admin','manager']}><Layout><CockpitDashboardPage /></Layout></ProtectedRoute>
+      } />
+      <Route path="cockpit/architecture" element={
+        <ProtectedRoute roles={['admin','manager']}><Layout><ArchitectureViewerPage /></Layout></ProtectedRoute>
+      } />
+      <Route path="cockpit/applications" element={
+        <ProtectedRoute roles={['admin','manager']}><Layout><CockpitApplicationsPage /></Layout></ProtectedRoute>
+      } />
+      <Route path="cockpit/infrastructure" element={
+        <ProtectedRoute roles={['admin','manager']}><Layout><CockpitInfrastructurePage /></Layout></ProtectedRoute>
+      } />
+      <Route path="cockpit/flux" element={
+        <ProtectedRoute roles={['admin','manager']}><Layout><CockpitDataFlowsPage /></Layout></ProtectedRoute>
+      } />
+      <Route path="cockpit/agents" element={
+        <ProtectedRoute roles={['admin','manager']}><Layout><CockpitAgentsPage /></Layout></ProtectedRoute>
+      } />
+      <Route path="cockpit/recommandations" element={
+        <ProtectedRoute roles={['admin','manager']}><Layout><CockpitRecommendationsPage /></Layout></ProtectedRoute>
       } />
 
       {/* Category Landing Pages */}

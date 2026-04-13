@@ -3,11 +3,12 @@ import { BreadcrumbProvider } from '../contexts/BreadcrumbContext'
 import { useFavorites } from '../contexts/FavoritesContext'
 import { useAuth } from '../contexts/AuthContext'
 import { useLocation } from 'react-router-dom'
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { supabase } from '../lib/supabase'
 import Sidebar from './Sidebar'
 import TopBar from './TopBar'
 import ChatWidget from './ChatWidget'
+import CockpitChat from './CockpitChat'
 // CommandPalette intégrée dans TopBar
 import Breadcrumb from './Breadcrumb'
 
@@ -73,21 +74,33 @@ function usePageTracking() {
 
 function LayoutInner({ children }) {
   usePageTracking()
+  const [cockpitChatOpen, setCockpitChatOpen] = useState(false)
+
+  // Listen for toggle events from TopBar DSI button
+  useEffect(() => {
+    function handleToggle() { setCockpitChatOpen(v => !v) }
+    window.addEventListener('toggle-cockpit-chat', handleToggle)
+    return () => window.removeEventListener('toggle-cockpit-chat', handleToggle)
+  }, [])
+
   return (
     <div className="app-layout">
       <Sidebar />
-      <div className="app-main">
+      <div className="app-main" style={{ display: 'flex', flexDirection: 'column', height: '100vh' }}>
         <TopBar />
-        <main className="app-content" style={{ position: 'relative', display: 'flex', flexDirection: 'column', minHeight: '100%' }}>
-          <FavoriteButton />
-          <Breadcrumb />
-          <div style={{ flex: 1 }}>{children}</div>
-          <div style={{ textAlign: 'right', padding: '.5rem 1.5rem', fontSize: '.65rem', color: '#b0b8c4', fontWeight: 500, letterSpacing: '.5px', flexShrink: 0 }}>
-            Powered by <span style={{ fontWeight: 700, color: '#94a3b8' }}>Nicoteam</span>
-          </div>
-        </main>
+        <div style={{ flex: 1, display: 'flex', overflow: 'hidden' }}>
+          <main className="app-content" style={{ position: 'relative', display: 'flex', flexDirection: 'column', minHeight: '100%', flex: 1, overflow: 'auto' }}>
+            <FavoriteButton />
+            <Breadcrumb />
+            <div style={{ flex: 1 }}>{children}</div>
+            <div style={{ textAlign: 'right', padding: '.5rem 1.5rem', fontSize: '.65rem', color: '#b0b8c4', fontWeight: 500, letterSpacing: '.5px', flexShrink: 0 }}>
+              Powered by <span style={{ fontWeight: 700, color: '#94a3b8' }}>Nicoteam</span>
+            </div>
+          </main>
+          <CockpitChat isOpen={cockpitChatOpen} onClose={() => setCockpitChatOpen(false)} />
+        </div>
       </div>
-      <ChatWidget />
+      {!cockpitChatOpen && <ChatWidget />}
     </div>
   )
 }

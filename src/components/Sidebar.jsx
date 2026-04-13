@@ -14,14 +14,20 @@ function useEnvPrefix() {
 
 const SECTIONS = [
   {
-    id: 'editor',
-    icon: '\u26A1',
-    label: '\u00C9diteur IA',
-    landingTo: '/editor',
-    directLink: true,
-    roles: ['admin', 'manager', 'collaborateur'],
-    items: [],
-    highlight: true,
+    id: 'cockpit',
+    icon: '🎛',
+    label: 'SI',
+    landingTo: '/cockpit',
+    roles: ['admin', 'manager'],
+    items: [
+      { to: '/cockpit',               icon: '📊', label: 'Tableau de bord' },
+      { to: '/cockpit/architecture',   icon: '🗺', label: 'Architecture' },
+      { to: '/cockpit/applications',   icon: '💻', label: 'Applications' },
+      { to: '/cockpit/infrastructure', icon: '🖥', label: 'Infrastructure' },
+      { to: '/cockpit/flux',           icon: '🔗', label: 'Flux de donnees' },
+      { to: '/cockpit/agents',         icon: '🤖', label: 'Agents IA' },
+      { to: '/cockpit/recommandations',icon: '💡', label: 'Recommandations' },
+    ],
   },
   {
     id: 'calendrier',

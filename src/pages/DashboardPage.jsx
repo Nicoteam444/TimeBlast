@@ -1609,9 +1609,6 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      {/* ═══ BARRE PROMPT IA ═══ */}
-      <AiPromptBar navigate={navigate} />
-
       {/* ═══ Reset button ═══ */}
       <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '.5rem' }}>
         <button onClick={resetLayout} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '.75rem', color: 'var(--text-muted)' }}>
