@@ -1156,15 +1156,21 @@ export default function LoginPage() {
           display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '3rem', alignItems: 'center',
         }}>
           <div>
-            <h1 style={{
-              fontSize: 'clamp(2rem, 3.5vw, 3rem)', fontWeight: 800, lineHeight: 1.2,
-              color: S.dark, margin: '0 0 1.25rem', letterSpacing: '-0.02em',
-              height: 'clamp(7rem, 10vw, 9rem)', overflow: 'hidden',
-            }}>
-              <span style={{ display: 'block' }}>La plateforme IA</span>
-              <span style={{ display: 'block', height: '3.6rem', overflow: 'hidden' }}>qui active vos données :</span>
-              <span style={{ display: 'block', height: '2rem', overflow: 'hidden', color: '#1D9BF0' }}><RotatingText /></span>
-            </h1>
+            <div style={{ marginBottom: '1.25rem' }}>
+              <h1 style={{
+                fontSize: 'clamp(2rem, 3.5vw, 3rem)', fontWeight: 800, lineHeight: 1.2,
+                color: S.dark, margin: 0, letterSpacing: '-0.02em',
+              }}>
+                La plateforme IA<br />
+                qui active vos données :
+              </h1>
+              <div style={{
+                fontSize: 'clamp(1.8rem, 3vw, 2.6rem)', fontWeight: 800, lineHeight: 1.3,
+                color: '#1D9BF0', height: 'clamp(2.4rem, 4vw, 3.4rem)', overflow: 'hidden',
+              }}>
+                <RotatingText />
+              </div>
+            </div>
 
             <p style={{
               fontSize: '1.1rem', color: S.gray, lineHeight: 1.65, margin: '0 0 2rem', maxWidth: 520,
