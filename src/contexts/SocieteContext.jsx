@@ -58,6 +58,8 @@ export function SocieteProvider({ children }) {
     <SocieteContext.Provider value={{
       societes,
       selectedSociete,
+      societe: selectedSociete,
+      societeId: selectedSociete?.id || null,
       setSelectedSociete: handleSelectSociete,
       loadingSocietes}}>
       {children}
