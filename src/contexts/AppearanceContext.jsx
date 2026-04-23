@@ -90,7 +90,13 @@ function setupDarkModeObserver(isDark) {
     }
   }
 
+  // Skip si on est sur /backoffice (force en light via BackofficeLayout)
+  function isBackofficeRoute() {
+    return /\/backoffice(\/|$)/.test(window.location.pathname)
+  }
+
   function fixAll() {
+    if (isBackofficeRoute()) return
     document.querySelectorAll('.app-content *').forEach(fixElement)
   }
 
