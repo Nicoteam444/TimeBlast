@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, lazy, Suspense } from 'react'
+import { useState, useEffect, useMemo, lazy, Suspense, Component } from 'react'
 import { useAuth } from '../../contexts/AuthContext'
 import { supabase, defaultUrl, defaultKey, switchSupabaseClient, getCurrentSupabaseUrl } from '../../lib/supabase'
 import { createClient } from '@supabase/supabase-js'
@@ -1004,8 +1004,30 @@ const TABS = [
   { id: 'deploy', label: 'Infrastructure', icon: '🏗' },
 ]
 
+// ── Error Boundary pour capturer les crashs React ──
+class BOErrorBoundary extends Component {
+  constructor(props) { super(props); this.state = { error: null } }
+  static getDerivedStateFromError(error) { return { error } }
+  componentDidCatch(error, info) { console.error('[Backoffice crash]', error, info) }
+  render() {
+    if (this.state.error) {
+      return (
+        <div style={{ padding: '2rem', fontFamily: 'ui-monospace, monospace', background: '#fff', color: '#1e293b', minHeight: '100vh' }}>
+          <h1 style={{ color: '#dc2626' }}>Backoffice crash</h1>
+          <p><strong>Message :</strong> {this.state.error?.message}</p>
+          <pre style={{ background: '#f1f5f9', padding: '1rem', borderRadius: 8, overflow: 'auto', fontSize: 11 }}>
+            {this.state.error?.stack}
+          </pre>
+          <button onClick={() => this.setState({ error: null })} style={{ padding: '.5rem 1rem', background: '#2563eb', color: '#fff', border: 'none', borderRadius: 6, cursor: 'pointer' }}>Réessayer</button>
+        </div>
+      )
+    }
+    return this.props.children
+  }
+}
+
 // ── Page principale ──
-export default function BackofficePage() {
+function BackofficePageInner() {
   const [tab, setTab] = useState('envs')
 
   useEffect(() => { document.title = 'Admin TimeBlast' }, [])
@@ -1067,6 +1089,11 @@ export default function BackofficePage() {
       {tab === 'deploy' && <DeployTab />}
     </div>
   )
+}
+
+// Default export wrappant l'inner dans l'ErrorBoundary
+export default function BackofficePage() {
+  return <BOErrorBoundary><BackofficePageInner /></BOErrorBoundary>
 }
 
 // ── Modal generique pour afficher/gerer un message recu ──
