@@ -229,7 +229,7 @@ function IntegrationsTab() {
 
   async function fetchIntegrations() {
     setLoading(true)
-    const { data } = await supabase.from('integrations').select('*').eq('id', 'hubspot').maybeSingle()
+    const { data } = await supabase.from('integrations').select('*').eq('provider', 'hubspot').maybeSingle()
     setHubspot(data)
     setLoading(false)
   }
@@ -260,7 +260,9 @@ function IntegrationsTab() {
             <p>Synchronisation des clients (companies) et transactions (deals)</p>
           </div>
           <div className="integration-status">
-            <span className="status-badge" style={{ color: '#16a34a', background: '#f0fdf4' }}>Connecté</span>
+            {hubspot?.status === 'connected'
+              ? <span className="status-badge" style={{ color: '#16a34a', background: '#f0fdf4' }}>Connecté</span>
+              : <span className="status-badge" style={{ color: '#64748b', background: '#f1f5f9' }}>Non connecté</span>}
           </div>
         </div>
         <div className="integration-meta">
@@ -280,8 +282,8 @@ function IntegrationsTab() {
           <div className="sync-result">✅ {result.synced} {result.type === 'companies' ? 'client(s)' : 'transaction(s)'} synchronisé(s)</div>
         )}
         <div className="integration-actions">
-          <button className="btn-primary" onClick={() => handleSync('sync_companies')} disabled={!!syncing}>↓ Synchroniser les clients</button>
-          <button className="btn-secondary" onClick={() => handleSync('sync_deals')} disabled={!!syncing}>↓ Synchroniser les transactions</button>
+          <button className="btn-primary" onClick={() => handleSync('sync_companies')} disabled={!!syncing || hubspot?.status !== 'connected'}>↓ Synchroniser les clients</button>
+          <button className="btn-secondary" onClick={() => handleSync('sync_deals')} disabled={!!syncing || hubspot?.status !== 'connected'}>↓ Synchroniser les transactions</button>
         </div>
       </div>
 
@@ -340,9 +342,21 @@ const MARKETPLACE_CATS = ['Tous', 'Comptabilité', 'Paiement', 'Communication', 
 function MarketplaceBlock() {
   const [search, setSearch] = useState('')
   const [cat, setCat] = useState('Tous')
-  const [installed, setInstalled] = useState(new Set(['hubspot']))
+  const [installed, setInstalled] = useState(new Set())
   const [showConfig, setShowConfig] = useState(null)
   const [apiKey, setApiKey] = useState('')
+
+  // Charger les integrations reellement connectees depuis la DB (scopees par env via le Proxy)
+  useEffect(() => {
+    let cancelled = false
+    ;(async () => {
+      const { data } = await supabase.from('integrations').select('provider, status')
+      if (cancelled) return
+      const connected = new Set((data || []).filter(r => r.status === 'connected').map(r => r.provider))
+      setInstalled(connected)
+    })()
+    return () => { cancelled = true }
+  }, [])
 
   const filtered = MARKETPLACE_APPS.filter(app => {
     if (cat !== 'Tous' && app.cat !== cat) return false
@@ -355,15 +369,22 @@ function MarketplaceBlock() {
     setApiKey('')
   }
 
-  function handleConnect() {
-    if (showConfig) {
-      setInstalled(prev => new Set([...prev, showConfig]))
-      setShowConfig(null)
-      setApiKey('')
-    }
+  async function handleConnect() {
+    if (!showConfig) return
+    await supabase.from('integrations').upsert(
+      { provider: showConfig, status: 'connected', config: apiKey ? { api_key: apiKey } : {}, updated_at: new Date().toISOString() },
+      { onConflict: 'provider,environment_id' }
+    ).catch(() => {})
+    setInstalled(prev => new Set([...prev, showConfig]))
+    setShowConfig(null)
+    setApiKey('')
   }
 
-  function handleDisconnect(appId) {
+  async function handleDisconnect(appId) {
+    await supabase.from('integrations').upsert(
+      { provider: appId, status: 'disconnected', updated_at: new Date().toISOString() },
+      { onConflict: 'provider,environment_id' }
+    ).catch(() => {})
     setInstalled(prev => { const n = new Set(prev); n.delete(appId); return n })
   }
 
