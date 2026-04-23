@@ -9,3 +9,8 @@ body {
 #root {
   min-height: 100vh;
 }
+
+/* Keyframes globales — evite les <style> dupliques dans les composants
+   qui causaient 'removeChild not a child' en React 19 */
+@keyframes spin { to { transform: rotate(360deg) } }
+@keyframes tbSpin { to { transform: rotate(360deg) } }

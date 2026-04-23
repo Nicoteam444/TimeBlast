@@ -784,7 +784,7 @@ export default function SaisiePage() {
               width: 36, height: 36, border: '4px solid #e2e8f0', borderTopColor: '#2B4C7E',
               borderRadius: '50%', animation: 'spin 0.8s linear infinite'
             }} />
-            <style>{`@keyframes spin { to { transform: rotate(360deg) } }`}</style>
+            
           </div>
         )}
 
