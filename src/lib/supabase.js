@@ -86,17 +86,11 @@ function wrapQueryBuilder(qb, tableName) {
   return qb
 }
 
-// Proxy minimal : on ne wrap que .from(). Tous les autres accès
-// (auth, functions, rpc, storage, channels...) passent direct a _client
-// pour preserver le comportement natif Supabase.
+// Proxy minimal : expose les proprietes de _client directement.
+// Le scoping par env_id est desactive temporairement (il sera re-introduit
+// au niveau des queries individuelles pour eviter des issues React).
 export const supabase = new Proxy({}, {
   get(_, prop) {
-    if (prop === 'from') {
-      return (tableName) => {
-        const qb = _client.from(tableName)
-        return wrapQueryBuilder(qb, tableName)
-      }
-    }
     return _client[prop]
   },
 })
