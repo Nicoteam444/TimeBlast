@@ -40,70 +40,11 @@ function load(userId) {
   } catch { return DEFAULTS }
 }
 
-// Force dark backgrounds on elements with white inline styles
-let darkModeObserver = null
-function setupDarkModeObserver(isDark) {
-  if (darkModeObserver) { darkModeObserver.disconnect(); darkModeObserver = null }
-  if (!isDark) return
-
-  const WHITE_BG = new Set(['rgb(255, 255, 255)', 'rgb(248, 250, 252)', 'rgb(241, 245, 249)', 'rgb(226, 232, 240)', 'rgb(249, 250, 251)'])
-  const LIGHT_BG = new Set(['rgb(248, 250, 252)', 'rgb(241, 245, 249)', 'rgb(249, 250, 251)', 'rgba(0, 0, 0, 0)'])
-  const DARK_TEXT = new Set(['rgb(13, 27, 36)', 'rgb(26, 35, 50)', 'rgb(30, 41, 59)', 'rgb(51, 65, 85)', 'rgb(71, 85, 105)', 'rgb(55, 65, 81)'])
-
-  function fixElement(el) {
-    if (!el || !el.style) return
-    const cs = getComputedStyle(el)
-    const bg = cs.backgroundColor
-
-    // Fix white/light backgrounds → dark
-    if (WHITE_BG.has(bg)) {
-      el.style.setProperty('background-color', '#111111', 'important')
-      el.style.setProperty('border-color', '#1e1e1e', 'important')
-    }
-
-    // Fix dark text on dark background → light
-    if (DARK_TEXT.has(cs.color) && !el.closest('[style*="gradient"]')) {
-      el.style.setProperty('color', '#e2e8f0', 'important')
-    }
-
-    // Fix buttons specifically
-    if (el.tagName === 'BUTTON') {
-      // Buttons with transparent/white/light bg → give them dark bg + visible text
-      if (bg === 'rgba(0, 0, 0, 0)' || WHITE_BG.has(bg) || LIGHT_BG.has(bg)) {
-        const bc = cs.borderColor
-        if (bc && bc !== 'rgb(30, 30, 30)') {
-          el.style.setProperty('background-color', '#0f1a2e', 'important')
-          el.style.setProperty('border-color', '#1e3a5f', 'important')
-          el.style.setProperty('color', '#93c5fd', 'important')
-        }
-      }
-      if (DARK_TEXT.has(cs.color)) {
-        el.style.setProperty('color', '#e2e8f0', 'important')
-      }
-    }
-
-    // Fix gradient banners (dashboard welcome, etc.) — light gradients → dark
-    const bgImage = cs.backgroundImage
-    if (bgImage && bgImage.includes('linear-gradient') && (bgImage.includes('86, 180, 232') || bgImage.includes('45, 139, 201') || bgImage.includes('56b4e8') || bgImage.includes('2d8bc9'))) {
-      el.style.setProperty('background', 'linear-gradient(135deg, #0a0a0a 0%, #111827 60%, #1e293b 100%)', 'important')
-      el.style.setProperty('border', '1px solid #1e1e1e', 'important')
-    }
-  }
-
-  // Skip si on est sur /backoffice (force en light via BackofficeLayout)
-  function isBackofficeRoute() {
-    return /\/backoffice(\/|$)/.test(window.location.pathname)
-  }
-
-  function fixAll() {
-    if (isBackofficeRoute()) return
-    document.querySelectorAll('.app-content *').forEach(fixElement)
-  }
-
-  // Fix on initial load and after DOM mutations
-  requestAnimationFrame(fixAll)
-  darkModeObserver = new MutationObserver(() => requestAnimationFrame(fixAll))
-  darkModeObserver.observe(document.body, { childList: true, subtree: true, attributes: true, attributeFilter: ['style', 'class'] })
+// Dark mode : gere uniquement via CSS [data-theme="dark"] dans App.css.
+// On ne manipule plus le DOM via JS (MutationObserver + style.setProperty)
+// pour eviter les crashes React 'removeChild: not a child of this node'.
+function setupDarkModeObserver(_isDark) {
+  // No-op : on s'appuie sur les regles CSS statiques dans App.css
 }
 
 function isBackofficePath() {
@@ -193,21 +134,13 @@ export function AppearanceProvider({ children }) {
     try { localStorage.setItem(getStorageKey(userId), JSON.stringify(settings)) } catch {}
   }, [settings, userId])
 
-  // Re-apply on navigation (SPA route change) — pour que /backoffice force light
-  // et que le retour a l'app restaure le dark eventuel
+  // Re-apply on popstate uniquement (pas d'interception pushState/replaceState
+  // qui cause des crashs React removeChild). Pour la detection de route,
+  // BackofficeLayout appelle applyToDOM via useForceLightTheme.
   useEffect(() => {
     function reapply() { applyToDOM(settings) }
     window.addEventListener('popstate', reapply)
-    // Intercept pushState/replaceState pour detecter les navigations react-router
-    const origPush = window.history.pushState
-    const origReplace = window.history.replaceState
-    window.history.pushState = function (...args) { origPush.apply(this, args); reapply() }
-    window.history.replaceState = function (...args) { origReplace.apply(this, args); reapply() }
-    return () => {
-      window.removeEventListener('popstate', reapply)
-      window.history.pushState = origPush
-      window.history.replaceState = origReplace
-    }
+    return () => window.removeEventListener('popstate', reapply)
   }, [settings])
 
   function update(patch) { setSettings(s => ({ ...s, ...patch })) }
