@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom'
 import useEnvNavigate from '../../hooks/useEnvNavigate'
 import { supabase } from '../../lib/supabase'
 import { useBreadcrumb } from '../../contexts/BreadcrumbContext'
+import { useEnv } from '../../contexts/EnvContext'
 import Spinner from '../../components/Spinner'
 
 /* ── helpers ── */
@@ -81,6 +82,7 @@ export default function CollaborateurPage() {
   const { id } = useParams()
   const navigate = useEnvNavigate()
   const { setSegments, clearSegments } = useBreadcrumb()
+  const { currentEnv } = useEnv() || {}
 
   const [collab, setCollab]     = useState(null)
   const [societe, setSociete]   = useState(null)
@@ -116,6 +118,10 @@ export default function CollaborateurPage() {
     setLoading(true)
     const { data, error } = await supabase.from('equipe').select('*').eq('id', id).single()
     if (error || !data) { setNotFound(true); setLoading(false); return }
+    // Isolation env : si le collaborateur n'appartient pas a l'env courant, 404
+    if (currentEnv?.id && data.environment_id && data.environment_id !== currentEnv.id) {
+      setNotFound(true); setLoading(false); return
+    }
     setCollab(data)
     setNotesValue(data.notes || '')
     // Set breadcrumb with collaborator name

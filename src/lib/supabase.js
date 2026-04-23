@@ -86,11 +86,17 @@ function wrapQueryBuilder(qb, tableName) {
   return qb
 }
 
-// Proxy minimal : expose les proprietes de _client directement.
-// Le scoping par env_id est desactive temporairement (il sera re-introduit
-// au niveau des queries individuelles pour eviter des issues React).
+// Proxy minimal avec scoping par env_id sur les tables metier.
+// Les pages critiques (CollaborateurPage, etc.) font AUSSI un check
+// cote client en complement pour une isolation defense in depth.
 export const supabase = new Proxy({}, {
   get(_, prop) {
+    if (prop === 'from') {
+      return (tableName) => {
+        const qb = _client.from(tableName)
+        return wrapQueryBuilder(qb, tableName)
+      }
+    }
     return _client[prop]
   },
 })
