@@ -3,17 +3,22 @@ import { createClient } from '@supabase/supabase-js'
 export const defaultUrl = import.meta.env.VITE_SUPABASE_URL
 export const defaultKey = import.meta.env.VITE_SUPABASE_ANON_KEY
 
-// Client Supabase mutable — peut être reconfiguré pour pointer vers un autre env
-// flowType: 'pkce' requis pour Azure AD (pas d'implicit grant)
 let _client = createClient(defaultUrl, defaultKey, { auth: { flowType: 'pkce' } })
 let _currentUrl = defaultUrl
-let _currentEnvId = null
 
 // ============================================================
-// ISOLATION PAR ENVIRONMENT : toute query sur ces tables est
-// automatiquement filtree par environment_id = currentEnvId
-// (SELECT, UPDATE, DELETE) et injectee a la creation (INSERT).
+// ISOLATION STRICTE PAR ENV — basee sur l'env_code dans l'URL
 // ============================================================
+// Mapping statique env_code (URL) -> environment_id (UUID en DB).
+// Lu depuis window.location.pathname a chaque query, synchrone,
+// independant du state React. GARANTIT le cloisonnement meme si
+// une page render avant que l'EnvContext ait fini son load async.
+const ENV_CODE_TO_ID = {
+  '1924635': '4657c018-d993-4876-8a10-df9da89d5612', // SRA
+  '2026001': '4a70b987-9541-4db9-8f1b-144a74682c30', // Webmedia
+}
+
+// Tables metier qui DOIVENT etre filtrees par environment_id
 const SCOPED_TABLES = new Set([
   'abonnements','absences','achats','assignations','automation_workflows',
   'calendar_events','campagnes','client_projects','clients',
@@ -29,19 +34,25 @@ const SCOPED_TABLES = new Set([
   'transactions','validation_semaines','wiki_articles',
 ])
 
-export function setCurrentEnvId(envId) {
-  _currentEnvId = envId || null
-  console.log('[Supabase] Env scope =', _currentEnvId)
+// Lecture SYNCHRONE de l'env_id depuis l'URL — c'est la source de verite
+function getEnvIdFromUrl() {
+  if (typeof window === 'undefined') return null
+  const pathSegments = window.location.pathname.split('/').filter(Boolean)
+  const urlEnvCode = pathSegments.length > 0 && /^\d{7}$/.test(pathSegments[0]) ? pathSegments[0] : null
+  return urlEnvCode ? (ENV_CODE_TO_ID[urlEnvCode] || null) : null
 }
-export function getCurrentEnvId() { return _currentEnvId }
 
-// Wrapper le query builder pour ajouter env_id automatiquement
+// Expose pour compatibilite (plus utilise en interne)
+export function setCurrentEnvId(_envId) { /* no-op : on lit toujours l'URL */ }
+export function getCurrentEnvId() { return getEnvIdFromUrl() }
+
+// Wrapper du query builder qui injecte automatiquement environment_id
 function wrapQueryBuilder(qb, tableName) {
-  if (!SCOPED_TABLES.has(tableName) || !_currentEnvId) return qb
+  if (!SCOPED_TABLES.has(tableName)) return qb
+  const envId = getEnvIdFromUrl()
+  if (!envId) return qb // Sur /backoffice, /login, etc. : pas de filtrage
 
-  const envId = _currentEnvId
-
-  // SELECT : ajouter .eq('environment_id', envId) apres
+  // SELECT : AND environment_id = envId
   const origSelect = qb.select.bind(qb)
   qb.select = function (...args) {
     const next = origSelect(...args)
@@ -49,7 +60,7 @@ function wrapQueryBuilder(qb, tableName) {
     return next
   }
 
-  // INSERT : injecter environment_id dans les rows
+  // INSERT : injecter environment_id
   const origInsert = qb.insert.bind(qb)
   qb.insert = function (rows, opts) {
     const withEnv = Array.isArray(rows)
@@ -58,7 +69,7 @@ function wrapQueryBuilder(qb, tableName) {
     return origInsert(withEnv, opts)
   }
 
-  // UPSERT : injecter environment_id dans les rows
+  // UPSERT : injecter environment_id
   const origUpsert = qb.upsert.bind(qb)
   qb.upsert = function (rows, opts) {
     const withEnv = Array.isArray(rows)
@@ -67,7 +78,7 @@ function wrapQueryBuilder(qb, tableName) {
     return origUpsert(withEnv, opts)
   }
 
-  // UPDATE : ajouter .eq('environment_id', envId)
+  // UPDATE : AND environment_id = envId
   const origUpdate = qb.update.bind(qb)
   qb.update = function (values, opts) {
     const next = origUpdate(values, opts)
@@ -75,7 +86,7 @@ function wrapQueryBuilder(qb, tableName) {
     return next
   }
 
-  // DELETE : ajouter .eq('environment_id', envId)
+  // DELETE : AND environment_id = envId
   const origDelete = qb.delete.bind(qb)
   qb.delete = function (opts) {
     const next = origDelete(opts)
@@ -86,9 +97,6 @@ function wrapQueryBuilder(qb, tableName) {
   return qb
 }
 
-// Proxy minimal avec scoping par env_id sur les tables metier.
-// Les pages critiques (CollaborateurPage, etc.) font AUSSI un check
-// cote client en complement pour une isolation defense in depth.
 export const supabase = new Proxy({}, {
   get(_, prop) {
     if (prop === 'from') {
@@ -101,23 +109,18 @@ export const supabase = new Proxy({}, {
   },
 })
 
-// Reconfigurer le client pour un autre environnement
 export function switchSupabaseClient(url, anonKey) {
-  if (url === _currentUrl) return // Déjà sur ce client
+  if (url === _currentUrl) return
   _client = createClient(url, anonKey)
   _currentUrl = url
-  console.log(`[Supabase] Client switché vers ${url}`)
+  console.log(`[Supabase] Client switche vers ${url}`)
 }
 
-// Remettre le client sur la base master (appelé au sign-out et avant sign-in)
 export function resetToMasterClient() {
   if (_currentUrl === defaultUrl) return
   _client = createClient(defaultUrl, defaultKey, { auth: { flowType: 'pkce' } })
   _currentUrl = defaultUrl
-  console.log('[Supabase] Client resetté sur master')
+  console.log('[Supabase] Client resette sur master')
 }
 
-// Obtenir l'URL courante
-export function getCurrentSupabaseUrl() {
-  return _currentUrl
-}
+export function getCurrentSupabaseUrl() { return _currentUrl }
