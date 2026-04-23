@@ -19,6 +19,10 @@ const INTEGRATIONS = [
   { id: 'claude',     name: 'Claude AI',        icon: '🧠', desc: 'Assistant intelligent, analyse de données, suggestions.', category: 'IA' },
   { id: 'gsheets',    name: 'Google Sheets',    icon: '📊', desc: 'Import/export, synchronisation tableaux.', category: 'Data' },
   { id: 'api_rest',   name: 'API REST custom',  icon: '🔗', desc: 'Connecteur générique pour vos APIs internes.', category: 'Data' },
+  { id: 'leadbyte',   name: 'LeadByte',         icon: '🎯', desc: 'Plateforme de distribution de leads : campagnes, leads, acheteurs, ventes.', category: 'Lead Gen' },
+  { id: 'dolibarr',   name: 'Dolibarr',         icon: '📘', desc: 'ERP/CRM : tiers, devis, factures, paiements.', category: 'ERP' },
+  { id: 'google_ads', name: 'Google Ads',       icon: '🔴', desc: 'Campagnes publicitaires, dépenses, conversions.', category: 'Publicité' },
+  { id: 'meta_ads',   name: 'Meta Ads',         icon: '🔵', desc: 'Facebook/Instagram Ads + Lead Ads forms.', category: 'Publicité' },
 ]
 
 const STATUS_MAP = {
@@ -39,7 +43,28 @@ const CONFIG_FIELDS = {
   qonto:   [{ key: 'api_key', label: 'Clé API Qonto', placeholder: '', type: 'password' }, { key: 'slug', label: 'Slug organisation', placeholder: 'mon-entreprise', type: 'text' }],
   slack:   [{ key: 'webhook_url', label: 'Webhook URL', placeholder: 'https://hooks.slack.com/...', type: 'text' }],
   gmail:   [{ key: 'smtp_user', label: 'Email SMTP', placeholder: 'noreply@groupe-sra.fr', type: 'text' }, { key: 'smtp_pass', label: 'Mot de passe app', placeholder: '', type: 'password' }],
+  leadbyte: [
+    { key: 'subdomain', label: 'Sous-domaine LeadByte', placeholder: 'webmediarm', type: 'text' },
+    { key: 'api_key',   label: 'Clé API REST',          placeholder: '16283b8fefd8c37a4d3cb17e04584bb6', type: 'password' },
+    { key: 'tld',       label: 'TLD (.com ou .co.uk)',  placeholder: '.com', type: 'text' },
+  ],
+  dolibarr: [
+    { key: 'base_url', label: 'URL de base', placeholder: 'https://erp.example.com', type: 'text' },
+    { key: 'api_key',  label: 'DOLAPIKEY',   placeholder: '', type: 'password' },
+  ],
+  google_ads: [
+    { key: 'developer_token', label: 'Developer Token', placeholder: '', type: 'password' },
+    { key: 'customer_id',     label: 'Customer ID MCC', placeholder: '123-456-7890', type: 'text' },
+    { key: 'refresh_token',   label: 'Refresh Token OAuth', placeholder: '', type: 'password' },
+  ],
+  meta_ads: [
+    { key: 'access_token',  label: 'Access Token (long-lived)', placeholder: '', type: 'password' },
+    { key: 'ad_account_id', label: 'Ad Account ID', placeholder: 'act_1234567890', type: 'text' },
+  ],
 }
+
+// Intégrations qui exposent un sync à la demande (Edge Function <provider>-sync)
+const SYNC_PROVIDERS = ['leadbyte']
 
 export default function IntegrationsAdminPage() {
   const [statuses, setStatuses] = useState({})
@@ -49,8 +74,33 @@ export default function IntegrationsAdminPage() {
   const [configModal, setConfigModal] = useState(null)
   const [configForm, setConfigForm] = useState({})
   const [saving, setSaving] = useState(false)
+  const [syncing, setSyncing] = useState(null)
+  const [syncResult, setSyncResult] = useState({})
 
   useEffect(() => { loadStatuses() }, [])
+
+  async function runSync(providerId) {
+    const cfg = configs[providerId]
+    if (!cfg || !cfg.api_key || !cfg.subdomain) {
+      setSyncResult(prev => ({ ...prev, [providerId]: { ok: false, error: 'Configuration manquante : subdomain + api_key requis.' } }))
+      return
+    }
+    setSyncing(providerId)
+    setSyncResult(prev => ({ ...prev, [providerId]: null }))
+    try {
+      const { data, error } = await supabase.functions.invoke(`${providerId}-sync`, {
+        body: { action: 'sync', subdomain: cfg.subdomain, api_key: cfg.api_key, tld: cfg.tld || '.com' },
+      })
+      if (error) throw error
+      setSyncResult(prev => ({ ...prev, [providerId]: data?.ok ? data : { ok: false, error: data?.error || 'Erreur inconnue' } }))
+      // Reload configs to get updated last_sync
+      loadStatuses()
+    } catch (e) {
+      setSyncResult(prev => ({ ...prev, [providerId]: { ok: false, error: e.message } }))
+    } finally {
+      setSyncing(null)
+    }
+  }
 
   async function loadStatuses() {
     const { data } = await supabase.from('integrations').select('*')
@@ -160,10 +210,28 @@ export default function IntegrationsAdminPage() {
                     ⚙️ Configurer
                   </button>
                 )}
+                {SYNC_PROVIDERS.includes(integ.id) && isConnected && (
+                  <button className="btn-primary" style={{ fontSize: '.82rem', padding: '.4rem .75rem' }}
+                    onClick={() => runSync(integ.id)} disabled={syncing === integ.id}>
+                    {syncing === integ.id ? '⏳ Sync…' : '🔄 Sync now'}
+                  </button>
+                )}
               </div>
               {/* Indicateur config */}
               {configs[integ.id] && Object.keys(configs[integ.id]).length > 0 && (
                 <div style={{ fontSize: 11, color: '#16a34a', marginTop: 4 }}>✓ Configuré</div>
+              )}
+              {configs[integ.id]?.last_sync && (
+                <div style={{ fontSize: 11, color: '#64748b', marginTop: 2 }}>
+                  Dernier sync : {new Date(configs[integ.id].last_sync).toLocaleString('fr-FR')}
+                </div>
+              )}
+              {syncResult[integ.id] && (
+                <div style={{ fontSize: 11, color: syncResult[integ.id].ok ? '#16a34a' : '#dc2626', marginTop: 2 }}>
+                  {syncResult[integ.id].ok
+                    ? `✓ ${syncResult[integ.id].summary?.campaigns?.upserted || 0} campagnes, ${syncResult[integ.id].summary?.buyers?.upserted || 0} acheteurs, ${syncResult[integ.id].summary?.leads?.upserted || 0} leads`
+                    : `✗ ${syncResult[integ.id].error}`}
+                </div>
               )}
             </div>
           )
