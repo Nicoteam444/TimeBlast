@@ -184,6 +184,16 @@ function EnvHomeRouter() {
   return <Layout><DashboardPage /></Layout>
 }
 
+// Bloque une route dans l'env Webmedia et redirige vers la home de l'env
+function BlockInWebmedia({ children }) {
+  const { envId } = useParams()
+  const { currentEnv } = useEnv() || {}
+  if (currentEnv?.name === 'Webmedia' || envId === '2026001') {
+    return <Navigate to={`/${envId}/gestion/tableau-de-bord`} replace />
+  }
+  return children
+}
+
 function AppRoutes() {
   return (
     <Suspense fallback={<LazySpinner />}>
@@ -479,7 +489,7 @@ function AppRoutes() {
         <ProtectedRoute roles={['admin']} superAdminOnly><Layout><AnalyticsPage /></Layout></ProtectedRoute>
       } />
       <Route path="wiki" element={
-        <ProtectedRoute roles={['admin','manager','collaborateur']}><Layout><WikiPage /></Layout></ProtectedRoute>
+        <ProtectedRoute roles={['admin','manager','collaborateur']}><BlockInWebmedia><Layout><WikiPage /></Layout></BlockInWebmedia></ProtectedRoute>
       } />
       {/* Backoffice déplacé hors /:envId — voir route /backoffice */}
       <Route path="parametres" element={
