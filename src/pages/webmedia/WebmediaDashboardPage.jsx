@@ -1,6 +1,7 @@
-import { useMemo } from 'react'
+import { useMemo, useState, useEffect } from 'react'
 import useEnvNavigate from '../../hooks/useEnvNavigate'
 import { useAnalytics } from '../../hooks/useWebmediaData'
+import { supabase } from '../../lib/supabase'
 import { BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line } from 'recharts'
 
 // ── Helpers ──
@@ -34,9 +35,42 @@ function DonutChart({ size = 64, stroke = 6, pct = 0, color = '#16a34a', label }
   )
 }
 
+// Live clock updating every second
+function useNow() {
+  const [now, setNow] = useState(new Date())
+  useEffect(() => {
+    const id = setInterval(() => setNow(new Date()), 1000)
+    return () => clearInterval(id)
+  }, [])
+  return now
+}
+
+// Last LeadByte sync timestamp from integrations table
+function useLastSync(provider = 'leadbyte') {
+  const [lastSync, setLastSync] = useState(null)
+  useEffect(() => {
+    let active = true
+    ;(async () => {
+      // 1. Try the dedicated integrations row
+      const { data } = await supabase.from('integrations').select('config').eq('provider', provider).maybeSingle()
+      if (data?.config?.last_sync && active) {
+        setLastSync(data.config.last_sync)
+        return
+      }
+      // 2. Fallback: most recent wm_campaigns updated_at (since we persist data here)
+      const { data: c } = await supabase.from('wm_campaigns').select('updated_at').eq('metadata->>source', 'leadbyte').order('updated_at', { ascending: false }).limit(1)
+      if (c?.[0]?.updated_at && active) setLastSync(c[0].updated_at)
+    })()
+    return () => { active = false }
+  }, [provider])
+  return lastSync
+}
+
 export default function WebmediaDashboardPage() {
   const envNavigate = useEnvNavigate()
   const { analytics, loading } = useAnalytics()
+  const now = useNow()
+  const lastSync = useLastSync('leadbyte')
 
   const objectiveProgress = useMemo(() => {
     if (!analytics) return 0
@@ -56,14 +90,30 @@ export default function WebmediaDashboardPage() {
 
   return (
     <div style={{ padding: '1.5rem', maxWidth: 1500, margin: '0 auto' }}>
-      {/* Header */}
-      <div style={{ marginBottom: '1.5rem' }}>
-        <h1 style={{ fontSize: '1.6rem', fontWeight: 700, margin: 0, display: 'flex', alignItems: 'center', gap: '.5rem' }}>
-          <span style={{ fontSize: '1.4rem' }}>🎯</span> Webmedia — Tableau de bord
-        </h1>
-        <p style={{ color: 'var(--text-muted, #64748b)', fontSize: '.85rem', marginTop: '.25rem' }}>
-          Vue d'ensemble de l'activite lead generation
-        </p>
+      {/* Header with live clock + last sync (top right) */}
+      <div style={{ marginBottom: '1.5rem', display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '1rem', flexWrap: 'wrap' }}>
+        <div>
+          <h1 style={{ fontSize: '1.6rem', fontWeight: 700, margin: 0, display: 'flex', alignItems: 'center', gap: '.5rem' }}>
+            <span style={{ fontSize: '1.4rem' }}>🎯</span> Webmedia — Tableau de bord
+          </h1>
+          <p style={{ color: 'var(--text-muted, #64748b)', fontSize: '.85rem', marginTop: '.25rem', margin: '.25rem 0 0' }}>
+            Vue d'ensemble de l'activité lead generation
+          </p>
+        </div>
+        <div style={{ textAlign: 'right', fontFamily: 'ui-monospace, "SF Mono", Menlo, monospace', lineHeight: 1.3 }}>
+          <div style={{ fontSize: '1.05rem', fontWeight: 700, color: '#0f172a' }}>
+            {now.toLocaleDateString('fr-FR', { weekday: 'long', day: '2-digit', month: 'long', year: 'numeric' })}
+          </div>
+          <div style={{ fontSize: '1.4rem', fontWeight: 700, color: '#195C82', letterSpacing: '.5px' }}>
+            {now.toLocaleTimeString('fr-FR')}
+          </div>
+          <div style={{ fontSize: '.75rem', color: 'var(--text-muted, #64748b)', marginTop: '.25rem' }}>
+            {lastSync
+              ? <>Dernière synchro LeadByte : <strong style={{ color: '#16a34a' }}>{new Date(lastSync).toLocaleString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' })}</strong></>
+              : <>Dernière synchro LeadByte : <span style={{ color: '#94a3b8' }}>jamais</span></>
+            }
+          </div>
+        </div>
       </div>
 
       {/* ── KPI Cards ── */}

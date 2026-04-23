@@ -178,13 +178,13 @@ function EnvDefaultRedirect() {
 }
 
 // Redirige vers la home par defaut selon l'env :
-// - Webmedia (2026001) -> /gestion/tableau-de-bord
+// - Webmedia (2026001) -> /webmedia (Tableau Performance avec donnees LeadByte)
 // - autres -> DashboardPage classique
 function EnvHomeRouter() {
   const { envId } = useParams()
   const { currentEnv } = useEnv() || {}
   if (currentEnv?.name === 'Webmedia' || envId === '2026001') {
-    return <Navigate to={`/${envId}/gestion/tableau-de-bord`} replace />
+    return <Navigate to={`/${envId}/webmedia`} replace />
   }
   return <Layout><DashboardPage /></Layout>
 }
@@ -194,7 +194,7 @@ function BlockInWebmedia({ children }) {
   const { envId } = useParams()
   const { currentEnv } = useEnv() || {}
   if (currentEnv?.name === 'Webmedia' || envId === '2026001') {
-    return <Navigate to={`/${envId}/gestion/tableau-de-bord`} replace />
+    return <Navigate to={`/${envId}/webmedia`} replace />
   }
   return children
 }

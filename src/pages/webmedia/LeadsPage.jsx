@@ -199,13 +199,48 @@ export default function LeadsPage() {
     </div>
   )
 
+  // Agregats LeadByte depuis wm_campaigns.metadata (API ne liste pas les leads individuels)
+  const lbAgg = useMemo(() => {
+    const total = campaigns.reduce((s, c) => s + (Number(c.metadata?.leads_total) || 0), 0)
+    const sold = campaigns.reduce((s, c) => s + (Number(c.metadata?.leads_sold) || 0), 0)
+    const revenue = campaigns.reduce((s, c) => s + (Number(c.metadata?.revenue) || 0), 0)
+    const activeCampaigns = campaigns.filter(c => Number(c.metadata?.leads_total) > 0).length
+    return { total, sold, revenue, activeCampaigns }
+  }, [campaigns])
+
   return (
     <div style={{ padding: '1.5rem', maxWidth: 1400, margin: '0 auto' }}>
+      {/* LeadByte aggregates — shown when local wm_leads is empty but synced campaigns exist */}
+      {leads.length === 0 && lbAgg.total > 0 && (
+        <div style={{ background: 'linear-gradient(135deg, #0f172a 0%, #195C82 100%)', color: '#fff', borderRadius: 12, padding: '1.25rem 1.5rem', marginBottom: '1.5rem', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: '1rem' }}>
+          <div>
+            <div style={{ fontSize: '.7rem', textTransform: 'uppercase', letterSpacing: '1px', opacity: 0.75 }}>Agrégat LeadByte</div>
+            <div style={{ fontSize: '1.6rem', fontWeight: 800, marginTop: '.25rem' }}>{fmtE(0).replace('0', '').trim() ? '' : ''}{new Intl.NumberFormat('fr-FR').format(lbAgg.total)} leads</div>
+            <div style={{ fontSize: '.72rem', opacity: 0.75, marginTop: '.15rem' }}>sur {lbAgg.activeCampaigns} campagnes actives (12 derniers mois)</div>
+          </div>
+          <div>
+            <div style={{ fontSize: '.7rem', textTransform: 'uppercase', letterSpacing: '1px', opacity: 0.75 }}>Leads vendus</div>
+            <div style={{ fontSize: '1.6rem', fontWeight: 800, color: '#34d399', marginTop: '.25rem' }}>{new Intl.NumberFormat('fr-FR').format(lbAgg.sold)}</div>
+            <div style={{ fontSize: '.72rem', opacity: 0.75, marginTop: '.15rem' }}>Taux de vente : {lbAgg.total > 0 ? ((lbAgg.sold / lbAgg.total) * 100).toFixed(1) : 0}%</div>
+          </div>
+          <div>
+            <div style={{ fontSize: '.7rem', textTransform: 'uppercase', letterSpacing: '1px', opacity: 0.75 }}>Revenu (12 mois)</div>
+            <div style={{ fontSize: '1.6rem', fontWeight: 800, color: '#fbbf24', marginTop: '.25rem' }}>{fmtE(lbAgg.revenue)}</div>
+            <div style={{ fontSize: '.72rem', opacity: 0.75, marginTop: '.15rem' }}>Rapports /reports/campaign</div>
+          </div>
+          <div style={{ fontSize: '.78rem', opacity: 0.9, lineHeight: 1.5, alignSelf: 'center' }}>
+            <strong>ℹ️ Note</strong> — L'API LeadByte REST ne permet pas de lister les leads individuels.<br/>
+            Les métriques ci-dessus sont récupérées via <code style={{ background: 'rgba(255,255,255,0.15)', padding: '1px 6px', borderRadius: 4 }}>/reports/campaign</code> et sont détaillées dans la page <strong>Campagnes</strong>.
+          </div>
+        </div>
+      )}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem', flexWrap: 'wrap', gap: '.75rem' }}>
         <div>
           <h1 style={{ fontSize: '1.4rem', fontWeight: 700, margin: 0 }}>💧 Leads Webmedia</h1>
           <p style={{ color: 'var(--text-muted)', fontSize: '.8rem', marginTop: '.25rem' }}>
-            {leads.length} leads — {counts.generated} generated, {counts.sold} sold, {counts.dead} dead
+            {leads.length > 0
+              ? `${leads.length} leads — ${counts.generated} generated, ${counts.sold} sold, ${counts.dead} dead`
+              : 'Saisie manuelle ou import CSV — l\'API LeadByte ne liste pas les leads individuels'}
           </p>
         </div>
         <div style={{ display: 'flex', gap: '.5rem', alignItems: 'center' }}>
