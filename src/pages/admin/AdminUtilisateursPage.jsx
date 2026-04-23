@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo, useCallback } from 'react'
 import { supabase } from '../../lib/supabase'
 import { useAuth } from '../../contexts/AuthContext'
+import { useEnv } from '../../contexts/EnvContext'
 import useSortableTable from '../../hooks/useSortableTable'
 import SortableHeader from '../../components/SortableHeader'
 import Spinner from '../../components/Spinner'
@@ -75,18 +76,28 @@ export default function AdminUtilisateursPage() {
   const [showMigration, setShowMigration] = useState(false)
   const [activeTab, setActiveTab] = useState('users')
   const { user: authUser } = useAuth()
+  const { currentEnv } = useEnv() || {}
   const isSuperAdmin = authUser?.email === SUPER_ADMIN_EMAIL
 
   useEffect(() => {
     fetchUsers()
     supabase.from('societes').select('id, name, groupe_id, groupes(id, name, color)').order('name').then(({ data }) => setSocietes(data || []))
     supabase.from('groupes').select('id, name, color').order('name').then(({ data }) => setGroupes(data || []))
-  }, [])
+  }, [currentEnv?.id])
 
   async function fetchUsers() {
     setLoading(true)
     const { data } = await supabase.rpc('get_users_with_auth')
-    setUsers(data || [])
+    const all = data || []
+    // Filtrer par environnement courant : uniquement les users lies a cet env
+    if (currentEnv?.id) {
+      const { data: links } = await supabase
+        .from('user_environments').select('user_id').eq('environment_id', currentEnv.id)
+      const allowedIds = new Set((links || []).map(l => l.user_id))
+      setUsers(all.filter(u => allowedIds.has(u.id)))
+    } else {
+      setUsers(all)
+    }
     setLoading(false)
   }
 
@@ -110,11 +121,12 @@ export default function AdminUtilisateursPage() {
       if (form.poste) profileUpdate.poste = form.poste
       if (form.date_embauche) profileUpdate.date_embauche = form.date_embauche
       await supabase.from('profiles').update(profileUpdate).eq('id', data.user.id)
-      // Ajouter l'utilisateur à tous les environnements actifs
-      const { data: envs } = await supabase.from('environments').select('id').eq('is_active', true)
-      if (envs?.length) {
-        const inserts = envs.map(env => ({ user_id: data.user.id, environment_id: env.id }))
-        await supabase.from('user_environments').upsert(inserts, { onConflict: 'user_id,environment_id' })
+      // Ajouter l'utilisateur UNIQUEMENT a l'env courant (pas a tous les envs)
+      if (currentEnv?.id) {
+        await supabase.from('user_environments').upsert(
+          [{ user_id: data.user.id, environment_id: currentEnv.id, role: form.role }],
+          { onConflict: 'user_id,environment_id' }
+        )
       }
     }
     setShowForm(false)
