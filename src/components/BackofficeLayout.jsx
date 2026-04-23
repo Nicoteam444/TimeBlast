@@ -1,29 +1,12 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
 import Spinner from './Spinner'
 
 const SUPER_ADMIN_EMAIL = 'nicolas.nabhan@groupe-sra.fr'
 
-// Force le theme light pendant que le backoffice est monte — le style doit
-// rester independant du dark mode de la plateforme
-function useForceLightTheme() {
-  useEffect(() => {
-    const root = document.documentElement
-    const prevTheme = root.getAttribute('data-theme')
-    root.setAttribute('data-theme', 'light')
-    // Restore toutes les CSS vars light (au cas ou l'AppearanceContext a set du dark)
-    root.style.setProperty('--bg', '#F0F0F0')
-    root.style.setProperty('--surface', '#FFFFFF')
-    root.style.setProperty('--card-bg', '#FFFFFF')
-    root.style.setProperty('--border', '#e2e8f0')
-    root.style.setProperty('--text', '#0D1B24')
-    root.style.setProperty('--text-muted', '#5a7080')
-    root.style.setProperty('--primary', '#195C82')
-    root.style.setProperty('--accent', '#1D9BF0')
-    return () => { if (prevTheme) root.setAttribute('data-theme', prevTheme) }
-  }, [])
-}
+// Le theme light est maintenant gere dans AppearanceContext via
+// isBackofficePath() dans applyToDOM. Plus besoin de hook ici.
 
 // Login form intégré pour le backoffice (pas de dépendance EnvContext)
 function BackofficeLogin() {
@@ -81,7 +64,6 @@ function BackofficeLogin() {
 export default function BackofficeLayout({ children }) {
   const navigate = useNavigate()
   const { user, profile, loading } = useAuth()
-  useForceLightTheme()
 
   // Loading state
   if (loading) return (
