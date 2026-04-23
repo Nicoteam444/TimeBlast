@@ -5,6 +5,12 @@
       "has": [{ "type": "host", "value": "admin.timeblast.ai" }],
       "destination": "/backoffice",
       "permanent": false
+    },
+    {
+      "source": "/:rest((?!backoffice).+)",
+      "has": [{ "type": "host", "value": "admin.timeblast.ai" }],
+      "destination": "https://www.timeblast.ai/:rest",
+      "permanent": false
     }
   ],
   "rewrites": [
