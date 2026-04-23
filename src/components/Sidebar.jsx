@@ -181,8 +181,9 @@ const ADMIN_SECTION = {
     { to: '/admin/historique',   icon: '👁', label: 'Historique',            roles: ['admin'], superAdminOnly: true },
     { to: '/admin/analytics',    icon: '📊', label: 'Analytics',         roles: ['admin'] },
     { to: '/parametres',         icon: '🔧', label: 'Paramètres',        roles: ['admin'] },
-    { to: '/backoffice',          icon: '🛡', label: 'Backoffice',        roles: ['admin'], superAdminOnly: true, absolute: true },
   ]}
+// Note : le Backoffice (admin.timeblast.ai) est global super-admin, pas par env.
+// Il n'apparait volontairement dans aucun menu d'env, accessible via URL directe.
 
 export default function Sidebar() {
   const { profile, user } = useAuth()
@@ -311,7 +312,7 @@ export default function Sidebar() {
       <aside className={`sidebar ${sidebarOpen ? 'sidebar--open' : 'sidebar--closed'}`}>
 
         {/* Logo */}
-        <div className="sidebar-logo" onClick={() => { navigate('/'); window.scrollTo({ top: 0 }) }} style={{ cursor: 'pointer' }}>
+        <div className="sidebar-logo" onClick={() => { navigate(envPrefix || '/'); window.scrollTo({ top: 0 }) }} style={{ cursor: 'pointer' }}>
           {settings.logoUrl ? (
             sidebarOpen
               ? <span style={{ display: 'flex', alignItems: 'center', gap: '.5rem' }}>
