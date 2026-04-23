@@ -6,6 +6,7 @@ import { useAppearance } from '../contexts/AppearanceContext'
 import { isModuleEnabled } from '../config/modules'
 import { useFavorites } from '../contexts/FavoritesContext'
 import { usePermissions } from '../contexts/PermissionsContext'
+import { useEnv } from '../contexts/EnvContext'
 
 function useEnvPrefix() {
   const { envId } = useParams()
@@ -136,6 +137,24 @@ const SECTIONS = [
     ],
   },
   {
+    id: 'webmedia',
+    icon: '🎯',
+    label: 'Webmedia',
+    landingTo: '/webmedia',
+    roles: ['admin', 'manager'],
+    envOnly: 'Webmedia', // visible uniquement dans l'env Webmedia
+    items: [
+      { to: '/webmedia',            icon: '📊', label: 'Tableau de bord' },
+      { to: '/webmedia/campagnes',  icon: '📢', label: 'Campagnes' },
+      { to: '/webmedia/leads',      icon: '💧', label: 'Leads' },
+      { to: '/webmedia/acheteurs',  icon: '🤝', label: 'Acheteurs' },
+      { to: '/webmedia/ventes',     icon: '💰', label: 'Ventes' },
+      { to: '/webmedia/achats',     icon: '🛒', label: 'Achats' },
+      { to: '/webmedia/facturation',icon: '🧾', label: 'Facturation' },
+      { to: '/webmedia/analytics',  icon: '📈', label: 'Analytics' },
+    ],
+  },
+  {
     id: 'wiki',
     icon: '📚',
     label: 'Wiki',
@@ -172,6 +191,7 @@ export default function Sidebar() {
   const { settings } = useAppearance()
   const { favorites, favLabels, toggleFavorite, syncing } = useFavorites()
   const { canView } = usePermissions()
+  const { currentEnv } = useEnv() || {}
   const envPrefix = useEnvPrefix()
   const navigate = useNavigate()
   const location = useLocation()
@@ -235,7 +255,9 @@ export default function Sidebar() {
 
   const visibleSections = SECTIONS.filter(s => {
     if (!isModuleEnabled(s.id)) return false
-    // Super admin voit toutes les sections
+    // Section envOnly : visible uniquement dans l'env correspondant
+    if (s.envOnly && currentEnv?.name !== s.envOnly) return false
+    // Super admin voit toutes les sections (sauf envOnly filtré ci-dessus)
     if (isSuperAdmin) return true
     // Filtrer par modules accessibles (si définis)
     if (hasModuleRestriction && !userModules.includes(s.id)) return false

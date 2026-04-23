@@ -102,6 +102,16 @@ const CockpitDataFlowsPage = lazy(() => import('./pages/cockpit/DataFlowsPage'))
 const CockpitAgentsPage = lazy(() => import('./pages/cockpit/AgentsPage'))
 const CockpitRecommendationsPage = lazy(() => import('./pages/cockpit/RecommendationsPage'))
 
+// Webmedia — client dédié (env 2026001)
+const WebmediaDashboardPage = lazy(() => import('./pages/webmedia/WebmediaDashboardPage'))
+const WebmediaCampaignsPage = lazy(() => import('./pages/webmedia/CampaignsPage'))
+const WebmediaLeadsPage = lazy(() => import('./pages/webmedia/LeadsPage'))
+const WebmediaBuyerClientsPage = lazy(() => import('./pages/webmedia/BuyerClientsPage'))
+const WebmediaLeadSalesPage = lazy(() => import('./pages/webmedia/LeadSalesPage'))
+const WebmediaPurchasesPage = lazy(() => import('./pages/webmedia/PurchasesPage'))
+const WebmediaInvoicesPage = lazy(() => import('./pages/webmedia/InvoicesPage'))
+const WebmediaAnalyticsPage = lazy(() => import('./pages/webmedia/AnalyticsPage'))
+
 // Spinner global pour lazy loading
 function LazySpinner() {
   return (
@@ -216,6 +226,32 @@ function AppRoutes() {
       } />
       <Route path="cockpit/recommandations" element={
         <ProtectedRoute roles={['admin','manager']}><Layout><CockpitRecommendationsPage /></Layout></ProtectedRoute>
+      } />
+
+      {/* Webmedia — client dédié */}
+      <Route path="webmedia" element={
+        <ProtectedRoute roles={['admin','manager']}><Layout><WebmediaDashboardPage /></Layout></ProtectedRoute>
+      } />
+      <Route path="webmedia/campagnes" element={
+        <ProtectedRoute roles={['admin','manager']}><Layout><WebmediaCampaignsPage /></Layout></ProtectedRoute>
+      } />
+      <Route path="webmedia/leads" element={
+        <ProtectedRoute roles={['admin','manager']}><Layout><WebmediaLeadsPage /></Layout></ProtectedRoute>
+      } />
+      <Route path="webmedia/acheteurs" element={
+        <ProtectedRoute roles={['admin','manager']}><Layout><WebmediaBuyerClientsPage /></Layout></ProtectedRoute>
+      } />
+      <Route path="webmedia/ventes" element={
+        <ProtectedRoute roles={['admin','manager']}><Layout><WebmediaLeadSalesPage /></Layout></ProtectedRoute>
+      } />
+      <Route path="webmedia/achats" element={
+        <ProtectedRoute roles={['admin','manager']}><Layout><WebmediaPurchasesPage /></Layout></ProtectedRoute>
+      } />
+      <Route path="webmedia/facturation" element={
+        <ProtectedRoute roles={['admin','manager']}><Layout><WebmediaInvoicesPage /></Layout></ProtectedRoute>
+      } />
+      <Route path="webmedia/analytics" element={
+        <ProtectedRoute roles={['admin','manager']}><Layout><WebmediaAnalyticsPage /></Layout></ProtectedRoute>
       } />
 
       {/* Category Landing Pages */}
