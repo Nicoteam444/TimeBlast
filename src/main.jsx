@@ -1,4 +1,3 @@
-import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import './index.css'
 import App from './App.jsx'
@@ -12,8 +11,6 @@ try {
 } catch {}
 
 
-createRoot(document.getElementById('root')).render(
-  <StrictMode>
-    <App />
-  </StrictMode>,
-)
+// StrictMode desactive volontairement : causait des crashes 'removeChild'
+// en interaction avec les extensions Chrome qui modifient le DOM
+createRoot(document.getElementById('root')).render(<App />)
