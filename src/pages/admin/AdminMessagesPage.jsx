@@ -151,7 +151,7 @@ export default function AdminMessagesPage() {
       {/* Détail */}
       {selected && (
         <div style={{
-          flex: '1 1 auto', minWidth: 0, background: 'var(--card-bg, #fff)', borderRadius: 12, border: '1px solid var(--border, #e2e8f0)',
+          flex: '1 1 auto', minWidth: 0, background: '#fff', borderRadius: 12, border: '1px solid #e2e8f0',
           padding: 24, position: 'sticky', top: 20, maxHeight: 'calc(100vh - 120px)', overflowY: 'auto'
         }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 20 }}>
@@ -169,9 +169,9 @@ export default function AdminMessagesPage() {
           </div>
 
           <div style={{
-            background: 'var(--surface, #f8fafc)', borderRadius: 8, padding: 16, marginBottom: 20,
-            lineHeight: 1.7, fontSize: 14, whiteSpace: 'pre-wrap', wordBreak: 'break-word', color: 'var(--text, #1e293b)',
-            border: '1px solid var(--border, #e2e8f0)',
+            background: '#f8fafc', borderRadius: 8, padding: 16, marginBottom: 20,
+            lineHeight: 1.7, fontSize: 14, whiteSpace: 'pre-wrap', wordBreak: 'break-word', color: '#1e293b',
+            border: '1px solid #e2e8f0',
           }}>
             {selected.message}
           </div>

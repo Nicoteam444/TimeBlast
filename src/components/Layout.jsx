@@ -74,6 +74,7 @@ function usePageTracking() {
 
 function LayoutInner({ children }) {
   usePageTracking()
+  const location = useLocation()
   const [cockpitChatOpen, setCockpitChatOpen] = useState(false)
 
   // Listen for toggle events from TopBar DSI button
@@ -82,6 +83,28 @@ function LayoutInner({ children }) {
     window.addEventListener('toggle-cockpit-chat', handleToggle)
     return () => window.removeEventListener('toggle-cockpit-chat', handleToggle)
   }, [])
+
+  // Force light theme on admin/parametres pages — le style admin doit rester
+  // independant du dark mode de la plateforme
+  const isAdminRoute = /\/(admin|parametres)(\/|$)/.test(location.pathname)
+  useEffect(() => {
+    if (!isAdminRoute) return
+    const root = document.documentElement
+    const prevTheme = root.getAttribute('data-theme')
+    root.setAttribute('data-theme', 'light')
+    const lightVars = {
+      '--bg': '#F0F0F0', '--surface': '#FFFFFF', '--card-bg': '#FFFFFF',
+      '--border': '#e2e8f0', '--text': '#0D1B24', '--text-muted': '#5a7080',
+      '--primary': '#195C82', '--accent': '#1D9BF0',
+      '--error': '#dc2626', '--success': '#16a34a',
+    }
+    const prevVars = {}
+    Object.keys(lightVars).forEach(k => { prevVars[k] = root.style.getPropertyValue(k); root.style.setProperty(k, lightVars[k]) })
+    return () => {
+      if (prevTheme) root.setAttribute('data-theme', prevTheme)
+      Object.entries(prevVars).forEach(([k, v]) => { if (v) root.style.setProperty(k, v); else root.style.removeProperty(k) })
+    }
+  }, [isAdminRoute])
 
   return (
     <div className="app-layout">
