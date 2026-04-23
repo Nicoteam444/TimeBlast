@@ -61,9 +61,6 @@ export default function IntegrationsAdminPage() {
       if (row.config) cfgMap[row.provider] = row.config
     })
     INTEGRATIONS.forEach(i => { if (!map[i.id]) map[i.id] = 'disconnected' })
-    if (!map.hubspot || map.hubspot === 'disconnected') map.hubspot = 'connected'
-    if (!map.sirene || map.sirene === 'disconnected') map.sirene = 'connected'
-    if (!map.outlook || map.outlook === 'disconnected') map.outlook = 'connected'
     setStatuses(map)
     setConfigs(cfgMap)
   }
@@ -72,7 +69,7 @@ export default function IntegrationsAdminPage() {
     const current = statuses[id] || 'disconnected'
     const next = current === 'connected' ? 'disconnected' : 'connected'
     setStatuses(prev => ({ ...prev, [id]: next }))
-    await supabase.from('integrations').upsert({ provider: id, status: next, updated_at: new Date().toISOString() }, { onConflict: 'provider' }).catch(() => {})
+    await supabase.from('integrations').upsert({ provider: id, status: next, updated_at: new Date().toISOString() }, { onConflict: 'provider,environment_id' }).catch(() => {})
   }
 
   function openConfig(integ) {
@@ -88,7 +85,7 @@ export default function IntegrationsAdminPage() {
       status: 'connected',
       config: configForm,
       updated_at: new Date().toISOString()
-    }, { onConflict: 'provider' }).catch(() => {})
+    }, { onConflict: 'provider,environment_id' }).catch(() => {})
     setConfigs(prev => ({ ...prev, [configModal.id]: configForm }))
     setStatuses(prev => ({ ...prev, [configModal.id]: 'connected' }))
     setSaving(false)

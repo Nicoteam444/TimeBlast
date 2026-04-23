@@ -23,6 +23,7 @@ const SCOPED_TABLES = new Set([
   'immobilisations','integrations','journal_entries','journal_lines',
   'kanban_columns','kanban_tasks','kanban_time_entries','leads','lots',
   'notes_de_frais','org_edges','org_nodes',
+  'page_views',
   'plannings','produits','project_messages','projet_members','projets',
   'saisies_temps','societes','stocks','time_entries',
   'transactions','validation_semaines','wiki_articles',
