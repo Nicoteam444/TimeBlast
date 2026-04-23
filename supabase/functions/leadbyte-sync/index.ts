@@ -131,9 +131,10 @@ serve(async (req) => {
 
     const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!
     const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
-    const admin = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY)
+    // `main` = projet SRA principal (contient la table environments + integrations)
+    const main = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY)
 
-    const { data: { user }, error: authError } = await admin.auth.getUser(authHeader.replace('Bearer ', ''))
+    const { data: { user }, error: authError } = await main.auth.getUser(authHeader.replace('Bearer ', ''))
     if (authError || !user) return json({ error: 'Token invalide' }, 401)
 
     // 2. Extract config from request body
@@ -141,6 +142,24 @@ serve(async (req) => {
     if (!subdomain || !api_key) return json({ error: 'subdomain et api_key sont requis' }, 400)
 
     const actualTld = tld || '.com'
+
+    // 3. Resoudre le client qui ecrira les donnees wm_* :
+    //    - si env_code fourni, on lit la config env correspondante dans la DB principale
+    //    - sinon on ecrit dans la DB principale (fallback pour test single-tenant)
+    let writeClient = main
+    let targetEnvId: string | null = null
+    if (env_code) {
+      const { data: env, error: envErr } = await main
+        .from('environments')
+        .select('id, supabase_url, supabase_anon_key')
+        .eq('env_code', env_code)
+        .maybeSingle()
+      if (envErr) return json({ error: `env_code inconnu : ${envErr.message}` }, 400)
+      if (!env) return json({ error: `env_code "${env_code}" introuvable` }, 404)
+      // On autorise l'ecriture cross-project via la cle anon (RLS WITH CHECK (true) sur wm_*)
+      writeClient = createClient(env.supabase_url, env.supabase_anon_key)
+      targetEnvId = env.id
+    }
 
     // 3. Route actions
     if (action === 'test') {
@@ -212,15 +231,15 @@ serve(async (req) => {
 
           const externalId = (mapped.metadata as any)?.external_id
           if (externalId != null) {
-            const { data: existing } = await admin.from('wm_campaigns').select('id').eq('metadata->>external_id', String(externalId)).limit(1).maybeSingle()
+            const { data: existing } = await writeClient.from('wm_campaigns').select('id').eq('metadata->>external_id', String(externalId)).limit(1).maybeSingle()
             if (existing?.id) {
-              await admin.from('wm_campaigns').update(mapped).eq('id', existing.id)
+              await writeClient.from('wm_campaigns').update(mapped).eq('id', existing.id)
             } else {
-              await admin.from('wm_campaigns').insert(mapped)
+              await writeClient.from('wm_campaigns').insert(mapped)
             }
             summary.campaigns.upserted++
           } else {
-            await admin.from('wm_campaigns').insert(mapped)
+            await writeClient.from('wm_campaigns').insert(mapped)
             summary.campaigns.upserted++
           }
         }
@@ -241,11 +260,11 @@ serve(async (req) => {
           const mapped = mapBuyer(item)
           if (!mapped) continue
           // Upsert by name for simplicity (wm_buyer_clients has no external_id)
-          const { data: existing } = await admin.from('wm_buyer_clients').select('id').eq('name', mapped.name).limit(1).maybeSingle()
+          const { data: existing } = await writeClient.from('wm_buyer_clients').select('id').eq('name', mapped.name).limit(1).maybeSingle()
           if (existing?.id) {
-            await admin.from('wm_buyer_clients').update(mapped).eq('id', existing.id)
+            await writeClient.from('wm_buyer_clients').update(mapped).eq('id', existing.id)
           } else {
-            await admin.from('wm_buyer_clients').insert(mapped)
+            await writeClient.from('wm_buyer_clients').insert(mapped)
           }
           summary.buyers.upserted++
         }
@@ -281,14 +300,14 @@ serve(async (req) => {
               if (!mapped) continue
               const externalId = (mapped.metadata as any)?.external_id
               if (externalId != null) {
-                const { data: existing } = await admin.from('wm_leads').select('id').eq('metadata->>external_id', String(externalId)).limit(1).maybeSingle()
+                const { data: existing } = await writeClient.from('wm_leads').select('id').eq('metadata->>external_id', String(externalId)).limit(1).maybeSingle()
                 if (existing?.id) {
-                  await admin.from('wm_leads').update(mapped).eq('id', existing.id)
+                  await writeClient.from('wm_leads').update(mapped).eq('id', existing.id)
                 } else {
-                  await admin.from('wm_leads').insert(mapped)
+                  await writeClient.from('wm_leads').insert(mapped)
                 }
               } else {
-                await admin.from('wm_leads').insert(mapped)
+                await writeClient.from('wm_leads').insert(mapped)
               }
               summary.leads.upserted++
             }
@@ -304,7 +323,7 @@ serve(async (req) => {
     summary.finished_at = new Date().toISOString()
 
     // 5. Save last sync timestamp in integrations.config
-    await admin.from('integrations').update({
+    await main.from('integrations').update({
       status: 'connected',
       config: { subdomain, tld: actualTld, api_key, last_sync: summary.finished_at, last_summary: summary },
       updated_at: new Date().toISOString(),

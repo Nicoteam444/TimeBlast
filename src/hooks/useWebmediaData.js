@@ -141,17 +141,24 @@ export function useAnalytics(filters = {}) {
       safeQuery(supabase.from('wm_lead_purchases').select('*')),
     ])
 
-    // KPIs globaux
-    const leadsGenerated = leads.length
-    const leadsSold = leads.filter(l => l.status === 'sold').length
+    // KPIs depuis wm_leads (detail) OU depuis wm_campaigns.metadata (agregats LeadByte)
+    // Quand les leads individuels ne sont pas dispo, on utilise les totaux des rapports LeadByte.
+    const metaLeads = campaigns.reduce((s, c) => s + (Number(c.metadata?.leads_total) || 0), 0)
+    const metaSold = campaigns.reduce((s, c) => s + (Number(c.metadata?.leads_sold) || 0), 0)
+    const metaRevenue = campaigns.reduce((s, c) => s + (Number(c.metadata?.revenue) || 0), 0)
+    const metaPayout = campaigns.reduce((s, c) => s + (Number(c.metadata?.payout) || 0), 0)
+
+    const leadsGenerated = leads.length || metaLeads
+    const leadsSold = leads.filter(l => l.status === 'sold').length || metaSold
     const leadsPurchased = leads.filter(l => l.status === 'purchased').length + purchases.reduce((s, p) => s + (p.volume || 1), 0)
     const leadsDead = leads.filter(l => l.status === 'dead').length
 
-    const totalRevenue = sales.reduce((s, x) => s + (parseFloat(x.price) || 0), 0)
+    const totalRevenueDetail = sales.reduce((s, x) => s + (parseFloat(x.price) || 0), 0)
+    const totalRevenue = totalRevenueDetail || metaRevenue
     const totalAcquisitionCost = leads.reduce((s, l) => s + (parseFloat(l.acquisition_cost) || 0), 0)
     const totalPurchaseCost = purchases.reduce((s, p) => s + (parseFloat(p.price) || 0) * (p.volume || 1), 0)
     const totalCampaignCost = campaigns.reduce((s, c) => s + (parseFloat(c.cost) || 0), 0)
-    const totalCost = totalAcquisitionCost + totalPurchaseCost
+    const totalCost = (totalAcquisitionCost + totalPurchaseCost) || totalCampaignCost || metaPayout
     const margin = totalRevenue - totalCost
     const marginPct = totalRevenue > 0 ? (margin / totalRevenue) * 100 : 0
     const avgCPL = leadsGenerated > 0 ? totalCampaignCost / leadsGenerated : 0
