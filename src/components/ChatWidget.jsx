@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from 'react'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../contexts/AuthContext'
+import { useEnv } from '../contexts/EnvContext'
 
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL
 const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY
@@ -121,30 +122,46 @@ function buildSystemPrompt(societe, ctx) {
   return lines.join('\n')
 }
 
-function getHistoryKey(userId) {
-  return `timeblast_chat_history_${userId || 'anon'}`
+// Cle d'historique par utilisateur ET par environnement (isolation stricte)
+function getHistoryKey(userId, envId) {
+  return `timeblast_chat_history_${userId || 'anon'}_${envId || 'noenv'}`
 }
 
-function loadHistory(userId) {
-  const key = getHistoryKey(userId)
+// Nettoyage des anciennes cles non-scopees par env (fuites potentielles SRA -> autre env)
+let _legacyCleaned = false
+function cleanLegacyHistoryKeys() {
+  if (_legacyCleaned) return
+  _legacyCleaned = true
   try {
-    // Migration: si l'ancienne clé globale existe, la migrer vers l'utilisateur courant
-    const oldKey = 'timeblast_chat_history'
-    const oldData = localStorage.getItem(oldKey)
-    if (oldData && userId) {
-      const existing = localStorage.getItem(key)
-      if (!existing) localStorage.setItem(key, oldData)
-      localStorage.removeItem(oldKey)
+    const toDelete = []
+    for (let i = 0; i < localStorage.length; i++) {
+      const k = localStorage.key(i)
+      if (k && k.startsWith('timeblast_chat_history_') && k.split('_').length < 5) {
+        // Ancienne cle format: timeblast_chat_history_<userId> (sans _<envId>)
+        toDelete.push(k)
+      }
     }
+    toDelete.forEach(k => localStorage.removeItem(k))
+  } catch {}
+}
+
+function loadHistory(userId, envId) {
+  cleanLegacyHistoryKeys()
+  if (!envId) return [] // pas d'env → pas d'historique (evite la fuite inter-env)
+  const key = getHistoryKey(userId, envId)
+  try {
     return JSON.parse(localStorage.getItem(key) || '[]')
   } catch { return [] }
 }
-function saveHistory(history, userId) {
-  try { localStorage.setItem(getHistoryKey(userId), JSON.stringify(history.slice(0, 20))) } catch {}
+function saveHistory(history, userId, envId) {
+  if (!envId) return
+  try { localStorage.setItem(getHistoryKey(userId, envId), JSON.stringify(history.slice(0, 20))) } catch {}
 }
 
 export default function ChatWidget() {
   const { profile } = useAuth()
+  const { currentEnv } = useEnv() || {}
+  const envId = currentEnv?.id
 
   const [open, setOpen] = useState(false)
   const [messages, setMessages] = useState([])
@@ -154,19 +171,19 @@ export default function ChatWidget() {
   const [ctxLoading, setCtxLoading] = useState(false)
   const [error, setError] = useState(null)
   const [showHistory, setShowHistory] = useState(false)
-  const [history, setHistory] = useState(() => loadHistory(profile?.id))
+  const [history, setHistory] = useState(() => loadHistory(profile?.id, envId))
   const [activeConvId, setActiveConvId] = useState(null)
 
   const messagesEndRef = useRef(null)
   const inputRef = useRef(null)
   const abortRef = useRef(null)
 
-  // Recharger l'historique quand l'utilisateur change
+  // Recharger l'historique quand l'utilisateur OU l'env change (isolation stricte)
   useEffect(() => {
-    setHistory(loadHistory(profile?.id))
+    setHistory(loadHistory(profile?.id, envId))
     setMessages([])
     setActiveConvId(null)
-  }, [profile?.id])
+  }, [profile?.id, envId])
 
   // Sauvegarder la conversation active dans l'historique
   useEffect(() => {
@@ -184,7 +201,7 @@ export default function ChatWidget() {
         { id: convId, title, messages, date: new Date().toISOString() },
         ...existing,
       ].slice(0, 20)
-      saveHistory(updated, profile?.id)
+      saveHistory(updated, profile?.id, envId)
       return updated
     })
   }, [messages])
@@ -370,7 +387,7 @@ export default function ChatWidget() {
     e.stopPropagation()
     setHistory(prev => {
       const updated = prev.filter(c => c.id !== convId)
-      saveHistory(updated, profile?.id)
+      saveHistory(updated, profile?.id, envId)
       return updated
     })
     if (activeConvId === convId) clearChat()

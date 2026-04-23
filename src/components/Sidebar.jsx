@@ -254,8 +254,8 @@ export default function Sidebar() {
   const userModules = profile?.modules || []
   const hasModuleRestriction = userModules.length > 0
 
-  // Restriction par env : dans Webmedia, seules CRM, Equipe, Gestion, Performance (webmedia), Wiki
-  const WEBMEDIA_ALLOWED = new Set(['crm', 'equipe', 'gestion', 'webmedia', 'wiki'])
+  // Restriction par env : dans Webmedia, seules CRM, Equipe, Gestion, Performance (webmedia)
+  const WEBMEDIA_ALLOWED = new Set(['crm', 'equipe', 'gestion', 'webmedia'])
 
   const visibleSections = SECTIONS.filter(s => {
     if (!isModuleEnabled(s.id)) return false

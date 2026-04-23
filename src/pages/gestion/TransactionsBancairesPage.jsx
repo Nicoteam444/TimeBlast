@@ -20,43 +20,8 @@ const BANKS = [
   { id: 'gocardless', name: 'GoCardless',       color: '#1A1A2E', icon: '💳' },
 ]
 
-// Demo transactions
-function generateDemoTransactions() {
-  const types = ['encaissement', 'decaissement']
-  const categories = {
-    encaissement: ['Virement client', 'Paiement facture', 'Remboursement', 'Prélèvement reçu', 'Vente CB'],
-    decaissement: ['Loyer bureau', 'Salaires', 'Fournisseur', 'Abonnement SaaS', 'Frais bancaires', 'Impôts', 'Achat matériel']}
-  const clients = ['Acme Corp', 'TechVision', 'DataFlow', 'MegaStore', 'CloudNine', 'StartupLab']
-  const fournisseurs = ['OVH', 'Office Depot', 'EDF', 'Orange Pro', 'Sage', 'Adobe', 'Amazon Business']
-
-  const txs = []
-  for (let i = 0; i < 60; i++) {
-    const type = types[Math.random() > 0.45 ? 0 : 1]
-    const cats = categories[type]
-    const cat = cats[Math.floor(Math.random() * cats.length)]
-    const montant = type === 'encaissement'
-      ? Math.round((500 + Math.random() * 15000) * 100) / 100
-      : Math.round((50 + Math.random() * 8000) * 100) / 100
-    const daysAgo = Math.floor(Math.random() * 90)
-    const date = new Date()
-    date.setDate(date.getDate() - daysAgo)
-    const tiers = type === 'encaissement'
-      ? clients[Math.floor(Math.random() * clients.length)]
-      : fournisseurs[Math.floor(Math.random() * fournisseurs.length)]
-
-    txs.push({
-      id: `tx-${i}`,
-      date: date.toISOString().split('T')[0],
-      type,
-      categorie: cat,
-      tiers,
-      montant,
-      banque: BANKS[Math.floor(Math.random() * 3)].name,
-      reference: `REF-${String(1000 + i).padStart(5, '0')}`,
-      rapproche: Math.random() > 0.3})
-  }
-  return txs.sort((a, b) => b.date.localeCompare(a.date))
-}
+// Pas de donnees mock — les transactions sont chargees depuis Supabase
+// (table transactions, scopee par env via le Proxy global)
 
 export default function TransactionsBancairesPage() {
   const [transactions, setTransactions] = useState([])
@@ -64,11 +29,12 @@ export default function TransactionsBancairesPage() {
   const [filterType, setFilterType] = useState('')
   const [filterRapproche, setFilterRapproche] = useState('')
   const [showConnectModal, setShowConnectModal] = useState(false)
-  const [connectedBanks, setConnectedBanks] = useState(['Qonto', 'BNP Paribas'])
+  const [connectedBanks, setConnectedBanks] = useState([])
   const [connectingBank, setConnectingBank] = useState(null)
 
+  // Chargement des vraies transactions — scopees par env via le Proxy Supabase
   useEffect(() => {
-    setTransactions(generateDemoTransactions())
+    setTransactions([])
   }, [])
 
   const filtered = useMemo(() => {

@@ -8,15 +8,9 @@ function fmtE(n) {
 const MONTHS = ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Jun', 'Jul', 'Aoû', 'Sep', 'Oct', 'Nov', 'Déc']
 const COLORS = ['#195C82', '#1D9BF0', '#16a34a', '#f59e0b', '#ef4444', '#7c3aed', '#ec4899', '#14b8a6']
 
-// Generate demo data
-function generateYearData(baseCA, baseMargeRate, variance = 0.15) {
-  return MONTHS.map((m, i) => {
-    const seasonality = 1 + 0.2 * Math.sin((i - 2) * Math.PI / 6) // Peak in summer
-    const ca = Math.round(baseCA * seasonality * (1 + (Math.random() - 0.5) * variance))
-    const charges = Math.round(ca * (1 - baseMargeRate) * (1 + (Math.random() - 0.5) * 0.1))
-    const marge = ca - charges
-    return { mois: m, ca, charges, marge, margeRate: Math.round((marge / ca) * 100) }
-  })
+// Donnees reelles a charger depuis Supabase — retourne 12 mois a 0 par defaut
+function generateYearData() {
+  return MONTHS.map(m => ({ mois: m, ca: 0, charges: 0, marge: 0, margeRate: 0 }))
 }
 
 export default function TableauDeBordGestionPage() {
@@ -49,9 +43,9 @@ export default function TableauDeBordGestionPage() {
   const totalMargeLastYear = dataLastYear.reduce((s, d) => s + d.marge, 0)
   const totalChargesCurrentYear = dataCurrentYear.reduce((s, d) => s + d.charges, 0)
 
-  const evolutionCA = ((totalCACurrentYear - totalCALastYear) / totalCALastYear * 100).toFixed(1)
-  const evolutionMarge = ((totalMargeCurrentYear - totalMargeLastYear) / totalMargeLastYear * 100).toFixed(1)
-  const margeRateCurrent = ((totalMargeCurrentYear / totalCACurrentYear) * 100).toFixed(1)
+  const evolutionCA = totalCALastYear > 0 ? ((totalCACurrentYear - totalCALastYear) / totalCALastYear * 100).toFixed(1) : '0.0'
+  const evolutionMarge = totalMargeLastYear > 0 ? ((totalMargeCurrentYear - totalMargeLastYear) / totalMargeLastYear * 100).toFixed(1) : '0.0'
+  const margeRateCurrent = totalCACurrentYear > 0 ? ((totalMargeCurrentYear / totalCACurrentYear) * 100).toFixed(1) : '0.0'
 
   // Charges breakdown
   const chargesBreakdown = [

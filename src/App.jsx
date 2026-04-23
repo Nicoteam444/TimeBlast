@@ -1,5 +1,5 @@
 import { useEffect, useRef, lazy, Suspense } from 'react'
-import { BrowserRouter, Routes, Route, Navigate, useNavigate } from 'react-router-dom'
+import { BrowserRouter, Routes, Route, Navigate, useNavigate, useParams } from 'react-router-dom'
 import { AuthProvider } from './contexts/AuthContext'
 import { DemoProvider } from './contexts/DemoContext'
 import { AppearanceProvider } from './contexts/AppearanceContext'
@@ -172,6 +172,18 @@ function EnvDefaultRedirect() {
   return <LazySpinner />
 }
 
+// Redirige vers la home par defaut selon l'env :
+// - Webmedia (2026001) -> /gestion/tableau-de-bord
+// - autres -> DashboardPage classique
+function EnvHomeRouter() {
+  const { envId } = useParams()
+  const { currentEnv } = useEnv() || {}
+  if (currentEnv?.name === 'Webmedia' || envId === '2026001') {
+    return <Navigate to={`/${envId}/gestion/tableau-de-bord`} replace />
+  }
+  return <Layout><DashboardPage /></Layout>
+}
+
 function AppRoutes() {
   return (
     <Suspense fallback={<LazySpinner />}>
@@ -199,7 +211,7 @@ function AppRoutes() {
       <Route path="/:envId" element={<EnvRouteWrapper />}>
 
       <Route index element={
-        <ProtectedRoute><Layout><DashboardPage /></Layout></ProtectedRoute>
+        <ProtectedRoute><EnvHomeRouter /></ProtectedRoute>
       } />
       <Route path="dashboard" element={
         <ProtectedRoute><Layout><DashboardPage /></Layout></ProtectedRoute>
