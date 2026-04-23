@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, useState } from 'react'
 import { useAuth } from './AuthContext'
-import { supabase, switchSupabaseClient } from '../lib/supabase'
+import { supabase, switchSupabaseClient, setCurrentEnvId } from '../lib/supabase'
 
 // Les clés anon Supabase sont publiques par design (elles ne donnent accès
 // qu'aux données autorisées par les RLS policies). Ce n'est PAS un secret.
@@ -49,6 +49,8 @@ export function EnvProvider({ children }) {
       if (selectedEnv?.supabase_url && anonKey) {
         switchSupabaseClient(selectedEnv.supabase_url, anonKey)
       }
+      // Activer le scoping par env_id (isolation SRA / Webmedia)
+      setCurrentEnvId(selectedEnv?.id || null)
       setClientReady(true)
     } catch (err) {
       console.error('Erreur chargement environnements:', err)
@@ -65,6 +67,7 @@ export function EnvProvider({ children }) {
       if (env.supabase_url && anonKey) {
         switchSupabaseClient(env.supabase_url, anonKey)
       }
+      setCurrentEnvId(env.id)
     }
   }
 
@@ -77,6 +80,7 @@ export function EnvProvider({ children }) {
     if (env.supabase_url && anonKey) {
       switchSupabaseClient(env.supabase_url, anonKey)
     }
+    setCurrentEnvId(env.id)
 
     setCurrentEnv(env)
     // Changer l'URL (reload pour réinitialiser tous les états)
