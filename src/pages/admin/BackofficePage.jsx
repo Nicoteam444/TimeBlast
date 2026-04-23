@@ -807,9 +807,11 @@ function ImportsTab() {
 }
 
 // ── Onglet Tables ──
+// IMPORTANT : lazy() doit etre hors du composant sinon React recrée le composant
+// lazy a chaque render -> crash 'removeChild not a child'.
+const LazyTablesPage = lazy(() => import('./TablesPage'))
 function TablesTab() {
-  const Comp = lazy(() => import('./TablesPage'))
-  return <Suspense fallback={<Spinner />}><Comp /></Suspense>
+  return <Suspense fallback={<Spinner />}><LazyTablesPage /></Suspense>
 }
 
 // ── Droits & Profils ──
