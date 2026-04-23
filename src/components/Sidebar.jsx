@@ -138,8 +138,8 @@ const SECTIONS = [
   },
   {
     id: 'webmedia',
-    icon: '🎯',
-    label: 'Webmedia',
+    icon: '🚀',
+    label: 'Performance',
     landingTo: '/webmedia',
     roles: ['admin', 'manager'],
     envOnly: 'Webmedia', // visible uniquement dans l'env Webmedia
@@ -253,11 +253,16 @@ export default function Sidebar() {
   const userModules = profile?.modules || []
   const hasModuleRestriction = userModules.length > 0
 
+  // Restriction par env : dans Webmedia, seules CRM, Equipe, Gestion, Performance (webmedia), Wiki
+  const WEBMEDIA_ALLOWED = new Set(['crm', 'equipe', 'gestion', 'webmedia', 'wiki'])
+
   const visibleSections = SECTIONS.filter(s => {
     if (!isModuleEnabled(s.id)) return false
     // Section envOnly : visible uniquement dans l'env correspondant
     if (s.envOnly && currentEnv?.name !== s.envOnly) return false
-    // Super admin voit toutes les sections (sauf envOnly filtré ci-dessus)
+    // Dans l'env Webmedia, whitelist des sections autorisees
+    if (currentEnv?.name === 'Webmedia' && !WEBMEDIA_ALLOWED.has(s.id)) return false
+    // Super admin voit toutes les sections (sauf envOnly et whitelist filtres ci-dessus)
     if (isSuperAdmin) return true
     // Filtrer par modules accessibles (si définis)
     if (hasModuleRestriction && !userModules.includes(s.id)) return false
