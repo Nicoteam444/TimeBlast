@@ -53,30 +53,36 @@ function EnvsTab() {
 
     // Charger les stats de chaque env en background
     for (const env of envList) {
+      // Utilisateurs : toujours via user_environments (lie par env, pas count profiles global)
+      const usersFromAccess = env.user_environments?.[0]?.count || 0
+
       if (env.supabase_url && env.supabase_anon_key) {
         try {
           const client = createClient(env.supabase_url, env.supabase_anon_key)
-          // Tenter de compter profiles et page_views (peut échouer selon RLS)
-          const [profilesRes, pageViewsRes] = await Promise.all([
-            client.from('profiles').select('id', { count: 'exact', head: true }),
-            client.from('page_views').select('id', { count: 'exact', head: true }),
-          ])
-          // Fallback: si profiles count = 0 (RLS bloque le client anonyme), utiliser user_environments
-          const usersFromProfiles = profilesRes.count || 0
-          const usersFromAccess = env.user_environments?.[0]?.count || 0
+          // Page views : tenter de filtrer par environment_id pour eviter les stats globales
+          let pageViewsCount = 0
+          try {
+            const { count } = await client.from('page_views').select('id', { count: 'exact', head: true }).eq('environment_id', env.id)
+            pageViewsCount = count || 0
+          } catch {
+            // Fallback : count global (cas ou la colonne environment_id n'existe pas)
+            const { count } = await client.from('page_views').select('id', { count: 'exact', head: true })
+            pageViewsCount = count || 0
+          }
           setEnvStats(prev => ({ ...prev, [env.id]: {
-            users: usersFromProfiles > 0 ? usersFromProfiles : usersFromAccess,
-            pageViews: pageViewsRes.count || 0,
-            online: true
+            users: usersFromAccess,
+            pageViews: pageViewsCount,
+            online: true,
           } }))
         } catch {
-          // Hors ligne: fallback sur user_environments count
           setEnvStats(prev => ({ ...prev, [env.id]: {
-            users: env.user_environments?.[0]?.count || 0,
+            users: usersFromAccess,
             pageViews: 0,
-            online: false
+            online: false,
           } }))
         }
+      } else {
+        setEnvStats(prev => ({ ...prev, [env.id]: { users: usersFromAccess, pageViews: 0, online: false } }))
       }
     }
   }

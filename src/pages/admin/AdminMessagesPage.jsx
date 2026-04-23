@@ -60,7 +60,7 @@ export default function AdminMessagesPage() {
   return (
     <div className="admin-page" style={{ display: 'flex', gap: 24 }}>
       {/* Liste */}
-      <div style={{ flex: selected ? '0 0 55%' : '1' }}>
+      <div style={{ flex: selected ? '0 0 45%' : '1', minWidth: 0 }}>
         <div className="section-header" style={{ marginBottom: 16 }}>
           <div>
             <h1>📬 Messages de contact</h1>
@@ -117,7 +117,16 @@ export default function AdminMessagesPage() {
                       background: selected?.id === msg.id ? '#f0f9ff' : msg.read ? 'transparent' : '#fefce8'
                     }}>
                     <td style={{ textAlign: 'center' }}>{msg.read ? '📭' : '📬'}</td>
-                    <td className="user-cell"><span className="user-name">{msg.name}</span></td>
+                    <td className="user-cell">
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: 2, minWidth: 0 }}>
+                        <span className="user-name" style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{msg.name}</span>
+                        {msg.message && (
+                          <span style={{ fontSize: 11, color: '#94a3b8', fontWeight: 'normal', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: 240 }}>
+                            {msg.message.replace(/\n/g, ' ').slice(0, 80)}{msg.message.length > 80 ? '…' : ''}
+                          </span>
+                        )}
+                      </div>
+                    </td>
                     <td className="user-cell" style={{ color: '#2563eb' }}>{msg.email}</td>
                     <td className="user-cell">{msg.company || '-'}</td>
                     <td className="date-cell">{fmtDate(msg.created_at)}</td>
@@ -142,7 +151,7 @@ export default function AdminMessagesPage() {
       {/* Détail */}
       {selected && (
         <div style={{
-          flex: '0 0 42%', background: '#fff', borderRadius: 12, border: '1px solid #e2e8f0',
+          flex: '1 1 auto', minWidth: 0, background: 'var(--card-bg, #fff)', borderRadius: 12, border: '1px solid var(--border, #e2e8f0)',
           padding: 24, position: 'sticky', top: 20, maxHeight: 'calc(100vh - 120px)', overflowY: 'auto'
         }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 20 }}>
@@ -160,8 +169,9 @@ export default function AdminMessagesPage() {
           </div>
 
           <div style={{
-            background: '#f8fafc', borderRadius: 8, padding: 16, marginBottom: 20,
-            lineHeight: 1.7, fontSize: 14, whiteSpace: 'pre-wrap', color: '#1e293b'
+            background: 'var(--surface, #f8fafc)', borderRadius: 8, padding: 16, marginBottom: 20,
+            lineHeight: 1.7, fontSize: 14, whiteSpace: 'pre-wrap', wordBreak: 'break-word', color: 'var(--text, #1e293b)',
+            border: '1px solid var(--border, #e2e8f0)',
           }}>
             {selected.message}
           </div>
