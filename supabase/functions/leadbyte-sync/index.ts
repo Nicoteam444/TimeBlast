@@ -90,22 +90,32 @@ function mapBuyer(raw: any): Record<string, unknown> | null {
   }
 }
 
-function mapLead(raw: any): Record<string, unknown> | null {
+function mapLead(raw: any, campaignLBId?: string | number): Record<string, unknown> | null {
   if (!raw || typeof raw !== 'object') return null
+  // LeadByte lead payloads often have nested `data` or `fields` with the form values.
+  const d = raw.data || raw.fields || raw
+  const firstName = d.FirstName || d.firstname || d.first_name || d['First Name'] || null
+  const lastName = d.LastName || d.lastname || d.last_name || d['Last Name'] || null
   return {
     source: raw.source || raw.sourceName || 'leadbyte',
     thematic: raw.vertical || raw.thematic || null,
-    first_name: raw.firstName || raw.firstname || null,
-    last_name: raw.lastName || raw.lastname || null,
-    email: raw.email || null,
-    phone: raw.phone || raw.mobile || null,
-    zip: raw.zip || raw.postcode || raw.postalCode || null,
-    city: raw.city || null,
+    first_name: firstName,
+    last_name: lastName,
+    email: d.Email || d.email || null,
+    phone: d.Phone || d['Phone 1'] || d.phone || d.mobile || null,
+    zip: d.Postcode || d.postcode || d.zip || d.PostalCode || null,
+    city: d.City || d.city || null,
     status: (raw.status === 'sold' ? 'sold' : raw.status === 'rejected' ? 'dead' : 'generated'),
     acquisition_cost: Number(raw.acquisitionCost) || 0,
     sale_price: Number(raw.salePrice) || null,
     quality_score: Number(raw.quality) || Number(raw.qualityScore) || null,
-    metadata: { source: 'leadbyte', external_id: raw.id || raw.leadId || null, received_at: raw.receivedAt || raw.created || null },
+    metadata: {
+      source: 'leadbyte',
+      external_id: raw.id || raw.leadId || null,
+      campaign_lb_id: campaignLBId ?? raw.campaignId ?? null,
+      received_at: raw.receivedAt || raw.created || raw.dateCreated || null,
+      raw: d,
+    },
   }
 }
 
@@ -154,16 +164,17 @@ serve(async (req) => {
     }
 
     // ── Campaigns ──
+    // Keep track of LB campaign IDs to iterate leads per campaign below
+    const campaignLBIds: Array<string | number> = []
     try {
       const { ok, data } = await lbGet(subdomain, actualTld, '/campaigns', api_key, { limit: '200' })
       if (ok) {
         const list = Array.isArray(data) ? data : (data as any)?.results || (data as any)?.campaigns || []
         summary.campaigns.fetched = list.length
         for (const item of list) {
+          if (item?.id != null) campaignLBIds.push(item.id)
           const mapped = mapCampaign(item)
           if (!mapped) continue
-          // Upsert by external_id stored in metadata. Since wm_campaigns has no
-          // external_id column, we match on metadata->>'external_id'.
           const externalId = (mapped.metadata as any)?.external_id
           if (externalId != null) {
             const { data: existing } = await admin.from('wm_campaigns').select('id').eq('metadata->>external_id', String(externalId)).limit(1).maybeSingle()
@@ -210,30 +221,46 @@ serve(async (req) => {
       summary.buyers.errors.push((e as Error).message)
     }
 
-    // ── Leads (recent 500) ──
+    // ── Leads ──
+    // LeadByte's /leads/search requires a `searches` array where each item targets
+    // a specific campaignId with at least one field filter (e.g. email: "%").
+    // We iterate over all known campaigns and fetch their leads.
     try {
-      const { ok, data } = await lbPost(subdomain, actualTld, '/leads/search', api_key, { limit: 500 })
-      if (ok) {
-        const list = Array.isArray(data) ? data : (data as any)?.results || (data as any)?.leads || []
-        summary.leads.fetched = list.length
-        for (const item of list) {
-          const mapped = mapLead(item)
-          if (!mapped) continue
-          const externalId = (mapped.metadata as any)?.external_id
-          if (externalId != null) {
-            const { data: existing } = await admin.from('wm_leads').select('id').eq('metadata->>external_id', String(externalId)).limit(1).maybeSingle()
-            if (existing?.id) {
-              await admin.from('wm_leads').update(mapped).eq('id', existing.id)
-            } else {
-              await admin.from('wm_leads').insert(mapped)
-            }
-          } else {
-            await admin.from('wm_leads').insert(mapped)
-          }
-          summary.leads.upserted++
-        }
+      if (campaignLBIds.length === 0) {
+        summary.leads.errors.push('Aucune campagne disponible — leads ignores.')
       } else {
-        summary.leads.errors.push(`fetch failed: ${JSON.stringify(data).slice(0, 200)}`)
+        for (const cid of campaignLBIds) {
+          try {
+            const { ok, data } = await lbPost(subdomain, actualTld, '/leads/search', api_key, {
+              searches: [{ campaignId: Number(cid), email: '%' }],
+            })
+            if (!ok) {
+              summary.leads.errors.push(`campaign ${cid}: fetch failed`)
+              continue
+            }
+            const searches = (data as any)?.searches || []
+            const results = searches.flatMap((s: any) => s?.results || [])
+            summary.leads.fetched += results.length
+            for (const item of results) {
+              const mapped = mapLead(item, cid)
+              if (!mapped) continue
+              const externalId = (mapped.metadata as any)?.external_id
+              if (externalId != null) {
+                const { data: existing } = await admin.from('wm_leads').select('id').eq('metadata->>external_id', String(externalId)).limit(1).maybeSingle()
+                if (existing?.id) {
+                  await admin.from('wm_leads').update(mapped).eq('id', existing.id)
+                } else {
+                  await admin.from('wm_leads').insert(mapped)
+                }
+              } else {
+                await admin.from('wm_leads').insert(mapped)
+              }
+              summary.leads.upserted++
+            }
+          } catch (e) {
+            summary.leads.errors.push(`campaign ${cid}: ${(e as Error).message}`)
+          }
+        }
       }
     } catch (e) {
       summary.leads.errors.push((e as Error).message)
