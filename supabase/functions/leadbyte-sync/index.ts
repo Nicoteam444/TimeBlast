@@ -163,11 +163,16 @@ serve(async (req) => {
       finished_at: '',
     }
 
-    // ── Campaigns ──
+    // ── Campaigns (liste + enrichissement avec /reports/campaign) ──
     // Keep track of LB campaign IDs to iterate leads per campaign below
     const campaignLBIds: Array<string | number> = []
+    // Date range pour le rapport : par defaut, 12 derniers mois
+    const today = new Date()
+    const fromDate = new Date(today.getFullYear() - 1, today.getMonth(), today.getDate()).toISOString().slice(0, 10) + 'T00:00:00Z'
+    const toDate = today.toISOString().slice(0, 10) + 'T23:59:59Z'
+
     try {
-      const { ok, data } = await lbGet(subdomain, actualTld, '/campaigns', api_key, { limit: '200' })
+      const { ok, data } = await lbGet(subdomain, actualTld, '/campaigns', api_key, { limit: '500' })
       if (ok) {
         const list = Array.isArray(data) ? data : (data as any)?.results || (data as any)?.campaigns || []
         summary.campaigns.fetched = list.length
@@ -175,6 +180,36 @@ serve(async (req) => {
           if (item?.id != null) campaignLBIds.push(item.id)
           const mapped = mapCampaign(item)
           if (!mapped) continue
+
+          // Enrichir avec le rapport campagne (leads, revenue, profit)
+          try {
+            const rep = await lbGet(subdomain, actualTld, '/reports/campaign', api_key, {
+              campaignId: String(item.id),
+              from: fromDate,
+              to: toDate,
+            })
+            if (rep.ok) {
+              const r = (rep.data as any)?.data?.[0] || null
+              if (r) {
+                // Store aggregated metrics in metadata + update cost/budget for display
+                const meta = mapped.metadata as any
+                meta.leads_total = Number(r.leads) || 0
+                meta.leads_valid = Number(r.valid) || 0
+                meta.leads_invalid = Number(r.invalid) || 0
+                meta.leads_sold = Number(r.sold) || 0
+                meta.leads_returns = Number(r.returns) || 0
+                meta.revenue = Number(r.revenue) || 0
+                meta.payout = Number(r.payout) || 0
+                meta.profit = Number(r.profit) || 0
+                meta.currency = r.currency || 'EUR'
+                meta.report_from = fromDate
+                meta.report_to = toDate
+                // Le cost du wm_campaigns = payout (ce qu'on a verse aux sources)
+                mapped.cost = Number(r.payout) || 0
+              }
+            }
+          } catch (_e) { /* continue even if report fails */ }
+
           const externalId = (mapped.metadata as any)?.external_id
           if (externalId != null) {
             const { data: existing } = await admin.from('wm_campaigns').select('id').eq('metadata->>external_id', String(externalId)).limit(1).maybeSingle()
