@@ -86,10 +86,13 @@ function wrapQueryBuilder(qb, tableName) {
   return qb
 }
 
+// Proxy minimal : on ne wrap que .from(). Tous les autres accès
+// (auth, functions, rpc, storage, channels...) passent direct a _client
+// pour preserver le comportement natif Supabase.
 export const supabase = new Proxy({}, {
   get(_, prop) {
     if (prop === 'from') {
-      return function (tableName) {
+      return (tableName) => {
         const qb = _client.from(tableName)
         return wrapQueryBuilder(qb, tableName)
       }
