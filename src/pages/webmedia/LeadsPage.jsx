@@ -193,13 +193,8 @@ export default function LeadsPage() {
     return c
   }, [leads])
 
-  if (leadsLoading) return (
-    <div style={{ display: 'flex', justifyContent: 'center', padding: '3rem' }}>
-      <div style={{ width: 36, height: 36, border: '4px solid #e2e8f0', borderTopColor: '#195C82', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
-    </div>
-  )
-
   // Agregats LeadByte depuis wm_campaigns.metadata (API ne liste pas les leads individuels)
+  // Doit rester AVANT tout early return — regle des Hooks
   const lbAgg = useMemo(() => {
     const total = campaigns.reduce((s, c) => s + (Number(c.metadata?.leads_total) || 0), 0)
     const sold = campaigns.reduce((s, c) => s + (Number(c.metadata?.leads_sold) || 0), 0)
@@ -207,6 +202,12 @@ export default function LeadsPage() {
     const activeCampaigns = campaigns.filter(c => Number(c.metadata?.leads_total) > 0).length
     return { total, sold, revenue, activeCampaigns }
   }, [campaigns])
+
+  if (leadsLoading) return (
+    <div style={{ display: 'flex', justifyContent: 'center', padding: '3rem' }}>
+      <div style={{ width: 36, height: 36, border: '4px solid #e2e8f0', borderTopColor: '#195C82', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
+    </div>
+  )
 
   return (
     <div style={{ padding: '1.5rem', maxWidth: 1400, margin: '0 auto' }}>
