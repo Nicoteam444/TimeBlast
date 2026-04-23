@@ -159,6 +159,12 @@ function EnvDefaultRedirect() {
     // Callback en cours mais user pas encore set → attendre
     if (!user) { console.log('[Redirect] waiting for user (oauth in progress)'); return }
     if (environments?.length > 0) {
+      // Sous-domaine webmedia → redirection directe vers env Webmedia
+      const host = window.location.hostname
+      if (host === 'webmedia.timeblast.ai') {
+        const webmediaEnv = environments.find(e => e.name === 'Webmedia') || environments.find(e => e.env_code === '2026001')
+        if (webmediaEnv) { navigate(`/${webmediaEnv.env_code}`, { replace: true }); return }
+      }
       const defaultEnv = environments.find(e => e.is_production) || environments[0]
       console.log('[Redirect] → /' + defaultEnv.env_code)
       navigate(`/${defaultEnv.env_code}`, { replace: true })
