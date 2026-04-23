@@ -106,9 +106,16 @@ function setupDarkModeObserver(isDark) {
   darkModeObserver.observe(document.body, { childList: true, subtree: true, attributes: true, attributeFilter: ['style', 'class'] })
 }
 
+function isBackofficePath() {
+  if (typeof window === 'undefined') return false
+  return /\/backoffice(\/|$)/.test(window.location.pathname)
+}
+
 function applyToDOM(settings) {
   const root = document.documentElement
-  root.setAttribute('data-theme', settings.theme)
+  // Sur /backoffice, force toujours light (independant du theme utilisateur)
+  const effectiveTheme = isBackofficePath() ? 'light' : settings.theme
+  root.setAttribute('data-theme', effectiveTheme)
   root.style.setProperty('--base-font-size', FONT_SCALE[settings.fontSize] || '15px')
   root.style.setProperty('--row-py', DENSITY_SCALE[settings.density] || '0.45rem')
 
@@ -119,7 +126,7 @@ function applyToDOM(settings) {
   const surface = settings.surfaceColor || DEFAULTS.surfaceColor
   const bg      = settings.bgColor      || DEFAULTS.bgColor
 
-  if (settings.theme === 'dark') {
+  if (effectiveTheme === 'dark') {
     // Dark mode — Claude Code style: tout noir
     root.style.setProperty('--primary', '#93c5fd')
     root.style.setProperty('--primary-hover', '#60a5fa')
@@ -153,7 +160,7 @@ function applyToDOM(settings) {
   }
 
   // Setup/teardown dark mode observer for inline style overrides
-  setupDarkModeObserver(settings.theme === 'dark')
+  setupDarkModeObserver(effectiveTheme === 'dark')
 }
 
 export function AppearanceProvider({ children }) {
@@ -185,6 +192,23 @@ export function AppearanceProvider({ children }) {
     applyToDOM(settings)
     try { localStorage.setItem(getStorageKey(userId), JSON.stringify(settings)) } catch {}
   }, [settings, userId])
+
+  // Re-apply on navigation (SPA route change) — pour que /backoffice force light
+  // et que le retour a l'app restaure le dark eventuel
+  useEffect(() => {
+    function reapply() { applyToDOM(settings) }
+    window.addEventListener('popstate', reapply)
+    // Intercept pushState/replaceState pour detecter les navigations react-router
+    const origPush = window.history.pushState
+    const origReplace = window.history.replaceState
+    window.history.pushState = function (...args) { origPush.apply(this, args); reapply() }
+    window.history.replaceState = function (...args) { origReplace.apply(this, args); reapply() }
+    return () => {
+      window.removeEventListener('popstate', reapply)
+      window.history.pushState = origPush
+      window.history.replaceState = origReplace
+    }
+  }, [settings])
 
   function update(patch) { setSettings(s => ({ ...s, ...patch })) }
 
