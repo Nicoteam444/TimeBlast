@@ -992,6 +992,7 @@ function RightsTab() {
 const TABS = [
   { id: 'envs', label: 'Environnements', icon: '🌐' },
   { id: 'users', label: 'Utilisateurs & Acces', icon: '👥' },
+  { id: 'messages', label: 'Messages', icon: '📬' },
   { id: 'inscriptions', label: 'Inscriptions', icon: '📋' },
   { id: 'integrations', label: 'Intégrations', icon: '🔌' },
   { id: 'imports', label: 'Import données', icon: '📥' },
@@ -1054,6 +1055,7 @@ export default function BackofficePage() {
 
       {tab === 'envs' && <EnvsTab />}
       {tab === 'users' && <UsersTab />}
+      {tab === 'messages' && <MessagesTab />}
       {tab === 'integrations' && <IntegrationsTab />}
       {tab === 'imports' && <ImportsTab />}
       {tab === 'tables' && <TablesTab />}
@@ -1065,10 +1067,69 @@ export default function BackofficePage() {
   )
 }
 
+// ── Modal generique pour afficher/gerer un message recu ──
+function MessageDetailModal({ item, type, onClose, onDelete, onMarkRead, onMarkReplied }) {
+  if (!item) return null
+  const isContact = type === 'contact'
+  return (
+    <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 9999 }} onClick={onClose}>
+      <div style={{ background: '#fff', borderRadius: 16, width: 640, maxWidth: '95vw', maxHeight: '85vh', overflow: 'auto', boxShadow: '0 25px 50px rgba(0,0,0,.25)' }} onClick={e => e.stopPropagation()}>
+        <div style={{ padding: '1.5rem', borderBottom: '1px solid #f1f5f9' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+            <div>
+              <h2 style={{ margin: 0, fontSize: '1.2rem', fontWeight: 700, color: '#1e293b' }}>
+                {isContact ? (item.name || '—') : [item.prenom, item.nom].filter(Boolean).join(' ')}
+              </h2>
+              <a href={`mailto:${item.email}`} style={{ color: '#2563eb', fontSize: '.9rem', textDecoration: 'none' }}>{item.email}</a>
+              <div style={{ display: 'flex', gap: 12, marginTop: 6, fontSize: '.8rem', color: '#64748b' }}>
+                {item.telephone && <span>📞 {item.telephone}</span>}
+                {item.company && <span>🏢 {item.company}</span>}
+                <span>📅 {new Date(item.created_at).toLocaleString('fr-FR')}</span>
+              </div>
+            </div>
+            <button onClick={onClose} style={{ background: 'none', border: 'none', fontSize: 24, cursor: 'pointer', color: '#94a3b8', padding: 0, lineHeight: 1 }}>×</button>
+          </div>
+        </div>
+        <div style={{ padding: '1.5rem' }}>
+          <div style={{ fontSize: '.75rem', fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: .5, marginBottom: 8 }}>Message</div>
+          <div style={{
+            background: '#f8fafc', borderRadius: 8, padding: 16, lineHeight: 1.7, fontSize: 14,
+            whiteSpace: 'pre-wrap', wordBreak: 'break-word', color: '#1e293b', border: '1px solid #e2e8f0',
+          }}>
+            {item.message || 'Aucun message.'}
+          </div>
+        </div>
+        <div style={{ padding: '1rem 1.5rem', borderTop: '1px solid #f1f5f9', display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+          <a href={`mailto:${item.email}?subject=Re: ${isContact ? 'Demande de contact' : 'Demande d\'inscription'} TimeBlast`}
+            style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '8px 16px', borderRadius: 8, background: '#195C82', color: '#fff', textDecoration: 'none', fontSize: 13, fontWeight: 600 }}>
+            ✉️ Répondre
+          </a>
+          {isContact && onMarkRead && (
+            <button onClick={() => onMarkRead(item)} style={S.btn}>
+              {item.read ? '📬 Marquer non lu' : '📭 Marquer lu'}
+            </button>
+          )}
+          {isContact && onMarkReplied && (
+            <button onClick={() => onMarkReplied(item)} style={S.btn}>
+              {item.replied ? '✅ Répondu' : '📋 Marquer répondu'}
+            </button>
+          )}
+          {onDelete && (
+            <button onClick={() => { if (confirm('Supprimer definitivement ?')) onDelete(item) }} style={S.btnDanger}>
+              🗑 Supprimer
+            </button>
+          )}
+        </div>
+      </div>
+    </div>
+  )
+}
+
 // ── Onglet Inscriptions ──
 function InscriptionsTab() {
   const [rows, setRows] = useState([])
   const [loading, setLoading] = useState(true)
+  const [selected, setSelected] = useState(null)
 
   useEffect(() => { load() }, [])
 
@@ -1079,12 +1140,18 @@ function InscriptionsTab() {
     setLoading(false)
   }
 
+  async function handleDelete(item) {
+    await supabase.from('inscriptions').delete().eq('id', item.id)
+    setSelected(null)
+    load()
+  }
+
   return (
     <div style={S.card}>
       <div style={{ ...S.cardPad, borderBottom: '1px solid #f1f5f9', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <div>
           <h3 style={{ margin: 0, fontSize: '1rem', fontWeight: 700 }}>📋 Demandes d'inscription</h3>
-          <p style={{ margin: '2px 0 0', fontSize: '.8rem', color: '#94a3b8' }}>{rows.length} demande{rows.length > 1 ? 's' : ''} reçue{rows.length > 1 ? 's' : ''}</p>
+          <p style={{ margin: '2px 0 0', fontSize: '.8rem', color: '#94a3b8' }}>{rows.length} demande{rows.length > 1 ? 's' : ''} reçue{rows.length > 1 ? 's' : ''} · cliquez sur une ligne pour voir le message complet</p>
         </div>
         <button onClick={load} style={S.btn}>🔄 Actualiser</button>
       </div>
@@ -1105,13 +1172,14 @@ function InscriptionsTab() {
             </thead>
             <tbody>
               {rows.map(r => (
-                <tr key={r.id} style={{ borderBottom: '1px solid #f1f5f9' }}
+                <tr key={r.id} style={{ borderBottom: '1px solid #f1f5f9', cursor: 'pointer' }}
+                  onClick={() => setSelected(r)}
                   onMouseEnter={e => e.currentTarget.style.background = '#f8fafc'}
                   onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>
                   <td style={{ padding: '12px 16px', fontWeight: 600, color: '#1e293b' }}>{r.prenom}</td>
                   <td style={{ padding: '12px 16px', color: '#1e293b' }}>{r.nom}</td>
                   <td style={{ padding: '12px 16px' }}>
-                    <a href={`mailto:${r.email}`} style={{ color: '#195C82', textDecoration: 'none', fontWeight: 600 }}>{r.email}</a>
+                    <a href={`mailto:${r.email}`} style={{ color: '#195C82', textDecoration: 'none', fontWeight: 600 }} onClick={e => e.stopPropagation()}>{r.email}</a>
                   </td>
                   <td style={{ padding: '12px 16px', color: '#64748b' }}>{r.telephone || '—'}</td>
                   <td style={{ padding: '12px 16px', color: '#64748b', maxWidth: 260, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}
@@ -1125,6 +1193,118 @@ function InscriptionsTab() {
           </table>
         </div>
       )}
+
+      <MessageDetailModal item={selected} type="inscription" onClose={() => setSelected(null)} onDelete={handleDelete} />
+    </div>
+  )
+}
+
+// ── Onglet Messages de contact ──
+function MessagesTab() {
+  const [rows, setRows] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [selected, setSelected] = useState(null)
+  const [filter, setFilter] = useState('all')
+
+  useEffect(() => { load() }, [])
+
+  async function load() {
+    setLoading(true)
+    const { data } = await supabase.from('contact_messages').select('*').order('created_at', { ascending: false })
+    setRows(data || [])
+    setLoading(false)
+  }
+
+  async function handleDelete(item) {
+    await supabase.from('contact_messages').delete().eq('id', item.id)
+    setSelected(null)
+    load()
+  }
+  async function handleMarkRead(item) {
+    await supabase.from('contact_messages').update({ read: !item.read }).eq('id', item.id)
+    const next = { ...item, read: !item.read }
+    setSelected(next); load()
+  }
+  async function handleMarkReplied(item) {
+    await supabase.from('contact_messages').update({ replied: !item.replied }).eq('id', item.id)
+    const next = { ...item, replied: !item.replied }
+    setSelected(next); load()
+  }
+  async function selectRow(msg) {
+    setSelected(msg)
+    if (!msg.read) {
+      await supabase.from('contact_messages').update({ read: true }).eq('id', msg.id)
+      setSelected({ ...msg, read: true })
+      load()
+    }
+  }
+
+  const filtered = rows.filter(m => filter === 'all' ? true : filter === 'unread' ? !m.read : m.read)
+  const unreadCount = rows.filter(m => !m.read).length
+
+  return (
+    <div style={S.card}>
+      <div style={{ ...S.cardPad, borderBottom: '1px solid #f1f5f9', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <div>
+          <h3 style={{ margin: 0, fontSize: '1rem', fontWeight: 700 }}>📬 Messages de contact</h3>
+          <p style={{ margin: '2px 0 0', fontSize: '.8rem', color: '#94a3b8' }}>{rows.length} message{rows.length > 1 ? 's' : ''} · {unreadCount} non lu{unreadCount > 1 ? 's' : ''}</p>
+        </div>
+        <div style={{ display: 'flex', gap: 8 }}>
+          {['all', 'unread', 'read'].map(f => (
+            <button key={f} onClick={() => setFilter(f)}
+              style={{ ...S.btn, background: filter === f ? '#195C82' : '#fff', color: filter === f ? '#fff' : '#475569', border: filter === f ? 'none' : '1px solid #e2e8f0' }}>
+              {f === 'all' ? `Tous (${rows.length})` : f === 'unread' ? `Non lus (${unreadCount})` : `Lus (${rows.length - unreadCount})`}
+            </button>
+          ))}
+          <button onClick={load} style={S.btn}>🔄</button>
+        </div>
+      </div>
+
+      {loading ? (
+        <div style={{ padding: '3rem', textAlign: 'center', color: '#94a3b8' }}>Chargement…</div>
+      ) : filtered.length === 0 ? (
+        <div style={{ padding: '3rem', textAlign: 'center', color: '#94a3b8' }}>Aucun message.</div>
+      ) : (
+        <div style={{ overflowX: 'auto' }}>
+          <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '.85rem' }}>
+            <thead>
+              <tr style={{ background: '#f8fafc' }}>
+                {['', 'Nom', 'Email', 'Entreprise', 'Message', 'Statut', 'Date'].map((h, i) => (
+                  <th key={i} style={{ padding: '10px 16px', textAlign: 'left', fontWeight: 700, color: '#475569', fontSize: '.75rem', textTransform: 'uppercase', letterSpacing: .5, borderBottom: '1px solid #e2e8f0', whiteSpace: 'nowrap' }}>{h}</th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {filtered.map(r => (
+                <tr key={r.id} onClick={() => selectRow(r)}
+                  style={{ borderBottom: '1px solid #f1f5f9', cursor: 'pointer', background: r.read ? 'transparent' : '#fefce8', fontWeight: r.read ? 'normal' : '600' }}
+                  onMouseEnter={e => e.currentTarget.style.background = '#f1f5f9'}
+                  onMouseLeave={e => e.currentTarget.style.background = r.read ? 'transparent' : '#fefce8'}>
+                  <td style={{ padding: '12px 16px', fontSize: 16 }}>{r.read ? '📭' : '📬'}</td>
+                  <td style={{ padding: '12px 16px', color: '#1e293b' }}>{r.name || '—'}</td>
+                  <td style={{ padding: '12px 16px' }}>
+                    <a href={`mailto:${r.email}`} style={{ color: '#195C82', textDecoration: 'none', fontWeight: 600 }} onClick={e => e.stopPropagation()}>{r.email}</a>
+                  </td>
+                  <td style={{ padding: '12px 16px', color: '#64748b' }}>{r.company || '—'}</td>
+                  <td style={{ padding: '12px 16px', color: '#64748b', maxWidth: 260, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}
+                    title={r.message}>{r.message || '—'}</td>
+                  <td style={{ padding: '12px 16px' }}>
+                    <div style={{ display: 'flex', gap: 4 }}>
+                      {r.replied && <span style={S.badge('#dcfce7', '#166534')}>Répondu</span>}
+                      {!r.read && <span style={S.badge('#fef3c7', '#92400e')}>Nouveau</span>}
+                    </div>
+                  </td>
+                  <td style={{ padding: '12px 16px', color: '#94a3b8', whiteSpace: 'nowrap', fontSize: '.8rem' }}>
+                    {new Date(r.created_at).toLocaleDateString('fr-FR', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+
+      <MessageDetailModal item={selected} type="contact" onClose={() => setSelected(null)} onDelete={handleDelete} onMarkRead={handleMarkRead} onMarkReplied={handleMarkReplied} />
     </div>
   )
 }
