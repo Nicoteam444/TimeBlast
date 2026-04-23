@@ -66,11 +66,42 @@ function useLastSync(provider = 'leadbyte') {
   return lastSync
 }
 
+// Monthly stats since 2026-01-01 (for monthly CA chart)
+function useMonthlyStats() {
+  const [stats, setStats] = useState([])
+  useEffect(() => {
+    let active = true
+    ;(async () => {
+      const { data } = await supabase.from('wm_monthly_stats').select('*').gte('month', '2026-01').order('month', { ascending: true })
+      if (data && active) setStats(data)
+    })()
+    return () => { active = false }
+  }, [])
+  return stats
+}
+
+const MONTH_LABELS_FR = { '01':'Jan','02':'Fév','03':'Mar','04':'Avr','05':'Mai','06':'Juin','07':'Juil','08':'Août','09':'Sept','10':'Oct','11':'Nov','12':'Déc' }
+
 export default function WebmediaDashboardPage() {
   const envNavigate = useEnvNavigate()
   const { analytics, loading } = useAnalytics()
   const now = useNow()
   const lastSync = useLastSync('leadbyte')
+  const monthlyStats = useMonthlyStats()
+
+  const monthlyChartData = useMemo(() => monthlyStats.map(s => ({
+    month: MONTH_LABELS_FR[s.month.slice(5, 7)] + ' ' + s.month.slice(0, 4),
+    revenue: Number(s.revenue) || 0,
+    profit: Number(s.profit) || 0,
+    leads: Number(s.leads) || 0,
+    sold: Number(s.sold) || 0,
+  })), [monthlyStats])
+
+  const ytdTotals = useMemo(() => ({
+    revenue: monthlyStats.reduce((s, m) => s + (Number(m.revenue) || 0), 0),
+    profit: monthlyStats.reduce((s, m) => s + (Number(m.profit) || 0), 0),
+    leads: monthlyStats.reduce((s, m) => s + (Number(m.leads) || 0), 0),
+  }), [monthlyStats])
 
   const objectiveProgress = useMemo(() => {
     if (!analytics) return 0
@@ -167,6 +198,44 @@ export default function WebmediaDashboardPage() {
           }} />
         </div>
       </div>
+
+      {/* ── CA mensuel depuis 2026-01-01 ── */}
+      {monthlyChartData.length > 0 && (
+        <div style={{ ...cardStyle, marginBottom: '1.5rem' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '.75rem', flexWrap: 'wrap', gap: '.75rem' }}>
+            <div>
+              <h2 style={{ fontSize: '1rem', fontWeight: 700, margin: 0 }}>📈 CA par mois — YTD 2026</h2>
+              <p style={{ margin: '.2rem 0 0', color: 'var(--text-muted, #64748b)', fontSize: '.78rem' }}>
+                Revenu, marge et leads mensuels depuis le 1er janvier 2026 (source LeadByte)
+              </p>
+            </div>
+            <div style={{ display: 'flex', gap: '1.25rem', fontSize: '.82rem' }}>
+              <div>
+                <div style={{ color: 'var(--text-muted, #64748b)', fontSize: '.7rem', textTransform: 'uppercase', letterSpacing: '.5px' }}>CA YTD</div>
+                <div style={{ fontWeight: 800, color: '#195C82' }}>{fmtE(ytdTotals.revenue)}</div>
+              </div>
+              <div>
+                <div style={{ color: 'var(--text-muted, #64748b)', fontSize: '.7rem', textTransform: 'uppercase', letterSpacing: '.5px' }}>Marge YTD</div>
+                <div style={{ fontWeight: 800, color: ytdTotals.profit >= 0 ? '#16a34a' : '#dc2626' }}>{fmtE(ytdTotals.profit)}</div>
+              </div>
+              <div>
+                <div style={{ color: 'var(--text-muted, #64748b)', fontSize: '.7rem', textTransform: 'uppercase', letterSpacing: '.5px' }}>Leads YTD</div>
+                <div style={{ fontWeight: 800, color: '#1D9BF0' }}>{fmtN(ytdTotals.leads)}</div>
+              </div>
+            </div>
+          </div>
+          <ResponsiveContainer width="100%" height={260}>
+            <BarChart data={monthlyChartData} margin={{ top: 5, right: 16, bottom: 5, left: 0 }}>
+              <CartesianGrid strokeDasharray="3 3" stroke="var(--border, #e2e8f0)" />
+              <XAxis dataKey="month" tick={{ fontSize: 11, fill: 'var(--text-muted, #64748b)' }} />
+              <YAxis tick={{ fontSize: 11, fill: 'var(--text-muted, #64748b)' }} tickFormatter={v => v >= 1000 ? `${(v/1000).toFixed(0)}k€` : `${v}€`} />
+              <Tooltip formatter={(v, k) => k === 'leads' ? fmtN(v) : fmtE(v)} labelStyle={{ fontWeight: 700 }} />
+              <Bar dataKey="revenue" name="Revenu" fill="#195C82" radius={[6, 6, 0, 0]} />
+              <Bar dataKey="profit" name="Marge" fill="#F8B35A" radius={[6, 6, 0, 0]} />
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
+      )}
 
       {/* ── Charts row ── */}
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem', marginBottom: '1.5rem' }}>

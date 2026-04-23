@@ -136,24 +136,15 @@ const SECTIONS = [
       { to: '/cockpit/recommandations',icon: '💡', label: 'Recommandations' },
     ],
   },
-  {
-    id: 'webmedia',
-    icon: '🚀',
-    label: 'Performance',
-    landingTo: '/webmedia',
-    roles: ['admin', 'manager'],
-    envOnly: 'Webmedia', // visible uniquement dans l'env Webmedia
-    items: [
-      { to: '/webmedia',            icon: '📊', label: 'Tableau de bord' },
-      { to: '/webmedia/campagnes',  icon: '📢', label: 'Campagnes' },
-      { to: '/webmedia/leads',      icon: '💧', label: 'Leads' },
-      { to: '/webmedia/acheteurs',  icon: '🤝', label: 'Acheteurs' },
-      { to: '/webmedia/ventes',     icon: '💰', label: 'Ventes' },
-      { to: '/webmedia/achats',     icon: '🛒', label: 'Achats' },
-      { to: '/webmedia/facturation',icon: '🧾', label: 'Facturation' },
-      { to: '/webmedia/analytics',  icon: '📈', label: 'Analytics' },
-    ],
-  },
+  // ── Performance (Webmedia) : chaque onglet en entree top-level de la sidebar ──
+  { id: 'wm-dashboard', icon: '🚀', label: 'Performance',       directLink: true, landingTo: '/webmedia',              roles: ['admin','manager'], envOnly: 'Webmedia', items: [] },
+  { id: 'wm-camp',      icon: '📢', label: 'Campagnes',         directLink: true, landingTo: '/webmedia/campagnes',    roles: ['admin','manager'], envOnly: 'Webmedia', items: [] },
+  { id: 'wm-leads',     icon: '💧', label: 'Leads',             directLink: true, landingTo: '/webmedia/leads',        roles: ['admin','manager'], envOnly: 'Webmedia', items: [] },
+  { id: 'wm-buyers',    icon: '🤝', label: 'Acheteurs',         directLink: true, landingTo: '/webmedia/acheteurs',    roles: ['admin','manager'], envOnly: 'Webmedia', items: [] },
+  { id: 'wm-sales',     icon: '💰', label: 'Ventes',            directLink: true, landingTo: '/webmedia/ventes',       roles: ['admin','manager'], envOnly: 'Webmedia', items: [] },
+  { id: 'wm-buy',       icon: '🛒', label: 'Achats',            directLink: true, landingTo: '/webmedia/achats',       roles: ['admin','manager'], envOnly: 'Webmedia', items: [] },
+  { id: 'wm-bill',      icon: '🧾', label: 'Facturation',       directLink: true, landingTo: '/webmedia/facturation',  roles: ['admin','manager'], envOnly: 'Webmedia', items: [] },
+  { id: 'wm-anal',      icon: '📈', label: 'Analytics',         directLink: true, landingTo: '/webmedia/analytics',    roles: ['admin','manager'], envOnly: 'Webmedia', items: [] },
   {
     id: 'wiki',
     icon: '📚',
