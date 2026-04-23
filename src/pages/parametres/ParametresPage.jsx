@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react'
 import { supabase } from '../../lib/supabase'
 import { useAppearance } from '../../contexts/AppearanceContext'
+import { useEnv } from '../../contexts/EnvContext'
 import Spinner from '../../components/Spinner'
 
 // ── Onglet Affichage ─────────────────────────────────────────
@@ -629,6 +630,7 @@ const DB_TABLES = [
 ]
 
 function BaseDeDonneesTab() {
+  const { currentEnv } = useEnv() || {}
   const [stats, setStats] = useState([])
   const [loading, setLoading] = useState(true)
   const [totalRows, setTotalRows] = useState(0)
@@ -636,14 +638,22 @@ function BaseDeDonneesTab() {
   const [detailLoading, setDetailLoading] = useState(false)
   const [detailData, setDetailData] = useState({})
 
-  useEffect(() => { fetchStats() }, [])
+  useEffect(() => { fetchStats() }, [currentEnv?.id])
 
   async function fetchStats() {
     setLoading(true)
     const results = []
     for (const table of DB_TABLES) {
       try {
-        const { count, error } = await supabase.from(table.name).select('*', { count: 'exact', head: true })
+        let count, error
+        // profiles n'a pas d'environment_id : on compte via user_environments
+        if (table.name === 'profiles' && currentEnv?.id) {
+          const res = await supabase.from('user_environments').select('*', { count: 'exact', head: true }).eq('environment_id', currentEnv.id)
+          count = res.count; error = res.error
+        } else {
+          const res = await supabase.from(table.name).select('*', { count: 'exact', head: true })
+          count = res.count; error = res.error
+        }
         results.push({ ...table, count: error ? '—' : (count || 0), error: error ? error.message : null })
       } catch {
         results.push({ ...table, count: '—', error: 'Table introuvable' })
