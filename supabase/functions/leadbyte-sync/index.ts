@@ -125,21 +125,44 @@ serve(async (req) => {
   if (req.method !== 'POST') return json({ error: 'POST only' }, 405)
 
   try {
-    // 1. Auth check — only authenticated users
+    // 1. Auth check — authenticated user OR cron secret
     const authHeader = req.headers.get('Authorization')
-    if (!authHeader) return json({ error: 'Non authentifie' }, 401)
+    const cronSecret = req.headers.get('x-cron-secret')
+    const expectedCronSecret = Deno.env.get('CRON_SECRET') || ''
 
     const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!
     const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
     // `main` = projet SRA principal (contient la table environments + integrations)
     const main = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY)
 
-    const { data: { user }, error: authError } = await main.auth.getUser(authHeader.replace('Bearer ', ''))
-    if (authError || !user) return json({ error: 'Token invalide' }, 401)
+    const isCron = expectedCronSecret && cronSecret === expectedCronSecret
+    if (!isCron) {
+      if (!authHeader) return json({ error: 'Non authentifie' }, 401)
+      const { data: { user }, error: authError } = await main.auth.getUser(authHeader.replace('Bearer ', ''))
+      if (authError || !user) return json({ error: 'Token invalide' }, 401)
+    }
 
-    // 2. Extract config from request body
-    const { action, subdomain, api_key, tld, env_code } = await req.json()
-    if (!subdomain || !api_key) return json({ error: 'subdomain et api_key sont requis' }, 400)
+    // 2. Extract config from request body OR from integrations table (cron mode)
+    let body: any = {}
+    try { body = await req.json() } catch { body = {} }
+    let { action, subdomain, api_key, tld, env_code } = body
+
+    // Si cron ou body vide : charger config depuis integrations.config
+    if (isCron || (!subdomain && !api_key)) {
+      const { data: integ } = await main.from('integrations').select('config, environment_id').eq('provider', 'leadbyte').maybeSingle()
+      if (integ?.config) {
+        subdomain = subdomain || integ.config.subdomain
+        api_key = api_key || integ.config.api_key
+        tld = tld || integ.config.tld
+        // Pour env_code, on regarde la table environments si environment_id est present
+        if (!env_code && integ.environment_id) {
+          const { data: e } = await main.from('environments').select('env_code').eq('id', integ.environment_id).maybeSingle()
+          if (e) env_code = e.env_code
+        }
+      }
+    }
+
+    if (!subdomain || !api_key) return json({ error: 'subdomain et api_key requis (non trouves dans integrations)' }, 400)
 
     const actualTld = tld || '.com'
 
