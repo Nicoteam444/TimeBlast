@@ -176,13 +176,16 @@ export default function CampaignsPage() {
               <tr style={{ borderBottom: '2px solid var(--border)' }}>
                 {[
                   { key: 'name', label: 'Nom' },
-                  { key: 'channel', label: 'Levier' },
-                  { key: 'thematic', label: 'Thematique' },
+                  { key: 'thematic', label: 'Référence' },
+                  { key: 'country', label: 'Pays' },
                   { key: 'status', label: 'Statut' },
-                  { key: 'budget', label: 'Budget' },
-                  { key: 'cost', label: 'Cout' },
-                  { key: 'starts_on', label: 'Debut' },
-                  { key: 'ends_on', label: 'Fin' },
+                  { key: 'leads_total', label: 'Leads' },
+                  { key: 'leads_sold', label: 'Vendus' },
+                  { key: 'conversion', label: '% vente' },
+                  { key: 'revenue', label: 'Revenu' },
+                  { key: 'cost', label: 'Coût' },
+                  { key: 'profit', label: 'Marge' },
+                  { key: 'margin_pct', label: 'Marge %' },
                 ].map(col => (
                   <th key={col.key} onClick={() => toggleSort(col.key)} style={{ padding: '.65rem .75rem', textAlign: 'left', cursor: 'pointer', fontWeight: 600, color: 'var(--text-muted)', whiteSpace: 'nowrap', userSelect: 'none' }}>
                     {col.label} {sortKey === col.key ? (sortDir === 'asc' ? '▲' : '▼') : ''}
@@ -192,30 +195,42 @@ export default function CampaignsPage() {
               </tr>
             </thead>
             <tbody>
-              {filtered.map(c => (
-                <tr key={c.id} style={{ borderBottom: '1px solid var(--border)' }} onDoubleClick={() => openEdit(c)}>
-                  <td style={{ padding: '.55rem .75rem', fontWeight: 600 }}>{c.name}</td>
-                  <td style={{ padding: '.55rem .75rem' }}>
-                    <span style={{ display: 'inline-block', padding: '2px 8px', borderRadius: 6, fontSize: '.7rem', fontWeight: 700, color: '#fff', background: CHANNEL_COLORS[c.channel] || '#64748b' }}>{CHANNEL_LABELS[c.channel] || c.channel}</span>
-                  </td>
-                  <td style={{ padding: '.55rem .75rem' }}>{c.thematic || '-'}</td>
-                  <td style={{ padding: '.55rem .75rem' }}>
-                    <span style={{ display: 'inline-block', padding: '2px 8px', borderRadius: 6, fontSize: '.7rem', fontWeight: 700, color: '#fff', background: STATUS_COLORS[c.status] || '#94a3b8' }}>{STATUS_LABELS[c.status] || c.status}</span>
-                  </td>
-                  <td style={{ padding: '.55rem .75rem', fontWeight: 600 }}>{fmtE(c.budget)}</td>
-                  <td style={{ padding: '.55rem .75rem', fontWeight: 600 }}>{fmtE(c.cost)}</td>
-                  <td style={{ padding: '.55rem .75rem', whiteSpace: 'nowrap' }}>{fmtDate(c.starts_on)}</td>
-                  <td style={{ padding: '.55rem .75rem', whiteSpace: 'nowrap' }}>{fmtDate(c.ends_on)}</td>
-                  <td style={{ padding: '.55rem .75rem' }}>
-                    <div style={{ display: 'flex', gap: '.35rem' }}>
-                      <button onClick={() => openEdit(c)} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '.9rem' }} title="Modifier">✏️</button>
-                      <button onClick={() => setDeleting(c)} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '.9rem' }} title="Supprimer">🗑</button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
+              {filtered.map(c => {
+                const meta = c.metadata || {}
+                const leadsTotal = Number(meta.leads_total) || 0
+                const leadsSold = Number(meta.leads_sold) || 0
+                const revenue = Number(meta.revenue) || 0
+                const profit = Number(meta.profit) || 0
+                const cost = Number(c.cost) || Number(meta.payout) || 0
+                const conversionPct = leadsTotal > 0 ? (leadsSold / leadsTotal * 100) : 0
+                const marginPct = revenue > 0 ? (profit / revenue * 100) : 0
+                const profitColor = profit > 0 ? '#16a34a' : profit < 0 ? '#dc2626' : '#64748b'
+                return (
+                  <tr key={c.id} style={{ borderBottom: '1px solid var(--border)' }} onDoubleClick={() => openEdit(c)}>
+                    <td style={{ padding: '.55rem .75rem', fontWeight: 600 }}>{c.name}</td>
+                    <td style={{ padding: '.55rem .75rem', fontFamily: 'ui-monospace, Menlo, monospace', fontSize: '.75rem', color: '#475569' }}>{c.thematic || meta.reference || '-'}</td>
+                    <td style={{ padding: '.55rem .75rem', fontSize: '.78rem' }}>{meta.country || '-'}</td>
+                    <td style={{ padding: '.55rem .75rem' }}>
+                      <span style={{ display: 'inline-block', padding: '2px 8px', borderRadius: 6, fontSize: '.7rem', fontWeight: 700, color: '#fff', background: STATUS_COLORS[c.status] || '#94a3b8' }}>{STATUS_LABELS[c.status] || c.status}</span>
+                    </td>
+                    <td style={{ padding: '.55rem .75rem', fontWeight: 700, textAlign: 'right' }}>{leadsTotal.toLocaleString('fr-FR')}</td>
+                    <td style={{ padding: '.55rem .75rem', fontWeight: 700, textAlign: 'right', color: '#1D9BF0' }}>{leadsSold.toLocaleString('fr-FR')}</td>
+                    <td style={{ padding: '.55rem .75rem', textAlign: 'right', color: conversionPct >= 80 ? '#16a34a' : conversionPct >= 60 ? '#d97706' : '#64748b', fontWeight: 600 }}>{conversionPct.toFixed(0)}%</td>
+                    <td style={{ padding: '.55rem .75rem', fontWeight: 700, textAlign: 'right', color: '#195C82' }}>{fmtE(revenue)}</td>
+                    <td style={{ padding: '.55rem .75rem', textAlign: 'right' }}>{fmtE(cost)}</td>
+                    <td style={{ padding: '.55rem .75rem', textAlign: 'right', fontWeight: 700, color: profitColor }}>{fmtE(profit)}</td>
+                    <td style={{ padding: '.55rem .75rem', textAlign: 'right', fontWeight: 700, color: profitColor }}>{marginPct.toFixed(1)}%</td>
+                    <td style={{ padding: '.55rem .75rem' }}>
+                      <div style={{ display: 'flex', gap: '.35rem' }}>
+                        <button onClick={() => openEdit(c)} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '.9rem' }} title="Modifier">✏️</button>
+                        <button onClick={() => setDeleting(c)} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '.9rem' }} title="Supprimer">🗑</button>
+                      </div>
+                    </td>
+                  </tr>
+                )
+              })}
               {filtered.length === 0 && (
-                <tr><td colSpan={9} style={{ padding: '2rem', textAlign: 'center', color: 'var(--text-muted)' }}>Aucune campagne</td></tr>
+                <tr><td colSpan={12} style={{ padding: '2rem', textAlign: 'center', color: 'var(--text-muted)' }}>Aucune campagne</td></tr>
               )}
             </tbody>
           </table>
