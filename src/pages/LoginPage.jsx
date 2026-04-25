@@ -109,8 +109,114 @@ if (typeof document !== 'undefined' && !document.getElementById(TL_STYLE_ID)) {
       from { opacity: 0; transform: scaleY(.6); }
       to   { opacity: 1; transform: scaleY(1);  }
     }
+    .tl-dot-wrap { position: absolute; width: 0; height: 0; }
+    .tl-dot {
+      position: absolute; left: 0; top: 0;
+      width: 7px; height: 7px; border-radius: 50%;
+      transform: translate(-50%, -50%);
+      transition: transform .18s ease, box-shadow .18s ease;
+      cursor: pointer;
+    }
+    .tl-dot-tip {
+      position: absolute; left: 0; bottom: 14px;
+      transform: translate(-50%, 4px);
+      background: #0f172a; color: #fff;
+      padding: 6px 10px; border-radius: 8px;
+      font-size: .72rem; font-weight: 600; white-space: nowrap;
+      box-shadow: 0 6px 16px rgba(15,23,42,.18);
+      opacity: 0; pointer-events: none;
+      transition: opacity .15s ease, transform .15s ease;
+      z-index: 5;
+    }
+    .tl-dot-tip::after {
+      content: ''; position: absolute; left: 50%; top: 100%;
+      transform: translateX(-50%);
+      border: 5px solid transparent; border-top-color: #0f172a;
+    }
+    .tl-dot-wrap:hover .tl-dot {
+      transform: translate(-50%, -50%) scale(2);
+      box-shadow: 0 0 0 4px currentColor;
+    }
+    .tl-dot-wrap:hover .tl-dot-tip { opacity: 1; transform: translate(-50%, 0); }
+
+    /* Wires SVG : tirets animés vers le blast */
+    @keyframes tlWireDash {
+      from { stroke-dashoffset: 0;   }
+      to   { stroke-dashoffset: -24; }
+    }
+    @keyframes tlWireDraw {
+      from { stroke-dashoffset: 220; opacity: 0; }
+      to   { stroke-dashoffset: 0;   opacity: .55; }
+    }
+
+    /* Blast — panneau insight au hover */
+    .tl-blast-wrap { position: absolute; }
+    .tl-blast-halo {
+      position: absolute; left: 0; top: 0; width: 36px; height: 36px;
+      border-radius: 50%; transform: translate(-50%, -50%);
+      animation: tlSoftRing 2.4s ease-out infinite;
+      opacity: .35; pointer-events: none;
+    }
+    .tl-blast-core {
+      position: absolute; left: 0; top: 0; width: 14px; height: 14px;
+      border-radius: 50%; transform: translate(-50%, -50%);
+      background: #fff; border: 2px solid;
+      cursor: pointer; transition: transform .2s ease, box-shadow .2s ease;
+    }
+    .tl-blast-wrap:hover .tl-blast-core {
+      transform: translate(-50%, -50%) scale(1.4);
+      box-shadow: 0 0 0 6px currentColor;
+    }
+    .tl-blast-label, .tl-blast-panel {
+      position: absolute; pointer-events: none;
+      transition: opacity .2s ease, transform .2s ease;
+    }
+    .tl-blast-label {
+      left: 12px; top: -36px; white-space: nowrap;
+      background: #fff; color: #0f172a;
+      padding: 5px 10px; border-radius: 8px;
+      font-size: .72rem; font-weight: 600;
+      border: 1px solid;
+      box-shadow: 0 2px 8px rgba(15,23,42,.06);
+      opacity: 1;
+    }
+    .tl-blast-panel {
+      left: 14px; top: -16px; min-width: 230px; max-width: 290px;
+      background: #fff; color: #0f172a;
+      padding: 10px 12px; border-radius: 12px;
+      border: 1px solid;
+      box-shadow: 0 18px 36px rgba(15,23,42,.18);
+      opacity: 0; transform: translateX(-4px);
+      z-index: 10;
+    }
+    .tl-blast-wrap:hover .tl-blast-label { opacity: 0; }
+    .tl-blast-wrap:hover .tl-blast-panel { opacity: 1; transform: translateX(0); pointer-events: auto; }
+    .tl-blast-panel-title { font-size: .82rem; font-weight: 800; margin-bottom: 6px; }
+    .tl-blast-panel-line {
+      font-size: .74rem; color: #475569; line-height: 1.45;
+      display: flex; align-items: center; gap: 6px;
+      padding: 2px 0;
+    }
+    .tl-blast-panel-line::before {
+      content: ''; width: 6px; height: 6px; border-radius: 50%;
+      background: currentColor; flex-shrink: 0; opacity: .8;
+    }
+    .tl-blast-panel-foot {
+      margin-top: 8px; padding-top: 8px;
+      border-top: 1px dashed #e2e8f0;
+      font-size: .68rem; color: #94a3b8; font-style: italic;
+    }
   `
   document.head.appendChild(s)
+}
+
+// Pools d'événements par catégorie d'outil — affichés au hover
+const TL_EVENT_LABELS = {
+  erp:  ['Facture émise', 'Avoir client', 'Bon de commande', 'Écriture comptable', 'Encaissement', 'Achat fournisseur', 'TVA collectée', 'Règlement client'],
+  crm:  ['Nouveau lead', 'Email envoyé', 'RDV planifié', 'Deal créé', 'Note ajoutée', 'Tâche complétée', 'Appel sortant', 'Devis envoyé'],
+  bi:   ['Rapport généré', 'KPI actualisé', 'Alerte seuil', 'Dashboard mis à jour', 'Export terminé', 'Modèle prédictif', 'Anomalie détectée'],
+  sirh: ['Saisie congé', 'Note de frais', 'Pointage', 'Variable de paie', 'Demande RTT', 'Onboarding', 'Entretien planifié'],
+  wms:  ['Réception stock', 'Préparation commande', 'Expédition', 'Inventaire', 'Mouvement entrepôt', 'Réappro déclenché', 'Bon de transfert'],
 }
 
 // Sources affichées en parallèle — vue par catégorie d'outil métier
@@ -122,85 +228,122 @@ const TL_SOURCES = [
   { id: 'wms',  name: 'WMS',  color: '#F59E0B' },
 ]
 
-// 4 périodes — densité d'événements croissante du jour au trimestre,
-// libellés génériques (sans chiffres ni noms clients)
+// 4 périodes — chaque blast est un point de convergence où plusieurs outils
+// croisent leurs données pour produire un insight de pilotage. Les `wires`
+// décrivent les flux d'événements entrants (track + position en %).
 const TL_PERIODS = {
   T: {
     label: 'Trimestre', ticks: ['Janv.', 'Fév.', 'Mars', 'Avril'], density: 26,
     blasts: [
-      { x: 35, srcIdx: 0, label: 'Performance financière' },
-      { x: 72, srcIdx: 1, label: 'Pipeline en évolution' },
+      {
+        x: 38, srcIdx: 2, label: 'Santé financière',
+        wires: [{ srcIdx: 0, x: 28 }, { srcIdx: 1, x: 32 }, { srcIdx: 4, x: 26 }],
+        insight: ['ERP : encaissements en hausse', 'CRM : pipeline en croissance', 'WMS : flux de stock régulier'],
+        foot: 'Trimestre maîtrisé — marge stable',
+      },
+      {
+        x: 75, srcIdx: 1, label: 'Pipeline qualifié',
+        wires: [{ srcIdx: 0, x: 62 }, { srcIdx: 2, x: 70 }, { srcIdx: 3, x: 65 }],
+        insight: ['ERP : devis convertis en factures', 'BI : taux de transformation +', 'SIRH : équipe commerciale étoffée'],
+        foot: 'Levée de risque sur l\'atterrissage',
+      },
     ],
   },
   M: {
     label: 'Mois', ticks: ['S1', 'S2', 'S3', 'S4'], density: 16,
     blasts: [
-      { x: 30, srcIdx: 1, label: 'Acquisition de leads' },
-      { x: 70, srcIdx: 3, label: 'Suivi des effectifs' },
+      {
+        x: 30, srcIdx: 1, label: 'Acquisition de leads',
+        wires: [{ srcIdx: 2, x: 18 }, { srcIdx: 3, x: 22 }],
+        insight: ['CRM : nouveaux contacts qualifiés', 'BI : campagnes performantes', 'SIRH : capacité de traitement OK'],
+        foot: 'Volume × qualité au-dessus du run rate',
+      },
+      {
+        x: 72, srcIdx: 3, label: 'Effectifs & masse salariale',
+        wires: [{ srcIdx: 0, x: 60 }, { srcIdx: 2, x: 68 }],
+        insight: ['SIRH : variables de paie validées', 'ERP : provision masse salariale', 'BI : ratio CA/ETP suivi'],
+        foot: 'Clôture de paie sereine',
+      },
     ],
   },
   S: {
     label: 'Semaine', ticks: ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'], density: 9,
     blasts: [
-      { x: 32, srcIdx: 0, label: 'Encaissements' },
-      { x: 68, srcIdx: 2, label: 'Indicateurs clés' },
+      {
+        x: 35, srcIdx: 0, label: 'Encaissements',
+        wires: [{ srcIdx: 1, x: 22 }, { srcIdx: 2, x: 30 }],
+        insight: ['CRM : deal gagné → facture émise', 'ERP : encaissement détecté', 'BI : trésorerie temps réel'],
+        foot: 'Boucle CRM → ERP → BI fermée',
+      },
+      {
+        x: 70, srcIdx: 2, label: 'Indicateurs clés',
+        wires: [{ srcIdx: 0, x: 58 }, { srcIdx: 4, x: 65 }, { srcIdx: 3, x: 62 }],
+        insight: ['ERP : marge brute consolidée', 'WMS : rotation de stock', 'SIRH : taux de présence'],
+        foot: 'Tableau de bord direction à jour',
+      },
     ],
   },
   J: {
     label: 'Jour', ticks: ['08h', '10h', '12h', '14h', '16h', '18h'], density: 5,
     blasts: [
-      { x: 35, srcIdx: 0, label: 'Facturation' },
-      { x: 70, srcIdx: 4, label: 'Mouvements de stock' },
+      {
+        x: 35, srcIdx: 0, label: 'Cycle de facturation',
+        wires: [{ srcIdx: 1, x: 22 }, { srcIdx: 4, x: 28 }],
+        insight: ['CRM : commande validée', 'WMS : préparation expédiée', 'ERP : facture générée'],
+        foot: 'Order-to-cash en temps réel',
+      },
+      {
+        x: 72, srcIdx: 4, label: 'Logistique & stock',
+        wires: [{ srcIdx: 0, x: 58 }, { srcIdx: 2, x: 66 }],
+        insight: ['WMS : mouvements entrepôt', 'ERP : achats fournisseurs', 'BI : alerte rupture évitée'],
+        foot: 'Approvisionnement piloté à la maille',
+      },
     ],
   },
 }
 
-// Dots discrets répartis sur le track ; densité variable selon la période
+// Dots distribués aléatoirement (mais de manière déterministe) sur chaque
+// track ; chaque dot porte un libellé d'événement métier affiché au hover.
 function tlEventsFor(srcId, period, count) {
   const seed = (srcId + period).split('').reduce((a, c) => a + c.charCodeAt(0), 0)
-  const out = []
-  const step = 90 / Math.max(1, count - 1)
-  for (let i = 0; i < count; i++) {
-    const r = ((seed * (i + 7)) % 100) / 100
-    const x = 5 + i * step + (r - 0.5) * 2.5
-    out.push({ x: Math.max(3, Math.min(97, x)) })
+  const labels = TL_EVENT_LABELS[srcId] || ['Événement']
+  // PRNG déterministe (mulberry32-like)
+  let st = (seed + 1) >>> 0
+  const rnd = () => {
+    st = (st + 0x6D2B79F5) >>> 0
+    let t = st
+    t = Math.imul(t ^ (t >>> 15), t | 1)
+    t ^= t + Math.imul(t ^ (t >>> 7), t | 61)
+    return (((t ^ (t >>> 14)) >>> 0) % 10000) / 10000
   }
-  return out
+  const out = []
+  for (let i = 0; i < count; i++) {
+    out.push({
+      x: 4 + rnd() * 92,           // 4 → 96 % en horizontal
+      yJitter: (rnd() - 0.5) * 6,  // -3 → +3 px en vertical (pour casser la ligne)
+      label: labels[Math.floor(rnd() * labels.length)],
+    })
+  }
+  return out.sort((a, b) => a.x - b.x)
 }
 
-// Insight discret : pastille avec halo doux + libellé sobre
+// Convergence d'insight : pastille + libellé compact, panneau au hover
 function BlastPoint({ blast, top, color }) {
   return (
-    <div style={{
-      position: 'absolute', left: `${blast.x}%`, top: `${top}%`, pointerEvents: 'none',
-      width: 0, height: 0,
-    }}>
-      {/* Halo doux */}
-      <div style={{
-        position: 'absolute', left: 0, top: 0, width: 36, height: 36,
-        borderRadius: '50%', background: color,
-        animation: 'tlSoftRing 2.4s ease-out infinite',
-      }} />
-      {/* Pastille core */}
-      <div style={{
-        position: 'absolute', left: 0, top: 0,
-        width: 14, height: 14, borderRadius: '50%',
-        background: '#fff', border: `2px solid ${color}`,
-        transform: 'translate(-50%, -50%)',
-        boxShadow: `0 0 0 3px ${color}22`,
-      }} />
-      {/* Libellé sobre */}
-      <div style={{
-        position: 'absolute', left: 12, top: -32, whiteSpace: 'nowrap',
-        background: '#fff', color: '#0f172a',
-        padding: '4px 10px', borderRadius: 8,
-        fontSize: '.72rem', fontWeight: 600,
-        border: `1px solid ${color}33`,
-        boxShadow: '0 2px 8px rgba(15,23,42,.06)',
-        animation: 'tlFadeIn .4s ease both .15s',
-        pointerEvents: 'auto',
-      }}>
+    <div className="tl-blast-wrap" style={{ left: `${blast.x}%`, top: `${top}%`, color }}>
+      <div className="tl-blast-halo" style={{ background: color }} />
+      <div className="tl-blast-core" style={{ borderColor: color }} />
+      <div className="tl-blast-label" style={{ borderColor: `${color}55` }}>
         {blast.label}
+      </div>
+      <div className="tl-blast-panel" style={{ borderColor: `${color}66` }}>
+        <div className="tl-blast-panel-title" style={{ color }}>{blast.label}</div>
+        {(blast.insight || []).map((line, i) => (
+          <div key={i} className="tl-blast-panel-line" style={{ color }}>
+            <span style={{ color: '#475569' }}>{line}</span>
+          </div>
+        ))}
+        {blast.foot && <div className="tl-blast-panel-foot">{blast.foot}</div>}
       </div>
     </div>
   )
@@ -263,6 +406,45 @@ function CompanyTimelineBlast() {
             ))}
           </div>
 
+          {/* Wires SVG : flux d'événements convergeant vers les blasts */}
+          <svg
+            viewBox={`0 0 100 ${trackHeight}`}
+            preserveAspectRatio="none"
+            style={{
+              position: 'absolute', left: 130, right: 0, top: 0, height: trackHeight,
+              width: 'calc(100% - 130px)', pointerEvents: 'none', overflow: 'visible',
+            }}
+          >
+            {data.blasts.flatMap((b, bi) => {
+              const blastY = (b.srcIdx + 0.5) * ROW_H
+              const blastColor = TL_SOURCES[b.srcIdx]?.color || '#195C82'
+              return (b.wires || []).map((w, wi) => {
+                const wireY = (w.srcIdx + 0.5) * ROW_H
+                const dx = b.x - w.x
+                const c1x = w.x + dx * 0.45
+                const c2x = b.x - dx * 0.45
+                const wireColor = TL_SOURCES[w.srcIdx]?.color || '#94a3b8'
+                const delay = 0.3 + (bi * 0.6) + (wi * 0.18)
+                return (
+                  <path
+                    key={`${period}-${bi}-${wi}`}
+                    d={`M ${w.x} ${wireY} C ${c1x} ${wireY}, ${c2x} ${blastY}, ${b.x} ${blastY}`}
+                    fill="none"
+                    stroke={wireColor}
+                    strokeWidth="1.4"
+                    strokeLinecap="round"
+                    strokeDasharray="4 6"
+                    vectorEffect="non-scaling-stroke"
+                    style={{
+                      animation: `tlWireDraw 1.1s ease-out ${delay}s both, tlWireDash 1.6s linear ${delay + 1.1}s infinite`,
+                      filter: `drop-shadow(0 0 3px ${wireColor}55)`,
+                    }}
+                  />
+                )
+              })
+            })}
+          </svg>
+
           {TL_SOURCES.map((src, idx) => {
             const events = tlEventsFor(src.id, period, data.density)
             return (
@@ -284,12 +466,17 @@ function CompanyTimelineBlast() {
                   position: 'relative', borderRadius: 1,
                 }}>
                   {events.map((e, i) => (
-                    <div key={i} style={{
-                      position: 'absolute', left: `${e.x}%`, top: '50%',
-                      width: 6, height: 6, borderRadius: '50%',
-                      background: src.color,
-                      animation: `tlZoomIn .45s cubic-bezier(.34,1.6,.64,1) both ${0.04 * i}s, tlPulseDot ${3 + (i % 3)}s ease-in-out ${0.45 + i * 0.1}s infinite`,
-                    }} />
+                    <div key={i} className="tl-dot-wrap" style={{
+                      left: `${e.x}%`, top: `calc(50% + ${e.yJitter}px)`,
+                      animation: `tlZoomIn .45s cubic-bezier(.34,1.6,.64,1) both ${0.04 * i}s`,
+                    }}>
+                      <div className="tl-dot" style={{
+                        background: src.color,
+                        boxShadow: `0 0 0 0 ${src.color}55`,
+                        animation: `tlPulseDot ${3 + (i % 3)}s ease-in-out ${0.45 + i * 0.1}s infinite`,
+                      }} />
+                      <div className="tl-dot-tip">{e.label}</div>
+                    </div>
                   ))}
                 </div>
               </div>
