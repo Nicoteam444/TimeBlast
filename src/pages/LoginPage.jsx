@@ -507,6 +507,184 @@ function CompanyTimelineBlast() {
   )
 }
 
+// ── Composant SVG — Pipeline IA ─────────────────────────────────────────────
+// Représente le flux : outils métier → connecteur TimeBlast → cerveau IA
+function PipelineVisual() {
+  const tools = [
+    { id: 'erp',  name: 'ERP',  color: '#00DC82', y: 60  },
+    { id: 'crm',  name: 'CRM',  color: '#FF7A59', y: 145 },
+    { id: 'bi',   name: 'BI',   color: '#635BFF', y: 230 },
+    { id: 'sirh', name: 'SIRH', color: '#4A90D9', y: 315 },
+    { id: 'wms',  name: 'WMS',  color: '#F59E0B', y: 400 },
+  ]
+  const toolEndX = 130
+  const hubX = 295, hubY = 230, hubR = 50
+  const brainX = 510, brainY = 230, brainR = 56
+
+  return (
+    <svg viewBox="0 0 600 460" style={{ width: '100%', height: 'auto', display: 'block', overflow: 'visible' }}>
+      <defs>
+        <filter id="pvGlow" x="-50%" y="-50%" width="200%" height="200%">
+          <feGaussianBlur stdDeviation="3" />
+          <feMerge><feMergeNode /><feMergeNode in="SourceGraphic" /></feMerge>
+        </filter>
+        <radialGradient id="pvBrainBg" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stopColor="#5BCAFF" stopOpacity="0.35" />
+          <stop offset="60%" stopColor="#5BCAFF" stopOpacity="0.10" />
+          <stop offset="100%" stopColor="#5BCAFF" stopOpacity="0" />
+        </radialGradient>
+        <radialGradient id="pvHubBg" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stopColor="#ffffff" stopOpacity="0.18" />
+          <stop offset="100%" stopColor="#ffffff" stopOpacity="0" />
+        </radialGradient>
+        {/* Chemins outils → hub */}
+        {tools.map((t, i) => (
+          <path
+            key={`p-${t.id}`}
+            id={`pv-flow-${t.id}`}
+            d={`M ${toolEndX} ${t.y} C ${(toolEndX + hubX) / 2} ${t.y}, ${(toolEndX + hubX) / 2} ${hubY}, ${hubX - hubR} ${hubY}`}
+            fill="none"
+          />
+        ))}
+        {/* Chemin hub → cerveau */}
+        <path id="pv-out" d={`M ${hubX + hubR} ${hubY} L ${brainX - brainR} ${brainY}`} fill="none" />
+      </defs>
+
+      {/* Grille de fond très subtile pour ancrer la composition */}
+      <g opacity="0.6">
+        <line x1="0" y1="230" x2="600" y2="230" stroke="rgba(255,255,255,0.04)" strokeWidth="1" strokeDasharray="2 6" />
+      </g>
+
+      {/* Tools (gauche) — chips avec halo */}
+      {tools.map((t) => (
+        <g key={t.id}>
+          {/* Halo derrière chaque chip */}
+          <circle cx={70} cy={t.y} r={32} fill={t.color} opacity="0.08" />
+          {/* Chip */}
+          <rect x={20} y={t.y - 20} width={100} height={40} rx={20} ry={20}
+                fill="rgba(255,255,255,0.06)" stroke={t.color} strokeWidth="1.5" />
+          <circle cx={36} cy={t.y} r={5} fill={t.color}>
+            <animate attributeName="opacity" values=".5;1;.5" dur="2.6s" repeatCount="indefinite" />
+          </circle>
+          <text x={70} y={t.y} textAnchor="middle" dominantBaseline="central"
+                fill="#fff" fontSize="13" fontWeight="700" letterSpacing="0.5">
+            {t.name}
+          </text>
+        </g>
+      ))}
+
+      {/* Connexions outils → hub (lignes pointillées + particules) */}
+      {tools.map((t, i) => (
+        <g key={`flow-${t.id}`}>
+          <use href={`#pv-flow-${t.id}`} stroke={t.color} strokeOpacity="0.28" strokeWidth="1.4" strokeDasharray="3 5">
+            <animate attributeName="stroke-dashoffset" values="0;-16" dur="2s" repeatCount="indefinite" />
+          </use>
+          {/* Particule principale */}
+          <circle r="4" fill={t.color} filter="url(#pvGlow)">
+            <animateMotion dur={`${2.4 + i * 0.3}s`} repeatCount="indefinite" begin={`${i * 0.4}s`}>
+              <mpath xlinkHref={`#pv-flow-${t.id}`} />
+            </animateMotion>
+          </circle>
+          {/* Petite trainée */}
+          <circle r="2.2" fill={t.color} opacity="0.55">
+            <animateMotion dur={`${2.4 + i * 0.3}s`} repeatCount="indefinite" begin={`${i * 0.4 + 0.25}s`}>
+              <mpath xlinkHref={`#pv-flow-${t.id}`} />
+            </animateMotion>
+          </circle>
+        </g>
+      ))}
+
+      {/* Hub central — TimeBlast */}
+      <g>
+        {/* Halo doux qui pulse à l'arrivée des particules */}
+        <circle cx={hubX} cy={hubY} r={hubR + 18} fill="url(#pvHubBg)" />
+        <circle cx={hubX} cy={hubY} r={hubR + 8} fill="none" stroke="rgba(91,202,255,0.35)" strokeWidth="1">
+          <animate attributeName="r" values={`${hubR + 4};${hubR + 14};${hubR + 4}`} dur="3.2s" repeatCount="indefinite" />
+          <animate attributeName="opacity" values="0.6;0.15;0.6" dur="3.2s" repeatCount="indefinite" />
+        </circle>
+        {/* Cercle conteneur */}
+        <circle cx={hubX} cy={hubY} r={hubR}
+                fill="rgba(11,29,49,0.7)" stroke="#5BCAFF" strokeWidth="1.5"
+                style={{ filter: 'drop-shadow(0 8px 24px rgba(91,202,255,0.35))' }} />
+        {/* Logo gear blanc */}
+        <image href="/logo-icon-white.svg" x={hubX - 32} y={hubY - 32} width="64" height="64" />
+        {/* Label discret en dessous */}
+        <text x={hubX} y={hubY + hubR + 22} textAnchor="middle"
+              fill="rgba(255,255,255,0.55)" fontSize="11" fontWeight="600" letterSpacing="2">
+          CONNECTEUR UNIVERSEL
+        </text>
+      </g>
+
+      {/* Flux hub → brain */}
+      <use href="#pv-out" stroke="#5BCAFF" strokeWidth="2" strokeOpacity="0.45" strokeDasharray="4 4">
+        <animate attributeName="stroke-dashoffset" values="0;-16" dur="1.4s" repeatCount="indefinite" />
+      </use>
+      {[0, 0.5, 1].map((delay, i) => (
+        <circle key={i} r="4" fill="#5BCAFF" filter="url(#pvGlow)">
+          <animateMotion dur="1.6s" repeatCount="indefinite" begin={`${delay}s`}>
+            <mpath xlinkHref="#pv-out" />
+          </animateMotion>
+        </circle>
+      ))}
+
+      {/* Cerveau IA (droite) */}
+      <g>
+        {/* Onde de pulsation */}
+        <circle cx={brainX} cy={brainY} r={brainR}
+                fill="none" stroke="#5BCAFF" strokeWidth="2" opacity="0.6">
+          <animate attributeName="r" values={`${brainR};${brainR + 30}`} dur="2.4s" repeatCount="indefinite" />
+          <animate attributeName="opacity" values="0.55;0" dur="2.4s" repeatCount="indefinite" />
+        </circle>
+        <circle cx={brainX} cy={brainY} r={brainR}
+                fill="none" stroke="#5BCAFF" strokeWidth="2" opacity="0.6">
+          <animate attributeName="r" values={`${brainR};${brainR + 30}`} dur="2.4s" begin="1.2s" repeatCount="indefinite" />
+          <animate attributeName="opacity" values="0.55;0" dur="2.4s" begin="1.2s" repeatCount="indefinite" />
+        </circle>
+        {/* Halo de fond */}
+        <circle cx={brainX} cy={brainY} r={brainR + 30} fill="url(#pvBrainBg)" />
+        {/* Cerveau (cercle + pattern de connexions internes) */}
+        <circle cx={brainX} cy={brainY} r={brainR}
+                fill="rgba(11,29,49,0.85)" stroke="#5BCAFF" strokeWidth="2"
+                style={{ filter: 'drop-shadow(0 0 18px rgba(91,202,255,0.55))' }} />
+        {/* Pattern neural — petites lignes + nodes à l'intérieur */}
+        {(() => {
+          const nodes = [
+            { x: brainX - 22, y: brainY - 12 },
+            { x: brainX - 8,  y: brainY + 20 },
+            { x: brainX + 14, y: brainY - 22 },
+            { x: brainX + 22, y: brainY + 8 },
+            { x: brainX - 4,  y: brainY - 4 },
+            { x: brainX,      y: brainY + 4 },
+          ]
+          const links = [[0,4],[4,2],[4,5],[5,1],[5,3],[3,2],[1,3]]
+          return (
+            <g>
+              {links.map(([a, b], i) => (
+                <line key={`l${i}`} x1={nodes[a].x} y1={nodes[a].y} x2={nodes[b].x} y2={nodes[b].y}
+                      stroke="#5BCAFF" strokeWidth="0.8" opacity="0.55">
+                  <animate attributeName="opacity" values="0.25;0.85;0.25"
+                           dur={`${2.4 + (i % 3) * 0.3}s`} repeatCount="indefinite" begin={`${i * 0.18}s`} />
+                </line>
+              ))}
+              {nodes.map((n, i) => (
+                <circle key={`n${i}`} cx={n.x} cy={n.y} r="1.8" fill="#5BCAFF" filter="url(#pvGlow)">
+                  <animate attributeName="r" values="1.5;2.4;1.5"
+                           dur={`${2 + (i % 4) * 0.3}s`} repeatCount="indefinite" begin={`${i * 0.2}s`} />
+                </circle>
+              ))}
+            </g>
+          )
+        })()}
+        {/* Label IA */}
+        <text x={brainX} y={brainY + brainR + 22} textAnchor="middle"
+              fill="rgba(255,255,255,0.85)" fontSize="13" fontWeight="800" letterSpacing="3">
+          IA
+        </text>
+      </g>
+    </svg>
+  )
+}
+
 // ── Composant SVG — Hub decisionnel ────────────────────────────────────────
 function BiHubVisual() {
   const B = '#2B4C7E'
@@ -1454,6 +1632,9 @@ export default function LoginPage() {
           .landing-nav-links { display: none !important; }
           .landing-burger { display: flex !important; }
         }
+        @media (max-width: 700px) {
+          .landing-top-cta { display: none !important; }
+        }
         .landing-mobile-menu { position:fixed;inset:0;z-index:10000;background:#fff;padding:2rem;display:flex;flex-direction:column;gap:1rem;transform:translateX(100%);transition:transform .3s; }
         .landing-mobile-menu.open { transform:translateX(0); }
         .landing-mobile-menu a { font-size:1.1rem;font-weight:600;color:#0f172a;text-decoration:none;padding:.5rem 0;border-bottom:1px solid #f1f5f9; }
@@ -1496,7 +1677,7 @@ export default function LoginPage() {
 
           <button className="landing-burger" onClick={() => setMobileMenu(true)}>☰</button>
 
-          <div style={{ display: 'flex', gap: '.6rem', alignItems: 'center' }}>
+          <div className="landing-top-cta" style={{ display: 'flex', gap: '.6rem', alignItems: 'center' }}>
             <a href="https://www.groupe-sra.fr/contact/" target="_blank" rel="noopener noreferrer" style={{
               padding: '9px 18px', borderRadius: 10,
               background: 'transparent',
@@ -1598,8 +1779,9 @@ export default function LoginPage() {
                 qui active vos données :
               </h1>
               <div style={{
-                fontSize: 'clamp(1.8rem, 3vw, 2.6rem)', fontWeight: 800, lineHeight: 1.3,
-                color: '#5BCAFF', height: 'clamp(2.4rem, 4vw, 3.4rem)', overflow: 'hidden',
+                fontSize: 'clamp(1.1rem, 3vw, 2.6rem)', fontWeight: 800, lineHeight: 1.25,
+                color: '#5BCAFF', minHeight: 'clamp(1.6rem, 4vw, 3.4rem)',
+                whiteSpace: 'nowrap', overflow: 'visible',
               }}>
                 <RotatingText />
               </div>
@@ -1680,7 +1862,7 @@ export default function LoginPage() {
               WebkitBackdropFilter: 'blur(8px)',
               boxShadow: '0 24px 60px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.08)',
             }}>
-              <BiHubVisual />
+              <PipelineVisual />
             </div>
           </div>
         </div>
