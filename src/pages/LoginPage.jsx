@@ -512,29 +512,38 @@ function CompanyTimelineBlast() {
 // Tracé orthogonal rigide (right-angles) + flux électrique animé sur les lignes
 function PipelineVisual() {
   const tools = [
-    { id: 'erp',  name: 'ERP',  color: '#00DC82', y: 70  },
-    { id: 'crm',  name: 'CRM',  color: '#FF7A59', y: 150 },
-    { id: 'bi',   name: 'BI',   color: '#635BFF', y: 230 },
-    { id: 'sirh', name: 'SIRH', color: '#4A90D9', y: 310 },
-    { id: 'wms',  name: 'WMS',  color: '#F59E0B', y: 390 },
+    { id: 'erp',  name: 'ERP',  color: '#00DC82', y: 130 },
+    { id: 'crm',  name: 'CRM',  color: '#FF7A59', y: 200 },
+    { id: 'bi',   name: 'BI',   color: '#635BFF', y: 270 },
+    { id: 'sirh', name: 'SIRH', color: '#4A90D9', y: 340 },
+    { id: 'wms',  name: 'WMS',  color: '#F59E0B', y: 410 },
   ]
+  // Équipe en haut (superviseur), puis 3 outils de consommation
   const consumers = [
-    { id: 'cockpit',   name: 'Cockpit',   color: '#5BCAFF', y: 100 },
-    { id: 'dashboard', name: 'Dashboard', color: '#5BCAFF', y: 195 },
-    { id: 'agent',     name: 'Agent',     color: '#00DC82', y: 290, bidir: true },
-    { id: 'team',      name: 'Équipe',    color: '#F59E0B', y: 385, bidir: true, pilot: true },
+    { id: 'cockpit',   name: 'Cockpit',   color: '#5BCAFF', y: 200 },
+    { id: 'dashboard', name: 'Dashboard', color: '#5BCAFF', y: 290 },
+    { id: 'agent',     name: 'Agent',     color: '#00DC82', y: 380, bidir: true },
   ]
+  // Équipe : chip "banner" beaucoup plus large/haut, en haut de la pile
+  const teamColor = '#F59E0B'
+  const teamX = 440, teamY = 70, teamW = 155, teamH = 64
+  const teamBottom = teamY + teamH / 2
+
   const toolEndX = 130
   const busLeft = 195
   const busRight = 405
   const hubW = 130, hubH = 130
-  const hubX = 300, hubY = 230
+  const hubX = 300, hubY = 270
   const hubLeft = hubX - hubW / 2, hubRight = hubX + hubW / 2
   const hubTop = hubY - hubH / 2, hubBottom = hubY + hubH / 2
   const consumerX = 465
+  const actionBusX = 610   // bus vertical d'actions Équipe → Cockpit/Agent
+
+  // Cibles d'action de l'Équipe (consommateurs supervisés)
+  const actionTargets = consumers.filter(c => c.id === 'cockpit' || c.id === 'agent')
 
   return (
-    <svg viewBox="0 0 600 460" style={{ width: '100%', height: 'auto', display: 'block', overflow: 'visible' }}>
+    <svg viewBox="0 0 640 480" style={{ width: '100%', height: 'auto', display: 'block', overflow: 'visible' }}>
       <defs>
         <filter id="pvGlow" x="-50%" y="-50%" width="200%" height="200%">
           <feGaussianBlur stdDeviation="2.4" />
@@ -544,34 +553,39 @@ function PipelineVisual() {
           <stop offset="0%" stopColor="rgba(20,45,76,0.95)" />
           <stop offset="100%" stopColor="rgba(11,29,49,0.95)" />
         </linearGradient>
+        <linearGradient id="pvTeamFill" x1="0%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%" stopColor="rgba(245,158,11,0.30)" />
+          <stop offset="100%" stopColor="rgba(245,158,11,0.10)" />
+        </linearGradient>
         {/* Chemins entrants : L orthogonal — chip → bus vertical → hub */}
         {tools.map((t) => (
-          <path
-            key={`p-${t.id}`}
-            id={`pv-in-${t.id}`}
-            d={`M ${toolEndX} ${t.y} H ${busLeft} V ${hubY} H ${hubLeft}`}
-            fill="none"
-          />
+          <path key={`p-${t.id}`} id={`pv-in-${t.id}`}
+                d={`M ${toolEndX} ${t.y} H ${busLeft} V ${hubY} H ${hubLeft}`} fill="none" />
         ))}
         {/* Chemins sortants : hub → bus vertical → chip consommateur */}
         {consumers.map((c) => (
-          <path
-            key={`p-${c.id}`}
-            id={`pv-out-${c.id}`}
-            d={`M ${hubRight} ${hubY} H ${busRight} V ${c.y} H ${consumerX}`}
-            fill="none"
-          />
+          <path key={`p-${c.id}`} id={`pv-out-${c.id}`}
+                d={`M ${hubRight} ${hubY} H ${busRight} V ${c.y} H ${consumerX}`} fill="none" />
+        ))}
+        {/* Chemin données : hub → Équipe (sortie haute, dérivation depuis le bus droit) */}
+        <path id="pv-out-team"
+              d={`M ${hubRight} ${hubY} H ${busRight} V ${teamY} H ${teamX}`} fill="none" />
+        {/* Chemins d'action : Équipe → Cockpit/Agent (par le bus droit extérieur) */}
+        {actionTargets.map((c) => (
+          <path key={`a-${c.id}`} id={`pv-act-${c.id}`}
+                d={`M ${teamX + teamW} ${teamY} H ${actionBusX} V ${c.y} H ${consumerX + 120}`} fill="none" />
         ))}
       </defs>
 
-      {/* Grille de fond circuit — discrète */}
+      {/* Grille de fond circuit */}
       <g opacity="0.5">
-        <line x1="0" y1={hubY} x2="600" y2={hubY} stroke="rgba(255,255,255,0.05)" strokeWidth="1" strokeDasharray="1 5" />
-        <line x1={busLeft} y1="0" x2={busLeft} y2="460" stroke="rgba(255,255,255,0.04)" strokeWidth="1" strokeDasharray="1 5" />
-        <line x1={busRight} y1="0" x2={busRight} y2="460" stroke="rgba(255,255,255,0.04)" strokeWidth="1" strokeDasharray="1 5" />
+        <line x1="0" y1={hubY} x2="640" y2={hubY} stroke="rgba(255,255,255,0.05)" strokeWidth="1" strokeDasharray="1 5" />
+        <line x1={busLeft} y1="0" x2={busLeft} y2="480" stroke="rgba(255,255,255,0.04)" strokeWidth="1" strokeDasharray="1 5" />
+        <line x1={busRight} y1="0" x2={busRight} y2="480" stroke="rgba(255,255,255,0.04)" strokeWidth="1" strokeDasharray="1 5" />
+        <line x1={actionBusX} y1="0" x2={actionBusX} y2="480" stroke={`${teamColor}22`} strokeWidth="1" strokeDasharray="1 5" />
       </g>
 
-      {/* Tools (gauche) — chips rectangulaires */}
+      {/* Tools (gauche) */}
       {tools.map((t) => (
         <g key={t.id}>
           <rect x={20} y={t.y - 18} width={100} height={36} rx={4} ry={4}
@@ -580,98 +594,90 @@ function PipelineVisual() {
             <animate attributeName="opacity" values=".5;1;.5" dur="2.4s" repeatCount="indefinite" />
           </rect>
           <text x={70} y={t.y} textAnchor="middle" dominantBaseline="central"
-                fill="#fff" fontSize="13" fontWeight="800" letterSpacing="1">
-            {t.name}
-          </text>
+                fill="#fff" fontSize="13" fontWeight="800" letterSpacing="1">{t.name}</text>
         </g>
       ))}
 
-      {/* Flux électrique entrants : ligne pointillée + impulsion lumineuse */}
+      {/* Flux électriques entrants */}
       {tools.map((t, i) => (
         <g key={`flow-${t.id}`}>
-          {/* Trace de fond — chemin discret toujours visible */}
           <use href={`#pv-in-${t.id}`} stroke={t.color} strokeOpacity="0.22" strokeWidth="1.2" strokeDasharray="3 6">
             <animate attributeName="stroke-dashoffset" values="0;-18" dur="2s" repeatCount="indefinite" />
           </use>
-          {/* Flux électrique — pulse lumineux qui parcourt la ligne */}
           <use href={`#pv-in-${t.id}`} stroke={t.color} strokeWidth="2.4" strokeLinecap="round"
                strokeDasharray="14 600" filter="url(#pvGlow)">
-            <animate attributeName="stroke-dashoffset"
-                     values="600;-30" dur={`${3 + i * 0.25}s`}
-                     repeatCount="indefinite" begin={`${i * 0.45}s`} />
+            <animate attributeName="stroke-dashoffset" values="600;-30"
+                     dur={`${3 + i * 0.25}s`} repeatCount="indefinite" begin={`${i * 0.45}s`} />
           </use>
         </g>
       ))}
 
-      {/* Hub central — chip rectangulaire avec IA encapsulée */}
+      {/* Hub central — logo TimeBlast standalone + 8 branches d'impulsions */}
       <g>
-        {/* Halo de base */}
-        <rect x={hubLeft - 14} y={hubTop - 14} width={hubW + 28} height={hubH + 28} rx={20}
-              fill="none" stroke="rgba(91,202,255,0.18)" strokeWidth="1" />
-        {/* Onde rectangulaire qui pulse */}
-        <rect x={hubLeft} y={hubTop} width={hubW} height={hubH} rx={16}
-              fill="none" stroke="rgba(91,202,255,0.5)" strokeWidth="1.4">
-          <animate attributeName="x" values={`${hubLeft};${hubLeft - 14}`} dur="3s" repeatCount="indefinite" />
-          <animate attributeName="y" values={`${hubTop};${hubTop - 14}`} dur="3s" repeatCount="indefinite" />
-          <animate attributeName="width" values={`${hubW};${hubW + 28}`} dur="3s" repeatCount="indefinite" />
-          <animate attributeName="height" values={`${hubH};${hubH + 28}`} dur="3s" repeatCount="indefinite" />
-          <animate attributeName="opacity" values="0.55;0" dur="3s" repeatCount="indefinite" />
-        </rect>
-        {/* Conteneur principal du hub */}
-        <rect x={hubLeft} y={hubTop} width={hubW} height={hubH} rx={16}
-              fill="url(#pvHubFill)" stroke="#5BCAFF" strokeWidth="1.8"
-              style={{ filter: 'drop-shadow(0 10px 30px rgba(91,202,255,0.4))' }} />
-        {/* Coins de chip (style processeur) */}
-        {[
-          [hubLeft + 8, hubTop + 8], [hubRight - 8, hubTop + 8],
-          [hubLeft + 8, hubBottom - 8], [hubRight - 8, hubBottom - 8],
-        ].map(([cx, cy], i) => (
-          <circle key={i} cx={cx} cy={cy} r="2" fill="#5BCAFF" opacity="0.6" />
-        ))}
-        {/* Pattern neural minimal — IA encapsulée (lignes droites entre nodes) */}
-        {(() => {
-          const nodes = [
-            { x: hubX - 36, y: hubY - 18 },
-            { x: hubX + 36, y: hubY - 26 },
-            { x: hubX - 28, y: hubY + 30 },
-            { x: hubX + 30, y: hubY + 22 },
-          ]
-          const links = [[0,1],[0,2],[1,3],[2,3],[0,3],[1,2]]
+        {/* Halo doux qui respire */}
+        <circle cx={hubX} cy={hubY} r="62" fill="none" stroke="rgba(91,202,255,0.18)" strokeWidth="1" />
+        {/* Onde radiale qui pulse */}
+        <circle cx={hubX} cy={hubY} r="55" fill="none" stroke="rgba(91,202,255,0.45)" strokeWidth="1.4">
+          <animate attributeName="r" values="50;78;50" dur="3s" repeatCount="indefinite" />
+          <animate attributeName="opacity" values="0.55;0;0.55" dur="3s" repeatCount="indefinite" />
+        </circle>
+
+        {/* 8 branches : impulsions électriques entrantes ET sortantes */}
+        {Array.from({ length: 8 }).map((_, i) => {
+          const angle = (i * 45) * Math.PI / 180
+          const innerR = 36
+          const outerR = 60
+          const ix = hubX + Math.cos(angle) * innerR
+          const iy = hubY + Math.sin(angle) * innerR
+          const ox = hubX + Math.cos(angle) * outerR
+          const oy = hubY + Math.sin(angle) * outerR
+          // Mix : index pairs propulsent (sortant), index impairs reçoivent (entrant)
+          const propel = i % 2 === 0
           return (
-            <g opacity="0.5">
-              {links.map(([a, b], i) => (
-                <line key={`hl${i}`} x1={nodes[a].x} y1={nodes[a].y} x2={nodes[b].x} y2={nodes[b].y}
-                      stroke="#5BCAFF" strokeWidth="0.6">
-                  <animate attributeName="opacity" values="0.15;0.7;0.15"
-                           dur={`${2.4 + (i % 3) * 0.3}s`} repeatCount="indefinite" begin={`${i * 0.2}s`} />
-                </line>
-              ))}
-              {nodes.map((n, i) => (
-                <circle key={`hn${i}`} cx={n.x} cy={n.y} r="1.5" fill="#5BCAFF" />
-              ))}
+            <g key={`spk${i}`}>
+              {/* Trace de la branche */}
+              <line x1={ix} y1={iy} x2={ox} y2={oy}
+                    stroke="rgba(91,202,255,0.32)" strokeWidth="1.2" strokeLinecap="round" />
+              {/* Impulsion électrique animée — sens varie selon la branche */}
+              <line x1={ix} y1={iy} x2={ox} y2={oy}
+                    stroke="#5BCAFF" strokeWidth="2.6" strokeLinecap="round"
+                    strokeDasharray="8 32" filter="url(#pvGlow)">
+                <animate attributeName="stroke-dashoffset"
+                         values={propel ? '32;0' : '0;32'}
+                         dur={`${1.3 + (i % 3) * 0.3}s`}
+                         repeatCount="indefinite" begin={`${i * 0.12}s`} />
+              </line>
+              {/* Petit point lumineux à l'extrémité (pulse en synchro) */}
+              <circle cx={ox} cy={oy} r="2.2" fill="#5BCAFF" filter="url(#pvGlow)">
+                <animate attributeName="opacity" values="0.4;1;0.4"
+                         dur={`${1.6 + (i % 4) * 0.2}s`}
+                         repeatCount="indefinite" begin={`${i * 0.15}s`} />
+              </circle>
             </g>
           )
-        })()}
-        {/* Logo gear central */}
-        <image href="/logo-icon-white.svg" x={hubX - 28} y={hubY - 32} width="56" height="56" />
-        {/* Badge IA encapsulée — angle haut droit */}
-        <g transform={`translate(${hubRight - 22}, ${hubTop + 14})`}>
+        })}
+
+        {/* Logo gear TimeBlast central — sans cadre, taille augmentée */}
+        <image href="/logo-icon-white.svg" x={hubX - 36} y={hubY - 36} width="72" height="72"
+               style={{ filter: 'drop-shadow(0 0 14px rgba(91,202,255,0.55))' }} />
+
+        {/* Badge +IA flottant — collé au gear sans rectangle derrière */}
+        <g transform={`translate(${hubX + 42}, ${hubY - 42})`}>
           <rect x="-22" y="-11" width="44" height="22" rx="3"
                 fill="#5BCAFF" stroke="#0b1d31" strokeWidth="1.5"
                 style={{ filter: 'drop-shadow(0 2px 6px rgba(91,202,255,0.6))' }} />
           <text x="0" y="0" textAnchor="middle" dominantBaseline="central"
-                fill="#0b1d31" fontSize="11" fontWeight="900" letterSpacing="1">
-            + IA
-          </text>
+                fill="#0b1d31" fontSize="11" fontWeight="900" letterSpacing="1">+ IA</text>
         </g>
-        {/* Label TimeBlast en bas */}
-        <text x={hubX} y={hubBottom + 22} textAnchor="middle"
-              fill="rgba(255,255,255,0.6)" fontSize="10" fontWeight="800" letterSpacing="2.5">
+
+        {/* Label CONNECTEUR UNIVERSEL en bas */}
+        <text x={hubX} y={hubY + 80} textAnchor="middle"
+              fill="rgba(255,255,255,0.65)" fontSize="10" fontWeight="800" letterSpacing="2.5">
           CONNECTEUR UNIVERSEL
         </text>
       </g>
 
-      {/* Flux électrique sortants (mêmes principes qu'en entrée) */}
+      {/* Flux hub → consommateurs (Cockpit, Dashboard, Agent) */}
       {consumers.map((c, i) => (
         <g key={`cflow-${c.id}`}>
           <use href={`#pv-out-${c.id}`} stroke={c.color} strokeOpacity="0.22" strokeWidth="1.2" strokeDasharray="3 6">
@@ -679,23 +685,50 @@ function PipelineVisual() {
           </use>
           <use href={`#pv-out-${c.id}`} stroke={c.color} strokeWidth="2.4" strokeLinecap="round"
                strokeDasharray="14 600" filter="url(#pvGlow)">
-            <animate attributeName="stroke-dashoffset"
-                     values="600;-30" dur={`${2.6 + i * 0.25}s`}
-                     repeatCount="indefinite" begin={`${0.3 + i * 0.4}s`} />
+            <animate attributeName="stroke-dashoffset" values="600;-30"
+                     dur={`${2.6 + i * 0.25}s`} repeatCount="indefinite" begin={`${0.3 + i * 0.4}s`} />
           </use>
-          {/* Flux retour pour les consommateurs bidirectionnels (Agent + Équipe) */}
           {c.bidir && (
             <use href={`#pv-out-${c.id}`} stroke={c.color} strokeWidth="2.4" strokeLinecap="round"
                  strokeDasharray="10 600" filter="url(#pvGlow)" opacity="0.85">
-              <animate attributeName="stroke-dashoffset"
-                       values={`-30;600`} dur={`${3.2 + i * 0.2}s`}
-                       repeatCount="indefinite" begin={`${1.4 + i * 0.3}s`} />
+              <animate attributeName="stroke-dashoffset" values="-30;600"
+                       dur={`${3.2 + i * 0.2}s`} repeatCount="indefinite" begin={`${1.4 + i * 0.3}s`} />
             </use>
           )}
         </g>
       ))}
 
-      {/* Consommateurs (droite) — chips rectangulaires */}
+      {/* Flux hub → Équipe (données vers le superviseur) */}
+      <g>
+        <use href="#pv-out-team" stroke={teamColor} strokeOpacity="0.25" strokeWidth="1.2" strokeDasharray="3 6">
+          <animate attributeName="stroke-dashoffset" values="0;-18" dur="2s" repeatCount="indefinite" />
+        </use>
+        <use href="#pv-out-team" stroke={teamColor} strokeWidth="2.6" strokeLinecap="round"
+             strokeDasharray="16 600" filter="url(#pvGlow)">
+          <animate attributeName="stroke-dashoffset" values="600;-30" dur="2.8s" repeatCount="indefinite" />
+        </use>
+      </g>
+
+      {/* Flux d'actions Équipe → Cockpit / Agent (descendant via bus droit) */}
+      {actionTargets.map((c, i) => (
+        <g key={`act-${c.id}`}>
+          <use href={`#pv-act-${c.id}`} stroke={teamColor} strokeOpacity="0.32" strokeWidth="1.4" strokeDasharray="2 5">
+            <animate attributeName="stroke-dashoffset" values="0;-14" dur="1.6s" repeatCount="indefinite" />
+          </use>
+          <use href={`#pv-act-${c.id}`} stroke={teamColor} strokeWidth="2.6" strokeLinecap="round"
+               strokeDasharray="20 600" filter="url(#pvGlow)">
+            <animate attributeName="stroke-dashoffset" values="600;-30"
+                     dur={`${2.4 + i * 0.3}s`} repeatCount="indefinite" begin={`${0.6 + i * 0.5}s`} />
+          </use>
+          {/* Petit "ACTION" tag à proximité du chip cible */}
+          <text x={consumerX + 120 - 4} y={c.y - 26} textAnchor="end"
+                fill={teamColor} fontSize="8" fontWeight="800" letterSpacing="1.8">
+            ◀ ACTION
+          </text>
+        </g>
+      ))}
+
+      {/* Consommateurs (droite) — Cockpit, Dashboard, Agent */}
       {consumers.map((c) => (
         <g key={c.id}>
           <rect x={consumerX} y={c.y - 20} width={120} height={40} rx={4} ry={4}
@@ -704,7 +737,6 @@ function PipelineVisual() {
           <rect x={consumerX} y={c.y - 20} width={4} height={40} fill={c.color}>
             <animate attributeName="opacity" values=".5;1;.5" dur="2.4s" repeatCount="indefinite" />
           </rect>
-          {/* Icône à gauche */}
           <g transform={`translate(${consumerX + 22}, ${c.y})`}>
             {c.id === 'cockpit' && (
               <g stroke={c.color} strokeWidth="1.6" fill="none" strokeLinecap="round">
@@ -730,29 +762,62 @@ function PipelineVisual() {
                 <circle cx="2.5" cy="-2" r="0.8" fill={c.color} />
               </g>
             )}
-            {c.id === 'team' && (
-              <g stroke={c.color} strokeWidth="1.6" fill="none" strokeLinecap="round">
-                {/* deux silhouettes humaines stylisées */}
-                <circle cx="-4" cy="-3" r="2.5" />
-                <path d="M -8 6 Q -4 0 0 6" />
-                <circle cx="4" cy="-3" r="2.5" />
-                <path d="M 0 6 Q 4 0 8 6" />
-              </g>
-            )}
           </g>
           <text x={consumerX + 70} y={c.y} textAnchor="middle" dominantBaseline="central"
-                fill="#fff" fontSize="12" fontWeight="800" letterSpacing="0.5">
-            {c.name}
-          </text>
-          {/* Indicateur read/write ou pilote */}
+                fill="#fff" fontSize="12" fontWeight="800" letterSpacing="0.5">{c.name}</text>
           {c.bidir && (
             <text x={consumerX + 60} y={c.y + 32} textAnchor="middle"
                   fill={c.color} fontSize="9" fontWeight="800" letterSpacing="1.5">
-              {c.pilot ? 'PILOTE · LECTURE · ÉCRITURE' : 'LECTURE · ÉCRITURE'}
+              LECTURE · ÉCRITURE
             </text>
           )}
         </g>
       ))}
+
+      {/* ÉQUIPE — banner prominent en haut, superviseur du système */}
+      <g>
+        {/* Halo extérieur (pulse) */}
+        <rect x={teamX - 10} y={teamY - teamH/2 - 10} width={teamW + 20} height={teamH + 20} rx={8}
+              fill="none" stroke={teamColor} strokeWidth="1" opacity="0.5">
+          <animate attributeName="opacity" values="0.5;0.15;0.5" dur="2.6s" repeatCount="indefinite" />
+        </rect>
+        {/* Conteneur principal — gradient amber */}
+        <rect x={teamX} y={teamY - teamH/2} width={teamW} height={teamH} rx={6}
+              fill="url(#pvTeamFill)" stroke={teamColor} strokeWidth="2.2"
+              style={{ filter: `drop-shadow(0 8px 24px ${teamColor}50)` }} />
+        {/* Barre verticale gauche bien visible */}
+        <rect x={teamX} y={teamY - teamH/2} width={6} height={teamH} fill={teamColor}>
+          <animate attributeName="opacity" values=".6;1;.6" dur="2s" repeatCount="indefinite" />
+        </rect>
+        {/* Coins de chip */}
+        {[
+          [teamX + 10, teamY - teamH/2 + 10], [teamX + teamW - 10, teamY - teamH/2 + 10],
+          [teamX + 10, teamY + teamH/2 - 10], [teamX + teamW - 10, teamY + teamH/2 - 10],
+        ].map(([cx, cy], i) => (
+          <circle key={i} cx={cx} cy={cy} r="2" fill={teamColor} opacity="0.7" />
+        ))}
+        {/* Icône silhouettes humaines (taille augmentée) */}
+        <g transform={`translate(${teamX + 26}, ${teamY})`} stroke={teamColor} strokeWidth="2" fill="none" strokeLinecap="round">
+          <circle cx="-6" cy="-5" r="3.5" />
+          <path d="M -12 9 Q -6 1 0 9" />
+          <circle cx="6" cy="-5" r="3.5" />
+          <path d="M 0 9 Q 6 1 12 9" />
+        </g>
+        {/* Label Équipe (gros) + sous-titre supervise */}
+        <text x={teamX + 96} y={teamY - 7} textAnchor="middle" dominantBaseline="central"
+              fill="#fff" fontSize="16" fontWeight="900" letterSpacing="1.2">
+          ÉQUIPE
+        </text>
+        <text x={teamX + 96} y={teamY + 11} textAnchor="middle" dominantBaseline="central"
+              fill={teamColor} fontSize="9" fontWeight="800" letterSpacing="2">
+          PILOTE · SUPERVISE
+        </text>
+        {/* Couronne / badge "TOP" en coin haut droit pour signifier le haut de la pile */}
+        <g transform={`translate(${teamX + teamW - 12}, ${teamY - teamH/2 - 6})`}>
+          <polygon points="-9,5 -5,-5 0,3 5,-5 9,5" fill={teamColor}
+                   style={{ filter: `drop-shadow(0 2px 4px ${teamColor}80)` }} />
+        </g>
+      </g>
     </svg>
   )
 }
