@@ -13,6 +13,11 @@
      style="display:block;max-width:100%;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:transparent">
 
   <defs>
+    <linearGradient id="pvBgFill" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%"   stop-color="#0b1d31"/>
+      <stop offset="55%"  stop-color="#142d4c"/>
+      <stop offset="100%" stop-color="#195C82"/>
+    </linearGradient>
     <linearGradient id="pvHubFill" x1="0%" y1="0%" x2="0%" y2="100%">
       <stop offset="0%"   stop-color="rgba(20,45,76,0.95)"/>
       <stop offset="100%" stop-color="rgba(11,29,49,0.95)"/>
@@ -39,6 +44,9 @@
     <!-- Chemin d'action Équipe → IA Agentique -->
     <path id="pv-act-agent" d="M 595 70 H 610 V 360 H 585" fill="none"/>
   </defs>
+
+  <!-- Fond gradient marine intégré au SVG (rend visible sur fond clair) -->
+  <rect width="640" height="480" fill="url(#pvBgFill)"/>
 
   <!-- Grille de fond -->
   <g opacity="0.5">
