@@ -1662,8 +1662,26 @@ export default function LoginPage() {
             </div>
           </div>
 
-          <div>
-            <BiHubVisual />
+          <div style={{ position: 'relative' }}>
+            {/* Halo glow derrière l'animation */}
+            <div style={{
+              position: 'absolute', inset: '-10%',
+              background: 'radial-gradient(circle at 50% 50%, rgba(91,202,255,0.18) 0%, rgba(91,202,255,0.08) 35%, transparent 70%)',
+              pointerEvents: 'none', filter: 'blur(20px)',
+            }} />
+            {/* Cadre semi-transparent qui met le hub en valeur */}
+            <div style={{
+              position: 'relative',
+              background: 'rgba(11,29,49,0.45)',
+              border: '1px solid rgba(91,202,255,0.18)',
+              borderRadius: 24,
+              padding: '1.5rem',
+              backdropFilter: 'blur(8px)',
+              WebkitBackdropFilter: 'blur(8px)',
+              boxShadow: '0 24px 60px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.08)',
+            }}>
+              <BiHubVisual />
+            </div>
           </div>
         </div>
       </section>
@@ -2186,16 +2204,26 @@ export default function LoginPage() {
       ══════════════════════════════════════════════════════════════════ */}
       <section style={{
         padding: '6rem 2rem', textAlign: 'center',
-        background: '#195C82', position: 'relative', overflow: 'hidden',
+        background: 'linear-gradient(135deg, #0b1d31 0%, #142d4c 55%, #195C82 100%)',
+        position: 'relative', overflow: 'hidden',
       }}>
         <div style={{
           position: 'absolute', top: -150, left: '50%', transform: 'translateX(-50%)',
-          width: 800, height: 400, background: 'radial-gradient(circle, rgba(25,92,130,0.15) 0%, rgba(25,92,130,0.1) 30%, transparent 70%)',
+          width: 800, height: 400,
+          background: 'radial-gradient(circle, rgba(91,202,255,0.20) 0%, rgba(91,202,255,0.08) 30%, transparent 70%)',
           pointerEvents: 'none',
         }} />
         <div style={{
           position: 'absolute', bottom: -100, right: -100, width: 400, height: 400,
-          background: 'radial-gradient(circle, rgba(25,92,130,0.1) 0%, transparent 70%)',
+          background: 'radial-gradient(circle, rgba(91,202,255,0.14) 0%, transparent 70%)',
+          pointerEvents: 'none',
+        }} />
+        {/* Grille subtile, identique au hero */}
+        <div style={{
+          position: 'absolute', inset: 0,
+          backgroundImage:
+            'linear-gradient(rgba(255,255,255,.03) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.03) 1px, transparent 1px)',
+          backgroundSize: '56px 56px',
           pointerEvents: 'none',
         }} />
         <div style={{ position: 'relative', zIndex: 1 }}>
@@ -2241,7 +2269,10 @@ export default function LoginPage() {
           10. FOOTER — Blue SRA
       ══════════════════════════════════════════════════════════════════ */}
       <footer style={{
-        background: '#12475e', padding: '2rem', borderTop: '1px solid rgba(255,255,255,0.06)',
+        background: 'linear-gradient(135deg, #061626 0%, #0b1d31 60%, #142d4c 100%)',
+        padding: '2rem',
+        borderTop: '1px solid rgba(91,202,255,0.18)',
+        position: 'relative',
       }}>
         <div style={{
           maxWidth: 1200, margin: '0 auto', display: 'flex', alignItems: 'center',
