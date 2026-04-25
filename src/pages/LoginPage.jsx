@@ -512,12 +512,13 @@ function CompanyTimelineBlast() {
 // Tracé orthogonal rigide (right-angles) + flux électrique animé sur les lignes
 function PipelineVisual() {
   const tools = [
-    { id: 'erp',       name: 'ERP',       color: '#00DC82', y: 110 },
-    { id: 'crm',       name: 'CRM',       color: '#FF7A59', y: 175 },
-    { id: 'marketing', name: 'MARKETING', color: '#EC4899', y: 240 },
-    { id: 'sirh',      name: 'SIRH',      color: '#4A90D9', y: 305 },
-    { id: 'wms',       name: 'WMS',       color: '#F59E0B', y: 370 },
-    { id: 'infra',     name: 'INFRA IT',  color: '#635BFF', y: 435 },
+    { id: 'erp',       name: 'ERP',         color: '#00DC82', y: 70  },
+    { id: 'apps',      name: 'APPLICATION', color: '#14B8A6', y: 130, bidir: true },
+    { id: 'crm',       name: 'CRM',         color: '#FF7A59', y: 190 },
+    { id: 'marketing', name: 'MARKETING',   color: '#EC4899', y: 250 },
+    { id: 'sirh',      name: 'SIRH',        color: '#4A90D9', y: 310 },
+    { id: 'wms',       name: 'WMS',         color: '#F59E0B', y: 370 },
+    { id: 'infra',     name: 'INFRA IT',    color: '#635BFF', y: 430 },
   ]
   // Équipe en haut (superviseur), puis 2 consommateurs : Dashboard + IA Agentique
   const consumers = [
@@ -585,25 +586,7 @@ function PipelineVisual() {
         <line x1={actionBusX} y1="0" x2={actionBusX} y2="480" stroke={`${teamColor}22`} strokeWidth="1" strokeDasharray="1 5" />
       </g>
 
-      {/* Header colonne gauche — chip 'APPLICATIONS MÉTIERS' (style label) */}
-      <g>
-        <rect x={20} y={32} width={100} height={36} rx={4} ry={4}
-              fill="rgba(91,202,255,0.06)" stroke="rgba(91,202,255,0.5)" strokeWidth="1.4"
-              strokeDasharray="3 3" />
-        <rect x={20} y={32} width={4} height={36} fill="#5BCAFF" opacity="0.8">
-          <animate attributeName="opacity" values=".5;1;.5" dur="2.4s" repeatCount="indefinite" />
-        </rect>
-        <text x={70} y={47} textAnchor="middle" dominantBaseline="central"
-              fill="#fff" fontSize="9" fontWeight="900" letterSpacing="1.5">
-          APPLICATIONS
-        </text>
-        <text x={70} y={59} textAnchor="middle" dominantBaseline="central"
-              fill="rgba(91,202,255,0.85)" fontSize="9" fontWeight="800" letterSpacing="1.5">
-          MÉTIERS
-        </text>
-      </g>
-
-      {/* Tools (gauche) */}
+      {/* Tools (gauche) — chips identiques, format uniforme */}
       {tools.map((t) => (
         <g key={t.id}>
           <rect x={20} y={t.y - 18} width={100} height={36} rx={4} ry={4}
@@ -612,21 +595,32 @@ function PipelineVisual() {
             <animate attributeName="opacity" values=".5;1;.5" dur="2.4s" repeatCount="indefinite" />
           </rect>
           <text x={70} y={t.y} textAnchor="middle" dominantBaseline="central"
-                fill="#fff" fontSize="13" fontWeight="800" letterSpacing="1">{t.name}</text>
+                fill="#fff" fontSize={t.id === 'apps' ? 11 : 13} fontWeight="800" letterSpacing={t.id === 'apps' ? 0.5 : 1}>
+            {t.name}
+          </text>
         </g>
       ))}
 
-      {/* Flux électriques entrants */}
+      {/* Flux électriques entrants (et retour pour tools bidirectionnels) */}
       {tools.map((t, i) => (
         <g key={`flow-${t.id}`}>
           <use href={`#pv-in-${t.id}`} stroke={t.color} strokeOpacity="0.22" strokeWidth="1.2" strokeDasharray="3 6">
             <animate attributeName="stroke-dashoffset" values="0;-18" dur="2s" repeatCount="indefinite" />
           </use>
+          {/* Impulsion entrante (tool → hub) */}
           <use href={`#pv-in-${t.id}`} stroke={t.color} strokeWidth="2.4" strokeLinecap="round"
                strokeDasharray="14 600" filter="url(#pvGlow)">
             <animate attributeName="stroke-dashoffset" values="600;-30"
                      dur={`${3 + i * 0.25}s`} repeatCount="indefinite" begin={`${i * 0.45}s`} />
           </use>
+          {/* Impulsion sortante (hub → tool) pour les tools bidirectionnels */}
+          {t.bidir && (
+            <use href={`#pv-in-${t.id}`} stroke={t.color} strokeWidth="2.4" strokeLinecap="round"
+                 strokeDasharray="10 600" filter="url(#pvGlow)" opacity="0.85">
+              <animate attributeName="stroke-dashoffset" values="-30;600"
+                       dur={`${3.4 + i * 0.2}s`} repeatCount="indefinite" begin={`${1.2 + i * 0.3}s`} />
+            </use>
+          )}
         </g>
       ))}
 
@@ -1881,7 +1875,7 @@ export default function LoginPage() {
       ══════════════════════════════════════════════════════════════════ */}
       <section style={{
         paddingTop: 140, paddingBottom: 40,
-        background: 'linear-gradient(135deg, #0b1d31 0%, #142d4c 55%, #195C82 100%)',
+        background: 'linear-gradient(180deg, #0b1d31 0%, #142d4c 55%, #195C82 100%)',
         position: 'relative', overflow: 'hidden',
       }}>
         {/* Halos lumineux cyan */}
@@ -2040,7 +2034,29 @@ export default function LoginPage() {
       </section>
 
       {/* ══════════════════════════════════════════════════════════════════
-          3b. POURQUOI UNE COUCHE IA — Argumentation en 3 colonnes
+          3b. TIMELINE — Activité multi-outils en direct (juste après le mockup)
+      ══════════════════════════════════════════════════════════════════ */}
+      <section style={{ padding: '5rem 2rem 6rem', background: '#fff' }} id="timeline">
+        <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
+          <p style={{
+            fontSize: '.78rem', fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase',
+            color: '#195C82', marginBottom: '.75rem',
+          }}>Vue temps réel</p>
+          <h2 style={{
+            fontSize: 'clamp(1.7rem, 2.8vw, 2.4rem)', fontWeight: 800, color: S.dark,
+            margin: '0 0 .75rem', letterSpacing: '-0.02em',
+          }}>
+            L'activité de votre entreprise. En direct.
+          </h2>
+          <p style={{ fontSize: '1.05rem', color: S.gray, maxWidth: 560, margin: '0 auto', lineHeight: 1.65 }}>
+            Tous vos outils synchronisés sur une seule timeline. Zoomez du trimestre à la journée — les insights explosent là où ça compte.
+          </p>
+        </div>
+        <CompanyTimelineBlast />
+      </section>
+
+      {/* ══════════════════════════════════════════════════════════════════
+          3c. POURQUOI UNE COUCHE IA — Argumentation en 3 colonnes
       ══════════════════════════════════════════════════════════════════ */}
       <section style={{ padding: '5rem 2rem', background: '#fff' }}>
         <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
@@ -2171,28 +2187,6 @@ export default function LoginPage() {
             </p>
           </div>
         </div>
-      </section>
-
-      {/* ══════════════════════════════════════════════════════════════════
-          4b. TIMELINE BLAST — Activité multi-connecteurs en direct
-      ══════════════════════════════════════════════════════════════════ */}
-      <section style={{ padding: '6rem 2rem', background: '#fff' }} id="timeline">
-        <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
-          <p style={{
-            fontSize: '.78rem', fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase',
-            color: '#195C82', marginBottom: '.75rem',
-          }}>Vue temps réel</p>
-          <h2 style={{
-            fontSize: 'clamp(1.7rem, 2.8vw, 2.4rem)', fontWeight: 800, color: S.dark,
-            margin: '0 0 .75rem', letterSpacing: '-0.02em',
-          }}>
-            L'activité de votre entreprise. En direct.
-          </h2>
-          <p style={{ fontSize: '1.05rem', color: S.gray, maxWidth: 560, margin: '0 auto', lineHeight: 1.65 }}>
-            Tous vos outils synchronisés sur une seule timeline. Zoomez du trimestre à la journée — les insights explosent là où ça compte.
-          </p>
-        </div>
-        <CompanyTimelineBlast />
       </section>
 
       {/* ══════════════════════════════════════════════════════════════════
