@@ -79,6 +79,7 @@ const CrmContactsPage = lazy(() => import('./pages/crm/ContactsPage'))
 const CrmEntreprisesPage = lazy(() => import('./pages/crm/EntreprisesPage'))
 const CrmLeadsPage = lazy(() => import('./pages/crm/LeadsPage'))
 const CrmContactDetailPage = lazy(() => import('./pages/crm/ContactDetailPage'))
+const CrmHubSpotDashboardPage = lazy(() => import('./pages/crm/HubSpotDashboardPage'))
 const CategoryLandingPage = lazy(() => import('./pages/CategoryLandingPage'))
 const CampagnesPage = lazy(() => import('./pages/marketing/CampagnesPage'))
 const DocumentsArchivePage = lazy(() => import('./pages/documents/DocumentsArchivePage'))
@@ -313,6 +314,9 @@ function AppRoutes() {
       } />
       <Route path="crm/leads" element={
         <ProtectedRoute roles={['admin','manager']}><Layout><CrmLeadsPage /></Layout></ProtectedRoute>
+      } />
+      <Route path="crm/hubspot" element={
+        <ProtectedRoute roles={['admin','manager']}><Layout><CrmHubSpotDashboardPage /></Layout></ProtectedRoute>
       } />
 
       {/* Marketing */}

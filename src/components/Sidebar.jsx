@@ -42,6 +42,7 @@ const SECTIONS = [
     landingTo: '/crm',
     roles: ['admin', 'manager', 'collaborateur'],
     items: [
+      { to: '/crm/hubspot',           icon: '🟠', label: 'HubSpot',        roles: ['admin', 'manager'] },
       { to: '/crm/contacts',          icon: '👤', label: 'Contacts',       perm: 'crm:contacts' },
       { to: '/crm/entreprises',       icon: '🏢', label: 'Entreprises',    perm: 'crm:entreprises' },
       { to: '/commerce/clients',      icon: '👥', label: 'Clients',        perm: 'crm:clients' },
