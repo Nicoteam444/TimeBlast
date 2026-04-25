@@ -113,14 +113,13 @@ if (typeof document !== 'undefined' && !document.getElementById(TL_STYLE_ID)) {
   document.head.appendChild(s)
 }
 
-// Sources affichées en parallèle
+// Sources affichées en parallèle — vue par catégorie d'outil métier
 const TL_SOURCES = [
-  { id: 'hubspot',   name: 'HubSpot', color: '#FF7A59' },
-  { id: 'sage',      name: 'Sage',    color: '#00DC82' },
-  { id: 'stripe',    name: 'Stripe',  color: '#635BFF' },
-  { id: 'qonto',     name: 'Qonto',   color: '#0f172a' },
-  { id: 'silae',     name: 'Silae',   color: '#4A90D9' },
-  { id: 'gmail',     name: 'Gmail',   color: '#EA4335' },
+  { id: 'erp',  name: 'ERP',  color: '#00DC82' },
+  { id: 'crm',  name: 'CRM',  color: '#FF7A59' },
+  { id: 'bi',   name: 'BI',   color: '#635BFF' },
+  { id: 'sirh', name: 'SIRH', color: '#4A90D9' },
+  { id: 'wms',  name: 'WMS',  color: '#F59E0B' },
 ]
 
 // 4 périodes — densité d'événements croissante du jour au trimestre,
@@ -129,29 +128,29 @@ const TL_PERIODS = {
   T: {
     label: 'Trimestre', ticks: ['Janv.', 'Fév.', 'Mars', 'Avril'], density: 26,
     blasts: [
-      { x: 35, srcIdx: 1, label: 'Performance commerciale' },
-      { x: 72, srcIdx: 0, label: 'Pipeline en évolution' },
+      { x: 35, srcIdx: 0, label: 'Performance financière' },
+      { x: 72, srcIdx: 1, label: 'Pipeline en évolution' },
     ],
   },
   M: {
     label: 'Mois', ticks: ['S1', 'S2', 'S3', 'S4'], density: 16,
     blasts: [
-      { x: 30, srcIdx: 0, label: 'Acquisition contacts' },
-      { x: 70, srcIdx: 1, label: 'Activité commerciale' },
+      { x: 30, srcIdx: 1, label: 'Acquisition de leads' },
+      { x: 70, srcIdx: 3, label: 'Suivi des effectifs' },
     ],
   },
   S: {
     label: 'Semaine', ticks: ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'], density: 9,
     blasts: [
-      { x: 32, srcIdx: 2, label: 'Encaissements' },
-      { x: 68, srcIdx: 0, label: 'Leads à qualifier' },
+      { x: 32, srcIdx: 0, label: 'Encaissements' },
+      { x: 68, srcIdx: 2, label: 'Indicateurs clés' },
     ],
   },
   J: {
     label: 'Jour', ticks: ['08h', '10h', '12h', '14h', '16h', '18h'], density: 5,
     blasts: [
-      { x: 35, srcIdx: 1, label: 'Facturation' },
-      { x: 70, srcIdx: 3, label: 'Trésorerie' },
+      { x: 35, srcIdx: 0, label: 'Facturation' },
+      { x: 70, srcIdx: 4, label: 'Mouvements de stock' },
     ],
   },
 }
