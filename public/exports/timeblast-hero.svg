@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  TimeBlast Hero Animation — version standalone
+  Format : SVG + SMIL (compatible WordPress, navigateurs modernes, Elementor)
+  Usage WP : copier dans un bloc « HTML personnalisé » ou uploader puis <img src="...">
+  Dimensions natives : 500 × 480 (responsive via viewBox)
+-->
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+     viewBox="0 0 500 480"
+     width="100%" height="100%"
+     preserveAspectRatio="xMidYMid meet"
+     style="max-width:560px;display:block;margin:0 auto;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif">
+
+  <defs>
+    <linearGradient id="hubGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%"   stop-color="#142d4c"/>
+      <stop offset="100%" stop-color="#2B4C7E"/>
+    </linearGradient>
+    <filter id="bGlow"><feGaussianBlur stdDeviation="2"/><feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+    <filter id="shadow"><feDropShadow dx="0" dy="2" stdDeviation="3" flood-opacity="0.1"/></filter>
+    <mask id="hubMask"><rect width="500" height="480" fill="white"/><circle cx="250" cy="240" r="60" fill="black"/></mask>
+
+    <!-- 8 chemins ligne centre → source (utilisés par animateMotion) -->
+    <path id="path-0" d="M250,240 L250,75"  fill="none"/>
+    <path id="path-1" d="M250,240 L366.7,123.3" fill="none"/>
+    <path id="path-2" d="M250,240 L415,240" fill="none"/>
+    <path id="path-3" d="M250,240 L366.7,356.7" fill="none"/>
+    <path id="path-4" d="M250,240 L250,405" fill="none"/>
+    <path id="path-5" d="M250,240 L133.3,356.7" fill="none"/>
+    <path id="path-6" d="M250,240 L85,240"  fill="none"/>
+    <path id="path-7" d="M250,240 L133.3,123.3" fill="none"/>
+  </defs>
+
+  <!-- Cercles de fond concentriques -->
+  <circle cx="250" cy="240" r="205" fill="none" stroke="#2B4C7E" stroke-width="0.5" opacity="0.05"/>
+  <circle cx="250" cy="240" r="185" fill="none" stroke="#2B4C7E" stroke-width="0.5" opacity="0.08" stroke-dasharray="4 4"/>
+
+  <!-- Connexions + billes animées (masquées derrière le hub central) -->
+  <g mask="url(#hubMask)">
+    <!-- Compta -->
+    <line x1="250" y1="240" x2="250" y2="75" stroke="#2B4C7E" stroke-width="1" opacity="0.1"/>
+    <line x1="250" y1="240" x2="250" y2="75" stroke="#00DC82" stroke-width="0.8" opacity="0.3" stroke-dasharray="3 5">
+      <animate attributeName="stroke-dashoffset" values="0;-16" dur="2s" repeatCount="indefinite"/>
+    </line>
+    <circle r="4" fill="#2B4C7E" filter="url(#bGlow)" opacity="0.85">
+      <animateMotion dur="2.0s" repeatCount="indefinite" begin="0s"><mpath xlink:href="#path-0"/></animateMotion>
+    </circle>
+    <circle r="2.5" fill="#2B4C7E" opacity="0.5">
+      <animateMotion dur="2.0s" repeatCount="indefinite" begin="1.0s" keyPoints="1;0" keyTimes="0;1" calcMode="linear"><mpath xlink:href="#path-0"/></animateMotion>
+    </circle>
+
+    <!-- CRM -->
+    <line x1="250" y1="240" x2="366.7" y2="123.3" stroke="#2B4C7E" stroke-width="1" opacity="0.1"/>
+    <line x1="250" y1="240" x2="366.7" y2="123.3" stroke="#FF7A59" stroke-width="0.8" opacity="0.3" stroke-dasharray="3 5">
+      <animate attributeName="stroke-dashoffset" values="0;-16" dur="2s" repeatCount="indefinite"/>
+    </line>
+    <circle r="4" fill="#2B4C7E" filter="url(#bGlow)" opacity="0.85">
+      <animateMotion dur="2.4s" repeatCount="indefinite" begin="0.35s"><mpath xlink:href="#path-1"/></animateMotion>
+    </circle>
+    <circle r="2.5" fill="#2B4C7E" opacity="0.5">
+      <animateMotion dur="2.4s" repeatCount="indefinite" begin="1.35s" keyPoints="1;0" keyTimes="0;1" calcMode="linear"><mpath xlink:href="#path-1"/></animateMotion>
+    </circle>
+
+    <!-- Banques -->
+    <line x1="250" y1="240" x2="415" y2="240" stroke="#2B4C7E" stroke-width="1" opacity="0.1"/>
+    <line x1="250" y1="240" x2="415" y2="240" stroke="#635BFF" stroke-width="0.8" opacity="0.3" stroke-dasharray="3 5">
+      <animate attributeName="stroke-dashoffset" values="0;-16" dur="2s" repeatCount="indefinite"/>
+    </line>
+    <circle r="4" fill="#2B4C7E" filter="url(#bGlow)" opacity="0.85">
+      <animateMotion dur="2.8s" repeatCount="indefinite" begin="0.7s"><mpath xlink:href="#path-2"/></animateMotion>
+    </circle>
+    <circle r="2.5" fill="#2B4C7E" opacity="0.5">
+      <animateMotion dur="2.8s" repeatCount="indefinite" begin="1.7s" keyPoints="1;0" keyTimes="0;1" calcMode="linear"><mpath xlink:href="#path-2"/></animateMotion>
+    </circle>
+
+    <!-- RH -->
+    <line x1="250" y1="240" x2="366.7" y2="356.7" stroke="#2B4C7E" stroke-width="1" opacity="0.1"/>
+    <line x1="250" y1="240" x2="366.7" y2="356.7" stroke="#0066FF" stroke-width="0.8" opacity="0.3" stroke-dasharray="3 5">
+      <animate attributeName="stroke-dashoffset" values="0;-16" dur="2s" repeatCount="indefinite"/>
+    </line>
+    <circle r="4" fill="#2B4C7E" filter="url(#bGlow)" opacity="0.85">
+      <animateMotion dur="2.0s" repeatCount="indefinite" begin="1.05s"><mpath xlink:href="#path-3"/></animateMotion>
+    </circle>
+    <circle r="2.5" fill="#2B4C7E" opacity="0.5">
+      <animateMotion dur="2.0s" repeatCount="indefinite" begin="2.05s" keyPoints="1;0" keyTimes="0;1" calcMode="linear"><mpath xlink:href="#path-3"/></animateMotion>
+    </circle>
+
+    <!-- Temps -->
+    <line x1="250" y1="240" x2="250" y2="405" stroke="#2B4C7E" stroke-width="1" opacity="0.1"/>
+    <line x1="250" y1="240" x2="250" y2="405" stroke="#F59E0B" stroke-width="0.8" opacity="0.3" stroke-dasharray="3 5">
+      <animate attributeName="stroke-dashoffset" values="0;-16" dur="2s" repeatCount="indefinite"/>
+    </line>
+    <circle r="4" fill="#2B4C7E" filter="url(#bGlow)" opacity="0.85">
+      <animateMotion dur="2.4s" repeatCount="indefinite" begin="1.4s"><mpath xlink:href="#path-4"/></animateMotion>
+    </circle>
+    <circle r="2.5" fill="#2B4C7E" opacity="0.5">
+      <animateMotion dur="2.4s" repeatCount="indefinite" begin="2.4s" keyPoints="1;0" keyTimes="0;1" calcMode="linear"><mpath xlink:href="#path-4"/></animateMotion>
+    </circle>
+
+    <!-- Mails -->
+    <line x1="250" y1="240" x2="133.3" y2="356.7" stroke="#2B4C7E" stroke-width="1" opacity="0.1"/>
+    <line x1="250" y1="240" x2="133.3" y2="356.7" stroke="#EA4335" stroke-width="0.8" opacity="0.3" stroke-dasharray="3 5">
+      <animate attributeName="stroke-dashoffset" values="0;-16" dur="2s" repeatCount="indefinite"/>
+    </line>
+    <circle r="4" fill="#2B4C7E" filter="url(#bGlow)" opacity="0.85">
+      <animateMotion dur="2.8s" repeatCount="indefinite" begin="1.75s"><mpath xlink:href="#path-5"/></animateMotion>
+    </circle>
+    <circle r="2.5" fill="#2B4C7E" opacity="0.5">
+      <animateMotion dur="2.8s" repeatCount="indefinite" begin="2.75s" keyPoints="1;0" keyTimes="0;1" calcMode="linear"><mpath xlink:href="#path-5"/></animateMotion>
+    </circle>
+
+    <!-- Projets -->
+    <line x1="250" y1="240" x2="85" y2="240" stroke="#2B4C7E" stroke-width="1" opacity="0.1"/>
+    <line x1="250" y1="240" x2="85" y2="240" stroke="#0052CC" stroke-width="0.8" opacity="0.3" stroke-dasharray="3 5">
+      <animate attributeName="stroke-dashoffset" values="0;-16" dur="2s" repeatCount="indefinite"/>
+    </line>
+    <circle r="4" fill="#2B4C7E" filter="url(#bGlow)" opacity="0.85">
+      <animateMotion dur="2.0s" repeatCount="indefinite" begin="2.1s"><mpath xlink:href="#path-6"/></animateMotion>
+    </circle>
+    <circle r="2.5" fill="#2B4C7E" opacity="0.5">
+      <animateMotion dur="2.0s" repeatCount="indefinite" begin="3.1s" keyPoints="1;0" keyTimes="0;1" calcMode="linear"><mpath xlink:href="#path-6"/></animateMotion>
+    </circle>
+
+    <!-- IA -->
+    <line x1="250" y1="240" x2="133.3" y2="123.3" stroke="#2B4C7E" stroke-width="1" opacity="0.1"/>
+    <line x1="250" y1="240" x2="133.3" y2="123.3" stroke="#10A37F" stroke-width="0.8" opacity="0.3" stroke-dasharray="3 5">
+      <animate attributeName="stroke-dashoffset" values="0;-16" dur="2s" repeatCount="indefinite"/>
+    </line>
+    <circle r="4" fill="#2B4C7E" filter="url(#bGlow)" opacity="0.85">
+      <animateMotion dur="2.4s" repeatCount="indefinite" begin="2.45s"><mpath xlink:href="#path-7"/></animateMotion>
+    </circle>
+    <circle r="2.5" fill="#2B4C7E" opacity="0.5">
+      <animateMotion dur="2.4s" repeatCount="indefinite" begin="3.45s" keyPoints="1;0" keyTimes="0;1" calcMode="linear"><mpath xlink:href="#path-7"/></animateMotion>
+    </circle>
+  </g>
+
+  <!-- Sources en cercle (8 bulles autour) -->
+  <g filter="url(#shadow)">
+    <circle cx="250"   cy="75"    r="30" fill="#fff" stroke="#00DC82" stroke-width="2"/>
+    <text   x="250"   y="75"    text-anchor="middle" dominant-baseline="central" fill="#1a2332" font-size="11" font-weight="700">Compta</text>
+
+    <circle cx="366.7" cy="123.3" r="30" fill="#fff" stroke="#FF7A59" stroke-width="2"/>
+    <text   x="366.7" y="123.3" text-anchor="middle" dominant-baseline="central" fill="#1a2332" font-size="11" font-weight="700">CRM</text>
+
+    <circle cx="415"   cy="240"   r="30" fill="#fff" stroke="#635BFF" stroke-width="2"/>
+    <text   x="415"   y="240"   text-anchor="middle" dominant-baseline="central" fill="#1a2332" font-size="11" font-weight="700">Banques</text>
+
+    <circle cx="366.7" cy="356.7" r="30" fill="#fff" stroke="#0066FF" stroke-width="2"/>
+    <text   x="366.7" y="356.7" text-anchor="middle" dominant-baseline="central" fill="#1a2332" font-size="11" font-weight="700">RH</text>
+
+    <circle cx="250"   cy="405"   r="30" fill="#fff" stroke="#F59E0B" stroke-width="2"/>
+    <text   x="250"   y="405"   text-anchor="middle" dominant-baseline="central" fill="#1a2332" font-size="11" font-weight="700">Temps</text>
+
+    <circle cx="133.3" cy="356.7" r="30" fill="#fff" stroke="#EA4335" stroke-width="2"/>
+    <text   x="133.3" y="356.7" text-anchor="middle" dominant-baseline="central" fill="#1a2332" font-size="11" font-weight="700">Mails</text>
+
+    <circle cx="85"    cy="240"   r="30" fill="#fff" stroke="#0052CC" stroke-width="2"/>
+    <text   x="85"    y="240"   text-anchor="middle" dominant-baseline="central" fill="#1a2332" font-size="11" font-weight="700">Projets</text>
+
+    <circle cx="133.3" cy="123.3" r="30" fill="#fff" stroke="#10A37F" stroke-width="2"/>
+    <text   x="133.3" y="123.3" text-anchor="middle" dominant-baseline="central" fill="#1a2332" font-size="11" font-weight="700">IA</text>
+  </g>
+
+  <!-- Hub central (gear logo TimeBlast) -->
+  <g transform="translate(195,185) scale(0.64)">
+    <path fill="#195C82" d="M 557.042969 754.5 C 560.046875 754.5 562.5 752.042969 562.5 749.039062 L 562.5 735.84375 C 562.5 732.839844 560.046875 730.386719 557.042969 730.386719 L 551.375 730.386719 C 548.375 730.386719 545.199219 728.035156 544.3125 725.167969 L 539.476562 713.429688 C 538.058594 710.78125 538.632812 706.882812 540.753906 704.761719 L 544.765625 700.75 C 546.886719 698.625 546.890625 695.152344 544.765625 693.03125 L 535.4375 683.699219 C 533.3125 681.578125 529.839844 681.578125 527.714844 683.699219 L 523.707031 687.710938 C 521.582031 689.835938 517.679688 690.40625 515.035156 688.988281 L 503.296875 684.152344 C 500.429688 683.269531 498.082031 680.09375 498.082031 677.089844 L 498.082031 671.421875 C 498.082031 668.421875 495.625 665.964844 492.625 665.964844 L 479.425781 665.964844 C 476.425781 665.964844 473.96875 668.421875 473.96875 671.421875 L 473.96875 677.089844 C 473.96875 680.09375 471.621094 683.269531 468.753906 684.152344 L 457.011719 688.988281 C 454.367188 690.40625 450.46875 689.832031 448.347656 687.710938 L 444.335938 683.699219 C 442.210938 681.574219 438.738281 681.574219 436.617188 683.699219 L 427.285156 693.027344 C 425.160156 695.152344 425.160156 698.625 427.285156 700.746094 L 431.296875 704.757812 C 433.421875 706.882812 433.992188 710.78125 432.574219 713.429688 L 427.738281 725.167969 C 426.855469 728.035156 423.679688 730.382812 420.675781 730.382812 L 415.011719 730.382812 C 412.011719 730.382812 409.554688 732.839844 409.554688 735.839844 L 409.554688 749.039062 C 409.554688 752.042969 412.011719 754.5 415.011719 754.5 L 420.675781 754.5 C 423.679688 754.5 426.855469 756.84375 427.738281 759.714844 L 432.578125 771.457031 C 433.996094 774.097656 433.421875 778 431.300781 780.121094 L 427.285156 784.136719 C 425.164062 786.257812 425.164062 789.730469 427.285156 791.851562 L 436.617188 801.183594 C 438.738281 803.308594 442.210938 803.304688 444.335938 801.183594 L 448.347656 797.171875 C 450.472656 795.050781 454.371094 794.472656 457.015625 795.894531 L 468.753906 800.730469 C 471.625 801.613281 473.96875 804.789062 473.96875 807.792969 L 473.96875 813.460938 C 473.96875 816.460938 476.425781 818.917969 479.429688 818.917969 L 492.625 818.917969 C 495.625 818.917969 498.082031 816.460938 498.082031 813.460938 L 498.082031 807.792969 C 498.082031 804.789062 500.429688 801.613281 503.296875 800.730469 L 515.039062 795.894531 C 517.683594 794.476562 521.585938 795.046875 523.707031 797.171875 L 527.71875 801.183594 C 529.839844 803.308594 533.316406 803.304688 535.4375 801.183594 L 544.769531 791.851562 C 546.890625 789.730469 546.890625 786.257812 544.769531 784.132812 L 540.757812 780.121094 C 538.632812 778 538.0625 774.097656 539.480469 771.453125 L 544.3125 759.714844 C 545.195312 756.84375 548.375 754.5 551.378906 754.5 Z M 486.023438 773.902344 C 468.648438 773.902344 454.5625 759.816406 454.5625 742.441406 C 454.5625 725.0625 468.648438 710.976562 486.023438 710.976562 C 503.402344 710.976562 517.488281 725.0625 517.488281 742.441406 C 517.488281 759.816406 503.402344 773.902344 486.023438 773.902344 Z" transform="translate(-400,-656)"/>
+  </g>
+</svg>
