@@ -585,12 +585,23 @@ function PipelineVisual() {
         <line x1={actionBusX} y1="0" x2={actionBusX} y2="480" stroke={`${teamColor}22`} strokeWidth="1" strokeDasharray="1 5" />
       </g>
 
-      {/* Header colonne gauche */}
-      <text x={70} y={62} textAnchor="middle"
-            fill="rgba(255,255,255,0.55)" fontSize="10" fontWeight="800" letterSpacing="2.5">
-        APPLICATIONS MÉTIERS
-      </text>
-      <line x1={20} y1={75} x2={120} y2={75} stroke="rgba(255,255,255,0.18)" strokeWidth="1" />
+      {/* Header colonne gauche — chip 'APPLICATIONS MÉTIERS' (style label) */}
+      <g>
+        <rect x={20} y={32} width={100} height={36} rx={4} ry={4}
+              fill="rgba(91,202,255,0.06)" stroke="rgba(91,202,255,0.5)" strokeWidth="1.4"
+              strokeDasharray="3 3" />
+        <rect x={20} y={32} width={4} height={36} fill="#5BCAFF" opacity="0.8">
+          <animate attributeName="opacity" values=".5;1;.5" dur="2.4s" repeatCount="indefinite" />
+        </rect>
+        <text x={70} y={47} textAnchor="middle" dominantBaseline="central"
+              fill="#fff" fontSize="9" fontWeight="900" letterSpacing="1.5">
+          APPLICATIONS
+        </text>
+        <text x={70} y={59} textAnchor="middle" dominantBaseline="central"
+              fill="rgba(91,202,255,0.85)" fontSize="9" fontWeight="800" letterSpacing="1.5">
+          MÉTIERS
+        </text>
+      </g>
 
       {/* Tools (gauche) */}
       {tools.map((t) => (
@@ -1790,7 +1801,7 @@ export default function LoginPage() {
       ══════════════════════════════════════════════════════════════════ */}
       <nav style={{
         position: 'fixed', top: 0, left: 0, right: 0, zIndex: 1000,
-        background: 'rgba(255,255,255,0.75)', backdropFilter: 'blur(24px) saturate(180%)', WebkitBackdropFilter: 'blur(24px) saturate(180%)',
+        background: 'rgba(255,255,255,0.96)', backdropFilter: 'blur(20px) saturate(180%)', WebkitBackdropFilter: 'blur(20px) saturate(180%)',
         borderBottom: '1px solid rgba(25,92,130,0.08)',
       }}>
         <div style={{
@@ -1994,7 +2005,10 @@ export default function LoginPage() {
       {/* ══════════════════════════════════════════════════════════════════
           3. STATS BAR + INTERACTIVE MOCKUP
       ══════════════════════════════════════════════════════════════════ */}
-      <section style={{ background: '#195C82', padding: '3rem 2rem 3rem' }}>
+      <section style={{
+        background: 'linear-gradient(180deg, #195C82 0%, #142d4c 60%, #0b1d31 100%)',
+        padding: '3rem 2rem 3rem',
+      }}>
         <div style={{ display: 'flex', justifyContent: 'center', gap: '3rem', flexWrap: 'wrap', maxWidth: 1060, margin: '0 auto' }}>
           {STATS.map((s, i) => (
             <div key={i} style={{ textAlign: 'center' }}>
