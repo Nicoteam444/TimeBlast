@@ -1867,7 +1867,7 @@ export default function LoginPage() {
           2. HERO — Full impact (gradient marine)
       ══════════════════════════════════════════════════════════════════ */}
       <section style={{
-        paddingTop: 140, paddingBottom: 40,
+        paddingTop: 140, paddingBottom: 70,
         background: 'linear-gradient(180deg, #0b1d31 0%, #142d4c 55%, #195C82 100%)',
         position: 'relative', overflow: 'hidden',
       }}>
@@ -1987,16 +1987,13 @@ export default function LoginPage() {
             </div>
           </div>
         </div>
-      </section>
 
-      {/* ══════════════════════════════════════════════════════════════════
-          3. STATS BAR + INTERACTIVE MOCKUP
-      ══════════════════════════════════════════════════════════════════ */}
-      <section style={{
-        background: 'linear-gradient(180deg, #195C82 0%, #142d4c 60%, #0b1d31 100%)',
-        padding: '3rem 2rem 3rem',
-      }}>
-        <div style={{ display: 'flex', justifyContent: 'center', gap: '3rem', flexWrap: 'wrap', maxWidth: 1060, margin: '0 auto' }}>
+        {/* KPIs intégrés au fond du hero — aucun séparateur */}
+        <div style={{
+          maxWidth: 1060, margin: '4rem auto 0', padding: '0 2rem',
+          display: 'flex', justifyContent: 'center', gap: '3rem', flexWrap: 'wrap',
+          position: 'relative', zIndex: 1,
+        }}>
           {STATS.map((s, i) => (
             <div key={i} style={{ textAlign: 'center' }}>
               <span style={{ display: 'block', fontSize: '2.4rem', fontWeight: 800, color: '#fff' }}>{s.value}</span>
@@ -2005,6 +2002,10 @@ export default function LoginPage() {
           ))}
         </div>
       </section>
+
+      {/* ══════════════════════════════════════════════════════════════════
+          3. DASHBOARD UNIVERSEL — InteractiveMockup
+      ══════════════════════════════════════════════════════════════════ */}
       <section style={{ background: '#fff', padding: '4rem 2rem 5rem', position: 'relative' }}>
         <div style={{ maxWidth: 1060, margin: '0 auto' }}>
           <div style={{ textAlign: 'center', marginBottom: '2.5rem' }}>
