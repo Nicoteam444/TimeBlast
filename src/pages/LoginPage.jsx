@@ -550,16 +550,16 @@ function BiHubVisual() {
           const delay = (i * 0.35).toFixed(1)
           return (
             <g key={src.label + '-conn'}>
-              <line x1={cx} y1={cy} x2={ax} y2={ay} stroke={B} strokeWidth="1" opacity="0.1" />
+              <line x1={cx} y1={cy} x2={ax} y2={ay} stroke="#ffffff" strokeWidth="1" opacity="0.18" />
               <line x1={cx} y1={cy} x2={ax} y2={ay} stroke={src.color} strokeWidth="0.8" opacity="0.3" strokeDasharray="3 5">
                 <animate attributeName="strokeDashoffset" values="0;-16" dur="2s" repeatCount="indefinite" />
               </line>
-              <circle r="4" fill={B} filter="url(#bGlow)" opacity="0.85">
+              <circle r="4" fill="#5BCAFF" filter="url(#bGlow)" opacity="0.95">
                 <animateMotion dur={dur + 's'} repeatCount="indefinite" begin={delay + 's'}>
                   <mpath xlinkHref={`#path-${i}`} />
                 </animateMotion>
               </circle>
-              <circle r="2.5" fill={B} opacity="0.5">
+              <circle r="2.5" fill="#5BCAFF" opacity="0.65">
                 <animateMotion dur={dur + 's'} repeatCount="indefinite" begin={(parseFloat(delay) + 1) + 's'} keyPoints="1;0" keyTimes="0;1" calcMode="linear">
                   <mpath xlinkHref={`#path-${i}`} />
                 </animateMotion>
@@ -583,8 +583,8 @@ function BiHubVisual() {
           )
         })}
 
-        {/* Hub central — logo gear */}
-        <image href="/logo-icon.svg" x={cx-55} y={cy-55} width="110" height="110" />
+        {/* Hub central — logo gear (version blanche pour fond sombre du hero) */}
+        <image href="/logo-icon-white.svg" x={cx-55} y={cy-55} width="110" height="110" />
       </svg>
     </div>
   )
@@ -1541,21 +1541,30 @@ export default function LoginPage() {
       </div>
 
       {/* ══════════════════════════════════════════════════════════════════
-          2. HERO — Full impact
+          2. HERO — Full impact (gradient marine)
       ══════════════════════════════════════════════════════════════════ */}
       <section style={{
-        paddingTop: 140, paddingBottom: 40, background: '#fff',
+        paddingTop: 140, paddingBottom: 40,
+        background: 'linear-gradient(135deg, #0b1d31 0%, #142d4c 55%, #195C82 100%)',
         position: 'relative', overflow: 'hidden',
       }}>
-        {/* Background orbs */}
+        {/* Halos lumineux cyan */}
         <div style={{
           position: 'absolute', top: -300, right: -200, width: 800, height: 800,
-          background: 'radial-gradient(circle, rgba(25,92,130,0.04) 0%, rgba(25,92,130,0.03) 40%, transparent 70%)',
+          background: 'radial-gradient(circle, rgba(91,202,255,0.18) 0%, rgba(91,202,255,0.08) 40%, transparent 70%)',
           pointerEvents: 'none',
         }} />
         <div style={{
           position: 'absolute', top: 100, left: -300, width: 600, height: 600,
-          background: 'radial-gradient(circle, rgba(25,92,130,0.04) 0%, transparent 70%)',
+          background: 'radial-gradient(circle, rgba(91,202,255,0.12) 0%, transparent 70%)',
+          pointerEvents: 'none',
+        }} />
+        {/* Grille subtile */}
+        <div style={{
+          position: 'absolute', inset: 0,
+          backgroundImage:
+            'linear-gradient(rgba(255,255,255,.03) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.03) 1px, transparent 1px)',
+          backgroundSize: '56px 56px',
           pointerEvents: 'none',
         }} />
 
@@ -1563,12 +1572,12 @@ export default function LoginPage() {
           {/* Badge */}
           <a href="https://www.groupe-sra.fr" target="_blank" rel="noopener noreferrer" style={{
             display: 'inline-flex', alignItems: 'center', gap: 8, padding: '7px 18px',
-            borderRadius: 100, background: 'rgba(25,92,130,0.04)', border: '1px solid rgba(25,92,130,0.12)',
-            fontSize: '.82rem', fontWeight: 600, color: S.sra, marginBottom: '2rem',
+            borderRadius: 100, background: 'rgba(91,202,255,0.12)', border: '1px solid rgba(91,202,255,0.35)',
+            fontSize: '.82rem', fontWeight: 600, color: '#5BCAFF', marginBottom: '2rem',
             textDecoration: 'none', cursor: 'pointer', transition: 'all .25s',
           }}
-          onMouseEnter={e => { e.currentTarget.style.borderColor = 'rgba(25,92,130,0.3)'; e.currentTarget.style.background = 'rgba(25,92,130,0.06)' }}
-          onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(25,92,130,0.12)'; e.currentTarget.style.background = 'rgba(25,92,130,0.04)' }}>
+          onMouseEnter={e => { e.currentTarget.style.borderColor = 'rgba(91,202,255,0.6)'; e.currentTarget.style.background = 'rgba(91,202,255,0.18)' }}
+          onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(91,202,255,0.35)'; e.currentTarget.style.background = 'rgba(91,202,255,0.12)' }}>
             Propulsé par 40 ans d'expertise SRA →
           </a>
 
@@ -1576,28 +1585,28 @@ export default function LoginPage() {
 
         {/* Hero grid : texte gauche + animation droite */}
         <div className="landing-hero-grid" style={{
-          maxWidth: 1200, margin: '0 auto', padding: '0 2rem',
+          maxWidth: 1200, margin: '0 auto', padding: '0 2rem', position: 'relative', zIndex: 1,
           display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '3rem', alignItems: 'center',
         }}>
           <div>
             <div style={{ marginBottom: '1.25rem' }}>
               <h1 style={{
                 fontSize: 'clamp(2rem, 3.5vw, 3rem)', fontWeight: 800, lineHeight: 1.2,
-                color: S.dark, margin: 0, letterSpacing: '-0.02em',
+                color: '#fff', margin: 0, letterSpacing: '-0.02em',
               }}>
                 La plateforme IA<br />
                 qui active vos données :
               </h1>
               <div style={{
                 fontSize: 'clamp(1.8rem, 3vw, 2.6rem)', fontWeight: 800, lineHeight: 1.3,
-                color: '#1D9BF0', height: 'clamp(2.4rem, 4vw, 3.4rem)', overflow: 'hidden',
+                color: '#5BCAFF', height: 'clamp(2.4rem, 4vw, 3.4rem)', overflow: 'hidden',
               }}>
                 <RotatingText />
               </div>
             </div>
 
             <p style={{
-              fontSize: '1.1rem', color: S.gray, lineHeight: 1.65, margin: '0 0 2rem', maxWidth: 520,
+              fontSize: '1.1rem', color: 'rgba(255,255,255,0.78)', lineHeight: 1.65, margin: '0 0 2rem', maxWidth: 520,
             }}>
               TimeBlast se connecte à votre CRM, ERP et outils métier pour révéler les données dormantes et vous donner une vision 360 pilotée par l'IA.
             </p>
@@ -1611,23 +1620,43 @@ export default function LoginPage() {
                 <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '.6rem' }}>
                   <span style={{
                     width: 22, height: 22, borderRadius: '50%', flexShrink: 0,
-                    background: 'rgba(25,92,130,0.08)', color: '#195C82',
+                    background: 'rgba(91,202,255,0.18)', color: '#5BCAFF',
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
                     fontSize: '.7rem', fontWeight: 800,
                   }}>✓</span>
-                  <span style={{ fontSize: '.95rem', color: S.dark }}>
+                  <span style={{ fontSize: '.95rem', color: '#fff' }}>
                     <strong>{b.text}</strong>
-                    <span style={{ color: S.gray }}> — {b.sub}</span>
+                    <span style={{ color: 'rgba(255,255,255,0.65)' }}> — {b.sub}</span>
                   </span>
                 </div>
               ))}
             </div>
 
             <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
-              <button onClick={() => window.open('https://www.groupe-sra.fr/contact/', '_blank')} className="landing-btn-primary" style={{ border: 'none', cursor: 'pointer', textDecoration: 'none' }}>
+              <button
+                onClick={() => window.open('https://www.groupe-sra.fr/contact/', '_blank')}
+                style={{
+                  background: '#5BCAFF', color: '#0b1d31', border: 'none',
+                  padding: '.75rem 2rem', borderRadius: 8, fontSize: '1rem', fontWeight: 800,
+                  cursor: 'pointer', transition: 'all .15s',
+                  boxShadow: '0 6px 22px rgba(91,202,255,.35)',
+                }}
+                onMouseEnter={e => { e.currentTarget.style.background = '#7ad6ff'; e.currentTarget.style.transform = 'translateY(-1px)' }}
+                onMouseLeave={e => { e.currentTarget.style.background = '#5BCAFF'; e.currentTarget.style.transform = 'none' }}
+              >
                 Connecter mes outils →
               </button>
-              <a href="https://www.groupe-sra.fr/contact/" target="_blank" rel="noopener noreferrer" className="landing-btn-secondary">
+              <a
+                href="https://www.groupe-sra.fr/contact/" target="_blank" rel="noopener noreferrer"
+                style={{
+                  background: 'transparent', color: '#fff', border: '1.5px solid rgba(255,255,255,.4)',
+                  padding: '.75rem 2rem', borderRadius: 8, fontSize: '1rem', fontWeight: 600,
+                  cursor: 'pointer', textDecoration: 'none', transition: 'all .15s',
+                  display: 'inline-block',
+                }}
+                onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255,255,255,.08)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,.7)' }}
+                onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.borderColor = 'rgba(255,255,255,.4)' }}
+              >
                 Nous contacter →
               </a>
             </div>
