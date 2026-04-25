@@ -83,6 +83,288 @@ const CATEGORIES = [
 
 const BI_PREVIEWS = []
 
+// ── Timeline Blast — animation activité multi-connecteurs ──────────────────
+const TL_STYLE_ID = 'tl-blast-style'
+if (typeof document !== 'undefined' && !document.getElementById(TL_STYLE_ID)) {
+  const s = document.createElement('style')
+  s.id = TL_STYLE_ID
+  s.textContent = `
+    @keyframes tlFlow {
+      0%   { transform: translateX(-100%); opacity: 0; }
+      8%   { opacity: 1; }
+      92%  { opacity: 1; }
+      100% { transform: translateX(0%); opacity: 0; }
+    }
+    @keyframes tlPulseDot {
+      0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 currentColor; }
+      50%      { transform: scale(1.25); box-shadow: 0 0 0 6px transparent; }
+    }
+    @keyframes tlBlastIn {
+      0%   { transform: translate(-50%, -50%) scale(0); opacity: 0; }
+      40%  { transform: translate(-50%, -50%) scale(1.25); opacity: 1; }
+      70%  { transform: translate(-50%, -50%) scale(.95); opacity: 1; }
+      100% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+    }
+    @keyframes tlBlastRing {
+      0%   { transform: translate(-50%, -50%) scale(.4); opacity: .9; }
+      100% { transform: translate(-50%, -50%) scale(2.4); opacity: 0; }
+    }
+    @keyframes tlRaySpin {
+      from { transform: translate(-50%, -50%) rotate(0deg); }
+      to   { transform: translate(-50%, -50%) rotate(360deg); }
+    }
+    @keyframes tlInsightPop {
+      0%   { transform: translateY(8px) scale(.95); opacity: 0; }
+      100% { transform: translateY(0)   scale(1);    opacity: 1; }
+    }
+  `
+  document.head.appendChild(s)
+}
+
+// Sources affichées en parallèle
+const TL_SOURCES = [
+  { id: 'hubspot',   icon: '🟠', name: 'HubSpot',   color: '#FF7A59' },
+  { id: 'sage',      icon: '💚', name: 'Sage',      color: '#00DC82' },
+  { id: 'stripe',    icon: '💳', name: 'Stripe',    color: '#635BFF' },
+  { id: 'qonto',     icon: '🏦', name: 'Qonto',     color: '#0f172a' },
+  { id: 'silae',     icon: '👥', name: 'Silae',     color: '#4A90D9' },
+  { id: 'gmail',     icon: '📧', name: 'Gmail',     color: '#EA4335' },
+]
+
+// 4 périodes — positions en % horizontal + libellés axe + blasts (insights)
+const TL_PERIODS = {
+  T: {
+    label: 'Trimestre', ticks: ['Janv.', 'Fév.', 'Mars', 'Avril'],
+    blasts: [
+      { x: 22, srcIdx: 1, color: '#16a34a', icon: '💰', title: '+163 k€',     sub: 'Deal LEGAC CEGID FLEX gagné' },
+      { x: 56, srcIdx: 0, color: '#FF7A59', icon: '🎯', title: '× 1.4 pipeline', sub: 'Qualifié vs T-1' },
+      { x: 84, srcIdx: 3, color: '#f59e0b', icon: '⚠️',  title: 'Cash J+30',   sub: 'Sous seuil — anticiper' },
+    ],
+  },
+  M: {
+    label: 'Mois', ticks: ['S1', 'S2', 'S3', 'S4'],
+    blasts: [
+      { x: 18, srcIdx: 0, color: '#FF7A59', icon: '👤', title: '+340 contacts', sub: 'Nouveaux ce mois-ci' },
+      { x: 50, srcIdx: 1, color: '#16a34a', icon: '🏆', title: '68 deals gagnés', sub: 'Win-rate 69%' },
+      { x: 78, srcIdx: 4, color: '#4A90D9', icon: '📊', title: 'Marge 34%',     sub: 'Brute mensuelle' },
+    ],
+  },
+  S: {
+    label: 'Semaine', ticks: ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'],
+    blasts: [
+      { x: 28, srcIdx: 2, color: '#635BFF', icon: '💳', title: '+47 paiements', sub: '12 350 € encaissés' },
+      { x: 56, srcIdx: 0, color: '#FF7A59', icon: '🔥', title: '12 leads chauds', sub: 'Score IA > 80' },
+      { x: 82, srcIdx: 5, color: '#dc2626', icon: '📨', title: '3 relances dues', sub: 'Détectées via Gmail' },
+    ],
+  },
+  J: {
+    label: 'Jour', ticks: ['08h', '10h', '12h', '14h', '16h', '18h'],
+    blasts: [
+      { x: 24, srcIdx: 1, color: '#16a34a', icon: '⚡', title: 'Facture émise', sub: 'CRUSTA — 21 000 €' },
+      { x: 52, srcIdx: 3, color: '#0f172a', icon: '🏦', title: 'Virement reçu', sub: 'OFFICE TOURISME — 65 472 €' },
+      { x: 78, srcIdx: 0, color: '#FF7A59', icon: '🤝', title: 'Meeting clos',  sub: 'PARTEDIS → Proposition' },
+    ],
+  },
+}
+
+// Génère 14 dots pseudo-aléatoires mais déterministes pour un track
+function tlEventsFor(srcId, period) {
+  const seed = (srcId + period).split('').reduce((a, c) => a + c.charCodeAt(0), 0)
+  const out = []
+  for (let i = 0; i < 14; i++) {
+    const r = ((seed * (i + 7)) % 100) / 100
+    const x = 4 + (i * 92 / 14) + (r - 0.5) * 5
+    const major = ((seed + i) % 4 === 0)
+    out.push({ x: Math.max(2, Math.min(98, x)), major })
+  }
+  return out
+}
+
+function BlastBurst({ blast, top }) {
+  return (
+    <div style={{
+      position: 'absolute', left: `${blast.x}%`, top: `${top}%`, pointerEvents: 'none',
+      width: 0, height: 0,
+    }}>
+      {/* Ring expanding */}
+      <div style={{
+        position: 'absolute', left: 0, top: 0, width: 90, height: 90,
+        borderRadius: '50%', border: `2px solid ${blast.color}`,
+        animation: 'tlBlastRing 2s ease-out infinite',
+        transformOrigin: 'center',
+      }} />
+      {/* Rays SVG */}
+      <svg width="120" height="120" style={{
+        position: 'absolute', left: 0, top: 0,
+        animation: 'tlRaySpin 14s linear infinite',
+      }}>
+        {Array.from({ length: 12 }).map((_, i) => {
+          const a = (i * 30) * Math.PI / 180
+          const x1 = 60 + Math.cos(a) * 16
+          const y1 = 60 + Math.sin(a) * 16
+          const x2 = 60 + Math.cos(a) * 56
+          const y2 = 60 + Math.sin(a) * 56
+          return <line key={i} x1={x1} y1={y1} x2={x2} y2={y2} stroke={blast.color} strokeWidth="2" strokeLinecap="round" opacity={i % 2 ? .9 : .45} />
+        })}
+      </svg>
+      {/* Core */}
+      <div style={{
+        position: 'absolute', left: 0, top: 0,
+        width: 50, height: 50, borderRadius: '50%',
+        background: `radial-gradient(circle at 30% 30%, #fff, ${blast.color})`,
+        boxShadow: `0 0 35px ${blast.color}, 0 0 70px ${blast.color}aa`,
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        fontSize: '1.4rem', animation: 'tlBlastIn .55s cubic-bezier(.34,1.6,.64,1) both',
+      }}>{blast.icon}</div>
+      {/* Insight card */}
+      <div style={{
+        position: 'absolute', left: 60, top: -14, minWidth: 170,
+        background: '#0f172a', color: '#fff', padding: '8px 12px', borderRadius: 10,
+        fontSize: '.78rem', lineHeight: 1.35, boxShadow: '0 8px 22px rgba(0,0,0,.25)',
+        animation: 'tlInsightPop .5s ease both .25s', opacity: 0, animationFillMode: 'forwards',
+        pointerEvents: 'auto',
+      }}>
+        <div style={{ fontWeight: 800, color: blast.color }}>{blast.title}</div>
+        <div style={{ opacity: .85 }}>{blast.sub}</div>
+      </div>
+    </div>
+  )
+}
+
+function CompanyTimelineBlast() {
+  const [period, setPeriod] = React.useState('S')
+  const data = TL_PERIODS[period]
+  const ROW_H = 48
+  const trackHeight = TL_SOURCES.length * ROW_H + 30
+
+  return (
+    <div style={{ maxWidth: 1100, margin: '0 auto' }}>
+      {/* Period switcher */}
+      <div style={{ display: 'flex', justifyContent: 'center', gap: 8, marginBottom: '2rem', flexWrap: 'wrap' }}>
+        {[
+          { k: 'T', label: 'Trimestre' },
+          { k: 'M', label: 'Mois' },
+          { k: 'S', label: 'Semaine' },
+          { k: 'J', label: 'Jour' },
+        ].map(p => {
+          const active = period === p.k
+          return (
+            <button key={p.k} onClick={() => setPeriod(p.k)} style={{
+              padding: '.55rem 1.4rem', borderRadius: 100,
+              border: '1px solid', borderColor: active ? '#195C82' : '#e2e8f0',
+              background: active ? '#195C82' : '#fff',
+              color: active ? '#fff' : '#64748b',
+              fontWeight: 700, fontSize: '.85rem', cursor: 'pointer',
+              transition: 'all .2s',
+              boxShadow: active ? '0 6px 18px rgba(25,92,130,.25)' : 'none',
+            }}>{p.label}</button>
+          )
+        })}
+      </div>
+
+      {/* Timeline frame */}
+      <div style={{
+        position: 'relative',
+        background: '#fff',
+        border: '1px solid rgba(25,92,130,0.1)',
+        borderRadius: 16,
+        padding: '1.25rem 1.25rem 2rem',
+        boxShadow: '0 14px 40px rgba(15,23,42,.06)',
+        overflow: 'hidden',
+      }}>
+        {/* Sweep light */}
+        <div style={{
+          position: 'absolute', left: 0, top: 0, bottom: 0, width: '40%',
+          background: 'linear-gradient(90deg, transparent, rgba(25,92,130,.06), transparent)',
+          animation: 'tlFlow 7s linear infinite', pointerEvents: 'none',
+        }} />
+
+        {/* Tracks */}
+        <div style={{ position: 'relative', height: trackHeight }}>
+          {TL_SOURCES.map((src, idx) => {
+            const events = tlEventsFor(src.id, period)
+            return (
+              <div key={src.id} style={{
+                position: 'absolute', left: 0, right: 0,
+                top: idx * ROW_H, height: ROW_H,
+                display: 'flex', alignItems: 'center',
+              }}>
+                {/* Source label */}
+                <div style={{
+                  width: 130, flexShrink: 0, display: 'flex', alignItems: 'center', gap: 8,
+                  fontSize: '.85rem', fontWeight: 600, color: '#0f172a',
+                }}>
+                  <span style={{ fontSize: '1rem' }}>{src.icon}</span>
+                  <span>{src.name}</span>
+                </div>
+                {/* Track line */}
+                <div style={{
+                  flex: 1, height: 2, background: `linear-gradient(90deg, ${src.color}22, ${src.color}66, ${src.color}22)`,
+                  position: 'relative', borderRadius: 1,
+                }}>
+                  {events.map((e, i) => (
+                    <div key={i} style={{
+                      position: 'absolute', left: `${e.x}%`, top: '50%',
+                      width: e.major ? 10 : 6, height: e.major ? 10 : 6,
+                      borderRadius: '50%', background: src.color,
+                      transform: 'translate(-50%, -50%)', color: src.color,
+                      animation: `tlPulseDot ${2 + (i % 4) * .5}s ease-in-out ${(i * .15)}s infinite`,
+                      boxShadow: e.major ? `0 0 12px ${src.color}` : 'none',
+                    }} />
+                  ))}
+                </div>
+              </div>
+            )
+          })}
+
+          {/* Blasts overlay */}
+          {data.blasts.map((b, i) => {
+            const topPct = ((b.srcIdx + 0.5) * ROW_H / trackHeight) * 100
+            return <BlastBurst key={`${period}-${i}`} blast={b} top={topPct} />
+          })}
+        </div>
+
+        {/* Time axis */}
+        <div style={{
+          marginLeft: 130, marginTop: 8,
+          display: 'flex', justifyContent: 'space-between',
+          fontSize: '.75rem', color: '#94a3b8', fontWeight: 500,
+        }}>
+          {data.ticks.map((t, i) => (
+            <span key={i}>{t}</span>
+          ))}
+        </div>
+      </div>
+
+      {/* Legend insights */}
+      <div style={{
+        marginTop: '1.5rem',
+        display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 12,
+      }}>
+        {data.blasts.map((b, i) => (
+          <div key={i} style={{
+            display: 'flex', alignItems: 'center', gap: 10,
+            padding: '.65rem .9rem', borderRadius: 10,
+            background: '#fff', border: `1px solid ${b.color}33`,
+            boxShadow: `0 4px 12px ${b.color}10`,
+          }}>
+            <div style={{
+              width: 32, height: 32, borderRadius: '50%',
+              background: `${b.color}15`, color: b.color,
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              fontSize: '1rem', flexShrink: 0,
+            }}>{b.icon}</div>
+            <div>
+              <div style={{ fontSize: '.85rem', fontWeight: 700, color: '#0f172a' }}>{b.title}</div>
+              <div style={{ fontSize: '.75rem', color: '#64748b' }}>{b.sub}</div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+}
+
 // ── Composant SVG — Hub decisionnel ────────────────────────────────────────
 function BiHubVisual() {
   const B = '#2B4C7E'
@@ -1366,6 +1648,28 @@ export default function LoginPage() {
             </p>
           </div>
         </div>
+      </section>
+
+      {/* ══════════════════════════════════════════════════════════════════
+          4b. TIMELINE BLAST — Activité multi-connecteurs en direct
+      ══════════════════════════════════════════════════════════════════ */}
+      <section style={{ padding: '6rem 2rem', background: '#fff' }} id="timeline">
+        <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
+          <p style={{
+            fontSize: '.78rem', fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase',
+            color: '#195C82', marginBottom: '.75rem',
+          }}>Vue temps réel</p>
+          <h2 style={{
+            fontSize: 'clamp(1.7rem, 2.8vw, 2.4rem)', fontWeight: 800, color: S.dark,
+            margin: '0 0 .75rem', letterSpacing: '-0.02em',
+          }}>
+            L'activité de votre entreprise. En direct.
+          </h2>
+          <p style={{ fontSize: '1.05rem', color: S.gray, maxWidth: 560, margin: '0 auto', lineHeight: 1.65 }}>
+            Tous vos outils synchronisés sur une seule timeline. Zoomez du trimestre à la journée — les insights explosent là où ça compte.
+          </p>
+        </div>
+        <CompanyTimelineBlast />
       </section>
 
       {/* ══════════════════════════════════════════════════════════════════
