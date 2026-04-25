@@ -45,8 +45,10 @@
     <path id="pv-act-agent" d="M 595 70 H 610 V 360 H 585" fill="none"/>
   </defs>
 
-  <!-- Fond gradient marine intégré au SVG (rend visible sur fond clair) -->
-  <rect width="640" height="480" fill="url(#pvBgFill)"/>
+  <!-- Fond gradient marine + liseré cyan + coins arrondis -->
+  <rect x="2" y="2" width="636" height="476" rx="20" ry="20" fill="url(#pvBgFill)"/>
+  <rect x="2" y="2" width="636" height="476" rx="20" ry="20"
+        fill="none" stroke="#5BCAFF" stroke-width="2" opacity="0.7"/>
 
   <!-- Grille de fond -->
   <g opacity="0.5">
