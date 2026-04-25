@@ -508,237 +508,247 @@ function CompanyTimelineBlast() {
 }
 
 // ── Composant SVG — Pipeline IA ─────────────────────────────────────────────
-// Outils métier → connecteur TimeBlast (avec IA encapsulée) → consommateurs
+// Outils → connecteur TimeBlast (IA encapsulée) → consommateurs (dont équipe pilote)
+// Tracé orthogonal rigide (right-angles) + flux électrique animé sur les lignes
 function PipelineVisual() {
   const tools = [
-    { id: 'erp',  name: 'ERP',  color: '#00DC82', y: 60  },
-    { id: 'crm',  name: 'CRM',  color: '#FF7A59', y: 145 },
+    { id: 'erp',  name: 'ERP',  color: '#00DC82', y: 70  },
+    { id: 'crm',  name: 'CRM',  color: '#FF7A59', y: 150 },
     { id: 'bi',   name: 'BI',   color: '#635BFF', y: 230 },
-    { id: 'sirh', name: 'SIRH', color: '#4A90D9', y: 315 },
-    { id: 'wms',  name: 'WMS',  color: '#F59E0B', y: 400 },
+    { id: 'sirh', name: 'SIRH', color: '#4A90D9', y: 310 },
+    { id: 'wms',  name: 'WMS',  color: '#F59E0B', y: 390 },
   ]
   const consumers = [
-    { id: 'cockpit',   name: 'Cockpit',   color: '#5BCAFF', y: 110 },
-    { id: 'dashboard', name: 'Dashboard', color: '#5BCAFF', y: 230 },
-    { id: 'agent',     name: 'Agent',     color: '#00DC82', y: 350, bidir: true },
+    { id: 'cockpit',   name: 'Cockpit',   color: '#5BCAFF', y: 100 },
+    { id: 'dashboard', name: 'Dashboard', color: '#5BCAFF', y: 195 },
+    { id: 'agent',     name: 'Agent',     color: '#00DC82', y: 290, bidir: true },
+    { id: 'team',      name: 'Équipe',    color: '#F59E0B', y: 385, bidir: true, pilot: true },
   ]
   const toolEndX = 130
-  const hubX = 295, hubY = 230, hubR = 64
-  const consumerStartX = 470
+  const busLeft = 195
+  const busRight = 405
+  const hubW = 130, hubH = 130
+  const hubX = 300, hubY = 230
+  const hubLeft = hubX - hubW / 2, hubRight = hubX + hubW / 2
+  const hubTop = hubY - hubH / 2, hubBottom = hubY + hubH / 2
+  const consumerX = 465
 
   return (
     <svg viewBox="0 0 600 460" style={{ width: '100%', height: 'auto', display: 'block', overflow: 'visible' }}>
       <defs>
         <filter id="pvGlow" x="-50%" y="-50%" width="200%" height="200%">
-          <feGaussianBlur stdDeviation="3" />
+          <feGaussianBlur stdDeviation="2.4" />
           <feMerge><feMergeNode /><feMergeNode in="SourceGraphic" /></feMerge>
         </filter>
-        <radialGradient id="pvHubBg" cx="50%" cy="50%" r="50%">
-          <stop offset="0%" stopColor="#5BCAFF" stopOpacity="0.22" />
-          <stop offset="55%" stopColor="#5BCAFF" stopOpacity="0.08" />
-          <stop offset="100%" stopColor="#5BCAFF" stopOpacity="0" />
-        </radialGradient>
-        {/* Chemins outils → hub */}
+        <linearGradient id="pvHubFill" x1="0%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%" stopColor="rgba(20,45,76,0.95)" />
+          <stop offset="100%" stopColor="rgba(11,29,49,0.95)" />
+        </linearGradient>
+        {/* Chemins entrants : L orthogonal — chip → bus vertical → hub */}
         {tools.map((t) => (
           <path
             key={`p-${t.id}`}
-            id={`pv-flow-${t.id}`}
-            d={`M ${toolEndX} ${t.y} C ${(toolEndX + hubX) / 2} ${t.y}, ${(toolEndX + hubX) / 2} ${hubY}, ${hubX - hubR} ${hubY}`}
+            id={`pv-in-${t.id}`}
+            d={`M ${toolEndX} ${t.y} H ${busLeft} V ${hubY} H ${hubLeft}`}
             fill="none"
           />
         ))}
-        {/* Chemins hub → consommateurs */}
+        {/* Chemins sortants : hub → bus vertical → chip consommateur */}
         {consumers.map((c) => (
           <path
             key={`p-${c.id}`}
             id={`pv-out-${c.id}`}
-            d={`M ${hubX + hubR} ${hubY} C ${(hubX + hubR + consumerStartX) / 2} ${hubY}, ${(hubX + hubR + consumerStartX) / 2} ${c.y}, ${consumerStartX} ${c.y}`}
+            d={`M ${hubRight} ${hubY} H ${busRight} V ${c.y} H ${consumerX}`}
             fill="none"
           />
         ))}
       </defs>
 
-      {/* Grille de fond très subtile */}
-      <g opacity="0.6">
-        <line x1="0" y1="230" x2="600" y2="230" stroke="rgba(255,255,255,0.04)" strokeWidth="1" strokeDasharray="2 6" />
+      {/* Grille de fond circuit — discrète */}
+      <g opacity="0.5">
+        <line x1="0" y1={hubY} x2="600" y2={hubY} stroke="rgba(255,255,255,0.05)" strokeWidth="1" strokeDasharray="1 5" />
+        <line x1={busLeft} y1="0" x2={busLeft} y2="460" stroke="rgba(255,255,255,0.04)" strokeWidth="1" strokeDasharray="1 5" />
+        <line x1={busRight} y1="0" x2={busRight} y2="460" stroke="rgba(255,255,255,0.04)" strokeWidth="1" strokeDasharray="1 5" />
       </g>
 
-      {/* Tools (gauche) */}
+      {/* Tools (gauche) — chips rectangulaires */}
       {tools.map((t) => (
         <g key={t.id}>
-          <circle cx={70} cy={t.y} r={32} fill={t.color} opacity="0.08" />
-          <rect x={20} y={t.y - 20} width={100} height={40} rx={20} ry={20}
-                fill="rgba(255,255,255,0.06)" stroke={t.color} strokeWidth="1.5" />
-          <circle cx={36} cy={t.y} r={5} fill={t.color}>
-            <animate attributeName="opacity" values=".5;1;.5" dur="2.6s" repeatCount="indefinite" />
-          </circle>
+          <rect x={20} y={t.y - 18} width={100} height={36} rx={4} ry={4}
+                fill="rgba(255,255,255,0.04)" stroke={t.color} strokeWidth="1.5" />
+          <rect x={20} y={t.y - 18} width={4} height={36} fill={t.color}>
+            <animate attributeName="opacity" values=".5;1;.5" dur="2.4s" repeatCount="indefinite" />
+          </rect>
           <text x={70} y={t.y} textAnchor="middle" dominantBaseline="central"
-                fill="#fff" fontSize="13" fontWeight="700" letterSpacing="0.5">
+                fill="#fff" fontSize="13" fontWeight="800" letterSpacing="1">
             {t.name}
           </text>
         </g>
       ))}
 
-      {/* Connexions outils → hub (particules entrantes) */}
+      {/* Flux électrique entrants : ligne pointillée + impulsion lumineuse */}
       {tools.map((t, i) => (
         <g key={`flow-${t.id}`}>
-          <use href={`#pv-flow-${t.id}`} stroke={t.color} strokeOpacity="0.28" strokeWidth="1.4" strokeDasharray="3 5">
-            <animate attributeName="stroke-dashoffset" values="0;-16" dur="2s" repeatCount="indefinite" />
+          {/* Trace de fond — chemin discret toujours visible */}
+          <use href={`#pv-in-${t.id}`} stroke={t.color} strokeOpacity="0.22" strokeWidth="1.2" strokeDasharray="3 6">
+            <animate attributeName="stroke-dashoffset" values="0;-18" dur="2s" repeatCount="indefinite" />
           </use>
-          <circle r="4" fill={t.color} filter="url(#pvGlow)">
-            <animateMotion dur={`${2.4 + i * 0.3}s`} repeatCount="indefinite" begin={`${i * 0.4}s`}>
-              <mpath xlinkHref={`#pv-flow-${t.id}`} />
-            </animateMotion>
-          </circle>
-          <circle r="2.2" fill={t.color} opacity="0.55">
-            <animateMotion dur={`${2.4 + i * 0.3}s`} repeatCount="indefinite" begin={`${i * 0.4 + 0.25}s`}>
-              <mpath xlinkHref={`#pv-flow-${t.id}`} />
-            </animateMotion>
-          </circle>
+          {/* Flux électrique — pulse lumineux qui parcourt la ligne */}
+          <use href={`#pv-in-${t.id}`} stroke={t.color} strokeWidth="2.4" strokeLinecap="round"
+               strokeDasharray="14 600" filter="url(#pvGlow)">
+            <animate attributeName="stroke-dashoffset"
+                     values="600;-30" dur={`${3 + i * 0.25}s`}
+                     repeatCount="indefinite" begin={`${i * 0.45}s`} />
+          </use>
         </g>
       ))}
 
-      {/* Hub central — TimeBlast + IA encapsulée */}
+      {/* Hub central — chip rectangulaire avec IA encapsulée */}
       <g>
-        {/* Halo doux qui pulse */}
-        <circle cx={hubX} cy={hubY} r={hubR + 22} fill="url(#pvHubBg)" />
-        <circle cx={hubX} cy={hubY} r={hubR + 12} fill="none" stroke="rgba(91,202,255,0.45)" strokeWidth="1.2">
-          <animate attributeName="r" values={`${hubR + 6};${hubR + 18};${hubR + 6}`} dur="3.2s" repeatCount="indefinite" />
-          <animate attributeName="opacity" values="0.6;0.18;0.6" dur="3.2s" repeatCount="indefinite" />
-        </circle>
-        {/* Onde de pulsation IA (sort du hub) */}
-        <circle cx={hubX} cy={hubY} r={hubR}
-                fill="none" stroke="#5BCAFF" strokeWidth="1.5" opacity="0.55">
-          <animate attributeName="r" values={`${hubR};${hubR + 26}`} dur="2.6s" repeatCount="indefinite" />
-          <animate attributeName="opacity" values="0.55;0" dur="2.6s" repeatCount="indefinite" />
-        </circle>
-        {/* Conteneur principal */}
-        <circle cx={hubX} cy={hubY} r={hubR}
-                fill="rgba(11,29,49,0.85)" stroke="#5BCAFF" strokeWidth="1.8"
-                style={{ filter: 'drop-shadow(0 10px 30px rgba(91,202,255,0.4))' }} />
-        {/* Pattern neural en arrière-plan (IA encapsulée) */}
+        {/* Halo de base */}
+        <rect x={hubLeft - 14} y={hubTop - 14} width={hubW + 28} height={hubH + 28} rx={20}
+              fill="none" stroke="rgba(91,202,255,0.18)" strokeWidth="1" />
+        {/* Onde rectangulaire qui pulse */}
+        <rect x={hubLeft} y={hubTop} width={hubW} height={hubH} rx={16}
+              fill="none" stroke="rgba(91,202,255,0.5)" strokeWidth="1.4">
+          <animate attributeName="x" values={`${hubLeft};${hubLeft - 14}`} dur="3s" repeatCount="indefinite" />
+          <animate attributeName="y" values={`${hubTop};${hubTop - 14}`} dur="3s" repeatCount="indefinite" />
+          <animate attributeName="width" values={`${hubW};${hubW + 28}`} dur="3s" repeatCount="indefinite" />
+          <animate attributeName="height" values={`${hubH};${hubH + 28}`} dur="3s" repeatCount="indefinite" />
+          <animate attributeName="opacity" values="0.55;0" dur="3s" repeatCount="indefinite" />
+        </rect>
+        {/* Conteneur principal du hub */}
+        <rect x={hubLeft} y={hubTop} width={hubW} height={hubH} rx={16}
+              fill="url(#pvHubFill)" stroke="#5BCAFF" strokeWidth="1.8"
+              style={{ filter: 'drop-shadow(0 10px 30px rgba(91,202,255,0.4))' }} />
+        {/* Coins de chip (style processeur) */}
+        {[
+          [hubLeft + 8, hubTop + 8], [hubRight - 8, hubTop + 8],
+          [hubLeft + 8, hubBottom - 8], [hubRight - 8, hubBottom - 8],
+        ].map(([cx, cy], i) => (
+          <circle key={i} cx={cx} cy={cy} r="2" fill="#5BCAFF" opacity="0.6" />
+        ))}
+        {/* Pattern neural minimal — IA encapsulée (lignes droites entre nodes) */}
         {(() => {
           const nodes = [
-            { x: hubX - 38, y: hubY - 28 },
-            { x: hubX + 32, y: hubY - 30 },
-            { x: hubX - 30, y: hubY + 32 },
-            { x: hubX + 36, y: hubY + 26 },
-            { x: hubX - 18, y: hubY + 8 },
-            { x: hubX + 22, y: hubY - 6 },
+            { x: hubX - 36, y: hubY - 18 },
+            { x: hubX + 36, y: hubY - 26 },
+            { x: hubX - 28, y: hubY + 30 },
+            { x: hubX + 30, y: hubY + 22 },
           ]
-          const links = [[0,4],[1,5],[4,5],[2,4],[3,5],[4,3]]
+          const links = [[0,1],[0,2],[1,3],[2,3],[0,3],[1,2]]
           return (
-            <g opacity="0.55">
+            <g opacity="0.5">
               {links.map(([a, b], i) => (
                 <line key={`hl${i}`} x1={nodes[a].x} y1={nodes[a].y} x2={nodes[b].x} y2={nodes[b].y}
-                      stroke="#5BCAFF" strokeWidth="0.7" opacity="0.45">
-                  <animate attributeName="opacity" values="0.2;0.7;0.2"
+                      stroke="#5BCAFF" strokeWidth="0.6">
+                  <animate attributeName="opacity" values="0.15;0.7;0.15"
                            dur={`${2.4 + (i % 3) * 0.3}s`} repeatCount="indefinite" begin={`${i * 0.2}s`} />
                 </line>
               ))}
               {nodes.map((n, i) => (
-                <circle key={`hn${i}`} cx={n.x} cy={n.y} r="1.5" fill="#5BCAFF">
-                  <animate attributeName="r" values="1.2;2;1.2"
-                           dur={`${2 + (i % 4) * 0.3}s`} repeatCount="indefinite" begin={`${i * 0.2}s`} />
-                </circle>
+                <circle key={`hn${i}`} cx={n.x} cy={n.y} r="1.5" fill="#5BCAFF" />
               ))}
             </g>
           )
         })()}
-        {/* Logo gear blanc — TimeBlast */}
-        <image href="/logo-icon-white.svg" x={hubX - 30} y={hubY - 32} width="60" height="60" />
-        {/* Badge "IA" — encapsulée dans le hub */}
-        <g transform={`translate(${hubX + hubR - 18}, ${hubY - hubR + 8})`}>
-          <rect x="-18" y="-10" width="36" height="20" rx="10"
+        {/* Logo gear central */}
+        <image href="/logo-icon-white.svg" x={hubX - 28} y={hubY - 32} width="56" height="56" />
+        {/* Badge IA encapsulée — angle haut droit */}
+        <g transform={`translate(${hubRight - 22}, ${hubTop + 14})`}>
+          <rect x="-22" y="-11" width="44" height="22" rx="3"
                 fill="#5BCAFF" stroke="#0b1d31" strokeWidth="1.5"
                 style={{ filter: 'drop-shadow(0 2px 6px rgba(91,202,255,0.6))' }} />
           <text x="0" y="0" textAnchor="middle" dominantBaseline="central"
                 fill="#0b1d31" fontSize="11" fontWeight="900" letterSpacing="1">
-            +IA
+            + IA
           </text>
         </g>
-        {/* Label dessous */}
-        <text x={hubX} y={hubY + hubR + 22} textAnchor="middle"
-              fill="rgba(255,255,255,0.6)" fontSize="11" fontWeight="700" letterSpacing="2">
+        {/* Label TimeBlast en bas */}
+        <text x={hubX} y={hubBottom + 22} textAnchor="middle"
+              fill="rgba(255,255,255,0.6)" fontSize="10" fontWeight="800" letterSpacing="2.5">
           CONNECTEUR UNIVERSEL
         </text>
       </g>
 
-      {/* Flux hub → consommateurs */}
+      {/* Flux électrique sortants (mêmes principes qu'en entrée) */}
       {consumers.map((c, i) => (
         <g key={`cflow-${c.id}`}>
-          <use href={`#pv-out-${c.id}`} stroke={c.color} strokeOpacity="0.4" strokeWidth="1.5" strokeDasharray="4 4">
-            <animate attributeName="stroke-dashoffset" values="0;-16" dur="1.6s" repeatCount="indefinite" />
+          <use href={`#pv-out-${c.id}`} stroke={c.color} strokeOpacity="0.22" strokeWidth="1.2" strokeDasharray="3 6">
+            <animate attributeName="stroke-dashoffset" values="0;-18" dur="2s" repeatCount="indefinite" />
           </use>
-          {/* Particule sortante (hub → consommateur) */}
-          <circle r="4" fill={c.color} filter="url(#pvGlow)">
-            <animateMotion dur={`${1.8 + i * 0.2}s`} repeatCount="indefinite" begin={`${i * 0.4}s`}>
-              <mpath xlinkHref={`#pv-out-${c.id}`} />
-            </animateMotion>
-          </circle>
-          <circle r="2" fill={c.color} opacity="0.6">
-            <animateMotion dur={`${1.8 + i * 0.2}s`} repeatCount="indefinite" begin={`${i * 0.4 + 0.3}s`}>
-              <mpath xlinkHref={`#pv-out-${c.id}`} />
-            </animateMotion>
-          </circle>
-          {/* Pour Agent : flux de retour (write-back vers le hub) */}
+          <use href={`#pv-out-${c.id}`} stroke={c.color} strokeWidth="2.4" strokeLinecap="round"
+               strokeDasharray="14 600" filter="url(#pvGlow)">
+            <animate attributeName="stroke-dashoffset"
+                     values="600;-30" dur={`${2.6 + i * 0.25}s`}
+                     repeatCount="indefinite" begin={`${0.3 + i * 0.4}s`} />
+          </use>
+          {/* Flux retour pour les consommateurs bidirectionnels (Agent + Équipe) */}
           {c.bidir && (
-            <>
-              <circle r="3.5" fill={c.color} filter="url(#pvGlow)" opacity="0.85">
-                <animateMotion dur="2.2s" repeatCount="indefinite" begin="1s"
-                  keyPoints="1;0" keyTimes="0;1" calcMode="linear">
-                  <mpath xlinkHref={`#pv-out-${c.id}`} />
-                </animateMotion>
-              </circle>
-            </>
+            <use href={`#pv-out-${c.id}`} stroke={c.color} strokeWidth="2.4" strokeLinecap="round"
+                 strokeDasharray="10 600" filter="url(#pvGlow)" opacity="0.85">
+              <animate attributeName="stroke-dashoffset"
+                       values={`-30;600`} dur={`${3.2 + i * 0.2}s`}
+                       repeatCount="indefinite" begin={`${1.4 + i * 0.3}s`} />
+            </use>
           )}
         </g>
       ))}
 
-      {/* Consommateurs (droite) */}
+      {/* Consommateurs (droite) — chips rectangulaires */}
       {consumers.map((c) => (
         <g key={c.id}>
-          <circle cx={consumerStartX + 50} cy={c.y} r={32} fill={c.color} opacity="0.10" />
-          <rect x={consumerStartX} y={c.y - 22} width={100} height={44} rx={22} ry={22}
-                fill="rgba(11,29,49,0.7)" stroke={c.color} strokeWidth="1.6"
-                style={{ filter: `drop-shadow(0 4px 14px ${c.color}55)` }} />
-          {/* Icône à gauche du chip */}
-          <g transform={`translate(${consumerStartX + 18}, ${c.y})`}>
+          <rect x={consumerX} y={c.y - 20} width={120} height={40} rx={4} ry={4}
+                fill="rgba(255,255,255,0.04)" stroke={c.color} strokeWidth="1.6"
+                style={{ filter: `drop-shadow(0 3px 10px ${c.color}40)` }} />
+          <rect x={consumerX} y={c.y - 20} width={4} height={40} fill={c.color}>
+            <animate attributeName="opacity" values=".5;1;.5" dur="2.4s" repeatCount="indefinite" />
+          </rect>
+          {/* Icône à gauche */}
+          <g transform={`translate(${consumerX + 22}, ${c.y})`}>
             {c.id === 'cockpit' && (
               <g stroke={c.color} strokeWidth="1.6" fill="none" strokeLinecap="round">
-                <rect x="-8" y="-7" width="16" height="14" rx="2" />
+                <rect x="-9" y="-7" width="18" height="14" rx="1" />
                 <line x1="-5" y1="-2" x2="5" y2="-2" />
                 <line x1="-5" y1="2" x2="2" y2="2" />
-                <circle cx="5" cy="3" r="1.2" fill={c.color} />
               </g>
             )}
             {c.id === 'dashboard' && (
               <g stroke={c.color} strokeWidth="1.6" fill="none" strokeLinecap="round">
-                <line x1="-7" y1="6" x2="-7" y2="0" />
-                <line x1="-2" y1="6" x2="-2" y2="-4" />
-                <line x1="3" y1="6" x2="3" y2="-2" />
-                <line x1="8" y1="6" x2="8" y2="-6" />
+                <line x1="-8" y1="6" x2="-8" y2="0" />
+                <line x1="-3" y1="6" x2="-3" y2="-4" />
+                <line x1="2" y1="6" x2="2" y2="-2" />
+                <line x1="7" y1="6" x2="7" y2="-6" />
               </g>
             )}
             {c.id === 'agent' && (
               <g stroke={c.color} strokeWidth="1.6" fill="none" strokeLinecap="round">
-                <circle cx="0" cy="-2" r="6" />
-                <circle cx="-2.2" cy="-3" r="0.9" fill={c.color} />
-                <circle cx="2.2" cy="-3" r="0.9" fill={c.color} />
-                <path d="M -3 1 Q 0 3 3 1" />
-                <line x1="-7" y1="6" x2="7" y2="6" />
+                <rect x="-7" y="-7" width="14" height="11" rx="2" />
+                <line x1="0" y1="-7" x2="0" y2="-10" />
+                <circle cx="0" cy="-11" r="1.4" fill={c.color} />
+                <circle cx="-2.5" cy="-2" r="0.8" fill={c.color} />
+                <circle cx="2.5" cy="-2" r="0.8" fill={c.color} />
+              </g>
+            )}
+            {c.id === 'team' && (
+              <g stroke={c.color} strokeWidth="1.6" fill="none" strokeLinecap="round">
+                {/* deux silhouettes humaines stylisées */}
+                <circle cx="-4" cy="-3" r="2.5" />
+                <path d="M -8 6 Q -4 0 0 6" />
+                <circle cx="4" cy="-3" r="2.5" />
+                <path d="M 0 6 Q 4 0 8 6" />
               </g>
             )}
           </g>
-          <text x={consumerStartX + 60} y={c.y} textAnchor="middle" dominantBaseline="central"
-                fill="#fff" fontSize="13" fontWeight="700" letterSpacing="0.4">
+          <text x={consumerX + 70} y={c.y} textAnchor="middle" dominantBaseline="central"
+                fill="#fff" fontSize="12" fontWeight="800" letterSpacing="0.5">
             {c.name}
           </text>
-          {/* Indicateur read/write pour Agent */}
+          {/* Indicateur read/write ou pilote */}
           {c.bidir && (
-            <text x={consumerStartX + 50} y={c.y + 36} textAnchor="middle"
-                  fill={c.color} fontSize="10" fontWeight="700" letterSpacing="1.5">
-              LECTURE · ÉCRITURE
+            <text x={consumerX + 60} y={c.y + 32} textAnchor="middle"
+                  fill={c.color} fontSize="9" fontWeight="800" letterSpacing="1.5">
+              {c.pilot ? 'PILOTE · LECTURE · ÉCRITURE' : 'LECTURE · ÉCRITURE'}
             </text>
           )}
         </g>
