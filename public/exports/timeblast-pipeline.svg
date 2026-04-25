@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  TimeBlast Pipeline IA — version standalone
+  Format : SVG + SMIL (compatible WordPress, navigateurs modernes, Elementor)
+  Usage WP : copier dans un bloc « HTML personnalisé » ou <img src="...">
+  Dimensions natives : 640 × 480 (responsive via viewBox)
+  Pas de dépendance externe (logo gear inline).
+-->
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+     viewBox="0 0 640 480"
+     width="100%" height="auto"
+     preserveAspectRatio="xMidYMid meet"
+     style="display:block;max-width:100%;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:transparent">
+
+  <defs>
+    <linearGradient id="pvHubFill" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%"   stop-color="rgba(20,45,76,0.95)"/>
+      <stop offset="100%" stop-color="rgba(11,29,49,0.95)"/>
+    </linearGradient>
+    <linearGradient id="pvTeamFill" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%"   stop-color="rgba(245,158,11,0.30)"/>
+      <stop offset="100%" stop-color="rgba(245,158,11,0.10)"/>
+    </linearGradient>
+
+    <!-- Chemins entrants tools → hub (L orthogonaux : H + V + H) -->
+    <path id="pv-in-erp"  d="M 130 70  H 195 V 270 H 235" fill="none"/>
+    <path id="pv-in-apps" d="M 130 130 H 195 V 270 H 235" fill="none"/>
+    <path id="pv-in-crm"  d="M 130 190 H 195 V 270 H 235" fill="none"/>
+    <path id="pv-in-mkt"  d="M 130 250 H 195 V 270 H 235" fill="none"/>
+    <path id="pv-in-sirh" d="M 130 310 H 195 V 270 H 235" fill="none"/>
+    <path id="pv-in-wms"  d="M 130 370 H 195 V 270 H 235" fill="none"/>
+    <path id="pv-in-it"   d="M 130 430 H 195 V 270 H 235" fill="none"/>
+
+    <!-- Chemins sortants hub → consommateurs -->
+    <path id="pv-out-dashboard" d="M 365 270 H 405 V 240 H 465" fill="none"/>
+    <path id="pv-out-agent"     d="M 365 270 H 405 V 360 H 465" fill="none"/>
+    <path id="pv-out-team"      d="M 365 270 H 405 V 70  H 440" fill="none"/>
+
+    <!-- Chemin d'action Équipe → IA Agentique -->
+    <path id="pv-act-agent" d="M 595 70 H 610 V 360 H 585" fill="none"/>
+  </defs>
+
+  <!-- Grille de fond -->
+  <g opacity="0.5">
+    <line x1="0"   y1="270" x2="640" y2="270" stroke="rgba(255,255,255,0.05)" stroke-width="1" stroke-dasharray="1 5"/>
+    <line x1="195" y1="0"   x2="195" y2="480" stroke="rgba(255,255,255,0.04)" stroke-width="1" stroke-dasharray="1 5"/>
+    <line x1="405" y1="0"   x2="405" y2="480" stroke="rgba(255,255,255,0.04)" stroke-width="1" stroke-dasharray="1 5"/>
+    <line x1="610" y1="0"   x2="610" y2="480" stroke="rgba(245,158,11,0.13)" stroke-width="1" stroke-dasharray="1 5"/>
+  </g>
+
+  <!-- Outils (gauche) -->
+  <g>
+    <g><rect x="20" y="52"  width="100" height="36" rx="4" ry="4" fill="rgba(255,255,255,0.04)" stroke="#00DC82" stroke-width="1.5"/><rect x="20" y="52"  width="4" height="36" fill="#00DC82"><animate attributeName="opacity" values=".5;1;.5" dur="2.4s" repeatCount="indefinite"/></rect><text x="70" y="70" text-anchor="middle" dominant-baseline="central" fill="#fff" font-size="13" font-weight="800" letter-spacing="1">ERP</text></g>
+    <g><rect x="20" y="112" width="100" height="36" rx="4" ry="4" fill="rgba(255,255,255,0.04)" stroke="#14B8A6" stroke-width="1.5"/><rect x="20" y="112" width="4" height="36" fill="#14B8A6"><animate attributeName="opacity" values=".5;1;.5" dur="2.4s" repeatCount="indefinite"/></rect><text x="70" y="130" text-anchor="middle" dominant-baseline="central" fill="#fff" font-size="11" font-weight="800" letter-spacing="0.5">APPLICATION</text></g>
+    <g><rect x="20" y="172" width="100" height="36" rx="4" ry="4" fill="rgba(255,255,255,0.04)" stroke="#FF7A59" stroke-width="1.5"/><rect x="20" y="172" width="4" height="36" fill="#FF7A59"><animate attributeName="opacity" values=".5;1;.5" dur="2.4s" repeatCount="indefinite"/></rect><text x="70" y="190" text-anchor="middle" dominant-baseline="central" fill="#fff" font-size="13" font-weight="800" letter-spacing="1">CRM</text></g>
+    <g><rect x="20" y="232" width="100" height="36" rx="4" ry="4" fill="rgba(255,255,255,0.04)" stroke="#EC4899" stroke-width="1.5"/><rect x="20" y="232" width="4" height="36" fill="#EC4899"><animate attributeName="opacity" values=".5;1;.5" dur="2.4s" repeatCount="indefinite"/></rect><text x="70" y="250" text-anchor="middle" dominant-baseline="central" fill="#fff" font-size="13" font-weight="800" letter-spacing="1">MARKETING</text></g>
+    <g><rect x="20" y="292" width="100" height="36" rx="4" ry="4" fill="rgba(255,255,255,0.04)" stroke="#4A90D9" stroke-width="1.5"/><rect x="20" y="292" width="4" height="36" fill="#4A90D9"><animate attributeName="opacity" values=".5;1;.5" dur="2.4s" repeatCount="indefinite"/></rect><text x="70" y="310" text-anchor="middle" dominant-baseline="central" fill="#fff" font-size="13" font-weight="800" letter-spacing="1">SIRH</text></g>
+    <g><rect x="20" y="352" width="100" height="36" rx="4" ry="4" fill="rgba(255,255,255,0.04)" stroke="#F59E0B" stroke-width="1.5"/><rect x="20" y="352" width="4" height="36" fill="#F59E0B"><animate attributeName="opacity" values=".5;1;.5" dur="2.4s" repeatCount="indefinite"/></rect><text x="70" y="370" text-anchor="middle" dominant-baseline="central" fill="#fff" font-size="13" font-weight="800" letter-spacing="1">WMS</text></g>
+    <g><rect x="20" y="412" width="100" height="36" rx="4" ry="4" fill="rgba(255,255,255,0.04)" stroke="#635BFF" stroke-width="1.5"/><rect x="20" y="412" width="4" height="36" fill="#635BFF"><animate attributeName="opacity" values=".5;1;.5" dur="2.4s" repeatCount="indefinite"/></rect><text x="70" y="430" text-anchor="middle" dominant-baseline="central" fill="#fff" font-size="13" font-weight="800" letter-spacing="1">INFRA IT</text></g>
+  </g>
+
+  <!-- Flux entrants tools → hub (impulsion électrique) -->
+  <g>
+    <use href="#pv-in-erp"  stroke="#00DC82" stroke-opacity="0.22" stroke-width="1.2" stroke-dasharray="3 6"><animate attributeName="stroke-dashoffset" values="0;-18" dur="2s" repeatCount="indefinite"/></use>
+    <use href="#pv-in-erp"  stroke="#00DC82" stroke-width="2.6" stroke-linecap="round" stroke-dasharray="16 320" style="filter:drop-shadow(0 0 4px #00DC82)"><animate attributeName="stroke-dashoffset" values="320;-20" dur="2.6s" repeatCount="indefinite" begin="0s"/></use>
+
+    <use href="#pv-in-apps" stroke="#14B8A6" stroke-opacity="0.22" stroke-width="1.2" stroke-dasharray="3 6"><animate attributeName="stroke-dashoffset" values="0;-18" dur="2s" repeatCount="indefinite"/></use>
+    <use href="#pv-in-apps" stroke="#14B8A6" stroke-width="2.6" stroke-linecap="round" stroke-dasharray="16 320" style="filter:drop-shadow(0 0 4px #14B8A6)"><animate attributeName="stroke-dashoffset" values="320;-20" dur="2.75s" repeatCount="indefinite" begin="0.3s"/></use>
+    <use href="#pv-in-apps" stroke="#14B8A6" stroke-width="2.6" stroke-linecap="round" stroke-dasharray="12 320" opacity="0.9" style="filter:drop-shadow(0 0 3px #14B8A6)"><animate attributeName="stroke-dashoffset" values="-20;320" dur="2.8s" repeatCount="indefinite" begin="1.4s"/></use>
+
+    <use href="#pv-in-crm"  stroke="#FF7A59" stroke-opacity="0.22" stroke-width="1.2" stroke-dasharray="3 6"><animate attributeName="stroke-dashoffset" values="0;-18" dur="2s" repeatCount="indefinite"/></use>
+    <use href="#pv-in-crm"  stroke="#FF7A59" stroke-width="2.6" stroke-linecap="round" stroke-dasharray="16 320" style="filter:drop-shadow(0 0 4px #FF7A59)"><animate attributeName="stroke-dashoffset" values="320;-20" dur="2.9s" repeatCount="indefinite" begin="0.6s"/></use>
+
+    <use href="#pv-in-mkt"  stroke="#EC4899" stroke-opacity="0.22" stroke-width="1.2" stroke-dasharray="3 6"><animate attributeName="stroke-dashoffset" values="0;-18" dur="2s" repeatCount="indefinite"/></use>
+    <use href="#pv-in-mkt"  stroke="#EC4899" stroke-width="2.6" stroke-linecap="round" stroke-dasharray="16 320" style="filter:drop-shadow(0 0 4px #EC4899)"><animate attributeName="stroke-dashoffset" values="320;-20" dur="3.05s" repeatCount="indefinite" begin="0.9s"/></use>
+
+    <use href="#pv-in-sirh" stroke="#4A90D9" stroke-opacity="0.22" stroke-width="1.2" stroke-dasharray="3 6"><animate attributeName="stroke-dashoffset" values="0;-18" dur="2s" repeatCount="indefinite"/></use>
+    <use href="#pv-in-sirh" stroke="#4A90D9" stroke-width="2.6" stroke-linecap="round" stroke-dasharray="16 320" style="filter:drop-shadow(0 0 4px #4A90D9)"><animate attributeName="stroke-dashoffset" values="320;-20" dur="3.2s" repeatCount="indefinite" begin="1.2s"/></use>
+
+    <use href="#pv-in-wms"  stroke="#F59E0B" stroke-opacity="0.22" stroke-width="1.2" stroke-dasharray="3 6"><animate attributeName="stroke-dashoffset" values="0;-18" dur="2s" repeatCount="indefinite"/></use>
+    <use href="#pv-in-wms"  stroke="#F59E0B" stroke-width="2.6" stroke-linecap="round" stroke-dasharray="16 320" style="filter:drop-shadow(0 0 4px #F59E0B)"><animate attributeName="stroke-dashoffset" values="320;-20" dur="3.35s" repeatCount="indefinite" begin="1.5s"/></use>
+
+    <use href="#pv-in-it"   stroke="#635BFF" stroke-opacity="0.22" stroke-width="1.2" stroke-dasharray="3 6"><animate attributeName="stroke-dashoffset" values="0;-18" dur="2s" repeatCount="indefinite"/></use>
+    <use href="#pv-in-it"   stroke="#635BFF" stroke-width="2.6" stroke-linecap="round" stroke-dasharray="16 320" style="filter:drop-shadow(0 0 4px #635BFF)"><animate attributeName="stroke-dashoffset" values="320;-20" dur="3.5s" repeatCount="indefinite" begin="1.8s"/></use>
+  </g>
+
+  <!-- Hub central : gear standalone + 8 branches d'impulsions -->
+  <g>
+    <circle cx="300" cy="270" r="62" fill="none" stroke="rgba(91,202,255,0.18)" stroke-width="1"/>
+    <circle cx="300" cy="270" r="55" fill="none" stroke="rgba(91,202,255,0.45)" stroke-width="1.4">
+      <animate attributeName="r" values="50;78;50" dur="3s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="0.55;0;0.55" dur="3s" repeatCount="indefinite"/>
+    </circle>
+
+    <!-- 8 branches -->
+    <g>
+      <line x1="336"      y1="270"    x2="360"      y2="270"    stroke="rgba(91,202,255,0.32)" stroke-width="1.2" stroke-linecap="round"/>
+      <line x1="336"      y1="270"    x2="360"      y2="270"    stroke="#5BCAFF" stroke-width="2.4" stroke-linecap="round" stroke-dasharray="8 32" style="filter:drop-shadow(0 0 3px #5BCAFF)"><animate attributeName="stroke-dashoffset" values="32;0" dur="1.4s" repeatCount="indefinite" begin="0s"/></line>
+
+      <line x1="325.456"  y1="244.544" x2="342.426" y2="227.574" stroke="rgba(91,202,255,0.32)" stroke-width="1.2" stroke-linecap="round"/>
+      <line x1="325.456"  y1="244.544" x2="342.426" y2="227.574" stroke="#5BCAFF" stroke-width="2.4" stroke-linecap="round" stroke-dasharray="8 32" style="filter:drop-shadow(0 0 3px #5BCAFF)"><animate attributeName="stroke-dashoffset" values="0;32" dur="1.65s" repeatCount="indefinite" begin="0.1s"/></line>
+
+      <line x1="300"      y1="234"    x2="300"      y2="210"    stroke="rgba(91,202,255,0.32)" stroke-width="1.2" stroke-linecap="round"/>
+      <line x1="300"      y1="234"    x2="300"      y2="210"    stroke="#5BCAFF" stroke-width="2.4" stroke-linecap="round" stroke-dasharray="8 32" style="filter:drop-shadow(0 0 3px #5BCAFF)"><animate attributeName="stroke-dashoffset" values="32;0" dur="1.9s" repeatCount="indefinite" begin="0.2s"/></line>
+
+      <line x1="274.544"  y1="244.544" x2="257.574" y2="227.574" stroke="rgba(91,202,255,0.32)" stroke-width="1.2" stroke-linecap="round"/>
+      <line x1="274.544"  y1="244.544" x2="257.574" y2="227.574" stroke="#5BCAFF" stroke-width="2.4" stroke-linecap="round" stroke-dasharray="8 32" style="filter:drop-shadow(0 0 3px #5BCAFF)"><animate attributeName="stroke-dashoffset" values="0;32" dur="1.4s" repeatCount="indefinite" begin="0.3s"/></line>
+
+      <line x1="264"      y1="270"    x2="240"      y2="270"    stroke="rgba(91,202,255,0.32)" stroke-width="1.2" stroke-linecap="round"/>
+      <line x1="264"      y1="270"    x2="240"      y2="270"    stroke="#5BCAFF" stroke-width="2.4" stroke-linecap="round" stroke-dasharray="8 32" style="filter:drop-shadow(0 0 3px #5BCAFF)"><animate attributeName="stroke-dashoffset" values="32;0" dur="1.65s" repeatCount="indefinite" begin="0.4s"/></line>
+
+      <line x1="274.544"  y1="295.456" x2="257.574" y2="312.426" stroke="rgba(91,202,255,0.32)" stroke-width="1.2" stroke-linecap="round"/>
+      <line x1="274.544"  y1="295.456" x2="257.574" y2="312.426" stroke="#5BCAFF" stroke-width="2.4" stroke-linecap="round" stroke-dasharray="8 32" style="filter:drop-shadow(0 0 3px #5BCAFF)"><animate attributeName="stroke-dashoffset" values="0;32" dur="1.9s" repeatCount="indefinite" begin="0.5s"/></line>
+
+      <line x1="300"      y1="306"    x2="300"      y2="330"    stroke="rgba(91,202,255,0.32)" stroke-width="1.2" stroke-linecap="round"/>
+      <line x1="300"      y1="306"    x2="300"      y2="330"    stroke="#5BCAFF" stroke-width="2.4" stroke-linecap="round" stroke-dasharray="8 32" style="filter:drop-shadow(0 0 3px #5BCAFF)"><animate attributeName="stroke-dashoffset" values="32;0" dur="1.4s" repeatCount="indefinite" begin="0.6s"/></line>
+
+      <line x1="325.456"  y1="295.456" x2="342.426" y2="312.426" stroke="rgba(91,202,255,0.32)" stroke-width="1.2" stroke-linecap="round"/>
+      <line x1="325.456"  y1="295.456" x2="342.426" y2="312.426" stroke="#5BCAFF" stroke-width="2.4" stroke-linecap="round" stroke-dasharray="8 32" style="filter:drop-shadow(0 0 3px #5BCAFF)"><animate attributeName="stroke-dashoffset" values="0;32" dur="1.65s" repeatCount="indefinite" begin="0.7s"/></line>
+    </g>
+
+    <!-- Logo gear TimeBlast inline (white) -->
+    <g transform="translate(300,270)" style="filter:drop-shadow(0 0 14px rgba(91,202,255,0.55))">
+      <g transform="translate(-36,-36) scale(0.418)">
+        <path fill="#ffffff" transform="translate(-400,-656)" d="M 557.042969 754.5 C 560.046875 754.5 562.5 752.042969 562.5 749.039062 L 562.5 735.84375 C 562.5 732.839844 560.046875 730.386719 557.042969 730.386719 L 551.375 730.386719 C 548.375 730.386719 545.199219 728.035156 544.3125 725.167969 L 539.476562 713.429688 C 538.058594 710.78125 538.632812 706.882812 540.753906 704.761719 L 544.765625 700.75 C 546.886719 698.625 546.890625 695.152344 544.765625 693.03125 L 535.4375 683.699219 C 533.3125 681.578125 529.839844 681.578125 527.714844 683.699219 L 523.707031 687.710938 C 521.582031 689.835938 517.679688 690.40625 515.035156 688.988281 L 503.296875 684.152344 C 500.429688 683.269531 498.082031 680.09375 498.082031 677.089844 L 498.082031 671.421875 C 498.082031 668.421875 495.625 665.964844 492.625 665.964844 L 479.425781 665.964844 C 476.425781 665.964844 473.96875 668.421875 473.96875 671.421875 L 473.96875 677.089844 C 473.96875 680.09375 471.621094 683.269531 468.753906 684.152344 L 457.011719 688.988281 C 454.367188 690.40625 450.46875 689.832031 448.347656 687.710938 L 444.335938 683.699219 C 442.210938 681.574219 438.738281 681.574219 436.617188 683.699219 L 427.285156 693.027344 C 425.160156 695.152344 425.160156 698.625 427.285156 700.746094 L 431.296875 704.757812 C 433.421875 706.882812 433.992188 710.78125 432.574219 713.429688 L 427.738281 725.167969 C 426.855469 728.035156 423.679688 730.382812 420.675781 730.382812 L 415.011719 730.382812 C 412.011719 730.382812 409.554688 732.839844 409.554688 735.839844 L 409.554688 749.039062 C 409.554688 752.042969 412.011719 754.5 415.011719 754.5 L 420.675781 754.5 C 423.679688 754.5 426.855469 756.84375 427.738281 759.714844 L 432.578125 771.457031 C 433.996094 774.097656 433.421875 778 431.300781 780.121094 L 427.285156 784.136719 C 425.164062 786.257812 425.164062 789.730469 427.285156 791.851562 L 436.617188 801.183594 C 438.738281 803.308594 442.210938 803.304688 444.335938 801.183594 L 448.347656 797.171875 C 450.472656 795.050781 454.371094 794.472656 457.015625 795.894531 L 468.753906 800.730469 C 471.625 801.613281 473.96875 804.789062 473.96875 807.792969 L 473.96875 813.460938 C 473.96875 816.460938 476.425781 818.917969 479.429688 818.917969 L 492.625 818.917969 C 495.625 818.917969 498.082031 816.460938 498.082031 813.460938 L 498.082031 807.792969 C 498.082031 804.789062 500.429688 801.613281 503.296875 800.730469 L 515.039062 795.894531 C 517.683594 794.476562 521.585938 795.046875 523.707031 797.171875 L 527.71875 801.183594 C 529.839844 803.308594 533.316406 803.304688 535.4375 801.183594 L 544.769531 791.851562 C 546.890625 789.730469 546.890625 786.257812 544.769531 784.132812 L 540.757812 780.121094 C 538.632812 778 538.0625 774.097656 539.480469 771.453125 L 544.3125 759.714844 C 545.195312 756.84375 548.375 754.5 551.378906 754.5 Z M 486.023438 773.902344 C 468.648438 773.902344 454.5625 759.816406 454.5625 742.441406 C 454.5625 725.0625 468.648438 710.976562 486.023438 710.976562 C 503.402344 710.976562 517.488281 725.0625 517.488281 742.441406 C 517.488281 759.816406 503.402344 773.902344 486.023438 773.902344 Z"/>
+      </g>
+    </g>
+
+    <!-- Badge +IA -->
+    <g transform="translate(342,228)">
+      <rect x="-22" y="-11" width="44" height="22" rx="3" fill="#5BCAFF" stroke="#0b1d31" stroke-width="1.5" style="filter:drop-shadow(0 2px 6px rgba(91,202,255,0.6))"/>
+      <text x="0" y="0" text-anchor="middle" dominant-baseline="central" fill="#0b1d31" font-size="11" font-weight="900" letter-spacing="1">+ IA</text>
+    </g>
+
+    <!-- Label CONNECTEUR UNIVERSEL -->
+    <text x="300" y="350" text-anchor="middle" fill="rgba(255,255,255,0.65)" font-size="10" font-weight="800" letter-spacing="2.5">CONNECTEUR UNIVERSEL</text>
+  </g>
+
+  <!-- Flux hub → consommateurs -->
+  <g>
+    <use href="#pv-out-dashboard" stroke="#5BCAFF" stroke-opacity="0.22" stroke-width="1.2" stroke-dasharray="3 6"><animate attributeName="stroke-dashoffset" values="0;-18" dur="2s" repeatCount="indefinite"/></use>
+    <use href="#pv-out-dashboard" stroke="#5BCAFF" stroke-width="2.6" stroke-linecap="round" stroke-dasharray="16 320" style="filter:drop-shadow(0 0 4px #5BCAFF)"><animate attributeName="stroke-dashoffset" values="320;-20" dur="2.5s" repeatCount="indefinite" begin="0s"/></use>
+
+    <use href="#pv-out-agent" stroke="#00DC82" stroke-opacity="0.22" stroke-width="1.2" stroke-dasharray="3 6"><animate attributeName="stroke-dashoffset" values="0;-18" dur="2s" repeatCount="indefinite"/></use>
+    <use href="#pv-out-agent" stroke="#00DC82" stroke-width="2.6" stroke-linecap="round" stroke-dasharray="16 320" style="filter:drop-shadow(0 0 4px #00DC82)"><animate attributeName="stroke-dashoffset" values="320;-20" dur="2.7s" repeatCount="indefinite" begin="0.3s"/></use>
+    <use href="#pv-out-agent" stroke="#00DC82" stroke-width="2.6" stroke-linecap="round" stroke-dasharray="12 320" opacity="0.9" style="filter:drop-shadow(0 0 3px #00DC82)"><animate attributeName="stroke-dashoffset" values="-20;320" dur="3s" repeatCount="indefinite" begin="1.5s"/></use>
+  </g>
+
+  <!-- Flux hub → Équipe -->
+  <g>
+    <use href="#pv-out-team" stroke="#F59E0B" stroke-opacity="0.25" stroke-width="1.2" stroke-dasharray="3 6"><animate attributeName="stroke-dashoffset" values="0;-18" dur="2s" repeatCount="indefinite"/></use>
+    <use href="#pv-out-team" stroke="#F59E0B" stroke-width="2.6" stroke-linecap="round" stroke-dasharray="16 320" style="filter:drop-shadow(0 0 4px #F59E0B)"><animate attributeName="stroke-dashoffset" values="320;-20" dur="2.6s" repeatCount="indefinite"/></use>
+  </g>
+
+  <!-- Flux d'action Équipe → IA Agentique -->
+  <g>
+    <use href="#pv-act-agent" stroke="#F59E0B" stroke-opacity="0.32" stroke-width="1.4" stroke-dasharray="2 5"><animate attributeName="stroke-dashoffset" values="0;-14" dur="1.6s" repeatCount="indefinite"/></use>
+    <use href="#pv-act-agent" stroke="#F59E0B" stroke-width="2.6" stroke-linecap="round" stroke-dasharray="20 320" style="filter:drop-shadow(0 0 4px #F59E0B)"><animate attributeName="stroke-dashoffset" values="320;-20" dur="2.4s" repeatCount="indefinite" begin="0.6s"/></use>
+    <text x="581" y="334" text-anchor="end" fill="#F59E0B" font-size="8" font-weight="800" letter-spacing="1.8">◀ ACTION</text>
+  </g>
+
+  <!-- Consommateurs (Dashboard, IA Agentique) -->
+  <g>
+    <g><rect x="465" y="220" width="120" height="40" rx="4" ry="4" fill="rgba(255,255,255,0.04)" stroke="#5BCAFF" stroke-width="1.6" style="filter:drop-shadow(0 3px 10px rgba(91,202,255,0.25))"/><rect x="465" y="220" width="4" height="40" fill="#5BCAFF"><animate attributeName="opacity" values=".5;1;.5" dur="2.4s" repeatCount="indefinite"/></rect><g transform="translate(487,240)" stroke="#5BCAFF" stroke-width="1.6" fill="none" stroke-linecap="round"><line x1="-8" y1="6" x2="-8" y2="0"/><line x1="-3" y1="6" x2="-3" y2="-4"/><line x1="2" y1="6" x2="2" y2="-2"/><line x1="7" y1="6" x2="7" y2="-6"/></g><text x="535" y="240" text-anchor="middle" dominant-baseline="central" fill="#fff" font-size="12" font-weight="800" letter-spacing="0.5">Dashboard</text></g>
+    <g><rect x="465" y="340" width="120" height="40" rx="4" ry="4" fill="rgba(255,255,255,0.04)" stroke="#00DC82" stroke-width="1.6" style="filter:drop-shadow(0 3px 10px rgba(0,220,130,0.25))"/><rect x="465" y="340" width="4" height="40" fill="#00DC82"><animate attributeName="opacity" values=".5;1;.5" dur="2.4s" repeatCount="indefinite"/></rect><g transform="translate(487,360)" stroke="#00DC82" stroke-width="1.6" fill="none" stroke-linecap="round"><rect x="-7" y="-7" width="14" height="11" rx="2"/><line x1="0" y1="-7" x2="0" y2="-10"/><circle cx="0" cy="-11" r="1.4" fill="#00DC82"/><circle cx="-2.5" cy="-2" r="0.8" fill="#00DC82"/><circle cx="2.5" cy="-2" r="0.8" fill="#00DC82"/></g><text x="535" y="360" text-anchor="middle" dominant-baseline="central" fill="#fff" font-size="12" font-weight="800" letter-spacing="0.5">IA Agentique</text><text x="525" y="392" text-anchor="middle" fill="#00DC82" font-size="8" font-weight="800" letter-spacing="1">LECTURE · ÉCRITURE</text></g>
+  </g>
+
+  <!-- Équipe — banner prominent en haut, superviseur -->
+  <g>
+    <rect x="430" y="28" width="175" height="84" rx="8" fill="none" stroke="#F59E0B" stroke-width="1" opacity="0.5">
+      <animate attributeName="opacity" values="0.5;0.15;0.5" dur="2.6s" repeatCount="indefinite"/>
+    </rect>
+    <rect x="440" y="38" width="155" height="64" rx="6" fill="url(#pvTeamFill)" stroke="#F59E0B" stroke-width="2.2" style="filter:drop-shadow(0 8px 24px rgba(245,158,11,0.31))"/>
+    <rect x="440" y="38" width="6" height="64" fill="#F59E0B"><animate attributeName="opacity" values=".6;1;.6" dur="2s" repeatCount="indefinite"/></rect>
+    <circle cx="450" cy="48"  r="2" fill="#F59E0B" opacity="0.7"/>
+    <circle cx="585" cy="48"  r="2" fill="#F59E0B" opacity="0.7"/>
+    <circle cx="450" cy="92"  r="2" fill="#F59E0B" opacity="0.7"/>
+    <circle cx="585" cy="92"  r="2" fill="#F59E0B" opacity="0.7"/>
+
+    <!-- Icône silhouettes humaines -->
+    <g transform="translate(466,70)" stroke="#F59E0B" stroke-width="2" fill="none" stroke-linecap="round">
+      <circle cx="-6" cy="-5" r="3.5"/>
+      <path d="M -12 9 Q -6 1 0 9"/>
+      <circle cx="6" cy="-5" r="3.5"/>
+      <path d="M 0 9 Q 6 1 12 9"/>
+    </g>
+    <text x="540" y="63" text-anchor="middle" dominant-baseline="central" fill="#fff" font-size="16" font-weight="900" letter-spacing="1">ÉQUIPE</text>
+    <text x="540" y="81" text-anchor="middle" dominant-baseline="central" fill="#F59E0B" font-size="8" font-weight="800" letter-spacing="1.2">PILOTE · SUPERVISE</text>
+
+    <!-- Couronne en coin -->
+    <g transform="translate(583,32)">
+      <polygon points="-9,5 -5,-5 0,3 5,-5 9,5" fill="#F59E0B" style="filter:drop-shadow(0 2px 4px rgba(245,158,11,0.5))"/>
+    </g>
+  </g>
+</svg>

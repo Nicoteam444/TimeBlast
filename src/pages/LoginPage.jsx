@@ -233,7 +233,7 @@ const TL_SOURCES = [
 // décrivent les flux d'événements entrants (track + position en %).
 const TL_PERIODS = {
   T: {
-    label: 'Trimestre', ticks: ['Janv.', 'Fév.', 'Mars', 'Avril'], density: 26,
+    label: 'Trimestre', ticks: ['Janv.', 'Fév.', 'Mars', 'Avril'], density: 18,
     blasts: [
       {
         x: 38, srcIdx: 2, label: 'Santé financière',
@@ -250,7 +250,7 @@ const TL_PERIODS = {
     ],
   },
   M: {
-    label: 'Mois', ticks: ['S1', 'S2', 'S3', 'S4'], density: 16,
+    label: 'Mois', ticks: ['S1', 'S2', 'S3', 'S4'], density: 12,
     blasts: [
       {
         x: 30, srcIdx: 1, label: 'Acquisition de leads',
@@ -607,18 +607,19 @@ function PipelineVisual() {
           <use href={`#pv-in-${t.id}`} stroke={t.color} strokeOpacity="0.22" strokeWidth="1.2" strokeDasharray="3 6">
             <animate attributeName="stroke-dashoffset" values="0;-18" dur="2s" repeatCount="indefinite" />
           </use>
-          {/* Impulsion entrante (tool → hub) */}
-          <use href={`#pv-in-${t.id}`} stroke={t.color} strokeWidth="2.4" strokeLinecap="round"
-               strokeDasharray="14 600" filter="url(#pvGlow)">
-            <animate attributeName="stroke-dashoffset" values="600;-30"
-                     dur={`${3 + i * 0.25}s`} repeatCount="indefinite" begin={`${i * 0.45}s`} />
+          {/* Impulsion entrante (tool → hub) — sans filter pour fluidité */}
+          <use href={`#pv-in-${t.id}`} stroke={t.color} strokeWidth="2.6" strokeLinecap="round"
+               strokeDasharray="16 320" style={{ filter: `drop-shadow(0 0 4px ${t.color})` }}>
+            <animate attributeName="stroke-dashoffset" values="320;-20"
+                     dur={`${2.6 + i * 0.15}s`} repeatCount="indefinite" begin={`${i * 0.3}s`} />
           </use>
           {/* Impulsion sortante (hub → tool) pour les tools bidirectionnels */}
           {t.bidir && (
-            <use href={`#pv-in-${t.id}`} stroke={t.color} strokeWidth="2.4" strokeLinecap="round"
-                 strokeDasharray="10 600" filter="url(#pvGlow)" opacity="0.85">
-              <animate attributeName="stroke-dashoffset" values="-30;600"
-                       dur={`${3.4 + i * 0.2}s`} repeatCount="indefinite" begin={`${1.2 + i * 0.3}s`} />
+            <use href={`#pv-in-${t.id}`} stroke={t.color} strokeWidth="2.6" strokeLinecap="round"
+                 strokeDasharray="12 320" opacity="0.9"
+                 style={{ filter: `drop-shadow(0 0 3px ${t.color})` }}>
+              <animate attributeName="stroke-dashoffset" values="-20;320"
+                       dur="2.8s" repeatCount="indefinite" begin="1.4s" />
             </use>
           )}
         </g>
@@ -643,28 +644,20 @@ function PipelineVisual() {
           const iy = hubY + Math.sin(angle) * innerR
           const ox = hubX + Math.cos(angle) * outerR
           const oy = hubY + Math.sin(angle) * outerR
-          // Mix : index pairs propulsent (sortant), index impairs reçoivent (entrant)
           const propel = i % 2 === 0
           return (
             <g key={`spk${i}`}>
-              {/* Trace de la branche */}
               <line x1={ix} y1={iy} x2={ox} y2={oy}
                     stroke="rgba(91,202,255,0.32)" strokeWidth="1.2" strokeLinecap="round" />
-              {/* Impulsion électrique animée — sens varie selon la branche */}
               <line x1={ix} y1={iy} x2={ox} y2={oy}
-                    stroke="#5BCAFF" strokeWidth="2.6" strokeLinecap="round"
-                    strokeDasharray="8 32" filter="url(#pvGlow)">
+                    stroke="#5BCAFF" strokeWidth="2.4" strokeLinecap="round"
+                    strokeDasharray="8 32"
+                    style={{ filter: 'drop-shadow(0 0 3px #5BCAFF)' }}>
                 <animate attributeName="stroke-dashoffset"
                          values={propel ? '32;0' : '0;32'}
-                         dur={`${1.3 + (i % 3) * 0.3}s`}
-                         repeatCount="indefinite" begin={`${i * 0.12}s`} />
+                         dur={`${1.4 + (i % 3) * 0.25}s`}
+                         repeatCount="indefinite" begin={`${i * 0.1}s`} />
               </line>
-              {/* Petit point lumineux à l'extrémité (pulse en synchro) */}
-              <circle cx={ox} cy={oy} r="2.2" fill="#5BCAFF" filter="url(#pvGlow)">
-                <animate attributeName="opacity" values="0.4;1;0.4"
-                         dur={`${1.6 + (i % 4) * 0.2}s`}
-                         repeatCount="indefinite" begin={`${i * 0.15}s`} />
-              </circle>
             </g>
           )
         })}
@@ -689,50 +682,50 @@ function PipelineVisual() {
         </text>
       </g>
 
-      {/* Flux hub → consommateurs (Cockpit, Dashboard, Agent) */}
+      {/* Flux hub → consommateurs */}
       {consumers.map((c, i) => (
         <g key={`cflow-${c.id}`}>
           <use href={`#pv-out-${c.id}`} stroke={c.color} strokeOpacity="0.22" strokeWidth="1.2" strokeDasharray="3 6">
             <animate attributeName="stroke-dashoffset" values="0;-18" dur="2s" repeatCount="indefinite" />
           </use>
-          <use href={`#pv-out-${c.id}`} stroke={c.color} strokeWidth="2.4" strokeLinecap="round"
-               strokeDasharray="14 600" filter="url(#pvGlow)">
-            <animate attributeName="stroke-dashoffset" values="600;-30"
-                     dur={`${2.6 + i * 0.25}s`} repeatCount="indefinite" begin={`${0.3 + i * 0.4}s`} />
+          <use href={`#pv-out-${c.id}`} stroke={c.color} strokeWidth="2.6" strokeLinecap="round"
+               strokeDasharray="16 320" style={{ filter: `drop-shadow(0 0 4px ${c.color})` }}>
+            <animate attributeName="stroke-dashoffset" values="320;-20"
+                     dur={`${2.5 + i * 0.2}s`} repeatCount="indefinite" begin={`${i * 0.3}s`} />
           </use>
           {c.bidir && (
-            <use href={`#pv-out-${c.id}`} stroke={c.color} strokeWidth="2.4" strokeLinecap="round"
-                 strokeDasharray="10 600" filter="url(#pvGlow)" opacity="0.85">
-              <animate attributeName="stroke-dashoffset" values="-30;600"
-                       dur={`${3.2 + i * 0.2}s`} repeatCount="indefinite" begin={`${1.4 + i * 0.3}s`} />
+            <use href={`#pv-out-${c.id}`} stroke={c.color} strokeWidth="2.6" strokeLinecap="round"
+                 strokeDasharray="12 320" opacity="0.9"
+                 style={{ filter: `drop-shadow(0 0 3px ${c.color})` }}>
+              <animate attributeName="stroke-dashoffset" values="-20;320"
+                       dur={`${2.8 + i * 0.2}s`} repeatCount="indefinite" begin={`${1.2 + i * 0.3}s`} />
             </use>
           )}
         </g>
       ))}
 
-      {/* Flux hub → Équipe (données vers le superviseur) */}
+      {/* Flux hub → Équipe */}
       <g>
         <use href="#pv-out-team" stroke={teamColor} strokeOpacity="0.25" strokeWidth="1.2" strokeDasharray="3 6">
           <animate attributeName="stroke-dashoffset" values="0;-18" dur="2s" repeatCount="indefinite" />
         </use>
         <use href="#pv-out-team" stroke={teamColor} strokeWidth="2.6" strokeLinecap="round"
-             strokeDasharray="16 600" filter="url(#pvGlow)">
-          <animate attributeName="stroke-dashoffset" values="600;-30" dur="2.8s" repeatCount="indefinite" />
+             strokeDasharray="16 320" style={{ filter: `drop-shadow(0 0 4px ${teamColor})` }}>
+          <animate attributeName="stroke-dashoffset" values="320;-20" dur="2.6s" repeatCount="indefinite" />
         </use>
       </g>
 
-      {/* Flux d'actions Équipe → Cockpit / Agent (descendant via bus droit) */}
+      {/* Flux d'actions Équipe → IA Agentique */}
       {actionTargets.map((c, i) => (
         <g key={`act-${c.id}`}>
           <use href={`#pv-act-${c.id}`} stroke={teamColor} strokeOpacity="0.32" strokeWidth="1.4" strokeDasharray="2 5">
             <animate attributeName="stroke-dashoffset" values="0;-14" dur="1.6s" repeatCount="indefinite" />
           </use>
           <use href={`#pv-act-${c.id}`} stroke={teamColor} strokeWidth="2.6" strokeLinecap="round"
-               strokeDasharray="20 600" filter="url(#pvGlow)">
-            <animate attributeName="stroke-dashoffset" values="600;-30"
+               strokeDasharray="20 320" style={{ filter: `drop-shadow(0 0 4px ${teamColor})` }}>
+            <animate attributeName="stroke-dashoffset" values="320;-20"
                      dur={`${2.4 + i * 0.3}s`} repeatCount="indefinite" begin={`${0.6 + i * 0.5}s`} />
           </use>
-          {/* Petit "ACTION" tag à proximité du chip cible */}
           <text x={consumerX + 120 - 4} y={c.y - 26} textAnchor="end"
                 fill={teamColor} fontSize="8" fontWeight="800" letterSpacing="1.8">
             ◀ ACTION
