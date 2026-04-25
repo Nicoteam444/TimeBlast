@@ -512,17 +512,17 @@ function CompanyTimelineBlast() {
 // Tracé orthogonal rigide (right-angles) + flux électrique animé sur les lignes
 function PipelineVisual() {
   const tools = [
-    { id: 'erp',  name: 'ERP',  color: '#00DC82', y: 130 },
-    { id: 'crm',  name: 'CRM',  color: '#FF7A59', y: 200 },
-    { id: 'bi',   name: 'BI',   color: '#635BFF', y: 270 },
-    { id: 'sirh', name: 'SIRH', color: '#4A90D9', y: 340 },
-    { id: 'wms',  name: 'WMS',  color: '#F59E0B', y: 410 },
+    { id: 'erp',       name: 'ERP',       color: '#00DC82', y: 110 },
+    { id: 'crm',       name: 'CRM',       color: '#FF7A59', y: 175 },
+    { id: 'marketing', name: 'MARKETING', color: '#EC4899', y: 240 },
+    { id: 'sirh',      name: 'SIRH',      color: '#4A90D9', y: 305 },
+    { id: 'wms',       name: 'WMS',       color: '#F59E0B', y: 370 },
+    { id: 'infra',     name: 'INFRA IT',  color: '#635BFF', y: 435 },
   ]
-  // Équipe en haut (superviseur), puis 3 outils de consommation
+  // Équipe en haut (superviseur), puis 2 consommateurs : Dashboard + IA Agentique
   const consumers = [
-    { id: 'cockpit',   name: 'Cockpit',   color: '#5BCAFF', y: 200 },
-    { id: 'dashboard', name: 'Dashboard', color: '#5BCAFF', y: 290 },
-    { id: 'agent',     name: 'Agent',     color: '#00DC82', y: 380, bidir: true },
+    { id: 'dashboard', name: 'Dashboard',    color: '#5BCAFF', y: 240 },
+    { id: 'agent',     name: 'IA Agentique', color: '#00DC82', y: 360, bidir: true },
   ]
   // Équipe : chip "banner" beaucoup plus large/haut, en haut de la pile
   const teamColor = '#F59E0B'
@@ -539,8 +539,8 @@ function PipelineVisual() {
   const consumerX = 465
   const actionBusX = 610   // bus vertical d'actions Équipe → Cockpit/Agent
 
-  // Cibles d'action de l'Équipe (consommateurs supervisés)
-  const actionTargets = consumers.filter(c => c.id === 'cockpit' || c.id === 'agent')
+  // Cibles d'action de l'Équipe (consommateurs supervisés) — IA Agentique seul
+  const actionTargets = consumers.filter(c => c.id === 'agent')
 
   return (
     <svg viewBox="0 0 640 480" style={{ width: '100%', height: 'auto', display: 'block', overflow: 'visible' }}>
@@ -767,7 +767,7 @@ function PipelineVisual() {
                 fill="#fff" fontSize="12" fontWeight="800" letterSpacing="0.5">{c.name}</text>
           {c.bidir && (
             <text x={consumerX + 60} y={c.y + 32} textAnchor="middle"
-                  fill={c.color} fontSize="9" fontWeight="800" letterSpacing="1.5">
+                  fill={c.color} fontSize="8" fontWeight="800" letterSpacing="1">
               LECTURE · ÉCRITURE
             </text>
           )}
@@ -803,13 +803,13 @@ function PipelineVisual() {
           <circle cx="6" cy="-5" r="3.5" />
           <path d="M 0 9 Q 6 1 12 9" />
         </g>
-        {/* Label Équipe (gros) + sous-titre supervise */}
-        <text x={teamX + 96} y={teamY - 7} textAnchor="middle" dominantBaseline="central"
-              fill="#fff" fontSize="16" fontWeight="900" letterSpacing="1.2">
+        {/* Label Équipe (gros) + sous-titre supervise — centrés dans la zone hors-icône */}
+        <text x={teamX + 100} y={teamY - 7} textAnchor="middle" dominantBaseline="central"
+              fill="#fff" fontSize="16" fontWeight="900" letterSpacing="1">
           ÉQUIPE
         </text>
-        <text x={teamX + 96} y={teamY + 11} textAnchor="middle" dominantBaseline="central"
-              fill={teamColor} fontSize="9" fontWeight="800" letterSpacing="2">
+        <text x={teamX + 100} y={teamY + 11} textAnchor="middle" dominantBaseline="central"
+              fill={teamColor} fontSize="8" fontWeight="800" letterSpacing="1.2">
           PILOTE · SUPERVISE
         </text>
         {/* Couronne / badge "TOP" en coin haut droit pour signifier le haut de la pile */}
