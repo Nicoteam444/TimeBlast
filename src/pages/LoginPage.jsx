@@ -585,6 +585,13 @@ function PipelineVisual() {
         <line x1={actionBusX} y1="0" x2={actionBusX} y2="480" stroke={`${teamColor}22`} strokeWidth="1" strokeDasharray="1 5" />
       </g>
 
+      {/* Header colonne gauche */}
+      <text x={70} y={62} textAnchor="middle"
+            fill="rgba(255,255,255,0.55)" fontSize="10" fontWeight="800" letterSpacing="2.5">
+        APPLICATIONS MÉTIERS
+      </text>
+      <line x1={20} y1={75} x2={120} y2={75} stroke="rgba(255,255,255,0.18)" strokeWidth="1" />
+
       {/* Tools (gauche) */}
       {tools.map((t) => (
         <g key={t.id}>
@@ -942,14 +949,14 @@ function RotatingText() {
 
   return (
     <span style={{
-      background: '#195C82',
-      WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text',
+      color: '#5BCAFF',
+      textShadow: '0 0 18px rgba(91,202,255,0.55)',
       display: 'inline',
     }}>
       {displayed}
       <span style={{
         display: 'inline-block', width: 3, height: '1em', marginLeft: 2,
-        background: '#195C82',
+        background: '#5BCAFF',
         animation: 'blink 1s infinite', verticalAlign: 'text-bottom',
       }} />
     </span>
@@ -1877,14 +1884,6 @@ export default function LoginPage() {
           background: 'radial-gradient(circle, rgba(91,202,255,0.12) 0%, transparent 70%)',
           pointerEvents: 'none',
         }} />
-        {/* Grille subtile */}
-        <div style={{
-          position: 'absolute', inset: 0,
-          backgroundImage:
-            'linear-gradient(rgba(255,255,255,.03) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.03) 1px, transparent 1px)',
-          backgroundSize: '56px 56px',
-          pointerEvents: 'none',
-        }} />
 
         <div style={{ maxWidth: 1200, margin: '0 auto', padding: '0 2rem', textAlign: 'center', position: 'relative', zIndex: 1 }}>
           {/* Badge */}
@@ -1956,28 +1955,15 @@ export default function LoginPage() {
                 onClick={() => window.open('https://www.groupe-sra.fr/contact/', '_blank')}
                 style={{
                   background: '#5BCAFF', color: '#0b1d31', border: 'none',
-                  padding: '.75rem 2rem', borderRadius: 8, fontSize: '1rem', fontWeight: 800,
+                  padding: '.85rem 2.4rem', borderRadius: 8, fontSize: '1.05rem', fontWeight: 800,
                   cursor: 'pointer', transition: 'all .15s',
                   boxShadow: '0 6px 22px rgba(91,202,255,.35)',
                 }}
                 onMouseEnter={e => { e.currentTarget.style.background = '#7ad6ff'; e.currentTarget.style.transform = 'translateY(-1px)' }}
                 onMouseLeave={e => { e.currentTarget.style.background = '#5BCAFF'; e.currentTarget.style.transform = 'none' }}
               >
-                Connecter mes outils →
+                Je veux une démo →
               </button>
-              <a
-                href="https://www.groupe-sra.fr/contact/" target="_blank" rel="noopener noreferrer"
-                style={{
-                  background: 'transparent', color: '#fff', border: '1.5px solid rgba(255,255,255,.4)',
-                  padding: '.75rem 2rem', borderRadius: 8, fontSize: '1rem', fontWeight: 600,
-                  cursor: 'pointer', textDecoration: 'none', transition: 'all .15s',
-                  display: 'inline-block',
-                }}
-                onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255,255,255,.08)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,.7)' }}
-                onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.borderColor = 'rgba(255,255,255,.4)' }}
-              >
-                Nous contacter →
-              </a>
             </div>
           </div>
 
@@ -2018,8 +2004,23 @@ export default function LoginPage() {
           ))}
         </div>
       </section>
-      <section style={{ background: '#fff', padding: '2rem 2rem 5rem', position: 'relative' }}>
+      <section style={{ background: '#fff', padding: '4rem 2rem 5rem', position: 'relative' }}>
         <div style={{ maxWidth: 1060, margin: '0 auto' }}>
+          <div style={{ textAlign: 'center', marginBottom: '2.5rem' }}>
+            <p style={{
+              fontSize: '.78rem', fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase',
+              color: '#195C82', marginBottom: '.75rem',
+            }}>Vue unifiée</p>
+            <h2 style={{
+              fontSize: 'clamp(1.7rem, 2.8vw, 2.4rem)', fontWeight: 800, color: S.dark,
+              margin: '0 0 .75rem', letterSpacing: '-0.02em',
+            }}>
+              Dashboard universel
+            </h2>
+            <p style={{ fontSize: '1.05rem', color: S.gray, maxWidth: 640, margin: '0 auto', lineHeight: 1.65 }}>
+              Une seule vue temps réel pour piloter votre activité. Toutes vos données métier, agrégées, croisées, lisibles.
+            </p>
+          </div>
           <InteractiveMockup />
         </div>
       </section>
@@ -2535,14 +2536,6 @@ export default function LoginPage() {
         <div style={{
           position: 'absolute', bottom: -100, right: -100, width: 400, height: 400,
           background: 'radial-gradient(circle, rgba(91,202,255,0.14) 0%, transparent 70%)',
-          pointerEvents: 'none',
-        }} />
-        {/* Grille subtile, identique au hero */}
-        <div style={{
-          position: 'absolute', inset: 0,
-          backgroundImage:
-            'linear-gradient(rgba(255,255,255,.03) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.03) 1px, transparent 1px)',
-          backgroundSize: '56px 56px',
           pointerEvents: 'none',
         }} />
         <div style={{ position: 'relative', zIndex: 1 }}>
