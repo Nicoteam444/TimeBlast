@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>TimeBlast OG Template</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { width: 1200px; height: 630px; overflow: hidden; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    background: linear-gradient(135deg, #0b1d31 0%, #142d4c 55%, #195C82 100%);
+    color: #fff;
+    position: relative;
+    width: 1200px; height: 630px;
+  }
+  /* halo lumineux droite */
+  .halo {
+    position: absolute; right: -200px; top: -200px; width: 800px; height: 800px;
+    background: radial-gradient(circle, rgba(91,202,255,0.25) 0%, rgba(91,202,255,0) 60%);
+    border-radius: 50%;
+    pointer-events: none;
+  }
+  .grid {
+    position: absolute; inset: 0;
+    background-image:
+      linear-gradient(rgba(255,255,255,.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,.03) 1px, transparent 1px);
+    background-size: 56px 56px;
+  }
+  .wrap {
+    position: relative; z-index: 1;
+    width: 100%; height: 100%;
+    padding: 64px 72px;
+    display: flex; flex-direction: column; justify-content: space-between;
+  }
+  .top { display: flex; align-items: center; gap: 18px; }
+  .logo {
+    width: 56px; height: 56px;
+    background: #fff; border-radius: 14px;
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 8px 24px rgba(0,0,0,.25);
+  }
+  .logo svg { width: 36px; height: 36px; }
+  .brand-name { font-size: 30px; font-weight: 800; letter-spacing: -.02em; }
+  .brand-dot { color: #5BCAFF; }
+
+  .main { display: flex; flex-direction: column; gap: 22px; max-width: 980px; }
+  .pill {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 8px 14px; border-radius: 100px;
+    background: rgba(91,202,255,.12);
+    border: 1px solid rgba(91,202,255,.35);
+    color: #5BCAFF;
+    font-size: 14px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase;
+    width: fit-content;
+  }
+  h1 {
+    font-size: 70px; line-height: 1.05; font-weight: 800; letter-spacing: -.025em;
+  }
+  h1 .accent {
+    background: linear-gradient(90deg, #5BCAFF, #ffffff);
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
+  p.lead {
+    font-size: 24px; line-height: 1.45; color: rgba(255,255,255,.78);
+    max-width: 880px;
+  }
+
+  .bottom {
+    display: flex; justify-content: space-between; align-items: flex-end;
+    gap: 24px;
+  }
+  .tags {
+    display: flex; gap: 10px; flex-wrap: wrap;
+  }
+  .tag {
+    padding: 9px 18px; border-radius: 100px;
+    background: rgba(255,255,255,.08);
+    border: 1px solid rgba(255,255,255,.18);
+    font-size: 18px; font-weight: 700; letter-spacing: .02em;
+  }
+  .url {
+    font-size: 18px; font-weight: 700; color: rgba(255,255,255,.55); letter-spacing: .02em;
+  }
+</style>
+</head>
+<body>
+  <div class="halo"></div>
+  <div class="grid"></div>
+  <div class="wrap">
+    <div class="top">
+      <div class="logo">
+        <!-- gear icon -->
+        <svg viewBox="400 656 172 172" xmlns="http://www.w3.org/2000/svg">
+          <path fill="#195C82" d="M 557.042969 754.5 C 560.046875 754.5 562.5 752.042969 562.5 749.039062 L 562.5 735.84375 C 562.5 732.839844 560.046875 730.386719 557.042969 730.386719 L 551.375 730.386719 C 548.375 730.386719 545.199219 728.035156 544.3125 725.167969 L 539.476562 713.429688 C 538.058594 710.78125 538.632812 706.882812 540.753906 704.761719 L 544.765625 700.75 C 546.886719 698.625 546.890625 695.152344 544.765625 693.03125 L 535.4375 683.699219 C 533.3125 681.578125 529.839844 681.578125 527.714844 683.699219 L 523.707031 687.710938 C 521.582031 689.835938 517.679688 690.40625 515.035156 688.988281 L 503.296875 684.152344 C 500.429688 683.269531 498.082031 680.09375 498.082031 677.089844 L 498.082031 671.421875 C 498.082031 668.421875 495.625 665.964844 492.625 665.964844 L 479.425781 665.964844 C 476.425781 665.964844 473.96875 668.421875 473.96875 671.421875 L 473.96875 677.089844 C 473.96875 680.09375 471.621094 683.269531 468.753906 684.152344 L 457.011719 688.988281 C 454.367188 690.40625 450.46875 689.832031 448.347656 687.710938 L 444.335938 683.699219 C 442.210938 681.574219 438.738281 681.574219 436.617188 683.699219 L 427.285156 693.027344 C 425.160156 695.152344 425.160156 698.625 427.285156 700.746094 L 431.296875 704.757812 C 433.421875 706.882812 433.992188 710.78125 432.574219 713.429688 L 427.738281 725.167969 C 426.855469 728.035156 423.679688 730.382812 420.675781 730.382812 L 415.011719 730.382812 C 412.011719 730.382812 409.554688 732.839844 409.554688 735.839844 L 409.554688 749.039062 C 409.554688 752.042969 412.011719 754.5 415.011719 754.5 L 420.675781 754.5 C 423.679688 754.5 426.855469 756.84375 427.738281 759.714844 L 432.578125 771.457031 C 433.996094 774.097656 433.421875 778 431.300781 780.121094 L 427.285156 784.136719 C 425.164062 786.257812 425.164062 789.730469 427.285156 791.851562 L 436.617188 801.183594 C 438.738281 803.308594 442.210938 803.304688 444.335938 801.183594 L 448.347656 797.171875 C 450.472656 795.050781 454.371094 794.472656 457.015625 795.894531 L 468.753906 800.730469 C 471.625 801.613281 473.96875 804.789062 473.96875 807.792969 L 473.96875 813.460938 C 473.96875 816.460938 476.425781 818.917969 479.429688 818.917969 L 492.625 818.917969 C 495.625 818.917969 498.082031 816.460938 498.082031 813.460938 L 498.082031 807.792969 C 498.082031 804.789062 500.429688 801.613281 503.296875 800.730469 L 515.039062 795.894531 C 517.683594 794.476562 521.585938 795.046875 523.707031 797.171875 L 527.71875 801.183594 C 529.839844 803.308594 533.316406 803.304688 535.4375 801.183594 L 544.769531 791.851562 C 546.890625 789.730469 546.890625 786.257812 544.769531 784.132812 L 540.757812 780.121094 C 538.632812 778 538.0625 774.097656 539.480469 771.453125 L 544.3125 759.714844 C 545.195312 756.84375 548.375 754.5 551.378906 754.5 Z M 486.023438 773.902344 C 468.648438 773.902344 454.5625 759.816406 454.5625 742.441406 C 454.5625 725.0625 468.648438 710.976562 486.023438 710.976562 C 503.402344 710.976562 517.488281 725.0625 517.488281 742.441406 C 517.488281 759.816406 503.402344 773.902344 486.023438 773.902344 Z"/>
+        </svg>
+      </div>
+      <span class="brand-name">TimeBlast<span class="brand-dot">.ai</span></span>
+    </div>
+
+    <div class="main">
+      <div class="pill">Plateforme IA · PME &amp; ETI</div>
+      <h1>La plateforme IA qui<br><span class="accent">active vos données.</span></h1>
+      <p class="lead">Connectez vos outils existants. Révélez les insights cachés. Pilotez votre activité en temps réel — sans migration, sans rupture.</p>
+    </div>
+
+    <div class="bottom">
+      <div class="tags">
+        <span class="tag">ERP</span>
+        <span class="tag">CRM</span>
+        <span class="tag">BI</span>
+        <span class="tag">SIRH</span>
+        <span class="tag">WMS</span>
+      </div>
+      <span class="url">timeblast.ai</span>
+    </div>
+  </div>
+</body>
+</html>
