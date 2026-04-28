@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
 import { supabase } from '../lib/supabase'
+import HubSpotForm from '../components/HubSpotForm'
 
 // ── Modules decisionnels ──
 const BI_MODULES = [
@@ -2518,7 +2519,33 @@ export default function LoginPage() {
           </div>
         </div>
 
-        {/* Formulaire supprimé — redirection vers groupe-sra.fr/contact */}
+        {/* ── Séparateur + formulaire HubSpot ── */}
+        <div style={{
+          maxWidth: 720, margin: '4rem auto 0',
+        }}>
+          <div style={{
+            display: 'flex', alignItems: 'center', gap: '1rem',
+            color: S.lightGray, fontSize: '.78rem', fontWeight: 700,
+            textTransform: 'uppercase', letterSpacing: '0.1em',
+            marginBottom: '2.5rem',
+          }}>
+            <div style={{ flex: 1, height: 1, background: 'rgba(25,92,130,0.15)' }} />
+            <span>Ou laissez-nous vos coordonnées</span>
+            <div style={{ flex: 1, height: 1, background: 'rgba(25,92,130,0.15)' }} />
+          </div>
+
+          <div style={{
+            background: '#fff', borderRadius: 20, padding: '2.5rem 2rem',
+            border: '2px solid rgba(25,92,130,0.1)',
+            boxShadow: '0 4px 20px rgba(25,92,130,0.06)',
+          }}>
+            <HubSpotForm
+              portalId="26870220"
+              formId="2c5d0f37-c450-496e-ba75-76ec738fdf11"
+              region="eu1"
+            />
+          </div>
+        </div>
       </section>
 
       {/* ══════════════════════════════════════════════════════════════════
