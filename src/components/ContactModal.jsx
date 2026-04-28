@@ -79,7 +79,7 @@ export default function ContactModal({ isOpen, onClose }) {
           <p style={{
             margin: 0, fontSize: '.95rem', color: '#64748b', lineHeight: 1.55,
           }}>
-            Laissez-nous vos coordonnées, on vous recontacte sous 24h.
+            Laissez-nous vos coordonnées, on vous recontacte au plus vite.
           </p>
         </div>
 
