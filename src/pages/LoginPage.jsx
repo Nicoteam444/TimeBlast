@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
 import { supabase } from '../lib/supabase'
-import HubSpotForm from '../components/HubSpotForm'
+import ContactModal from '../components/ContactModal'
 
 // ── Modules decisionnels ──
 const BI_MODULES = [
@@ -1694,6 +1694,8 @@ export default function LoginPage() {
   // Contact form
   const [contactForm, setContactForm] = useState({ name: '', email: '', company: '', phone: '', message: '' })
   const [contactSent, setContactSent] = useState(false)
+  const [contactOpen, setContactOpen] = useState(false)
+  const openContact = () => setContactOpen(true)
 
   function saveRecentAccount(userEmail) {
     try {
@@ -1821,17 +1823,16 @@ export default function LoginPage() {
           <button className="landing-burger" onClick={() => setMobileMenu(true)}>☰</button>
 
           <div className="landing-top-cta" style={{ display: 'flex', gap: '.6rem', alignItems: 'center' }}>
-            <a href="https://www.groupe-sra.fr/contact/" target="_blank" rel="noopener noreferrer" style={{
+            <button onClick={openContact} style={{
               padding: '9px 18px', borderRadius: 10,
               background: 'transparent',
               border: '1.5px solid #195C82', color: '#195C82', fontWeight: 700,
               fontSize: '.85rem', cursor: 'pointer', transition: 'all .25s',
-              textDecoration: 'none',
             }}
             onMouseEnter={e => { e.target.style.background = 'rgba(25,92,130,0.06)' }}
             onMouseLeave={e => { e.target.style.background = 'transparent' }}>
               Nous contacter
-            </a>
+            </button>
             <button onClick={() => setShowLogin(true)} style={{
               padding: '9px 22px', borderRadius: 10,
               background: '#195C82',
@@ -1951,7 +1952,7 @@ export default function LoginPage() {
 
             <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
               <button
-                onClick={() => window.open('https://www.groupe-sra.fr/contact/', '_blank')}
+                onClick={openContact}
                 style={{
                   background: '#5BCAFF', color: '#0b1d31', border: 'none',
                   padding: '.85rem 2.4rem', borderRadius: 8, fontSize: '1.05rem', fontWeight: 800,
@@ -2483,7 +2484,7 @@ export default function LoginPage() {
             <p style={{ fontSize: '.88rem', color: S.gray, lineHeight: 1.6, marginBottom: '1.5rem', flex: 1 }}>
               Branchez TimeBlast sur votre stack existante. L'IA commence à analyser immédiatement.
             </p>
-            <button onClick={() => window.open('https://www.groupe-sra.fr/contact/', '_blank')} style={{
+            <button onClick={openContact} style={{
               padding: '14px 32px', borderRadius: 12, background: '#195C82', color: '#fff',
               fontWeight: 700, fontSize: '.95rem', border: 'none', cursor: 'pointer', width: '100%',
               boxShadow: '0 4px 20px rgba(25,92,130,0.3)', transition: 'all .25s',
@@ -2507,45 +2508,18 @@ export default function LoginPage() {
             <p style={{ fontSize: '.88rem', color: S.gray, lineHeight: 1.6, marginBottom: '1.5rem', flex: 1 }}>
               Nos experts configurent vos connecteurs et paramètrent vos tableaux de bord sur mesure.
             </p>
-            <a href="https://www.groupe-sra.fr/contact/" target="_blank" rel="noopener noreferrer" style={{
+            <button onClick={openContact} style={{
               padding: '14px 32px', borderRadius: 12, background: 'transparent',
               border: '2px solid #195C82', color: '#195C82',
               fontWeight: 700, fontSize: '.95rem', cursor: 'pointer', width: '100%',
-              textDecoration: 'none', display: 'block', textAlign: 'center', transition: 'all .25s',
+              textAlign: 'center', transition: 'all .25s',
               boxSizing: 'border-box',
             }}>
-              Nous contacter →
-            </a>
+              Je veux une démo →
+            </button>
           </div>
         </div>
 
-        {/* ── Séparateur + formulaire HubSpot ── */}
-        <div style={{
-          maxWidth: 720, margin: '4rem auto 0',
-        }}>
-          <div style={{
-            display: 'flex', alignItems: 'center', gap: '1rem',
-            color: S.lightGray, fontSize: '.78rem', fontWeight: 700,
-            textTransform: 'uppercase', letterSpacing: '0.1em',
-            marginBottom: '2.5rem',
-          }}>
-            <div style={{ flex: 1, height: 1, background: 'rgba(25,92,130,0.15)' }} />
-            <span>Ou laissez-nous vos coordonnées</span>
-            <div style={{ flex: 1, height: 1, background: 'rgba(25,92,130,0.15)' }} />
-          </div>
-
-          <div style={{
-            background: '#fff', borderRadius: 20, padding: '2.5rem 2rem',
-            border: '2px solid rgba(25,92,130,0.1)',
-            boxShadow: '0 4px 20px rgba(25,92,130,0.06)',
-          }}>
-            <HubSpotForm
-              portalId="26870220"
-              formId="2c5d0f37-c450-496e-ba75-76ec738fdf11"
-              region="eu1"
-            />
-          </div>
-        </div>
       </section>
 
       {/* ══════════════════════════════════════════════════════════════════
@@ -2581,27 +2555,27 @@ export default function LoginPage() {
             Connectez vos outils existants et laissez l'IA faire émerger l'intelligence cachée.
           </p>
           <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', flexWrap: 'wrap' }}>
-            <button onClick={() => window.open('https://www.groupe-sra.fr/contact/', '_blank')} style={{
-              padding: '15px 36px', borderRadius: 12, background: '#fff', border: 'none', cursor: 'pointer',
+            <button onClick={openContact} style={{
+              padding: '15px 36px', borderRadius: 12, background: '#fff', cursor: 'pointer',
               color: S.sra, border: 'none', fontWeight: 700, fontSize: '1rem',
-              cursor: 'pointer', transition: 'all .25s', textDecoration: 'none',
+              transition: 'all .25s',
               boxShadow: '0 4px 20px rgba(0,0,0,0.15)',
               letterSpacing: '-0.01em', display: 'inline-flex', alignItems: 'center',
             }}
             onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 8px 30px rgba(0,0,0,0.25)' }}
             onMouseLeave={e => { e.currentTarget.style.transform = 'none'; e.currentTarget.style.boxShadow = '0 4px 20px rgba(0,0,0,0.15)' }}>
-              Connecter mes outils →
+              Je veux une démo →
             </button>
-            <a href="#contact" style={{
+            <button onClick={openContact} style={{
               padding: '15px 36px', borderRadius: 12, background: 'transparent',
               border: '1.5px solid rgba(255,255,255,0.3)', color: '#fff',
-              fontWeight: 600, fontSize: '1rem', textDecoration: 'none',
+              fontWeight: 600, fontSize: '1rem', cursor: 'pointer',
               transition: 'all .25s', display: 'inline-flex', alignItems: 'center',
             }}
             onMouseEnter={e => { e.target.style.background = 'rgba(255,255,255,0.1)'; e.target.style.borderColor = 'rgba(255,255,255,0.5)' }}
             onMouseLeave={e => { e.target.style.background = 'transparent'; e.target.style.borderColor = 'rgba(255,255,255,0.3)' }}>
               Nous contacter
-            </a>
+            </button>
           </div>
         </div>
       </section>
@@ -2751,6 +2725,8 @@ export default function LoginPage() {
           </div>
         </div>
       )}
+
+      <ContactModal isOpen={contactOpen} onClose={() => setContactOpen(false)} />
     </div>
   )
 }
